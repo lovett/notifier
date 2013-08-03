@@ -23,22 +23,26 @@ $app->get('/message', function () use ($app) {
     print "This endpoint only accepts POST requests.";
 });
 
-$app->post('/message', function () use ($config, $req, $redis) {
+$app->post('/message', function () use ($app, $config, $req, $redis) {
     $message = new StdClass();
-    $properties = array('title', 'url', 'body', 'source', 'group', 'timestamp');
+    $properties = array('title', 'url', 'body', 'source', 'group');
 
     foreach ($properties as $property) {
         $value = $req->post($property);
-
-        if ($property == 'timestamp') {
-            $value = strtotime($value);
-            if ((int)$value === 0) {
-                $value = time();
-            }
-        }
+        if (empty($value)) continue;
 
         $message->$property = $value;
     }
+
+    $properties = get_object_vars($message);
+
+    if (empty($properties)) {
+        $app->response()->status(400);
+        print "No message specified";
+        return;
+    }
+
+    $message->timestamp = time();
 
     $message = json_encode($message);
 
@@ -46,8 +50,9 @@ $app->post('/message', function () use ($config, $req, $redis) {
 
     if ($received_by == 0) {
         $queue_length = $redis->rpush($config['pubsub']['queue'], $message);
-        print $queue_length;
     }
+
+    print "OK";
 });
 
 $app->run();
