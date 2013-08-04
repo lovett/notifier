@@ -31,6 +31,12 @@ $app->post('/message', function () use ($app, $config, $req, $redis) {
         $value = $req->post($property);
         if (empty($value)) continue;
 
+        $encoding = mb_detect_encoding($value);
+
+        if ($encoding !== 'UTF-8') {
+            $value = utf8_encode($value);
+        }
+
         $message->$property = $value;
     }
 
