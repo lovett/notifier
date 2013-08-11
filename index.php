@@ -48,7 +48,7 @@ $app->post('/message', function () use ($app, $config, $req, $redis) {
         return;
     }
 
-    $message->timestamp = time();
+    $message->timestamp = date('c');
 
     $message = json_encode($message);
 
