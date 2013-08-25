@@ -10,7 +10,7 @@ $app = new \Slim\Slim();
 $app->config('debug', true);
 $req = $app->request();
 
-$redis = new Predis\Client($config['redis_client']);
+$redis = new Predis\Client($config['redis']);
 $pubsub = $redis->pubSub();
 
 
@@ -48,15 +48,13 @@ $app->post('/message', function () use ($app, $config, $req, $redis) {
         return;
     }
 
-    $message->timestamp = date('c');
+    $message->received = date('c');
 
     $message = json_encode($message);
 
-    $received_by = $redis->publish($config['pubsub']['channel'], $message);
+    $redis->rpush($config['pubsub']['archive'], $message);
 
-    if ($received_by == 0) {
-        $queue_length = $redis->rpush($config['pubsub']['queue'], $message);
-    }
+    $redis->publish($config['pubsub']['queue'], $message);
 
     print "OK";
 });
