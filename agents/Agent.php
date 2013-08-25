@@ -6,30 +6,26 @@ class Agent {
     private $_redis;
     private $_message_handler;
 
-    public function __construct($config_file) {
-        $this->_config = parse_ini_file($config_file, true);
+    public function __construct($config) {
+        $this->_config = $config;
 
-        $this->_redis = new Predis\Client($this->_config['redis_client']);
+        $this->_redis = new Predis\Client($this->_config['redis']);
     }
 
     public function setMessageHandler($function) {
         $this->_message_handler = $function;
     }
 
-    public function run() {
-        $this->getQueuedMessages();
-        $this->subscribe();
-    }
-
-    private function getQueuedMessages() {
-        while ($message = $this->_redis->lpop($this->_config['pubsub']['queue'])) {
+    public function getRecentMessages() {
+        $messages = $this->_redis->lrange($this->_config['pubsub']['archive'], -5, -1);
+        foreach ($messages as $message) {
             $this->handleMessage($message);
         }
     }
 
-    private function subscribe() {
+    public function subscribe() {
         $pubsub = $this->_redis->pubSub();
-        $pubsub->subscribe($this->_config['pubsub']['channel']);
+        $pubsub->subscribe($this->_config['pubsub']['queue']);
 
         foreach ($pubsub as $message) {
             if ($message->kind !== 'message') {

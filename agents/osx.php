@@ -7,16 +7,26 @@ chdir(dirname(__DIR__));
 require 'vendor/autoload.php';
 require 'agents/Agent.php';
 
-$message_handler = function($message) {
+$config = parse_ini_file('config.ini', true);
+
+$message_handler = function($message) use ($config) {
     $message = json_decode($message);
-    $date = date('M d \a\t h:i A', strtotime($message->timestamp));
 
     $title = escapeshellarg($message->title);
-    $message = escapeshellarg($message->body);
+    $body = escapeshellarg($message->body);
 
-    exec("terminal-notifier -message $message -title $title");
+    print "terminal-notifier -message $body -title $title";
+
+    if (!empty($message->url)) {
+        $url = escapeshellarg($message->url);
+        print " -open $url ";
+    }
+
+    print "\n";
+
+    print "say $body\n";
 };
 
-$agent = new Agent('config.ini');
+$agent = new Agent($config);
 $agent->setMessageHandler($message_handler);
-$agent->run();
+$agent->subscribe();
