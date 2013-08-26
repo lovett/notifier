@@ -22,7 +22,7 @@ $message_handler = function($message) use ($config, $c) {
     print $c("[$date]")->green();
     print ' ';
 
-    if ($message->group == 'reminder') {
+    if (isset($message->group) && $message->group == 'reminder') {
         print $c($message->title)->cyan();
         print "\n";
     } else {
