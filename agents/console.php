@@ -19,11 +19,24 @@ $message_handler = function($message) use ($config, $c) {
     $date->setTimeZone(new DateTimeZone($config['agent']['timezone']));
     $date = $date->format('M d \a\t h:i A');
 
-    $date = $c("[$date]")->green();
-    printf("%s %s\n%s\n", $date, $message->title, $message->body);
-    if (!empty($message->url)) {
-        print $message->url . "\n";
+    print $c("[$date]")->green();
+    print ' ';
+
+    if ($message->group == 'reminder') {
+        print $c($message->title)->cyan();
+        print "\n";
+    } else {
+        print $c($message->title)->yellow();
+        print "\n";
     }
+
+    print $message->body;
+    print "\n";
+
+    if (!empty($message->url)) {
+        print $c($message->url)->red() . "\n";
+    }
+
     print "\n";
     print "\x07";
 };
