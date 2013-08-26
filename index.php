@@ -25,7 +25,7 @@ $app->get('/message', function () use ($app) {
 
 $app->post('/message', function () use ($app, $config, $req, $redis) {
     $message = new StdClass();
-    $properties = array('title', 'url', 'body', 'source', 'group');
+    $properties = array('title', 'url', 'body', 'source', 'group', 'noarchive');
 
     foreach ($properties as $property) {
         $value = $req->post($property);
@@ -50,11 +50,13 @@ $app->post('/message', function () use ($app, $config, $req, $redis) {
 
     $message->received = date('c');
 
-    $message = json_encode($message);
+    $encoded_message = json_encode($message);
 
-    $redis->rpush($config['pubsub']['archive'], $message);
+    if (!isset($message->noarchive)) {
+        $redis->rpush($config['pubsub']['archive'], $encoded_message);
+    }
 
-    $redis->publish($config['pubsub']['queue'], $message);
+    $redis->publish($config['pubsub']['queue'], $encoded_message);
 
     print "OK";
 });
