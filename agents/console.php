@@ -27,6 +27,8 @@ $message_handler = function($message) use ($config, $c) {
         $message = sprintf("[%s] %s\n%s",
                            $formatted_date, $message->title, $message->body);
 
+        print $c($message)->white() . "\n";
+
         if (!empty($message->url)) {
             print $c($message->url)->white() . "\n";
         }
