@@ -16,8 +16,9 @@ class Agent {
         $this->_message_handler = $function;
     }
 
-    public function getRecentMessages() {
-        $messages = $this->_redis->lrange($this->_config['pubsub']['archive'], -5, -1);
+    public function getRecentMessages($count) {
+        $count *= -1;
+        $messages = $this->_redis->lrange($this->_config['pubsub']['archive'], $count, -1);
         foreach ($messages as $message) {
             $this->handleMessage($message);
         }

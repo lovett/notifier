@@ -57,7 +57,22 @@ $message_handler = function($message) use ($config, $c) {
 
 };
 
+$shortopts = '';
+$longopts = array('historical::');
+
+$options = getopt($shortopts, $longopts);
+
+
+if (!array_key_exists('historical', $options)) {
+    $options['historical'] = 5;
+}
+
+if ($options['historical'] > 50) {
+    print "The max value for historical messages is 50.\n";
+    exit;
+}
+
 $agent = new Agent($config);
 $agent->setMessageHandler($message_handler);
-$agent->getRecentMessages();
+$agent->getRecentMessages($options['historical']);
 $agent->subscribe();
