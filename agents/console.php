@@ -37,20 +37,22 @@ $message_handler = function($message) use ($config, $c) {
         print $c("[$formatted_date]")->green();
         print ' ';
 
-        if (isset($message->group) && $message->group == 'reminder') {
+        if (!empty($message->group) && $message->group == 'reminder') {
             print $c($message->title)->cyan();
+            print "\n";
         } else {
             print $c($message->title)->yellow();
+            print "\n";
         }
 
-        print "\n";
-        print $message->body;
-        print "\n";
+        if (!empty($message->body)) {
+            print $message->body;
+            print "\n";
+        }
 
         if (!empty($message->url)) {
             print $c($message->url)->red() . "\n";
         }
-
     }
 
     print "\n\x07";
