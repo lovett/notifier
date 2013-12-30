@@ -1,11 +1,12 @@
+var CONFIG = require('config');
+var https = require('https');
+var fs = require('fs');
 var faye = require('faye');
 var express = require('express');
 var app = express();
 var redisClient = require('redis').createClient();
-var port = process.env.NOTIFIER_PORT || 8080;
 
-// We will be using database 1
-redisClient.select(1);
+redisClient.select(CONFIG.redis.dbnum);
 
 // Websocket endpoint for browser clients
 var bayeux = new faye.NodeAdapter({
@@ -67,10 +68,20 @@ app.get('/archive/:num', function (req, res) {
     });
 });
 
+
+if (CONFIG.ssl.enabled !== 1) {
+    // non-SSL
+    var server = app.listen(CONFIG.http.port);
+} else {
+    // SSL
+    var server = https.createServer({
+        key: fs.readFileSync(CONFIG.ssl.key),
+        cert: fs.readFileSync(CONFIG.ssl.cert)
+    }, app).listen(CONFIG.http.port);
+}
+
 // Attach to the express server returned by listen, rather than app itself.
 // See https://github.com/faye/faye/issues/256
-
-var server = app.listen(port);
 bayeux.attach(server);
 
-console.log('Listening on port ' + port);
+console.log('Listening on port ' + CONFIG.http.port);

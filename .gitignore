@@ -6,3 +6,5 @@ TAGS
 node_modules
 bower_components
 public
+config/*
+!config/default.json

@@ -1,0 +1,15 @@
+{
+    "redis": {
+        "dbnum": 1
+    },
+
+    "ssl": {
+        "enabled": 0,
+        "key": "",
+        "cert": ""
+    },
+
+    "http": {
+        "port": 8080
+    }
+}  
