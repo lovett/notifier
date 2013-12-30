@@ -3,6 +3,6 @@
 .\#*
 \#*
 TAGS
-vendor
-composer.lock
-composer.phar
+node_modules
+bower_components
+public

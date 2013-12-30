@@ -1,0 +1,11 @@
+<h1>Messages</h1>
+
+<p ng-if="messages.length == 0">You have no messages.</p>
+
+<div ng-repeat="message in messages">
+    <p>
+        {{ message.received | date:'h:mm a MMM d'}}:
+        {{ message.body }}
+        {{ message.url }}
+    </p>
+</div>

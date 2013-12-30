@@ -1,0 +1,27 @@
+{
+  "name": "notifier",
+  "version": "0.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/lovett/notifier.git"
+  },
+  "author": "",
+  "homepage": "https://github.com/lovett/notifier",
+  "dependencies": {
+    "faye": "~1.0.1",
+    "express": "~3.4.7",
+    "grunt": "~0.4.2",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-copy": "~0.5.0"
+  },
+  "devDependencies": {
+    "redis": "~0.10.0",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-clean": "~0.5.0"
+  }
+}
