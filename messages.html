@@ -1,11 +1,14 @@
-<h1>Messages</h1>
-
 <p ng-if="messages.length == 0">You have no messages.</p>
 
-<div ng-repeat="message in messages">
-    <p>
-        {{ message.received | date:'h:mm a MMM d'}}:
-        {{ message.body }}
-        {{ message.url }}
-    </p>
+<div id="articles">
+    <article class="panel" ng-repeat="message in messages">
+        <h1 ng-show="message.title">
+            <a ng-if="message.url" ng-href="{{ message.url }}" target="_blank">{{ message.title }}</a>
+            <span ng-if="!message.url">{{ message.title }}</span>
+        </h1>
+        <p ng-show="message.body">{{ message.body }}</p>
+        <footer>
+            <time datetime="{{ message.received | date:'yyyy-MM-ddTHH:mmZ' }}">{{ message.received | date:"MMMM d @ h:mm a"}}</time>
+        </footer>
+    </article>
 </div>
