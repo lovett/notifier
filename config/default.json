@@ -3,6 +3,12 @@
         "dbnum": 1
     },
 
+    "auth": {
+        "enabled": 0,
+        "username": "",
+        "password": ""
+    },
+
     "ssl": {
         "enabled": 0,
         "key": "",
@@ -12,4 +18,4 @@
     "http": {
         "port": 8080
     }
-}  
+}

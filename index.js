@@ -24,6 +24,10 @@ var bayeauxClient = bayeux.getClient();
 app.use(express.urlencoded());
 
 
+if (CONFIG.auth.enabled === 1) {
+    app.use(express.basicAuth(CONFIG.auth.username, CONFIG.auth.password));
+}
+
 // Static fileserving
 app.use(express.static(__dirname + '/public'));
 
@@ -79,6 +83,7 @@ if (CONFIG.ssl.enabled !== 1) {
         cert: fs.readFileSync(CONFIG.ssl.cert)
     }, app).listen(CONFIG.http.port);
 }
+
 
 // Attach to the express server returned by listen, rather than app itself.
 // See https://github.com/faye/faye/issues/256
