@@ -36,6 +36,7 @@ module.exports = function(grunt) {
                       'node_modules/faye/browser/faye-browser-min.js.map',
                       'index.html',
                       'messages.html',
+                      'favicon.ico',
                       'bower_components/foundation/js/vendor/custom.modernizr.js'],
                 dest: 'public/'
             }
