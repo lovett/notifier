@@ -26,4 +26,7 @@ appControllers.controller('MessageController', ['$scope', '$http', 'Faye', funct
         }
     });
 
+    $scope.clearAll = function (e) {
+        $scope.messages = [];
+    };
 }]);
