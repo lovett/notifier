@@ -1,7 +1,7 @@
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('MessageController', ['$scope', '$http', 'Faye', function ($scope, $http, Faye) {
-    $scope.messages = [];
+appControllers.controller('MessageController', ['$rootScope', '$scope', '$http', 'Faye', function ($rootScope, $scope, $http, Faye) {
+    $rootScope.messages = [];
 
     $http({
         method: 'GET',
@@ -13,20 +13,20 @@ appControllers.controller('MessageController', ['$scope', '$http', 'Faye', funct
             });
         }
     }).error(function(data, status, headers, config) {
-        alert(data);
+        alert(status);
     });
 
     Faye.subscribe("/messages", function (message) {
         try {
             message = JSON.parse(message);
-            $scope.messages.unshift(message);
-            console.log(message);
+            $rootScope.messages.unshift(message);
         } catch(e) {
             return;
         }
     });
 
     $scope.clearAll = function (e) {
-        $scope.messages = [];
+        $rootScope.messages = [];
     };
+
 }]);

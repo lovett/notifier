@@ -1,7 +1,7 @@
 <!doctype html>
 <html ng-app="App" class="no-js" lang="en">
     <head>
-        <title>Messages</title>
+        <title ng-pluralize count="messages.length" when="{'0': 'No Messages', 'one': '1 Message', 'other': '{} Messages'}"></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="stylesheet" href="/all.min.css" />
