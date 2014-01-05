@@ -1,7 +1,27 @@
 var appControllers = angular.module('appControllers', []);
 
 appControllers.controller('MessageController', ['$rootScope', '$scope', '$http', 'Faye', function ($rootScope, $scope, $http, Faye) {
+    var group_icon_map = {
+        'sysdown': 'icon-fire',
+        'sysup': 'icon-cool',
+        'reminder': 'icon-pushpin',
+        'email': 'icon-envelope',
+        'phone': 'icon-phone',
+        'web': 'icon-earth'
+    }
+
+    var acceptMessage = function (message) {
+
+        var icon_groups = ['sysup', 'sysdown', 'reminder', 'email', 'phone', 'web'];
+        if (Object.keys(group_icon_map).indexOf(message.group) !== -1) {
+            message.has_icon = true;
+        }
+
+        $rootScope.messages.unshift(message);
+    };
+
     $rootScope.messages = [];
+
 
     $http({
         method: 'GET',
@@ -9,7 +29,8 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
     }).success(function(data, status, headers, config) {
         if (data instanceof Array) {
             data.forEach(function (message) {
-                $scope.messages.unshift(JSON.parse(message));
+                message = JSON.parse(message);
+                acceptMessage(message);
             });
         }
     }).error(function(data, status, headers, config) {
@@ -19,7 +40,8 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
     Faye.subscribe("/messages", function (message) {
         try {
             message = JSON.parse(message);
-            $rootScope.messages.unshift(message);
+            acceptMessage(message);
+
         } catch(e) {
             return;
         }
@@ -28,5 +50,9 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
     $scope.clearAll = function (e) {
         $rootScope.messages = [];
     };
+
+    $scope.iconClassForGroup = function (group) {
+            return group_icon_map[group] || '';
+    }
 
 }]);

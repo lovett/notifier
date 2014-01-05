@@ -5,14 +5,13 @@
 </header>
 
 <div id="articles">
-    <article class="panel" ng-repeat="message in messages">
+    <article ng-class="{panel: true, 'panel-with-icon': message.has_icon}" ng-repeat="message in messages">
+        <div ng-class="['icon', iconClassForGroup(message.group) ]"></div>
         <h1 ng-show="message.title">
             <a ng-if="message.url" ng-href="{{ message.url }}" target="_blank">{{ message.title }}</a>
             <span ng-if="!message.url">{{ message.title }}</span>
         </h1>
+        <time datetime="{{ message.received | date:'yyyy-MM-ddTHH:mmZ' }}">{{ message.received | date:"MMMM d @ h:mm a"}}</time>
         <p ng-show="message.body">{{ message.body }}</p>
-        <footer>
-            <time datetime="{{ message.received | date:'yyyy-MM-ddTHH:mmZ' }}">{{ message.received | date:"MMMM d @ h:mm a"}}</time>
-        </footer>
     </article>
 </div>

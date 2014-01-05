@@ -6,21 +6,63 @@ BODY {
     text-align: right;
 }
 
+.panel-with-icon {
+    padding-left: 6em;
+
+    .icon {
+        font-size: 3em;
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: .7em .25em;
+        height: 100%;
+        background-color: #333;
+        color: #fff;
+    }
+
+    .icon-envelope {
+        background-color: rgb(56,101,120);
+    }
+
+    .icon-phone {
+        background-color: rgb(234,176,94);
+    }
+
+    .icon-earth {
+        background-color: rgb(95,67,64);
+    }
+
+    .icon-pushpin {
+        background-color: rgb(204,189,166);
+        color: rgb(17,21,33);
+    }
+
+    .icon-fire {
+        background-color: rgb(209,0,15);
+    }
+
+    .icon-cool {
+        background-color: rgb(113,176,146);
+    }
+
+}
+
 .panel {
+    position: relative;
+    border: 0;
+
     H1 {
-        font-size: 1.5em;
+        font-size: 1.25em;
+        font-weight: bold;
     }
 
     P {
         margin-bottom: .5em;
     }
 
-    FOOTER {
-        text-align: left;
-    }
-
     TIME {
         font-size: .8em;
         text-transform: uppercase;
+        line-height: 2.5;
     }
 }

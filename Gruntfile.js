@@ -39,6 +39,12 @@ module.exports = function(grunt) {
                       'favicon.ico',
                       'bower_components/foundation/js/vendor/custom.modernizr.js'],
                 dest: 'public/'
+            },
+
+            fonts: {
+                flatten: false,
+                src: ['fonts/*'],
+                dest: 'public/'
             }
         },
 
@@ -50,6 +56,7 @@ module.exports = function(grunt) {
                 files: {
                     'public/all.min.css': ['bower_components/foundation/css/normalize.css',
                                            'bower_components/foundation/css/foundation.css',
+                                           'font.less',
                                            'app.less']
                 }
             }
@@ -66,7 +73,6 @@ module.exports = function(grunt) {
 
         watch: {
             options: {
-                spawn: false,
                 livereload: true,
             },
             css: {
