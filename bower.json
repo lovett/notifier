@@ -16,9 +16,9 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "~1.2.6",
-    "angular-route": "~1.2.6",
-    "angular-resource": "~1.2.6",
+    "angular": "~1.2.7",
+    "angular-route": "~1.2.7",
+    "angular-resource": "~1.2.7",
     "angular-moment": "~0.6.0",
     "angular-faye": "~0.2.1",
     "foundation": "~5.0.2"

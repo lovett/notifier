@@ -1,6 +1,6 @@
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('MessageController', ['$rootScope', '$scope', '$http', 'Faye', function ($rootScope, $scope, $http, Faye) {
+appControllers.controller('MessageController', ['$rootScope', '$scope', '$http', '$window', 'Faye', function ($rootScope, $scope, $http, $window, Faye) {
     var group_icon_map = {
         'sysdown': 'icon-fire',
         'sysup': 'icon-cool',
@@ -11,6 +11,10 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
     }
 
     var displayMessage = function (message) {
+
+        if ($scope.asOf > message.received) {
+            return;
+        }
 
         var icon_groups = ['sysup', 'sysdown', 'reminder', 'email', 'phone', 'web'];
         if (Object.keys(group_icon_map).indexOf(message.group) !== -1) {
@@ -52,6 +56,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
     };
 
     $rootScope.messages = [];
+    $scope.asOf = parseInt(localStorage['asOf'], 10);
 
     $http({
         method: 'GET',
@@ -79,10 +84,18 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
 
     $scope.clearAll = function (e) {
         $rootScope.messages = [];
+        $scope.asOf = localStorage['asOf'] = +new Date();
     };
 
     $scope.iconClassForGroup = function (group) {
-            return group_icon_map[group] || '';
-    }
+        return group_icon_map[group] || '';
+    };
+
+    $scope.resetAsOf = function () {
+        localStorage.removeItem('asOf');
+        $scope.asOf = null;
+        $window.location.reload();
+    };
+
 
 }]);

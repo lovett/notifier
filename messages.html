@@ -1,4 +1,7 @@
-<p ng-if="messages.length == 0">No messages.</p>
+<p ng-if="messages.length == 0">
+    No new messages.
+    <a ng-if="asOf > 0" ng-click="resetAsOf()" ng-href="">View all</a>.
+</p>
 
 <header id="page-header">
     <a ng-click="clearAll()" ng-if="messages.length > 0" ng-href="" class="button small radius">Clear</a>
