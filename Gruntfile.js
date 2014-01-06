@@ -37,6 +37,7 @@ module.exports = function(grunt) {
                       'index.html',
                       'messages.html',
                       'favicon.ico',
+                      'newspaper.svg',
                       'bower_components/foundation/js/vendor/custom.modernizr.js'],
                 dest: 'public/'
             },

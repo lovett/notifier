@@ -10,7 +10,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
         'web': 'icon-earth'
     }
 
-    var acceptMessage = function (message) {
+    var displayMessage = function (message) {
 
         var icon_groups = ['sysup', 'sysdown', 'reminder', 'email', 'phone', 'web'];
         if (Object.keys(group_icon_map).indexOf(message.group) !== -1) {
@@ -18,10 +18,40 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
         }
 
         $rootScope.messages.unshift(message);
+
+    };
+
+    var sendNotification = function (message) {
+        var notification;
+        if (!'Notification' in window) {
+            return;
+        }
+
+        if (Notification.permission === 'denied') {
+            return;
+        }
+
+        if (Notification.permission === 'default') {
+            Notification.requestPermission(function () {
+                sendNotification(message);
+            });
+            return;
+        }
+
+        if (Notification.permission === 'granted' || Notification.permission === undefined) {
+            notification = new Notification(message.title, {
+                'body': message.body,
+                'tag' : +new Date(),
+                'icon': '/newspaper.svg'
+            });
+
+            notification.onclick = function () {
+                this.close();
+            };
+        }
     };
 
     $rootScope.messages = [];
-
 
     $http({
         method: 'GET',
@@ -30,7 +60,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
         if (data instanceof Array) {
             data.forEach(function (message) {
                 message = JSON.parse(message);
-                acceptMessage(message);
+                displayMessage(message);
             });
         }
     }).error(function(data, status, headers, config) {
@@ -40,8 +70,8 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
     Faye.subscribe("/messages", function (message) {
         try {
             message = JSON.parse(message);
-            acceptMessage(message);
-
+            displayMessage(message);
+            sendNotification(message);
         } catch(e) {
             return;
         }
