@@ -15,6 +15,6 @@
             <span ng-if="!message.url">{{ message.title }}</span>
         </h1>
         <time datetime="{{ message.received | date:'yyyy-MM-ddTHH:mmZ' }}">{{ message.received | date:"MMMM d @ h:mm a"}}</time>
-        <p ng-show="message.body">{{ message.body }}</p>
+        <p ng-show="message.body" ng-bind-html="message.body"></p>
     </article>
 </div>

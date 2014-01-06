@@ -21,6 +21,8 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
             message.has_icon = true;
         }
 
+        message.body = message.body.replace(/\n/g, "<br/>");
+
         $rootScope.messages.unshift(message);
 
     };

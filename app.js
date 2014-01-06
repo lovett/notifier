@@ -1,6 +1,7 @@
 var app = angular.module('App', [
     'ngRoute',
     'appControllers',
+    'ngSanitize',
     'faye'
 ]);
 
