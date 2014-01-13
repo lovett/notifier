@@ -38,7 +38,7 @@ module.exports = function(grunt) {
                       'bower_components/angular-sanitize/angular-sanitize.min.js.map',
                       'index.html',
                       'messages.html',
-                      'favicon.ico',
+                      'favicon*',
                       'newspaper.svg',
                       'bower_components/foundation/js/vendor/custom.modernizr.js'],
                 dest: 'public/'
