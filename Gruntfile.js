@@ -38,7 +38,9 @@ module.exports = function(grunt) {
                       'bower_components/angular-sanitize/angular-sanitize.min.js.map',
                       'index.html',
                       'messages.html',
-                      'favicon*',
+                      'favicon.ico',
+                      'favicon-144.png',
+                      'favicon-152.png',
                       'newspaper.svg',
                       'bower_components/foundation/js/vendor/custom.modernizr.js'],
                 dest: 'public/'
@@ -101,6 +103,26 @@ module.exports = function(grunt) {
                     'public/app.min.js': ['app.js', 'controllers.js']
                 }
             }
+        },
+
+        ver: {
+            main: {
+                phases: [
+                    {
+                        files: [
+                            'public/*.ico',
+                            'public/*.png',
+                            'public/*.js',
+                            'public/*.css'
+                        ],
+                        references: [
+                            'public/index.html',
+                            'public/*.js'
+                        ]
+                    }
+                ],
+                version: 'public/version.json'
+            }
         }
     });
 
@@ -111,9 +133,10 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-nodemon');
+    grunt.loadNpmTasks('grunt-ver');
 
     // Default task(s).
-    grunt.registerTask('build', ['clean:pre_build', 'uglify', 'less', 'concat', 'copy', 'clean:post_build']);
+    grunt.registerTask('build', ['clean:pre_build', 'uglify', 'less', 'concat', 'copy', 'ver', 'clean:post_build']);
     grunt.registerTask('default', ['build', 'watch']);
 
 
