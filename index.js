@@ -24,6 +24,11 @@ var bayeauxClient = bayeux.getClient();
 app.use(express.urlencoded());
 
 
+app.use(function(req, res, next){
+    console.log('%s %s', req.method, req.url);
+    next();
+});
+
 if (CONFIG.auth.enabled === 1) {
     app.use(express.basicAuth(CONFIG.auth.username, CONFIG.auth.password));
 }
