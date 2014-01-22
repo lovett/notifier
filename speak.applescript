@@ -1,3 +1,4 @@
+(* compile to speak.scpt by running: osacompile -o speak.scpt speak.applescript *)
 on run argv
 	set resumePlayback to false
 	if application "iTunes" is running then
