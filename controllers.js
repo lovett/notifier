@@ -7,7 +7,8 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
         'reminder': 'icon-pushpin',
         'email': 'icon-envelope',
         'phone': 'icon-phone',
-        'web': 'icon-earth'
+        'web': 'icon-earth',
+        'git': 'icon-github'
     }
 
     var displayMessage = function (message) {
@@ -16,12 +17,14 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
             return;
         }
 
-        var icon_groups = ['sysup', 'sysdown', 'reminder', 'email', 'phone', 'web'];
+        var icon_groups = ['sysup', 'sysdown', 'reminder', 'email', 'phone', 'web', 'git'];
         if (Object.keys(group_icon_map).indexOf(message.group) !== -1) {
             message.has_icon = true;
         }
 
-        message.body = message.body.replace(/\n/g, "<br/>");
+        if (message.hasOwnProperty('body')) {
+            message.body = message.body.replace(/\n/g, "<br/>");
+        }
 
         $rootScope.messages.unshift(message);
 
