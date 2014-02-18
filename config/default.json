@@ -17,5 +17,9 @@
 
     "http": {
         "port": 8080
+    },
+
+    "git": {
+        "http://example.com/foo.git": "/local/path/to/foo/checkout"
     }
 }

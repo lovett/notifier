@@ -77,7 +77,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
         alert(status);
     });
 
-    Faye.subscribe("/messages", function (message) {
+    var subscription = Faye.subscribe("/messages/*", function (message) {
         try {
             message = JSON.parse(message);
             displayMessage(message);
@@ -85,6 +85,9 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
         } catch(e) {
             return;
         }
+    });
+
+    subscription.then(function () {
     });
 
     $scope.clearAll = function (e) {

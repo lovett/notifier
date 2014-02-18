@@ -39,7 +39,7 @@ app.use(express.static(__dirname + '/public'));
 // Endpoint for receiving messages
 app.post('/message', function (req, res) {
     var message = {};
-    var keys = ['title', 'url', 'body', 'source', 'group', 'noarchive'];
+    var keys = ['title', 'url', 'body', 'source', 'group', 'noarchive', 'event'];
     var json_string;
 
     keys.forEach(function (key) {
@@ -57,7 +57,7 @@ app.post('/message', function (req, res) {
     json_string = JSON.stringify(message);
 
     // Immediately send to any connected clients
-    bayeauxClient.publish('/messages', json_string);
+    bayeauxClient.publish('/messages/' + message.group, json_string);
 
     // Queue for delivery by agents
     redisClient.rpush('messages:queued', json_string);
