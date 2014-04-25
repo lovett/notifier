@@ -16,12 +16,12 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "~1.2.7",
-    "angular-route": "~1.2.7",
-    "angular-resource": "~1.2.7",
-    "angular-moment": "~0.6.0",
-    "angular-faye": "~0.2.1",
-    "angular-sanitize": "~1.2.7",
-    "foundation": "~5.0.2"
+    "angular": "1.2.16",
+    "angular-route": "1.2.16",
+    "angular-resource": "1.2.16",
+    "angular-moment": "0.7.0",
+    "angular-faye": "0.2.1",
+    "angular-sanitize": "1.2.16",
+    "foundation": "5.2.2"
   }
 }
