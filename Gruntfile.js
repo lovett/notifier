@@ -121,7 +121,7 @@ module.exports = function(grunt) {
                         ]
                     }
                 ],
-                version: 'public/version.json'
+                versionFile: 'public/version.json'
             }
         }
     });

@@ -3,6 +3,7 @@ var https = require('https');
 var fs = require('fs');
 var faye = require('faye');
 var express = require('express');
+var bodyParser = require('body-parser');
 var app = express();
 var redisClient = require('redis').createClient();
 
@@ -21,7 +22,7 @@ var bayeauxClient = bayeux.getClient();
 
 // Express should only accept regular, urlencoded requests.
 // No json, no file uploads.
-app.use(express.urlencoded());
+app.use(bodyParser());
 
 
 app.use(function(req, res, next){
