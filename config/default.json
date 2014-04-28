@@ -1,6 +1,6 @@
 {
     "redis": {
-        "dbnum": 1
+        "dbnum": 2
     },
 
     "auth": {

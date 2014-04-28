@@ -2,6 +2,7 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        CONFIG: grunt.file.readJSON('config/default.json'),
 
         clean: {
             pre_build: {
@@ -82,7 +83,7 @@ module.exports = function(grunt) {
 
         shell: {
             'redis-flush': {
-                command: 'redis-cli flushdb'
+                command: 'redis-cli -n <%= CONFIG.redis.dbnum %> flushdb'
             },
             'redis-populate': {
                 command: 'curl -s -d "title=Test" -d "noarchive=1" -d "body=Testing testing 1 2 3" -d "url=http://example.com" http://localhost:8080/message'
