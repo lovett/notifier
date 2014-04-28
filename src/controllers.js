@@ -12,6 +12,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
     }
 
     var displayMessage = function (message) {
+        console.log(message);
 
         if ($scope.asOf > message.received) {
             return;

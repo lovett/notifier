@@ -86,7 +86,10 @@ module.exports = function(grunt) {
                 command: 'redis-cli -n <%= CONFIG.redis.dbnum %> flushdb'
             },
             'redis-populate': {
-                command: 'curl -s -d "title=Test" -d "noarchive=1" -d "body=Testing testing 1 2 3" -d "url=http://example.com" http://localhost:8080/message'
+                command: [
+                    'curl -s -d "title=Test 1" -d "noarchive=1" -d "body=Testing testing 1 2 3" -d "url=http://example.com" http://localhost:8080/message',
+                    'curl -s -d "title=Test 2" -d -d "body=Testing testing 4 5 6" -d "url=http://example.com" http://localhost:8080/message',
+                ].join(' && ')
             }
         },
 

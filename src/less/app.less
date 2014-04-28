@@ -52,6 +52,7 @@ BODY {
 }
 
 .panel {
+    overflow: hidden;
     position: relative;
     border: 0;
 
@@ -68,5 +69,20 @@ BODY {
         font-size: .8em;
         text-transform: uppercase;
         line-height: 2.5;
+    }
+
+    .noarchive {
+        color: white;
+        background-color: red;
+        color: #fff;
+        -webkit-transform: rotate(45deg);
+        position: absolute;
+        padding: .5em 3em;
+        text-align: center;
+        margin-top: 2.8em;
+        top: 0;
+        right: -30px;
+        font-size: .5em;
+        letter-spacing: 1px;
     }
 }

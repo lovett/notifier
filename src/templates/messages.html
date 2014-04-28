@@ -10,6 +10,8 @@
 <div id="articles">
     <article ng-class="{panel: true, 'panel-with-icon': message.has_icon}" ng-repeat="message in messages">
         <div ng-class="['icon', iconClassForGroup(message.group) ]"></div>
+
+        <div class="noarchive" ng-show="message.noarchive == 1">NOT ARCHIVED</div>
         <h1 ng-show="message.title">
             <a ng-if="message.url" ng-href="{{ message.url }}" target="_blank">{{ message.title }}</a>
             <span ng-if="!message.url">{{ message.title }}</span>
