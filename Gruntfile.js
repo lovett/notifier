@@ -80,6 +80,16 @@ module.exports = function(grunt) {
             }
         },
 
+        shell: {
+            'redis-flush': {
+                command: 'redis-cli flushdb'
+            },
+            'redis-populate': {
+                command: 'curl -s -d "title=Test" -d "noarchive=1" -d "body=Testing testing 1 2 3" -d "url=http://example.com" http://localhost:8080/message'
+            }
+        },
+
+
         watch: {
             options: {
                 livereload: true,
@@ -137,6 +147,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-nodemon');
+    grunt.loadNpmTasks('grunt-shell');
     grunt.loadNpmTasks('grunt-ver');
 
     // Default task(s).
