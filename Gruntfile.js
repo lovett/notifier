@@ -30,26 +30,31 @@ module.exports = function(grunt) {
 
         copy: {
             main: {
-                expand: true,
-                flatten: true,
-                src: ['bower_components/angular/angular.min.js.map',
-                      'bower_components/angular-route/angular-route.min.js.map',
-                      'node_modules/faye/browser/faye-browser-min.js.map',
-                      'bower_components/angular-sanitize/angular-sanitize.min.js.map',
-                      'index.html',
-                      'messages.html',
-                      'favicon.ico',
-                      'favicon-144.png',
-                      'favicon-152.png',
-                      'newspaper.svg',
-                      'bower_components/foundation/js/vendor/custom.modernizr.js'],
-                dest: 'public/'
+                files: [
+                    {
+                        expand: true,
+                        flatten: true,
+                        src: ['bower_components/angular/angular.min.js.map',
+                              'bower_components/angular-route/angular-route.min.js.map',
+                              'node_modules/faye/browser/faye-browser-min.js.map',
+                              'bower_components/angular-sanitize/angular-sanitize.min.js.map',
+                              'src/templates/**'],
+                        dest: 'public/'
+                    },
+                    {
+                        expand: true,
+                        cwd: 'src/images/',
+                        src: ['**'],
+                        dest: 'public/images'
+                    }
+                ]
             },
 
             fonts: {
-                flatten: false,
-                src: ['fonts/*'],
-                dest: 'public/'
+                expand: true,
+                cwd: 'src/assets/fonts/',
+                src: ['**'],
+                dest: 'public/fonts'
             }
         },
 
@@ -61,8 +66,7 @@ module.exports = function(grunt) {
                 files: {
                     'public/all.min.css': ['bower_components/foundation/css/normalize.css',
                                            'bower_components/foundation/css/foundation.css',
-                                           'font.less',
-                                           'app.less']
+                                           'src/less/*']
                 }
             }
         },
@@ -71,7 +75,7 @@ module.exports = function(grunt) {
             dev: {
                 options: {
                     file: 'index.js',
-                    ignoredFiles: ['public/**', 'app.js', 'controllers.js', 'Gruntfile.js'],
+                    ignoredFiles: ['public/**', 'src/**', 'Gruntfile.js'],
                 }
             }
         },
@@ -81,15 +85,15 @@ module.exports = function(grunt) {
                 livereload: true,
             },
             css: {
-                files: ['app.less', '!\..*app.less'],
+                files: ['src/less/**'],
                 tasks: ['less']
             },
             js: {
-                files: ['*.js', '!index.js'],
+                files: ['src/*.js'],
                 tasks: ['uglify', 'concat'],
             },
             html: {
-                files: ['*.html'],
+                files: ['src/templates/**'],
                 tasks: 'copy'
             }
         },
@@ -100,7 +104,7 @@ module.exports = function(grunt) {
                     sourceMap: 'public/app.min.js.map'
                 },
                 files: {
-                    'public/app.min.js': ['app.js', 'controllers.js']
+                    'public/app.min.js': ['src/app.js', 'src/controllers.js']
                 }
             }
         },

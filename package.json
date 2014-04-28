@@ -1,9 +1,9 @@
 {
   "name": "notifier",
   "version": "0.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -14,7 +14,7 @@
   "dependencies": {
     "faye": "1.0.1",
     "express": "4.1.0",
-    "body-parser": "1.0.2",  
+    "body-parser": "1.0.2",
     "grunt": "~0.4.2",
     "grunt-contrib-concat": "0.4.0",
     "grunt-contrib-watch": "0.6.1",

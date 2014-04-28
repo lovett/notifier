@@ -15,7 +15,7 @@ if (!program.server) {
 
 var client = new faye.Client(program.server);
 
-client.subscribe("/messages", function (message) {
+client.subscribe("/messages/*", function (message) {
     try {
         message = JSON.parse(message);
     } catch (e) {
