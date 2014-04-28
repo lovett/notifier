@@ -23,6 +23,8 @@ module.exports = function(grunt) {
                       'node_modules/faye/browser/faye-browser-min.js',
                       'bower_components/angular-faye/build/angular-faye.min.js',
                       'bower_components/angular-sanitize/angular-sanitize.min.js',
+                      'bower_components/moment/min/moment.min.js',
+                      'bower_components/angular-moment/angular-moment.min.js',
                       'public/app.min.js',
                      ],
                 dest: 'public/all.js',

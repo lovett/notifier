@@ -2,7 +2,8 @@ var app = angular.module('App', [
     'ngRoute',
     'appControllers',
     'ngSanitize',
-    'faye'
+    'faye',
+    'angularMoment'
 ]);
 
 app.config(['$routeProvider', function ($routeProvider) {
