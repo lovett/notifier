@@ -15,13 +15,37 @@
     </header>
 
     <div id="articles">
-        <article ng-class="{panel: true, 'panel-with-icon': message.has_icon}" ng-repeat="message in messages">
+        <article class="panel" ng-repeat="message in messages">
             <a ng-href="" ng-click="clearOne(message.received)" class="right">
                 <svg viewBox="0 0 32 32" class="icon icon-close">
                     <use xlink:href="#icon-close"></use>
                 </svg>
             </a>
-            <div ng-class="['icon', iconClassForGroup(message.group) ]"></div>
+
+            <div class="badge {{ message.group }}" ng-show="message.group">
+                <svg viewBox="0 0 32 32" class="icon" ng-show="message.group == 'web'">
+                    <use xlink:href="#icon-earth"></use>
+                </svg>
+                <svg viewBox="0 0 32 32" class="icon" ng-show="message.group == 'email'">
+                    <use xlink:href="#icon-envelope"></use>
+                </svg>
+                <svg viewBox="0 0 32 32" class="icon" ng-show="message.group == 'reminder'">
+                    <use xlink:href="#icon-pushpin"></use>
+                </svg>
+                <svg viewBox="0 0 32 32" class="icon" ng-show="message.group == 'phone'">
+                    <use xlink:href="#icon-phone"></use>
+                </svg>
+                <svg viewBox="0 0 32 32" class="icon" ng-show="message.group == 'git'">
+                    <use xlink:href="#icon-github"></use>
+                </svg>
+                <svg viewBox="0 0 32 32" class="icon" ng-show="message.group == 'sysdown'">
+                    <use xlink:href="#icon-fire"></use>
+                </svg>
+                <svg viewBox="0 0 32 32" class="icon" ng-show="message.group == 'sysup'">
+                    <use xlink:href="#icon-cool"></use>
+                </svg>
+
+            </div>
 
             <div class="noarchive" ng-show="message.noarchive">Not archived</div>
 

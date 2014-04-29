@@ -1,25 +1,10 @@
 var appControllers = angular.module('appControllers', []);
 
 appControllers.controller('MessageController', ['$rootScope', '$scope', '$http', '$window', 'Faye', '$filter', function ($rootScope, $scope, $http, $window, Faye, $filter) {
-    var group_icon_map = {
-        'sysdown': 'icon-fire',
-        'sysup': 'icon-cool',
-        'reminder': 'icon-pushpin',
-        'email': 'icon-envelope',
-        'phone': 'icon-phone',
-        'web': 'icon-earth',
-        'git': 'icon-github'
-    }
-
     var displayMessage = function (message) {
 
         if ($scope.asOf > message.received) {
             return;
-        }
-
-        var icon_groups = ['sysup', 'sysdown', 'reminder', 'email', 'phone', 'web', 'git'];
-        if (Object.keys(group_icon_map).indexOf(message.group) !== -1) {
-            message.has_icon = true;
         }
 
         if (message.hasOwnProperty('body')) {
@@ -95,10 +80,6 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
     $scope.clearAll = function (e) {
         $rootScope.messages = [];
         $scope.asOf = localStorage['asOf'] = +new Date();
-    };
-
-    $scope.iconClassForGroup = function (group) {
-        return group_icon_map[group] || '';
     };
 
     $scope.resetAsOf = function () {

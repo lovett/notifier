@@ -21,55 +21,10 @@ MAIN {
     background-color: #639635;
 }
 
-.panel-with-icon {
-    padding-left: 6em;
-
-    .icon {
-        font-size: 3em;
-        position: absolute;
-        top: 0;
-        left: 0;
-        padding: .7em .25em;
-        height: 100%;
-        background-color: #333;
-        color: #fff;
-    }
-
-    .icon-envelope {
-        background-color: rgb(56,101,120);
-    }
-
-    .icon-phone {
-        background-color: rgb(234,176,94);
-    }
-
-    .icon-earth {
-        background-color: rgb(95,67,64);
-    }
-
-    .icon-pushpin {
-        background-color: rgb(204,189,166);
-        color: rgb(17,21,33);
-    }
-
-    .icon-fire {
-        background-color: rgb(209,0,15);
-    }
-
-    .icon-cool {
-        background-color: rgb(113,176,146);
-    }
-
-    .icon-github {
-        background-color: #787773;
-    }
-
-}
-
 .panel {
     overflow: hidden;
     position: relative;
-    padding: .75em;
+    padding: .5em;
 
     H1 {
         font-size: 1.25em;
@@ -97,8 +52,53 @@ MAIN {
         text-transform: uppercase;
         margin-top: 2.8em;
         top: 13px;
-        right: -25px;
+        right: -45px;
         font-size: .5em;
         letter-spacing: 1px;
     }
+
+    .badge {
+        display: inline-block;
+        width: 5em;
+        height: 6em;
+        float: left;
+        margin: -0.5em 1em -0.5em -0.5em;
+        text-align: center;
+        line-height: 7.5;
+
+        .icon {
+            height: 2.5em;
+            width: 2.5em;
+        }
+    }
+
+    .badge.email {
+        background-color: rgb(56,101,120);
+    }
+
+
+    .badge.phone {
+        background-color: rgb(234,176,94);
+    }
+
+    .badge.web {
+        background-color: rgb(95,67,64);
+    }
+
+    .badge.reminder {
+        background-color: rgb(204,189,166);
+    }
+
+    .badge.sysdown {
+        background-color: rgb(209,0,15);
+    }
+
+    .badge.sysup {
+        background-color: rgb(135, 227, 243);
+    }
+
+    .badge.git {
+        background-color: #787773;
+    }
+
 }
