@@ -90,6 +90,7 @@ module.exports = function(grunt) {
                     'curl -s -d "title=System up example" -d "group=sysup" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
                     'curl -s -d "title=Git example" -d "group=git" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
                     'curl -s -d "title=Web example" -d "group=web" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
+                    'curl -s -d "title=Debian example" -d "group=email,debian" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
                     'curl -s -d "title=Unarchived Example" -d "noarchive=1" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
                 ].join(' && ')
             }
@@ -99,7 +100,6 @@ module.exports = function(grunt) {
             options: {
                 prefix : 'icon-',
                 svg: {
-                    viewBox : '0 0 32 32',
                 }
             },
             default: {

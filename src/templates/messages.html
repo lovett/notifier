@@ -15,6 +15,8 @@
         </div>
     </header>
 
+
+
     <div id="articles">
         <article class="panel" ng-repeat="message in messages">
             <a ng-href="" ng-click="clearOne(message.received)" class="right">
@@ -23,26 +25,31 @@
                 </svg>
             </a>
 
-            <div class="badge {{ message.group }}" ng-show="message.group">
-                <svg viewBox="0 0 32 32" class="icon" ng-show="message.group == 'web'">
+            <div class="badge {{ message.badge }}" ng-show="message.badge">
+
+                <svg viewBox="0 0 87.041 108.445" class="icon" ng-show="message.badge == 'debian'">
+                    <use xlink:href="#icon-debian"></use>
+                </svg>
+
+                <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'web'">
                     <use xlink:href="#icon-earth"></use>
                 </svg>
-                <svg viewBox="0 0 32 32" class="icon" ng-show="message.group == 'email'">
+                <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'email'">
                     <use xlink:href="#icon-envelope"></use>
                 </svg>
-                <svg viewBox="0 0 32 32" class="icon" ng-show="message.group == 'reminder'">
+                <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'reminder'">
                     <use xlink:href="#icon-pushpin"></use>
                 </svg>
-                <svg viewBox="0 0 32 32" class="icon" ng-show="message.group == 'phone'">
+                <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'phone'">
                     <use xlink:href="#icon-phone"></use>
                 </svg>
-                <svg viewBox="0 0 32 32" class="icon" ng-show="message.group == 'git'">
+                <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'git'">
                     <use xlink:href="#icon-github"></use>
                 </svg>
-                <svg viewBox="0 0 32 32" class="icon" ng-show="message.group == 'sysdown'">
+                <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'sysdown'">
                     <use xlink:href="#icon-fire"></use>
                 </svg>
-                <svg viewBox="0 0 32 32" class="icon" ng-show="message.group == 'sysup'">
+                <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'sysup'">
                     <use xlink:href="#icon-cool"></use>
                 </svg>
 

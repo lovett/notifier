@@ -11,6 +11,11 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
             message.body = message.body.replace(/\n/g, "<br/>");
         }
 
+        if (message.hasOwnProperty('group')) {
+            message.badge = message.group.split(',').pop();
+        }
+
+        console.log(message.badge);
         $rootScope.messages.unshift(message);
 
     };
