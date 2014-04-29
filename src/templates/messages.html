@@ -8,8 +8,9 @@
         <span ng-if="asOf > 0"><a ng-click="resetAsOf()" ng-href="">View all</a>.</span>
     </p>
 
-    <header id="page-header" class="clearfix">
+    <header class="clearfix">
         <div class="right">
+            <a ng-click="changeNotificationPermissions()" ng-href="" class="button small radius" ng-show="notifications_supported && notifications_enabled == false">Enable Notifications</a>
             <a ng-click="clearAll()" ng-if="messages.length > 0" ng-href="" class="button small radius">Dismiss All</a>
         </div>
     </header>

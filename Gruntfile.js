@@ -39,7 +39,9 @@ module.exports = function(grunt) {
                         src: ['bower_components/angular/angular.min.js.map',
                               'bower_components/angular-route/angular-route.min.js.map',
                               'bower_components/angular-sanitize/angular-sanitize.min.js.map',
-                              'src/templates/**'],
+                              'src/templates/**',
+                              'src/svg/megaphone.svg'
+                             ],
                         dest: 'public/'
                     },
                     {

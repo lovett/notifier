@@ -56,3 +56,35 @@ app.factory('Faye', ['$location', '$rootScope', '$log', function ($location, $ro
     };
     return instance;
 }]);
+
+app.factory('Notifications', ['$window', function ($window) {
+
+    var enabled = $window.Notification.permission == 'granted' || false;
+
+    console.log(enabled);
+    return {
+        supported: $window.Notification,
+
+        enabled: enabled,
+
+        enable: function () {
+            $window.Notification.requestPermission(function (permission) {
+                enabled = permission;
+                if (permission == 'granted') {
+                    alert('Browser notifications have been enabled.');
+                }
+            });
+        },
+        send: function (message) {
+            if (enabled === false) return;
+
+            if ($window.document.hasFocus()) return;
+            console.log('Notifications are currently ' + enabled);
+
+            notification = new Notification(message.title, {
+                'body': message.body || '',
+                'tag' : +new Date()
+            });
+        }
+    }
+}]);

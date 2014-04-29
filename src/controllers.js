@@ -1,6 +1,6 @@
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('MessageController', ['$rootScope', '$scope', '$http', '$window', 'Faye', '$filter', function ($rootScope, $scope, $http, $window, Faye, $filter) {
+appControllers.controller('MessageController', ['$rootScope', '$scope', '$http', '$window', 'Faye', '$filter', 'Notifications', function ($rootScope, $scope, $http, $window, Faye, $filter, Notifications) {
     var displayMessage = function (message) {
 
         if ($scope.asOf > message.received) {
@@ -15,43 +15,13 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
 
     };
 
-    var sendNotification = function (message) {
-        var notification;
-
-        if (document.hasFocus()) {
-            return;
-        }
-
-        if (!'Notification' in window) {
-            return;
-        }
-
-        if (Notification.permission === 'denied') {
-            return;
-        }
-
-        if (Notification.permission === 'default') {
-            Notification.requestPermission(function () {
-                sendNotification(message);
-            });
-            return;
-        }
-
-        if (Notification.permission === 'granted' || Notification.permission === undefined) {
-            notification = new Notification(message.title, {
-                'body': message.body || '',
-                'tag' : +new Date(),
-                'icon': '/newspaper.svg'
-            });
-
-            notification.onclick = function () {
-                this.close();
-            };
-        }
-    };
-
     $rootScope.messages = [];
     $rootScope.connection_status = 'disconnected';
+
+    $rootScope.notifications_supported = Notifications.supported;
+    $rootScope.notifications_enabled = Notifications.enabled;
+    $rootScope.changeNotificationPermissions = Notifications.enable;
+
 
     $scope.asOf = parseInt(localStorage['asOf'], 10);
 
@@ -72,7 +42,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
         try {
             message = JSON.parse(message);
             displayMessage(message);
-            sendNotification(message);
+            Notifications.send(message);
         } catch(e) {
             return;
         }
@@ -92,6 +62,5 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
         $scope.asOf = null;
         $window.location.reload();
     };
-
 
 }]);
