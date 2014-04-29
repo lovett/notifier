@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
+var path = require('path');
 var faye = require('faye');
 var util = require('util');
-var spawn = require('child_process').spawn;
+var execSync = require('exec-sync');
 var program = require('commander');
 
-program.option('-S, --server <url>', 'The notifier server to connect to, such as http://localhost:8080/faye');
+program.option('-s, --server <url>', 'The notifier server to connect to, such as http://localhost:8080/faye');
 program.parse(process.argv);
-
 
 if (!program.server) {
     program.help();
@@ -22,9 +22,12 @@ client.subscribe("/messages/*", function (message) {
         return;
     }
 
-    var shell_command = spawn('osascript', ['speak.scpt', message.title.replace(/"/g, '\\"')]);
+    var script_path = path.join(__dirname, 'speak.scpt');
 
-    shell_command.stderr.on('data', function (data) {
-        console.log(data);
-    });
+    var command = util.format("osascript %s '%s'", script_path, message.title.replace(/"/g, '\\"'));
+    var result = execSync(command, true);
+
+    if (result.sterr !== '') {
+        console.log(result.stderr);
+    }
 });
