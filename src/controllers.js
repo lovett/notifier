@@ -1,6 +1,6 @@
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('MessageController', ['$rootScope', '$scope', '$http', '$window', 'Faye', function ($rootScope, $scope, $http, $window, Faye) {
+appControllers.controller('MessageController', ['$rootScope', '$scope', '$http', '$window', 'Faye', '$filter', function ($rootScope, $scope, $http, $window, Faye, $filter) {
     var group_icon_map = {
         'sysdown': 'icon-fire',
         'sysup': 'icon-cool',
@@ -76,7 +76,6 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
             });
         }
     }).error(function(data, status, headers, config) {
-        alert(status);
     });
 
     Faye.subscribe("/messages/*", function (message) {
@@ -89,6 +88,9 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
         }
     });
 
+    $scope.clearOne = function (received) {
+        $rootScope.messages = $filter('filter')($rootScope.messages, {received: '!' +received});
+    };
 
     $scope.clearAll = function (e) {
         $rootScope.messages = [];

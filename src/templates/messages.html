@@ -1,5 +1,7 @@
 <div id="connection-status"  ng-class="{'text-center': true, 'invisible': connection_status != 'connected'}">{{ connection_status }}</div>
 
+<div id="svgdef" class="hide" ng-include="'/sprites.svg'"></div>
+
 <main>
     <p ng-if="messages.length == 0">
         No new messages.
@@ -14,9 +16,15 @@
 
     <div id="articles">
         <article ng-class="{panel: true, 'panel-with-icon': message.has_icon}" ng-repeat="message in messages">
+            <a ng-href="" ng-click="clearOne(message.received)" class="right">
+                <svg viewBox="0 0 32 32" class="icon icon-close">
+                    <use xlink:href="#icon-close"></use>
+                </svg>
+            </a>
             <div ng-class="['icon', iconClassForGroup(message.group) ]"></div>
 
-            <div class="noarchive" ng-show="message.noarchive == 1">NOT ARCHIVED</div>
+            <div class="noarchive" ng-show="message.noarchive">Not archived</div>
+
             <h1 ng-show="message.title">
                 <a ng-if="message.url" ng-href="{{ message.url }}" target="_blank">{{ message.title }}</a>
                 <span ng-if="!message.url">{{ message.title }}</span>

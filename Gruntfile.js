@@ -93,22 +93,27 @@ module.exports = function(grunt) {
             }
         },
 
+        svgstore: {
+            options: {
+                prefix : 'icon-',
+                svg: {
+                    viewBox : '0 0 32 32',
+                }
+            },
+            default: {
+                files: {
+                    'public/sprites.svg': ['src/svg/*.svg']
+                }
+            },
+        },
 
         watch: {
             options: {
                 livereload: true,
             },
-            css: {
-                files: ['src/less/**'],
-                tasks: ['less']
-            },
-            js: {
-                files: ['src/*.js'],
-                tasks: ['uglify', 'concat'],
-            },
-            html: {
-                files: ['src/templates/**'],
-                tasks: 'copy'
+            src: {
+                files: ['src/**'],
+                tasks: ['build']
             }
         },
 
@@ -152,10 +157,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-nodemon');
     grunt.loadNpmTasks('grunt-shell');
+    grunt.loadNpmTasks('grunt-svgstore');
     grunt.loadNpmTasks('grunt-ver');
 
     // Default task(s).
-    grunt.registerTask('build', ['clean:pre_build', 'uglify', 'less', 'concat', 'copy', 'ver', 'clean:post_build']);
+    grunt.registerTask('build', ['clean:pre_build', 'uglify', 'less', 'concat', 'copy', 'svgstore', 'ver', 'clean:post_build']);
     grunt.registerTask('default', ['build', 'watch']);
 
 
