@@ -17,6 +17,11 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
 
     var sendNotification = function (message) {
         var notification;
+
+        if (document.hasFocus()) {
+            return;
+        }
+
         if (!'Notification' in window) {
             return;
         }
@@ -34,7 +39,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
 
         if (Notification.permission === 'granted' || Notification.permission === undefined) {
             notification = new Notification(message.title, {
-                'body': message.body,
+                'body': message.body || '',
                 'tag' : +new Date(),
                 'icon': '/newspaper.svg'
             });

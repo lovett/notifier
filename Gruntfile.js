@@ -80,15 +80,15 @@ module.exports = function(grunt) {
             },
             'redis-populate': {
                 command: [
-                    'curl -s -d "title=Unarchived Example" -d "noarchive=1" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
                     'curl -s -d "title=Regular Example" -d -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
                     'curl -s -d "title=Email example" -d "group=email" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
                     'curl -s -d "title=Phone example" -d "group=phone" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
-                    'curl -s -d "title=Web example" -d "group=web" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
                     'curl -s -d "title=Reminder example" -d "group=reminder" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
                     'curl -s -d "title=System down example" -d "group=sysdown" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
                     'curl -s -d "title=System up example" -d "group=sysup" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
                     'curl -s -d "title=Git example" -d "group=git" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
+                    'curl -s -d "title=Web example" -d "group=web" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
+                    'curl -s -d "title=Unarchived Example" -d "noarchive=1" -d "body=Testing testing" -d "url=http://example.com" http://localhost:8080/message',
                 ].join(' && ')
             }
         },
