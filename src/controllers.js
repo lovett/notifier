@@ -12,7 +12,6 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
     }
 
     var displayMessage = function (message) {
-        console.log(message);
 
         if ($scope.asOf > message.received) {
             return;
@@ -78,7 +77,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
         alert(status);
     });
 
-    var subscription = Faye.subscribe("/messages/*", function (message) {
+    Faye.subscribe("/messages/*", function (message) {
         try {
             message = JSON.parse(message);
             displayMessage(message);
@@ -88,8 +87,6 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
         }
     });
 
-    subscription.then(function () {
-    });
 
     $scope.clearAll = function (e) {
         $rootScope.messages = [];
