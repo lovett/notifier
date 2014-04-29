@@ -25,10 +25,14 @@ app.factory('Faye', ['$location', '$rootScope', '$log', function ($location, $ro
 
     client.on('transport:down', function () {
         $log.info('The websocket connection went offline at ' + new Date());
+        $rootScope.connection_status = 'disconnected';
+        $rootScope.$apply();
     })
 
     client.on('transport:up', function () {
         $log.info('The websocket connection came online at ' + new Date());
+        $rootScope.connection_status = 'connected';
+        $rootScope.$apply();
     });
 
     return {
@@ -40,12 +44,14 @@ app.factory('Faye', ['$location', '$rootScope', '$log', function ($location, $ro
 
             subscription.then(function () {
                 $log.info('Subscribed to ' + channel);
+                $rootScope.$apply();
             });
         },
 
         unsubscribe: function() {
             $log.info('Unsubscribed from ' + subscription._channels);
             subscription.cancel();
+            $rootScope.$apply();
         }
     };
     return instance;

@@ -1,22 +1,28 @@
-<p ng-if="messages.length == 0">
-    No new messages.
-    <span ng-if="asOf > 0"><a ng-click="resetAsOf()" ng-href="">View all</a>.</span>
-</p>
+<div id="connection-status"  ng-class="{'text-center': true, 'invisible': connection_status != 'connected'}">{{ connection_status }}</div>
 
-<header id="page-header">
-    <a ng-click="clearAll()" ng-if="messages.length > 0" ng-href="" class="button small radius">Dismiss All</a>
-</header>
+<main>
+    <p ng-if="messages.length == 0">
+        No new messages.
+        <span ng-if="asOf > 0"><a ng-click="resetAsOf()" ng-href="">View all</a>.</span>
+    </p>
 
-<div id="articles">
-    <article ng-class="{panel: true, 'panel-with-icon': message.has_icon}" ng-repeat="message in messages">
-        <div ng-class="['icon', iconClassForGroup(message.group) ]"></div>
+    <header id="page-header" class="clearfix">
+        <div class="right">
+            <a ng-click="clearAll()" ng-if="messages.length > 0" ng-href="" class="button small radius">Dismiss All</a>
+        </div>
+    </header>
 
-        <div class="noarchive" ng-show="message.noarchive == 1">NOT ARCHIVED</div>
-        <h1 ng-show="message.title">
-            <a ng-if="message.url" ng-href="{{ message.url }}" target="_blank">{{ message.title }}</a>
-            <span ng-if="!message.url">{{ message.title }}</span>
-        </h1>
-        <time datetime="{{ message.received | date:'yyyy-MM-ddTHH:mmZ' }}" am-time-ago="message.received"=></time>
-        <p ng-show="message.body" ng-bind-html="message.body"></p>
-    </article>
-</div>
+    <div id="articles">
+        <article ng-class="{panel: true, 'panel-with-icon': message.has_icon}" ng-repeat="message in messages">
+            <div ng-class="['icon', iconClassForGroup(message.group) ]"></div>
+
+            <div class="noarchive" ng-show="message.noarchive == 1">NOT ARCHIVED</div>
+            <h1 ng-show="message.title">
+                <a ng-if="message.url" ng-href="{{ message.url }}" target="_blank">{{ message.title }}</a>
+                <span ng-if="!message.url">{{ message.title }}</span>
+            </h1>
+            <time datetime="{{ message.received | date:'yyyy-MM-ddTHH:mmZ' }}" am-time-ago="message.received"=></time>
+            <p ng-show="message.body" ng-bind-html="message.body"></p>
+        </article>
+    </div>
+</main>

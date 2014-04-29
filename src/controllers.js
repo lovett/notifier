@@ -61,6 +61,8 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$http',
     };
 
     $rootScope.messages = [];
+    $rootScope.connection_status = 'disconnected';
+
     $scope.asOf = parseInt(localStorage['asOf'], 10);
 
     $http({
