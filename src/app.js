@@ -17,7 +17,8 @@ app.config(['$locationProvider', function ($locationProvider) {
 }]);
 
 app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($location, $rootScope, $log, Queue) {
-    var client, subscription;
+    var client, subscription, disconnected;
+
 
     client = new Faye.Client($location.absUrl() + 'faye', {
         retry: 10
@@ -28,14 +29,18 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($loca
             group: 'internal',
             title: 'Disconnected'
         });
+        disconnected = true;
         $rootScope.$apply();
     })
 
     client.on('transport:up', function () {
-        Queue.add({
-            group: 'internal',
-            title: 'Connected'
-        });
+        if (disconnected) {
+            Queue.add({
+                group: 'internal',
+                title: 'Connected'
+            });
+            disconnected = false;
+        }
         $rootScope.$apply();
     });
 
@@ -130,6 +135,11 @@ app.factory('Queue', ['$http', function ($http) {
                     });
                 }
             }).error(function(data, status, headers, config) {
+                self.add({
+                    group: 'internal',
+                    title: 'Unable to get messages from archive'
+                });
+
             });
         },
 
