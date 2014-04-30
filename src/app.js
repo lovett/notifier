@@ -37,7 +37,7 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($loca
         if (disconnected) {
             Queue.add({
                 group: 'internal',
-                title: 'Connected'
+                title: 'Reconnected'
             });
             disconnected = false;
         }
