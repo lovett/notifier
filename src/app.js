@@ -61,7 +61,7 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($loca
     return instance;
 }]);
 
-app.factory('Notifications', ['$window', function ($window) {
+app.factory('BrowserNotification', ['$window', function ($window) {
 
     var enabled = $window.Notification.permission == 'granted' || false;
 
@@ -78,6 +78,7 @@ app.factory('Notifications', ['$window', function ($window) {
                 }
             });
         },
+
         send: function (message) {
             if (enabled === false) return;
 
@@ -142,7 +143,7 @@ app.factory('Queue', ['$http', function ($http) {
             }
 
             if (this.as_of > message.received) {
-                return;
+                return null;
             }
 
             if (message.hasOwnProperty('body')) {
@@ -157,6 +158,7 @@ app.factory('Queue', ['$http', function ($http) {
             message.id = counter;
 
             this.members.unshift(message);
+            return message;
         },
 
         remove: function (id) {

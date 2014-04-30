@@ -8,7 +8,7 @@
 
     <header class="clearfix">
         <div class="right">
-            <a ng-click="changeNotificationPermissions()" ng-href="" class="button small radius" ng-show="notifications_supported && notifications_enabled == false">Enable Notifications</a>
+            <a ng-click="browserNotification.enable()" ng-href="" class="button small radius" ng-show="browserNotification.supported && browserNotification.enabled == false">Enable Notifications</a>
             <a ng-click="clearAll()" ng-if="!queue.isEmpty()" ng-href="" class="button small radius">Dismiss All</a>
         </div>
     </header>

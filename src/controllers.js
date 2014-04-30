@@ -1,25 +1,19 @@
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('MessageController', ['$scope', '$window', 'Faye', 'Notifications', 'Queue', function ($scope, $window, Faye, Notifications, Queue) {
+appControllers.controller('MessageController', ['$rootScope', '$scope', '$window', 'Faye', 'BrowserNotification', 'Queue', function ($rootScope, $scope, $window, Faye, BrowserNotification, Queue) {
 
     Faye.subscribe("/messages/*", function (message) {
-        try {
-            Queue.add(message);
-            Notifications.send(message);
-        } catch(e) {
-            return;
+        message = Queue.add(message);
+        if (message) {
+            BrowserNotification.send(message);
         }
     });
 
     Queue.populate();
 
-    $scope.queue = Queue;
+    $rootScope.queue = Queue;
 
-    $scope.notifications_supported = Notifications.supported;
-
-    $scope.notifications_enabled = Notifications.enabled;
-
-    $scope.changeNotificationPermissions = Notifications.enable;
+    $scope.browserNotification = BrowserNotification;
 
     $scope.clearOne = function (id) {
         Queue.remove(id);
