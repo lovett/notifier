@@ -2,7 +2,7 @@
 
 <main>
     <p ng-if="queue.ready && queue.isEmpty()">
-        No new messages.
+        No new messages as of <span am-time-ago="queue.as_of"></span>.
         <span ng-if="queue.as_of > 0"><a ng-click="showAll()" ng-href="">View all</a>.</span>
     </p>
 
@@ -61,7 +61,7 @@
                 <a ng-if="item.url" ng-href="{{ item.url }}" target="_blank">{{ item.title }}</a>
                 <span ng-if="!item.url">{{ item.title }}</span>
             </h1>
-            <time datetime="{{ item.received | date:'yyyy-MM-ddTHH:mmZ' }}" am-time-ago="item.received"=></time>
+            <time datetime="{{ item.received | date:'yyyy-MM-ddTHH:mmZ' }}" am-time-ago="item.received"></time>
             <p ng-show="item.body" ng-bind-html="item.body"></p>
         </article>
     </div>
