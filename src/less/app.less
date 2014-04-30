@@ -1,10 +1,66 @@
 MAIN {
-    margin: 1em;
+    margin: 0 1em;
 }
 
-.invisible {
-    visibility: hidden;
+A {
+    color: #65809D;
+    text-decoration: none;
 }
+
+A:hover {
+    cursor: pointer;
+}
+
+.box-reset {
+    margin: 0;
+    padding: 0;
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+HEADER {
+    margin-bottom: 1em;
+    background-color: #666;
+    color: white;
+    padding: 0 1em;
+    line-height: 1em;
+    height: 2em;
+
+    A {
+        color: white;
+        text-decoration: underline;
+    }
+
+    P {
+        .box-reset;
+        line-height: 2;
+    }
+
+}
+
+.button {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: .7em;
+    display: inline-block;
+    background-color: #E05400;
+    line-height: 2.95;
+    padding: 0 2em;
+    color: white;
+    text-decoration: none;
+}
+
+.button:hover {
+    background-color: #FB9527;
+    color: black;
+}
+
 
 .icon {
     display: inline-block;
@@ -13,6 +69,8 @@ MAIN {
 }
 
 .panel {
+    background-color: #efefef;
+    margin-bottom: 1em;
     overflow: hidden;
     position: relative;
     padding: .5em;
@@ -20,11 +78,11 @@ MAIN {
     H1 {
         font-size: 1.25em;
         font-weight: bold;
-        margin-bottom: 0;
+        .box-reset;
     }
 
     P {
-        margin-bottom: .5em;
+        .box-reset;
     }
 
     TIME {
@@ -49,7 +107,6 @@ MAIN {
     }
 
     .badge {
-        display: inline-block;
         width: 5em;
         height: 6em;
         float: left;
@@ -93,7 +150,7 @@ MAIN {
     }
 
     .badge.debian {
-        background-color: #ffffff;
+        background-color: transparent;
     }
 
 }

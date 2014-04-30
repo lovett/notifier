@@ -61,8 +61,7 @@ module.exports = function(grunt) {
                     cleancss: true
                 },
                 files: {
-                    'public/all.min.css': ['bower_components/foundation/css/normalize.css',
-                                           'bower_components/foundation/css/foundation.css',
+                    'public/all.min.css': ['bower_components/normalize-css/normalize.css',
                                            'src/less/*']
                 }
             }
