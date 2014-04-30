@@ -9,7 +9,7 @@ module.exports = function(grunt) {
                 src: ['public/*']
             },
             post_build: {
-                src: ["public/app.min.js"]
+                src: ["public/app.min.js", "public/version.json"]
             }
         },
 
