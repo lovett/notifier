@@ -1,3 +1,4 @@
+/* global angular, Faye, Notification */
 var app = angular.module('App', [
     'ngRoute',
     'appControllers',
@@ -6,6 +7,7 @@ var app = angular.module('App', [
 ]);
 
 app.config(['$routeProvider', function ($routeProvider) {
+    'use strict';
     $routeProvider.when('/', {
         controller: 'MessageController',
         templateUrl: '/messages.html'
@@ -13,10 +15,12 @@ app.config(['$routeProvider', function ($routeProvider) {
 }]);
 
 app.config(['$locationProvider', function ($locationProvider) {
+    'use strict';
     $locationProvider.html5Mode(true);
 }]);
 
 app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($location, $rootScope, $log, Queue) {
+    'use strict';
     var client, subscription, disconnected;
 
 
@@ -31,7 +35,7 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($loca
         });
         disconnected = true;
         $rootScope.$apply();
-    })
+    });
 
     client.on('transport:up', function () {
         if (disconnected) {
@@ -48,7 +52,7 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($loca
         subscribe: function (channel, callback) {
             subscription = client.subscribe(channel, function (message) {
                 callback(message);
-                $rootScope.$apply()
+                $rootScope.$apply();
             });
 
             subscription.then(function () {
@@ -63,12 +67,11 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($loca
             $rootScope.$apply();
         }
     };
-    return instance;
 }]);
 
-app.factory('BrowserNotification', ['$window', function ($window) {
-
-    var enabled = $window.Notification.permission == 'granted' || false;
+app.factory('BrowserNotification', ['$window', 'Queue', function ($window, Queue) {
+    'use strict';
+    var enabled = $window.Notification.permission === 'granted' || false;
 
     return {
         supported: $window.Notification,
@@ -78,48 +81,57 @@ app.factory('BrowserNotification', ['$window', function ($window) {
         enable: function () {
             $window.Notification.requestPermission(function (permission) {
                 enabled = permission;
-                if (permission == 'granted') {
-                    alert('Browser notifications have been enabled.');
+                if (permission === 'granted') {
+                    Queue.add({
+                        group: 'internal',
+                        title: 'Browser notifications have been enabled'
+                    });
                 }
             });
         },
 
         send: function (message) {
-            if (enabled === false) return;
+            var notification;
+            if (enabled === false) {
+                return;
+            }
 
-            if ($window.document.hasFocus()) return;
+            if ($window.document.hasFocus()) {
+                return;
+            }
 
             notification = new Notification(message.title, {
                 'body': message.body || '',
                 'tag' : +new Date()
             });
         }
-    }
+    };
 }]);
 
 app.factory('Queue', ['$http', function ($http) {
+    'use strict';
     var counter = 0;
 
     return {
         ready: false,
 
-        as_of: parseInt(localStorage['asOf'], 10),
+        asOf: parseInt(localStorage.asOf, 10),
 
         sinceNow: function () {
-            this.as_of = +new Date();
-            localStorage['asOf'] = this.as_of;
+            this.asOf = +new Date();
+            localStorage.asOf = this.asOf;
             this.members = [];
         },
 
         sinceEver: function () {
-            this.as_of = 0;
-            localStorage['asOf'] = this.as_of;
+            this.asOf = 0;
+            localStorage.asOf = this.asOf;
         },
 
         members: [],
 
         isEmpty: function () {
-            return this.members.length == 0;
+            return this.members.length === 0;
         },
 
         populate: function () {
@@ -127,14 +139,14 @@ app.factory('Queue', ['$http', function ($http) {
             $http({
                 method: 'GET',
                 url: '/archive/10'
-            }).success(function(data, status, headers, config) {
+            }).success(function(data) {
                 self.ready = true;
                 if (data instanceof Array) {
                     data.forEach(function (message) {
                         self.add(message);
                     });
                 }
-            }).error(function(data, status, headers, config) {
+            }).error(function() {
                 self.add({
                     group: 'internal',
                     title: 'Unable to get messages from archive'
@@ -152,12 +164,12 @@ app.factory('Queue', ['$http', function ($http) {
                 message.received = +new Date();
             }
 
-            if (this.as_of > message.received) {
+            if (this.asOf > message.received) {
                 return null;
             }
 
             if (message.hasOwnProperty('body')) {
-                message.body = message.body.replace(/\n/g, "<br/>");
+                message.body = message.body.replace(/\n/g, '<br/>');
             }
 
             if (message.hasOwnProperty('group')) {
@@ -176,5 +188,5 @@ app.factory('Queue', ['$http', function ($http) {
                 return element.id !== id;
             });
         }
-    }
+    };
 }]);

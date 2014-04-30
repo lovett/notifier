@@ -1,8 +1,9 @@
+/* global angular */
 var appControllers = angular.module('appControllers', []);
 
 appControllers.controller('MessageController', ['$rootScope', '$scope', '$window', 'Faye', 'BrowserNotification', 'Queue', function ($rootScope, $scope, $window, Faye, BrowserNotification, Queue) {
-
-    Faye.subscribe("/messages/*", function (message) {
+    'use strict';
+    Faye.subscribe('/messages/*', function (message) {
         message = Queue.add(message);
         if (message) {
             BrowserNotification.send(message);

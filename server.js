@@ -41,7 +41,7 @@ app.use(express.static(__dirname + '/public'));
 app.post('/message', function (req, res) {
     var message = {};
     var keys = ['title', 'url', 'body', 'source', 'group', 'noarchive', 'event'];
-    var json_string;
+    var jsonString;
 
     keys.forEach(function (key) {
         if (req.body.hasOwnProperty(key)) {
@@ -55,17 +55,17 @@ app.post('/message', function (req, res) {
 
     message.received = +new Date();
 
-    json_string = JSON.stringify(message);
+    jsonString = JSON.stringify(message);
 
     // Immediately send to any connected clients
-    bayeauxClient.publish('/messages/' + message.group, json_string);
+    bayeauxClient.publish('/messages/' + message.group, jsonString);
 
     // Queue for delivery by agents
-    redisClient.rpush('messages:queued', json_string);
+    redisClient.rpush('messages:queued', jsonString);
 
     // Archive for display by future clients or agents
     if (!message.hasOwnProperty('noarchive') || message.noarchive === 0) {
-        redisClient.rpush('messages:archived', json_string);
+        redisClient.rpush('messages:archived', jsonString);
     }
 
     res.send(204);
