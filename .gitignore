@@ -6,7 +6,6 @@ TAGS
 node_modules
 bower_components
 public
-config/*
-!config/default.json
+config/*.json
 .nodemonignore
 *.scpt

@@ -111,6 +111,33 @@ module.exports = function(grunt) {
             }
         },
 
+        rsync: {
+            options: {
+                args: ["--verbose"],
+                exclude: [".git*", "node_modules", "bower_components", "clients", "src", "bower.json", ".jshintrc*", ".nodemonignore", "Gruntfile.js", ".DS_Store"],
+                recursive: true,
+                syncDestIgnoreExcl: true
+            },
+            production: {
+                options: {
+                    host: "<%= CONFIG.deployment.production.host %>",
+                    src: "./",
+                    dest: "<%= CONFIG.deployment.production.path %>",
+                }
+            }
+        },
+        
+        sshexec: {
+              production: {
+                  command: "cd <%= CONFIG.deployment.production.path %>; npm install",
+                  options: {
+                      host: "<%= CONFIG.deployment.production.host %>",
+                      username: process.env.USER,
+                      agent: process.env.SSH_AUTH_SOCK
+                  }
+              }
+        },
+
         svgstore: {
             options: {
                 prefix : "icon-",
