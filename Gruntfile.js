@@ -1,7 +1,10 @@
 module.exports = function(grunt) {
 
+    require("load-grunt-tasks")(grunt);
+    
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
+        
         CONFIG: grunt.file.readJSON("config/default.json"),
 
         clean: {
@@ -163,20 +166,6 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.loadNpmTasks("grunt-contrib-watch");
-    grunt.loadNpmTasks("grunt-contrib-clean");
-    grunt.loadNpmTasks("grunt-contrib-concat");
-    grunt.loadNpmTasks("grunt-contrib-copy");
-    grunt.loadNpmTasks("grunt-contrib-jshint");
-    grunt.loadNpmTasks("grunt-contrib-less");
-    grunt.loadNpmTasks("grunt-contrib-uglify");
-    grunt.loadNpmTasks("grunt-githooks");
-    grunt.loadNpmTasks("grunt-nodemon");
-    grunt.loadNpmTasks("grunt-shell");
-    grunt.loadNpmTasks("grunt-svgstore");
-    grunt.loadNpmTasks("grunt-ver");
-
-    // Default task(s).
     grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "svgstore", "ver", "clean:postBuild"]);
     grunt.registerTask("default", ["githooks", "build", "watch"]);
 
