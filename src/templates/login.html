@@ -1,0 +1,15 @@
+<form id="login" ng-submit="login()">
+    <div class="field">
+        <label for="login_user">Username</label>
+        <input type="text" id="login_user" name="login_user" ng-model="login.user"/>
+    </div>
+
+    <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="login_pass" name="login_pass" ng-model="login.pass"/>
+    </div>
+
+    <div class="field">
+        <input type="submit" value="submit" />
+    </div>
+</form>

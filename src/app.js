@@ -3,19 +3,27 @@ var app = angular.module('App', [
     'ngRoute',
     'appControllers',
     'ngSanitize',
-    'angularMoment'
+    'angularMoment',
+    'ngCookies'
 ]);
 
-app.config(['$routeProvider', function ($routeProvider) {
+app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($httpProvider, $routeProvider, $locationProvider) {
     'use strict';
+    
+    $routeProvider.when('/login', {
+        controller: 'LoginController',
+        templateUrl: '/login.html'
+    });
+
     $routeProvider.when('/', {
         controller: 'MessageController',
         templateUrl: '/messages.html'
     });
-}]);
 
-app.config(['$locationProvider', function ($locationProvider) {
-    'use strict';
+    $routeProvider.otherwise('/', {
+        redirectTo: '/'
+    });
+
     $locationProvider.html5Mode(true);
 }]);
 

@@ -4,6 +4,7 @@ var fs = require('fs');
 var faye = require('faye');
 var express = require('express');
 var bodyParser = require('body-parser');
+var Cookies = require('cookies');
 var app = express();
 var redisClient = require('redis').createClient();
 var subscriptions = {
@@ -29,6 +30,9 @@ var bayeuxClient = bayeux.getClient();
 app.use(bodyParser());
 
 
+app.use(Cookies.express());
+
+
 app.use(function(req, res, next){
     console.log('%s %s', req.method, req.url);
     next();
@@ -37,6 +41,10 @@ app.use(function(req, res, next){
 if (CONFIG.auth.enabled === 1) {
     app.use(express.basicAuth(CONFIG.auth.username, CONFIG.auth.password));
 }
+
+app.get('/login', function (req, res) {
+    res.sendfile(__dirname + '/public/index.html');
+});
 
 // Static fileserving
 app.use(express.static(__dirname + '/public'));
