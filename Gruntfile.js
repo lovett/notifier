@@ -55,8 +55,14 @@ module.exports = function(grunt) {
             }
         },
 
+        githooks: {
+            all: {
+                "pre-commit": "jshint"
+            }
+        },
+        
         jshint: {
-            server: {
+            node: {
                 options: {
                     jshintrc: ".jshintrc-node"
                 },
@@ -164,6 +170,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-contrib-less");
     grunt.loadNpmTasks("grunt-contrib-uglify");
+    grunt.loadNpmTasks("grunt-githooks");
     grunt.loadNpmTasks("grunt-nodemon");
     grunt.loadNpmTasks("grunt-shell");
     grunt.loadNpmTasks("grunt-svgstore");
@@ -171,7 +178,7 @@ module.exports = function(grunt) {
 
     // Default task(s).
     grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "svgstore", "ver", "clean:postBuild"]);
-    grunt.registerTask("default", ["build", "watch"]);
+    grunt.registerTask("default", ["githooks", "build", "watch"]);
 
 
 };
