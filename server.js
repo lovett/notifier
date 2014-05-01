@@ -6,16 +6,20 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
 var redisClient = require('redis').createClient();
+var subscriptions = {
+    browser: [],
+    speech: []
+};
 
 redisClient.select(CONFIG.redis.dbnum);
 
 // Websocket endpoint for browser clients
 var bayeux = new faye.NodeAdapter({
     mount: '/faye',
-    timeout: 45
+    timeout: 30
 });
 
-var bayeauxClient = bayeux.getClient();
+var bayeuxClient = bayeux.getClient();
 
 
 //app.use(express.compress());
@@ -57,8 +61,11 @@ app.post('/message', function (req, res) {
 
     jsonString = JSON.stringify(message);
 
-    // Immediately send to any connected clients
-    bayeauxClient.publish('/messages/' + message.group, jsonString);
+    if (subscriptions.browser.length > 0) {
+        bayeuxClient.publish('/messages/browser/' + message.group, jsonString);
+    } else if (subscriptions.speech.length > 0) {
+        bayeuxClient.publish('/messages/speech/' + message.group, jsonString);
+    }
 
     // Queue for delivery by agents
     redisClient.rpush('messages:queued', jsonString);
@@ -94,5 +101,32 @@ if (CONFIG.ssl.enabled !== 1) {
 // Attach to the express server returned by listen, rather than app itself.
 // See https://github.com/faye/faye/issues/256
 bayeux.attach(server);
+
+bayeux.on('subscribe', function (clientId, channel) {
+    var segments = channel.split('/');
+
+    if (segments[1] !== 'messages') {
+        return;
+    }
+
+    if (Object.keys(subscriptions).indexOf(segments[2]) === -1) {
+        return;
+    }
+
+    subscriptions[segments[2]].push(clientId);
+});
+
+bayeux.on('disconnect', function (clientId) {
+    var keys, index;
+
+    keys = Object.keys(subscriptions);
+
+    keys.forEach(function (key) {
+        index = subscriptions[key].indexOf(clientId);
+        if (index > -1) {
+            subscriptions[key].splice(index, 1);
+        }
+    });
+});
 
 console.log('Listening on port ' + CONFIG.http.port);

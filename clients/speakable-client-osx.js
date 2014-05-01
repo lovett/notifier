@@ -13,9 +13,12 @@ if (!program.server) {
     program.help();
 }
 
-var client = new faye.Client(program.server);
+var client = new faye.Client(program.server, {
+    retry: 10,
+    timeout: 45
+});
 
-client.subscribe("/messages/*", function (message) {
+client.subscribe("/messages/speech/*", function (message) {
     try {
         message = JSON.parse(message);
     } catch (e) {

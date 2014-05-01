@@ -51,7 +51,9 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($loca
     return {
         subscribe: function (channel, callback) {
             subscription = client.subscribe(channel, function (message) {
-                callback(message);
+                if (callback) {
+                    callback(message);
+                }
                 $rootScope.$apply();
             });
 
