@@ -1,12 +1,14 @@
 <form id="login" ng-submit="login()">
+    <p class="error" ng-show="message">{{ message }}</p>
+                            
     <div class="field">
-        <label for="login_user">Username</label>
-        <input type="text" id="login_user" name="login_user" ng-model="login.user"/>
+        <label for="login_username">Username</label>
+        <input type="text" id="login_username" name="login_username" ng-model="login.username"/>
     </div>
 
     <div class="field">
-        <label for="password">Password</label>
-        <input type="password" id="login_pass" name="login_pass" ng-model="login.pass"/>
+        <label for="login_password">Password</label>
+        <input type="password" id="login_password" name="login_password" ng-model="login.password"/>
     </div>
 
     <div class="field">

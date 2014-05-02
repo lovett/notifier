@@ -3,10 +3,9 @@
         "dbnum": 2
     },
 
-    "auth": {
-        "enabled": 0,
-        "username": "",
-        "password": ""
+    "users": {
+        "user1": "password1",
+        "user2": "password2"
     },
 
     "ssl": {

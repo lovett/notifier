@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var Cookies = require('cookies');
 var app = express();
 var redisClient = require('redis').createClient();
+var uuid = require('node-uuid');
 var subscriptions = {
     browser: [],
     speech: []
@@ -21,6 +22,24 @@ var bayeux = new faye.NodeAdapter({
 });
 
 var bayeuxClient = bayeux.getClient();
+
+
+var testLogin = function (username, password) {
+    if (username === false || password === false) {
+        return false;
+    }
+    
+    if (!CONFIG.users.hasOwnProperty(username)) {
+        return false;
+    }
+    
+    if (CONFIG.users[username] !== password) {
+        return false;
+    }
+    
+    return true;
+    
+};
 
 
 //app.use(express.compress());
@@ -38,12 +57,24 @@ app.use(function(req, res, next){
     next();
 });
 
-if (CONFIG.auth.enabled === 1) {
-    app.use(express.basicAuth(CONFIG.auth.username, CONFIG.auth.password));
-}
-
 app.get('/login', function (req, res) {
     res.sendfile(__dirname + '/public/index.html');
+});
+
+app.post('/auth', function (req, res) {
+    var result = testLogin(req.body.username, req.body.password);
+    if (result === true) {
+        var id = uuid.v4();
+        redisClient.set('token.' + id, +new Date());
+
+        var cookies = new Cookies(req, res);
+
+        // expire in 1 year
+        cookies.set('u', id, {httpOnly: false, maxage: (365 * 24 * 60 * 60 * 1000)});
+        res.send(200);
+    } else {
+        res.send(401);
+    }
 });
 
 // Static fileserving

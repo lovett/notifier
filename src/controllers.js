@@ -36,10 +36,26 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
 
 }]);
 
-appControllers.controller('LoginController', ['$scope', function ($scope) {
+appControllers.controller('LoginController', ['$scope', '$location', 'AuthService', function ($scope, $location, AuthService) {
     'use strict';
 
+
+    var loginSuccess, loginFail;
+
+    loginSuccess = function () {
+        $scope.message = null;
+        $location.path('/');
+    };
+
+    loginFail = function () {
+        $scope.message = 'Login failed';
+    };
+
     $scope.login = function () {
+        AuthService.login({}, {
+            'username': $scope.login.username,
+            'password': $scope.login.password
+        }, loginSuccess, loginFail);
     };
     
 }]);

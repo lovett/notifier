@@ -4,7 +4,8 @@ var app = angular.module('App', [
     'appControllers',
     'ngSanitize',
     'angularMoment',
-    'ngCookies'
+    'ngCookies',
+    'ngResource'
 ]);
 
 app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($httpProvider, $routeProvider, $locationProvider) {
@@ -25,6 +26,15 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($h
     });
 
     $locationProvider.html5Mode(true);
+}]);
+
+app.factory('AuthService', ['$resource', function ($resource) {
+    'use strict';
+    return $resource('/auth', {}, {
+        'login': {
+            method: 'POST'
+        }
+    });
 }]);
 
 app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($location, $rootScope, $log, Queue) {

@@ -28,6 +28,7 @@ module.exports = function(grunt) {
                       "bower_components/moment/min/moment.min.js",
                       "bower_components/angular-moment/angular-moment.min.js",
                       "bower_components/angular-cookies/angular-cookies.min.js",
+                      "bower_components/angular-resource/angular-resource.min.js",
                       "public/app.min.js",
                      ],
                 dest: "public/all.js",
@@ -45,6 +46,7 @@ module.exports = function(grunt) {
                               "bower_components/angular-sanitize/angular-sanitize.min.js.map",
                               "bower_components/angular/angular.js",
                               "bower_components/angular-cookies/angular-cookies.min.js.map",
+                              "bower_components/angular-resource/angular-resource.min.js.map",
                               "src/templates/**",
                               "src/svg/megaphone.svg"
                              ],
@@ -158,7 +160,7 @@ module.exports = function(grunt) {
                 livereload: true,
             },
             src: {
-                files: ["src/**"],
+                files: ["src/**", "Gruntfile.js"],
                 tasks: ["build"]
             }
         },
