@@ -3,7 +3,7 @@
     <header class="clearfix">
         <div class="left">
             <p ng-if="queue.ready && queue.isEmpty()">
-                No new messages as of <span am-time-ago="queue.asOf"></span>.
+                No new messages since <span>{{ queue.asOf |  amCalendar }}</span>.
                 <span ng-if="queue.asOf > 0"><a ng-click="showAll()" ng-href="">View all</a>.</span>
             </p>
         </div>

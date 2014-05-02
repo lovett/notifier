@@ -1,4 +1,4 @@
-/* global angular, Faye, Notification */
+/* global angular, Faye, Notification, moment */
 var app = angular.module('App', [
     'ngRoute',
     'appControllers',
@@ -10,6 +10,17 @@ var app = angular.module('App', [
 
 app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($httpProvider, $routeProvider, $locationProvider) {
     'use strict';
+
+    moment.lang('en', {
+        calendar : {
+            lastDay : '[Yesterday at] LT',
+            sameDay : 'LT',
+            nextDay : '[Tomorrow at] LT',
+            lastWeek : '[last] dddd [at] LT',
+            nextWeek : 'dddd [at] LT',
+            sameElse : 'L'
+        }
+    });
     
     $routeProvider.when('/login', {
         controller: 'LoginController',
