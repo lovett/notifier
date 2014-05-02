@@ -105,6 +105,27 @@ module.exports = function(grunt) {
         },
 
         shell: {
+            "favicons-dev": {
+                command: [
+                    "rm -rf public/favicons",
+                    "mkdir public/favicon",
+                    "convert src/favicon/favicon-dev.svg -geometry 16x16 -transparent white public/favicon/favicon-16.png",
+                    "convert src/favicon/favicon-dev.svg -geometry 32x32 -transparent white public/favicon/favicon-32.png",
+                    "convert src/favicon/favicon-dev.svg -geometry 48x48 -transparent white public/favicon/favicon-48.png",
+                    "convert public/favicon/favicon-16.png public/favicon/favicon-32.png public/favicon/favicon-48.png public/favicon/favicon.ico"
+                ].join(" && ")
+            },
+            "favicons-production": {
+                command: [
+                    "rm -rf public/favicons",
+                    "mkdir public/favicon",
+                    "convert src/favicon/favicon.svg -geometry 16x16 -transparent white public/favicon/favicon-16.png",
+                    "convert src/favicon/favicon.svg -geometry 32x32 -transparent white public/favicon/favicon-32.png",
+                    "convert src/favicon/favicon.svg -geometry 48x48 -transparent white public/favicon/favicon-48.png",
+                    "convert public/favicon/favicon-16.png public/favicon/favicon-32.png public/favicon/favicon-48.png public/favicon/favicon.ico"
+                ].join(" && ")
+            },
+            
             "redis-flush": {
                 command: "redis-cli -n <%= CONFIG.redis.dbnum %> flushdb"
             },
@@ -181,7 +202,7 @@ module.exports = function(grunt) {
                 phases: [
                     {
                         files: [
-                            "public/*.ico",
+                            "public/favicon/*",
                             "public/*.png",
                             "public/all.js",
                             "public/*.css"
@@ -197,7 +218,7 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "svgstore", "ver", "clean:postBuild"]);
+    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "svgstore", "clean:postBuild", "shell:favicons-dev", "ver"]);
     grunt.registerTask("default", ["githooks", "build", "watch"]);
 
 
