@@ -9,3 +9,4 @@ public
 config/*.json
 .nodemonignore
 *.scpt
+*.sqlite

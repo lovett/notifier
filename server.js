@@ -7,13 +7,70 @@ var bodyParser = require('body-parser');
 var Cookies = require('cookies');
 var app = express();
 var redisClient = require('redis').createClient();
-var uuid = require('node-uuid');
+var Sequelize = require('sequelize');
+var bcrypt = require('bcrypt');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 var subscriptions = {
     browser: [],
     speech: []
 };
 
+var sequelize = new Sequelize('', '', '', {
+    dialect: 'sqlite',
+    storage: './dev.sqlite'
+});
+
+var User = sequelize.define('User', {
+    id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+    username: { type: Sequelize.STRING, unique: true, allowNull: false},
+    passwordHash: { type: Sequelize.STRING, allowNull: true}
+});
+
+var Token = sequelize.define('Token', {
+    id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+    userId: { type: Sequelize.INTEGER, allowNull: false},
+    value: { type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, allowNull: false},
+});
+
+sequelize.sync();
+
+CONFIG.users.forEach(function (element) {
+    User.findOrCreate({ username: element.username}).success(function (user, created) {
+        if (created === true) {
+            var salt = bcrypt.genSaltSync(10);
+            user.values.passwordHash = bcrypt.hashSync(element.password, salt);
+            user.save();
+        }
+    });
+});
+
+
+
 redisClient.select(CONFIG.redis.dbnum);
+
+
+passport.use(new LocalStrategy(function (username, password, done) {
+    if (username === false || password === false) {
+        return done();
+    }
+
+    User.find({ where: { username: username } }).success(function (user) {
+        if (!user) {
+            return done(null, false, { message: 'Invalid login' });
+        }
+
+        if (!bcrypt.compareSync(password, user.values.passwordHash)) {
+            return done(null, false, { message: 'Invalid login' });
+        }
+
+        return done(null, user);
+    }).error(function (error) {
+        return done(error);
+    });
+}));
+
+app.use(passport.initialize());
 
 // Websocket endpoint for browser clients
 var bayeux = new faye.NodeAdapter({
@@ -23,34 +80,13 @@ var bayeux = new faye.NodeAdapter({
 
 var bayeuxClient = bayeux.getClient();
 
-
-var testLogin = function (username, password) {
-    if (username === false || password === false) {
-        return false;
-    }
-    
-    if (!CONFIG.users.hasOwnProperty(username)) {
-        return false;
-    }
-    
-    if (CONFIG.users[username] !== password) {
-        return false;
-    }
-    
-    return true;
-    
-};
-
-
 //app.use(express.compress());
 
 // Express should only accept regular, urlencoded requests.
 // No json, no file uploads.
 app.use(bodyParser());
 
-
 app.use(Cookies.express());
-
 
 app.use(function(req, res, next){
     console.log('%s %s', req.method, req.url);
@@ -61,20 +97,43 @@ app.get('/login', function (req, res) {
     res.sendfile(__dirname + '/public/index.html');
 });
 
-app.post('/auth', function (req, res) {
-    var result = testLogin(req.body.username, req.body.password);
-    if (result === true) {
-        var id = uuid.v4();
-        redisClient.set('token.' + id, +new Date());
+var requireAuth = function (req, res, next) {
+    var cookies = new Cookies(req, res);
 
-        var cookies = new Cookies(req, res);
+    var tokenValue = cookies.get('u');
 
-        // expire in 1 year
-        cookies.set('u', id, {httpOnly: false, maxage: (365 * 24 * 60 * 60 * 1000)});
-        res.send(200);
-    } else {
+    if (!tokenValue) {
         res.send(401);
+        return;
     }
+
+    Token.find({
+        where: { value: tokenValue },
+        attributes: ['userId']
+    }).success(function (token) {
+        if (!token) {
+            res.send(401);
+            return;
+        }
+        req.userId = token.values.userId;
+        next();
+    }).error(function () {
+        res.send(500);
+        return;
+    });
+};
+
+app.post('/auth', passport.authenticate('local', { session: false }), function (req, res) {
+    var token = Token.build({
+        userId: req.user.values.id
+    });
+    
+    token.save().success(function (token) {
+        var cookies = new Cookies(req, res);
+        // expire in 1 year
+        cookies.set('u', token.value, {httpOnly: false, maxage: (365 * 24 * 60 * 60 * 1000)});
+        res.send(200);
+    });
 });
 
 // Static fileserving
@@ -118,7 +177,7 @@ app.post('/message', function (req, res) {
 });
 
 // Endpoint for archived messages
-app.get('/archive/:num', function (req, res) {
+app.get('/archive/:num', requireAuth, function (req, res) {
     redisClient.lrange('messages:archived', -5, -1, function (err, messages) {
         res.send(messages);
     });
@@ -169,3 +228,4 @@ bayeux.on('disconnect', function (clientId) {
 });
 
 console.log('Listening on port ' + CONFIG.http.port);
+
