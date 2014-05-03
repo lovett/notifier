@@ -11,6 +11,8 @@ var app = angular.module('App', [
 app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($httpProvider, $routeProvider, $locationProvider) {
     'use strict';
 
+    $httpProvider.interceptors.push('HttpInterceptor');
+
     moment.lang('en', {
         calendar : {
             lastDay : '[Yesterday at] LT',
@@ -21,7 +23,7 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($h
             sameElse : 'L'
         }
     });
-    
+
     $routeProvider.when('/login', {
         controller: 'LoginController',
         templateUrl: '/login.html'
@@ -46,6 +48,18 @@ app.factory('AuthService', ['$resource', function ($resource) {
             method: 'POST'
         }
     });
+}]);
+
+app.factory('HttpInterceptor', ['$q', '$location', function ($q, $location) {
+    'use strict';
+    return {
+        'responseError': function (response) {
+            if (response.status === 401) {
+                $location.path('/login');
+                return $q.reject(response);
+            }
+        }
+    };
 }]);
 
 app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($location, $rootScope, $log, Queue) {
