@@ -126,10 +126,7 @@ module.exports = function(grunt) {
                 ].join(" && ")
             },
             
-            "redis-flush": {
-                command: "redis-cli -n <%= CONFIG.redis.dbnum %> flushdb"
-            },
-            "redis-populate": {
+            "db-populate": {
                 command: [
                     "curl -s -d 'title=Unarchived Example' -d 'noarchive=1' -d 'body=Testing testing' -d 'url=http://example.com' http://localhost:8080/message",
                 ].join(" && ")

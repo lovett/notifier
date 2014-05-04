@@ -17,7 +17,6 @@
     "body-parser": "1.0.2",
     "config": "0.4.35",
     "commander": "2.2.0",
-    "redis": "0.10.0",
     "exec-sync": "0.1.6",
     "cookies": "0.4.0",
     "sequelize": "1.7.3",

@@ -6,7 +6,6 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var Cookies = require('cookies');
 var app = express();
-var redisClient = require('redis').createClient();
 var Sequelize = require('sequelize');
 var bcrypt = require('bcrypt');
 var passport = require('passport');
@@ -22,16 +21,23 @@ var sequelize = new Sequelize('', '', '', {
 });
 
 var User = sequelize.define('User', {
-    id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     username: { type: Sequelize.STRING, unique: true, allowNull: false},
     passwordHash: { type: Sequelize.STRING, allowNull: true}
 });
 
 var Token = sequelize.define('Token', {
-    id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
     userId: { type: Sequelize.INTEGER, allowNull: false},
     value: { type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, allowNull: false},
 });
+
+var Message = sequelize.define('Message', {
+    title: { type: Sequelize.STRING, allowNull: false},
+    url: { type: Sequelize.STRING, allowNull: true},
+    body: { type: Sequelize.STRING, allowNull: true},
+    source: { type: Sequelize.STRING, allowNull: true},
+    group: { type: Sequelize.STRING, allowNull: true, defaultValue: 'default'},
+    event: { type: Sequelize.STRING, allowNull: true},
+}, { timestamps: true, updatedAt: false, createdAt: 'received' });
 
 sequelize.sync();
 
@@ -45,9 +51,6 @@ CONFIG.users.forEach(function (element) {
     });
 });
 
-
-
-redisClient.select(CONFIG.redis.dbnum);
 
 
 passport.use(new LocalStrategy(function (username, password, done) {
@@ -141,44 +144,52 @@ app.use(express.static(__dirname + '/public'));
 
 // Endpoint for receiving messages
 app.post('/message', function (req, res) {
-    var message = {};
-    var keys = ['title', 'url', 'body', 'source', 'group', 'noarchive', 'event'];
-    var jsonString;
 
-    keys.forEach(function (key) {
+    var message = Message.build();
+    var channel;
+
+    req.body.noarchive = req.body.noarchive || 0;
+
+    message.attributes.forEach(function (key) {
+        if (key === 'id') {
+            return;
+        }
+        
         if (req.body.hasOwnProperty(key)) {
-            message[key] = req.body[key];
+            message.values[key] = req.body[key];
         }
     });
 
-    if (Object.keys(message).length === 0) {
+    if (message.values === undefined) {
         res.send(404, 'Message is empty');
+        return;
     }
 
     message.received = +new Date();
 
-    jsonString = JSON.stringify(message);
-
     if (subscriptions.browser.length > 0) {
-        bayeuxClient.publish('/messages/browser/' + message.group, jsonString);
+        channel = 'browser';
     } else if (subscriptions.speech.length > 0) {
-        bayeuxClient.publish('/messages/speech/' + message.group, jsonString);
+        channel = 'speech';
     }
+        
+    bayeuxClient.publish('/messages/browser/' + message.group, JSON.stringify(message));
 
-    // Queue for delivery by agents
-    redisClient.rpush('messages:queued', jsonString);
-
-    // Archive for display by future clients or agents
-    if (!message.hasOwnProperty('noarchive') || message.noarchive === 0) {
-        redisClient.rpush('messages:archived', jsonString);
+    if (req.body.noarchive === 1) {
+        res.send(204);
+    } else {
+        message.save().success(function () {
+            res.send(204);
+        });
     }
-
-    res.send(204);
 });
 
 // Endpoint for archived messages
-app.get('/archive/:num', requireAuth, function (req, res) {
-    redisClient.lrange('messages:archived', -5, -1, function (err, messages) {
+app.get('/archive/:count', requireAuth, function (req, res) {
+    Message.findAll({
+        limit: req.params.count,
+        order: 'received DESC'
+    }).success(function (messages) {
         res.send(messages);
     });
 });
