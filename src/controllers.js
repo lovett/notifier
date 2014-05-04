@@ -1,8 +1,17 @@
 /* global angular */
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('MessageController', ['$rootScope', '$scope', '$window', 'Faye', 'BrowserNotification', 'Queue', 'User', function ($rootScope, $scope, $window, Faye, BrowserNotification, Queue, User) {
+appControllers.controller('MessageController', ['$rootScope', '$scope', '$window', '$location', 'Faye', 'BrowserNotification', 'Queue', 'User', function ($rootScope, $scope, $window, $location, Faye, BrowserNotification, Queue, User) {
     'use strict';
+
+    $scope.isLoggedIn = User.isLoggedIn();
+
+    $rootScope.queue = Queue;
+
+    if ($scope.isLoggedIn === false) {
+        $location.path('/login');
+        return;
+    }
 
     Faye.subscribe('/messages/browser/*', function (message) {
         message = Queue.add(message);
@@ -13,7 +22,6 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
 
     Queue.populate();
 
-    $rootScope.queue = Queue;
 
     $scope.browserNotification = BrowserNotification;
 
@@ -30,14 +38,15 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
         $window.location.reload();
     };
 
-    $scope.isLoggedIn = User.isLoggedIn();
 
 }]);
 
-appControllers.controller('LoginController', ['$scope', '$route', '$location', 'AuthService', 'User', function ($scope, $route, $location, AuthService, User) {
+appControllers.controller('LoginController', ['$scope', '$rootScope', '$route', '$location', 'Queue', 'AuthService', 'User', function ($scope, $rootScope, $route, $location, Queue, AuthService, User) {
     'use strict';
 
     var loginSuccess, loginFailure;
+
+    $rootScope.queue = Queue;
 
     loginSuccess = function () {
         $scope.message = null;
