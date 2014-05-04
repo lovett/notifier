@@ -1,7 +1,7 @@
 /* global angular */
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('MessageController', ['$rootScope', '$scope', '$window', 'Faye', 'BrowserNotification', 'Queue', function ($rootScope, $scope, $window, Faye, BrowserNotification, Queue) {
+appControllers.controller('MessageController', ['$rootScope', '$scope', '$window', 'Faye', 'BrowserNotification', 'Queue', 'User', function ($rootScope, $scope, $window, Faye, BrowserNotification, Queue, User) {
     'use strict';
 
     Faye.subscribe('/messages/browser/*', function (message) {
@@ -30,9 +30,11 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
         $window.location.reload();
     };
 
+    $scope.isLoggedIn = User.isLoggedIn();
+
 }]);
 
-appControllers.controller('LoginController', ['$scope', '$location', 'AuthService', function ($scope, $location, AuthService) {
+appControllers.controller('LoginController', ['$scope', '$route', '$location', 'AuthService', 'User', function ($scope, $route, $location, AuthService, User) {
     'use strict';
 
     var loginSuccess, loginFailure;
@@ -52,5 +54,12 @@ appControllers.controller('LoginController', ['$scope', '$location', 'AuthServic
             'password': $scope.login.password
         }, loginSuccess, loginFailure);
     };
-    
+
+    $scope.gotoLogin = function () {
+        $location.path('/login');
+    };
+
+    if ($route.current.appEvent === 'logout') {
+        User.logOut();
+    }
 }]);

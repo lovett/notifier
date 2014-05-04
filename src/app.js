@@ -29,6 +29,12 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($h
         templateUrl: '/login.html'
     });
 
+    $routeProvider.when('/logout', {
+        controller: 'LoginController',
+        templateUrl: '/logout.html',
+        appEvent: 'logout'
+    });
+
     $routeProvider.when('/', {
         controller: 'MessageController',
         templateUrl: '/messages.html'
@@ -50,6 +56,21 @@ app.factory('AuthService', ['$resource', function ($resource) {
     });
 }]);
 
+app.factory('User', ['$cookies', function ($cookies) {
+    'use strict';
+    return {
+        isLoggedIn: function () {
+            if ($cookies.u) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        logOut: function () {
+            delete $cookies.u;
+        }
+    };
+}]);
 app.factory('HttpInterceptor', ['$q', '$location', function ($q, $location) {
     'use strict';
     return {

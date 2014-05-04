@@ -100,6 +100,10 @@ app.get('/login', function (req, res) {
     res.sendfile(__dirname + '/public/index.html');
 });
 
+app.get('/logout', function (req, res) {
+    res.sendfile(__dirname + '/public/index.html');
+});
+
 var requireAuth = function (req, res, next) {
     var cookies = new Cookies(req, res);
 
@@ -130,7 +134,7 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
     var token = Token.build({
         userId: req.user.values.id
     });
-    
+
     token.save().success(function (token) {
         var cookies = new Cookies(req, res);
         // expire in 1 year
@@ -154,7 +158,7 @@ app.post('/message', function (req, res) {
         if (key === 'id') {
             return;
         }
-        
+
         if (req.body.hasOwnProperty(key)) {
             message.values[key] = req.body[key];
         }
@@ -172,7 +176,7 @@ app.post('/message', function (req, res) {
     } else if (subscriptions.speech.length > 0) {
         channel = 'speech';
     }
-        
+
     bayeuxClient.publish('/messages/browser/' + message.group, JSON.stringify(message));
 
     if (req.body.noarchive === 1) {
@@ -239,4 +243,3 @@ bayeux.on('disconnect', function (clientId) {
 });
 
 console.log('Listening on port ' + CONFIG.http.port);
-

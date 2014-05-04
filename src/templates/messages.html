@@ -1,19 +1,8 @@
 <div id="svgdef" class="hidden" ng-include="'/sprites.svg'"></div>
 
-    <header class="clearfix">
-        <div class="left">
-            <p ng-if="queue.ready && queue.isEmpty()">
-                No new messages since <span>{{ queue.asOf |  amCalendar }}</span>.
-                <span ng-if="queue.asOf > 0"><a ng-click="showAll()" ng-href="">View all</a>.</span>
-            </p>
-        </div>
-        <div class="right">
-            <a ng-click="browserNotification.enable()" ng-href="" class="button" ng-show="browserNotification.supported && browserNotification.enabled == false">Enable Notifications</a>
-            <a ng-click="clearAll()" ng-if="!queue.isEmpty()" ng-href="" class="button">Dismiss All</a>
-        </div>
-    </header>
-    <main>
+<ng-include src="'header.html'"></ng-include>
 
+<main>
     <div id="articles">
         <article class="panel" ng-repeat="item in queue.members">
             <a ng-href="" ng-click="clearOne(item.id)" class="right">
