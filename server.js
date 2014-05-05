@@ -136,10 +136,11 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
     });
 
     token.save().success(function (token) {
-        var cookies = new Cookies(req, res);
+        res.json({token: token.value});
+        //var cookies = new Cookies(req, res);
         // expire in 1 year
-        cookies.set('u', token.value, {httpOnly: false, maxage: (365 * 24 * 60 * 60 * 1000)});
-        res.send(200);
+        //cookies.set('u', token.value, {httpOnly: false, maxage: (365 * 24 * 60 * 60 * 1000)});
+        //res.send(200);
     });
 });
 

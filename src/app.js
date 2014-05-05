@@ -47,11 +47,25 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($h
     $locationProvider.html5Mode(true);
 }]);
 
-app.factory('AuthService', ['$resource', function ($resource) {
+app.factory('AuthService', ['$resource', '$cookies', function ($resource, $cookies) {
     'use strict';
     return $resource('/auth', {}, {
         'login': {
-            method: 'POST'
+            method: 'POST',
+            transformResponse: function (data) {
+                try {
+                    data = JSON.parse(data);
+                } catch (e) {
+                    data = {};
+                }
+
+                if (data.hasOwnProperty('token')) {
+                    $cookies.u = data.token;
+                } else {
+                    delete $cookies.u;
+                }
+                return data;
+            }
         }
     });
 }]);

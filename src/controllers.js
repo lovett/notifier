@@ -49,7 +49,6 @@ appControllers.controller('LoginController', ['$scope', '$rootScope', '$route', 
     $rootScope.queue = Queue;
 
     loginSuccess = function () {
-        $scope.message = null;
         $location.path('/');
     };
 
@@ -58,6 +57,7 @@ appControllers.controller('LoginController', ['$scope', '$rootScope', '$route', 
     };
 
     $scope.login = function () {
+        $scope.message = null;
         AuthService.login({}, {
             'username': $scope.login.username,
             'password': $scope.login.password
