@@ -47,7 +47,7 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($h
     $locationProvider.html5Mode(true);
 }]);
 
-app.factory('AuthService', ['$resource', '$cookies', function ($resource, $cookies) {
+app.factory('AuthService', ['$rootScope', '$resource', 'User', function ($rootScope, $resource, User) {
     'use strict';
     return $resource('/auth', {}, {
         'login': {
@@ -60,9 +60,9 @@ app.factory('AuthService', ['$resource', '$cookies', function ($resource, $cooki
                 }
 
                 if (data.hasOwnProperty('token')) {
-                    $cookies.u = data.token;
+                    User.setToken(data.token);
                 } else {
-                    delete $cookies.u;
+                    User.logOut();
                 }
                 return data;
             }
@@ -70,18 +70,33 @@ app.factory('AuthService', ['$resource', '$cookies', function ($resource, $cooki
     });
 }]);
 
-app.factory('User', ['$cookies', function ($cookies) {
+app.factory('User', ['$document', function ($document) {
     'use strict';
+    var key = 'u';
+
     return {
-        isLoggedIn: function () {
-            if ($cookies.u) {
-                return true;
-            } else {
-                return false;
-            }
+        setToken: function (value) {
+            var date = new Date();
+            date.setTime(date.getTime()+(365*24*60*60*1000));
+            $document[0].cookie = key + '=' + value + '; expires=' + date.toGMTString() + '; path=/';
         },
+
         logOut: function () {
-            delete $cookies.u;
+            var date = new Date();
+            date.setTime(date.getTime() - (365*24*60*60*1000));
+            $document[0].cookie = key + '=' + '; expires=' + date.toGMTString() + '; path=/';
+        },
+
+        isLoggedIn: function () {
+            var fields, i, segments;
+            fields = $document[0].cookie.split(';');
+            for (i=0; i < fields.length; i = i + 1) {
+                segments = fields[i].split('=');
+                if (segments[0] === 'u') {
+                    return true;
+                }
+            }
+            return false;
         }
     };
 }]);
