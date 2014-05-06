@@ -153,7 +153,7 @@ app.post('/message', function (req, res) {
     var message = Message.build();
     var channel;
 
-    req.body.noarchive = req.body.noarchive || 0;
+    req.body.noarchive = parseInt(req.body.noarchive, 10);
 
     message.attributes.forEach(function (key) {
         if (key === 'id') {
