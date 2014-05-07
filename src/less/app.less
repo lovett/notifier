@@ -1,3 +1,9 @@
+.rounded {
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+}
+
 HTML {
     @from: #2D8E5E;
     @to: lighten(@from, 30%);
@@ -14,9 +20,17 @@ BODY {
     height: 100%;
 }
 
-MAIN {
+MAIN.message-wrapper {
     margin: 0 1em;
 }
+
+MAIN.flex-wrapper {
+    min-height: 100%;
+    display: -webkit-flex;
+    display: flex;
+}
+
+
 
 A {
     color: #65809D;
@@ -181,18 +195,10 @@ HEADER {
 
 }
 
-#wrapper {
-    min-height: 100%;
-    display: -webkit-flex;
-    display: flex;
-}
-
 #logout {
     margin: auto;
     background-color: white;
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    border-radius: 8px;
+    .rounded;
     padding: 1em;
     text-align: center;
 }
