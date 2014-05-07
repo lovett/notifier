@@ -35,7 +35,7 @@ var Message = sequelize.define('Message', {
     url: { type: Sequelize.STRING, allowNull: true},
     body: { type: Sequelize.STRING, allowNull: true},
     source: { type: Sequelize.STRING, allowNull: true},
-    group: { type: Sequelize.STRING, allowNull: true, defaultValue: 'default'},
+    group: { type: Sequelize.STRING, allowNull: true},
     event: { type: Sequelize.STRING, allowNull: true},
 }, { timestamps: true, updatedAt: false, createdAt: 'received' });
 
@@ -153,7 +153,7 @@ app.post('/message', function (req, res) {
     var message = Message.build();
     var channel;
 
-    req.body.noarchive = parseInt(req.body.noarchive, 10);
+    message.values.noarchive = parseInt(req.body.noarchive, 10);
 
     message.attributes.forEach(function (key) {
         if (key === 'id') {
@@ -180,7 +180,7 @@ app.post('/message', function (req, res) {
 
     bayeuxClient.publish('/messages/browser/' + message.group, JSON.stringify(message));
 
-    if (req.body.noarchive === 1) {
+    if (message.values.noarchive === 1) {
         res.send(204);
     } else {
         message.save().success(function () {

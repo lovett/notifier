@@ -267,8 +267,8 @@ app.factory('Queue', ['$http', function ($http) {
                 message.body = message.body.replace(/\n/g, '<br/>');
             }
 
-            if (message.hasOwnProperty('group')) {
-                message.badge = message.group.split(',').pop();
+            if (message.group) {
+                message.badge = message.group.split('.').pop();
             }
 
             counter = counter + 1;
