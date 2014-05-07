@@ -10,6 +10,10 @@ HTML {
     background: -o-linear-gradient(@corner, @from, @to);
 }
 
+BODY {
+    height: 100%;
+}
+
 MAIN {
     margin: 0 1em;
 }
@@ -175,4 +179,20 @@ HEADER {
         background-color: transparent;
     }
 
+}
+
+#wrapper {
+    min-height: 100%;
+    display: -webkit-flex;
+    display: flex;
+}
+
+#logout {
+    margin: auto;
+    background-color: white;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    padding: 1em;
+    text-align: center;
 }

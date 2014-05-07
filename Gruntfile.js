@@ -1,10 +1,10 @@
 module.exports = function(grunt) {
 
     require("load-grunt-tasks")(grunt);
-    
+
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
-        
+
         CONFIG: grunt.file.readJSON("config/default.json"),
 
         clean: {
@@ -67,7 +67,7 @@ module.exports = function(grunt) {
                 "pre-commit": "jshint"
             }
         },
-        
+
         jshint: {
             node: {
                 options: {
@@ -125,7 +125,7 @@ module.exports = function(grunt) {
                     "convert public/favicon/favicon-16.png public/favicon/favicon-32.png public/favicon/favicon-48.png public/favicon/favicon.ico"
                 ].join(" && ")
             },
-            
+
             "db-populate": {
                 command: [
                     "curl -s -d 'title=Unarchived Example' -d 'noarchive=1' -d 'body=Testing testing' -d 'url=http://example.com' http://localhost:8080/message",
@@ -148,7 +148,7 @@ module.exports = function(grunt) {
                 }
             }
         },
-        
+
         sshexec: {
               production: {
                   command: "cd <%= CONFIG.deployment.production.path %>; npm install",
