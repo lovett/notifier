@@ -1,17 +1,15 @@
 <header class="clearfix">
-    <div class="left">
-        <p ng-if="queue.ready && queue.isEmpty()">
-            No messages <span ng-if="queue.asOf">since {{ queue.asOf |  amCalendar }}</span>
-        </p>
+    <div class="left" ng-if="queue.ready && queue.isEmpty()">
+        No messages <span ng-if="queue.asOf">since {{ queue.asOf |  amCalendar }}</span>
     </div>
 
     <div class="right">
         <a ng-click="browserNotification.enable()" ng-href="" class="button" ng-show="browserNotification.supported && browserNotification.enabled == false">Enable Notifications</a>
         <a ng-click="clearAll()" ng-if="!queue.isEmpty()" ng-href="" class="button">Sweep</a>
 
-        <a ng-click="showAll()" ng-if="queue.isEmpty() && queue.asOf > 0" ng-href="" class="button">Reset </a>
+        <a ng-click="showAll()" ng-if="queue.isEmpty() && queue.asOf > 0" ng-href="">Reset </a>
 
-        <a class="logout" href="" ng-if="isLoggedIn" ng-href="/logout">Log out</a>
+        <a ng-if="isLoggedIn" ng-href="/logout">Log out</a>
 
     </div>
 </header>

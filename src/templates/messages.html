@@ -3,7 +3,7 @@
 <ng-include src="'header.html'"></ng-include>
 
 <main class="message-wrapper">
-    <article class="panel rounded" ng-repeat="item in queue.members">
+    <article class="message rounded" ng-repeat="item in queue.members">
         <a ng-href="" ng-click="clearOne(item.id)" class="right">
             <svg viewBox="0 0 32 32" class="icon">
                 <use xlink:href="#icon-close"></use>
