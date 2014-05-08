@@ -41,7 +41,7 @@ var Message = sequelize.define('Message', {
 
 sequelize.sync();
 
-CONFIG.users.forEach(function (element) {
+CONFIG.defaultUsers.forEach(function (element) {
     User.findOrCreate({ username: element.username}).success(function (user, created) {
         if (created === true) {
             var salt = bcrypt.genSaltSync(10);
@@ -50,8 +50,6 @@ CONFIG.users.forEach(function (element) {
         }
     });
 });
-
-
 
 passport.use(new LocalStrategy(function (username, password, done) {
     if (username === false || password === false) {

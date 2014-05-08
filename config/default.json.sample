@@ -1,12 +1,10 @@
 {
-    "redis": {
-        "dbnum": 2
-    },
-
-    "users": {
-        "user1": "password1",
-        "user2": "password2"
-    },
+    "defaultUsers": [
+        {
+            "username": "guest",
+            "password": "notifier"
+        }
+    ],
 
     "ssl": {
         "enabled": 0,
@@ -28,5 +26,5 @@
             "path": "/var/www/"
         }
     }
-        
+
 }
