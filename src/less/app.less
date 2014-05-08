@@ -189,3 +189,49 @@ HEADER {
     padding: 1em;
     text-align: center;
 }
+
+#login {
+    margin: auto;
+    background-color: white;
+    .rounded;
+    padding: 1em;
+
+    .field {
+        margin-bottom: 2em;
+    }
+
+    FIELDSET {
+        border: none;
+    }
+
+    LEGEND {
+        text-align: center;
+        font-size: 2em;
+        margin-bottom: 1em;
+        font-weight: bold;
+    }
+
+    LABEL {
+        display: inline-block;
+        min-width: 6em;
+    }
+
+    LABEL:after {
+        content: ": ";
+    }
+
+    INPUT[type=text], INPUT[type=password] {
+        border: 0;
+        border-bottom: 1px solid black;
+        font-family: monospace;
+        width: 15em;
+        font-size: 1.3em;
+        padding: .25em;
+    }
+
+    INPUT[type=submit] {
+        display: block;
+        font-size: 1em;
+        margin: auto;
+    }
+}
