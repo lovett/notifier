@@ -205,7 +205,6 @@ app.factory('BrowserNotification', ['$window', 'Queue', function ($window, Queue
 
 app.factory('Queue', ['$http', function ($http) {
     'use strict';
-    var counter = 0;
 
     return {
         ready: false,
@@ -270,9 +269,6 @@ app.factory('Queue', ['$http', function ($http) {
             if (message.group) {
                 message.badge = message.group.split('.').pop();
             }
-
-            counter = counter + 1;
-            message.id = counter;
 
             this.members.unshift(message);
             return message;

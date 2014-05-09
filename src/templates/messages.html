@@ -10,7 +10,7 @@
             </svg>
         </a>
 
-        <div class="badge {{ item.badge }}" ng-show="item.badge">
+        <div class="badge {{ item.badge }}" ng-show="item.badge !== 'default'">
 
             <svg viewBox="0 0 32 32" class="icon" ng-show="item.badge == 'internal'">
                 <use xlink:href="#icon-megaphone"></use>

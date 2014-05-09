@@ -35,7 +35,7 @@ var Message = sequelize.define('Message', {
     url: { type: Sequelize.STRING, allowNull: true},
     body: { type: Sequelize.STRING, allowNull: true},
     source: { type: Sequelize.STRING, allowNull: true},
-    group: { type: Sequelize.STRING, allowNull: true},
+    group: { type: Sequelize.STRING, allowNull: true, defaultValue: 'default'},
     event: { type: Sequelize.STRING, allowNull: true},
 }, { timestamps: true, updatedAt: false, createdAt: 'received' });
 
@@ -128,6 +128,21 @@ var requireAuth = function (req, res, next) {
     });
 };
 
+var publishMessage = function (message) {
+    var channel, primaryGroup;
+
+    primaryGroup = message.values.group.split('.').pop();
+
+
+    if (subscriptions.browser.length > 0) {
+        channel = 'browser';
+    } else if (subscriptions.speech.length > 0) {
+        channel = 'speech';
+    }
+
+    bayeuxClient.publish('/messages/browser/' + primaryGroup, JSON.stringify(message));
+};
+
 app.post('/auth', passport.authenticate('local', { session: false }), function (req, res) {
     var token = Token.build({
         userId: req.user.values.id
@@ -135,10 +150,6 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
 
     token.save().success(function (token) {
         res.json({token: token.value});
-        //var cookies = new Cookies(req, res);
-        // expire in 1 year
-        //cookies.set('u', token.value, {httpOnly: false, maxage: (365 * 24 * 60 * 60 * 1000)});
-        //res.send(200);
     });
 });
 
@@ -147,11 +158,11 @@ app.use(express.static(__dirname + '/public'));
 
 // Endpoint for receiving messages
 app.post('/message', function (req, res) {
+    var message;
 
-    var message = Message.build();
-    var channel;
-
+    message = Message.build();
     message.values.noarchive = parseInt(req.body.noarchive, 10);
+    message.values.received = +new Date();
 
     message.attributes.forEach(function (key) {
         if (key === 'id') {
@@ -168,15 +179,7 @@ app.post('/message', function (req, res) {
         return;
     }
 
-    message.received = +new Date();
-
-    if (subscriptions.browser.length > 0) {
-        channel = 'browser';
-    } else if (subscriptions.speech.length > 0) {
-        channel = 'speech';
-    }
-
-    bayeuxClient.publish('/messages/browser/' + message.group, JSON.stringify(message));
+    publishMessage(message);
 
     if (message.values.noarchive === 1) {
         res.send(204);
