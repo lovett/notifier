@@ -164,9 +164,26 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($loca
     };
 }]);
 
-app.factory('BrowserNotification', ['$window', 'Queue', function ($window, Queue) {
+app.factory('BrowserNotification', ['$window', function ($window) {
     'use strict';
+
     var enabled = $window.Notification.permission === 'granted' || false;
+
+    var send = function (message, ignoreFocus) {
+        if (enabled === false) {
+            return false;
+        }
+
+        if ($window.document.hasFocus() && ignoreFocus !== true) {
+            return;
+        }
+
+        return new Notification(message.title, {
+            'body': message.body || '',
+            'tag' : +new Date()
+        });
+
+    };
 
     return {
         supported: $window.Notification,
@@ -177,33 +194,20 @@ app.factory('BrowserNotification', ['$window', 'Queue', function ($window, Queue
             $window.Notification.requestPermission(function (permission) {
                 enabled = permission;
                 if (permission === 'granted') {
-                    Queue.add({
+                    send({
                         group: 'internal',
-                        title: 'Browser notifications have been enabled'
-                    });
+                        title: 'Browser notifications enabled',
+                        body: 'They can be turned off by editing your browser settings.'
+                    }, true);
                 }
             });
         },
 
-        send: function (message) {
-            var notification;
-            if (enabled === false) {
-                return;
-            }
-
-            if ($window.document.hasFocus()) {
-                return;
-            }
-
-            notification = new Notification(message.title, {
-                'body': message.body || '',
-                'tag' : +new Date()
-            });
-        }
+        send: send
     };
 }]);
 
-app.factory('Queue', ['$http', function ($http) {
+app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNotification) {
     'use strict';
 
     return {
@@ -271,7 +275,7 @@ app.factory('Queue', ['$http', function ($http) {
             }
 
             this.members.unshift(message);
-            return message;
+            BrowserNotification.send(message);
         },
 
         remove: function (id) {

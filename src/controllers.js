@@ -6,18 +6,16 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
 
     $scope.isLoggedIn = User.isLoggedIn();
 
-    $rootScope.queue = Queue;
-
     if ($scope.isLoggedIn === false) {
         $location.path('/login');
         return;
     }
 
+    $rootScope.queue = Queue;
+
+
     Faye.subscribe('/messages/browser/*', function (message) {
-        message = Queue.add(message);
-        if (message) {
-            BrowserNotification.send(message);
-        }
+        Queue.add(message);
     });
 
     Queue.populate();
