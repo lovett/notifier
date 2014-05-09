@@ -58,11 +58,11 @@ passport.use(new LocalStrategy(function (username, password, done) {
 
     User.find({ where: { username: username } }).success(function (user) {
         if (!user) {
-            return done(null, false, { message: 'Invalid login' });
+            return done(null, false);
         }
 
         if (!bcrypt.compareSync(password, user.values.passwordHash)) {
-            return done(null, false, { message: 'Invalid login' });
+            return done(null, false);
         }
 
         return done(null, user);

@@ -1,21 +1,21 @@
 <main class="flex-wrapper">
-    <form id="login" ng-submit="login()">
+    <form id="login-form" name="loginForm" ng-submit="login()" class="onebox" novalidate>
         <fieldset>
-            <legend>Please Log In</legend>
-            <p class="error" ng-show="message">{{ message }}</p>
+            <legend>Hello</legend>
+            <div class="field error" ng-show="message">{{ message }}</div>
 
             <div class="field">
                 <label for="login_username">Username</label>
-                <input type="text" id="login_username" name="login_username" ng-model="login.username" autofocus="autofocus"/>
+                <input type="text" id="login_username" name="login_username" ng-model="login.username" autofocus="autofocus" required />
             </div>
 
             <div class="field">
                 <label for="login_password">Password</label>
-                <input type="password" id="login_password" name="login_password" ng-model="login.password"/>
+                <input type="password" id="login_password" name="login_password" ng-model="login.password" required />
             </div>
 
             <div class="field">
-                <input type="submit" value="Submit" />
+                <button ng-disabled="login.$invalid">sign in</button>
             </div>
         </fieldset>
     </form>

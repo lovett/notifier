@@ -53,11 +53,17 @@ appControllers.controller('LoginController', ['$scope', '$rootScope', '$route', 
     };
 
     loginFailure = function () {
-        $scope.message = 'Login failed';
+        $scope.message = 'Please try again';
     };
 
     $scope.login = function () {
+        if ($scope.loginForm.$invalid) {
+            $scope.message = 'All fields are required';
+            return;
+        }
+
         $scope.message = null;
+
         AuthService.login({}, {
             'username': $scope.login.username,
             'password': $scope.login.password
