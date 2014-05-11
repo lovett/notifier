@@ -10,7 +10,7 @@ var Sequelize = require('sequelize');
 var bcrypt = require('bcrypt');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var subscriptions = {
+var subscribers = {
     browser: [],
     speech: []
 };
@@ -133,14 +133,13 @@ var publishMessage = function (message) {
 
     primaryGroup = message.values.group.split('.').pop();
 
-
-    if (subscriptions.browser.length > 0) {
+    if (subscribers.browser.length > 0) {
         channel = 'browser';
-    } else if (subscriptions.speech.length > 0) {
+    } else if (subscribers.speech.length > 0) {
         channel = 'speech';
     }
 
-    bayeuxClient.publish('/messages/browser/' + primaryGroup, JSON.stringify(message));
+    bayeuxClient.publish('/messages/' + channel + '/' + primaryGroup, JSON.stringify(message));
 };
 
 app.post('/auth', passport.authenticate('local', { session: false }), function (req, res) {
@@ -218,28 +217,33 @@ if (CONFIG.ssl.enabled !== 1) {
 bayeux.attach(server);
 
 bayeux.on('subscribe', function (clientId, channel) {
+    channel = channel.replace(/\/+/, '/');
+    channel = channel.replace(/^\//, '');
+
     var segments = channel.split('/');
+    var channelRoot = segments[0];
+    var subscriberType = segments[1];
 
-    if (segments[1] !== 'messages') {
+    if (channelRoot !== 'messages') {
         return;
     }
 
-    if (Object.keys(subscriptions).indexOf(segments[2]) === -1) {
+    if (Object.keys(subscribers).indexOf(subscriberType) === -1) {
         return;
     }
 
-    subscriptions[segments[2]].push(clientId);
+    subscribers[subscriberType].push(clientId);
 });
 
 bayeux.on('disconnect', function (clientId) {
     var keys, index;
 
-    keys = Object.keys(subscriptions);
+    keys = Object.keys(subscribers);
 
     keys.forEach(function (key) {
-        index = subscriptions[key].indexOf(clientId);
+        index = subscribers[key].indexOf(clientId);
         if (index > -1) {
-            subscriptions[key].splice(index, 1);
+            subscribers[key].splice(index, 1);
         }
     });
 });
