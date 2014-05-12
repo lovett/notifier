@@ -28,6 +28,7 @@ var User = sequelize.define('User', {
 var Token = sequelize.define('Token', {
     userId: { type: Sequelize.INTEGER, allowNull: false},
     value: { type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, allowNull: false},
+    label: { type: Sequelize.STRING, allowNull: true}
 });
 
 var Message = sequelize.define('Message', {
@@ -143,8 +144,11 @@ var publishMessage = function (message) {
 };
 
 app.post('/auth', passport.authenticate('local', { session: false }), function (req, res) {
+    var tokenLabel = req.body.label.replace(/[^a-zA-Z0-9-]/, '') || null;
+
     var token = Token.build({
-        userId: req.user.values.id
+        userId: req.user.values.id,
+        label: tokenLabel
     });
 
     token.save().success(function (token) {
