@@ -72,6 +72,15 @@ passport.use(new LocalStrategy(function (username, password, done) {
     });
 }));
 
+app.param('u', function(req, res, next, value) {
+    var pattern = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+    if (!pattern.test(value)) {
+        delete req.params.u;
+    }
+    next();
+});
+
+
 app.use(passport.initialize());
 
 // Websocket endpoint for browser clients
@@ -106,7 +115,7 @@ app.get('/logout', function (req, res) {
 var requireAuth = function (req, res, next) {
     var cookies = new Cookies(req, res);
 
-    var tokenValue = cookies.get('u');
+    var tokenValue = cookies.get('u') || req.params.u;
 
     if (!tokenValue) {
         res.send(401);
@@ -144,7 +153,11 @@ var publishMessage = function (message) {
 };
 
 app.post('/auth', passport.authenticate('local', { session: false }), function (req, res) {
-    var tokenLabel = req.body.label.replace(/[^a-zA-Z0-9-]/, '') || null;
+    var tokenLabel = req.body.label || '';
+    tokenLabel = tokenLabel.replace(/[^a-zA-Z0-9-\.]/, '');
+    if (tokenLabel === '') {
+        tokenLabel = null;
+    }
 
     var token = Token.build({
         userId: req.user.values.id,
@@ -194,7 +207,7 @@ app.post('/message', function (req, res) {
 });
 
 // Endpoint for archived messages
-app.get('/archive/:count', requireAuth, function (req, res) {
+app.get('/archive/:count/:u?', requireAuth, function (req, res) {
     Message.findAll({
         limit: req.params.count,
         order: 'received DESC'
