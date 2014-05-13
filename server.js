@@ -32,7 +32,8 @@ var Token = sequelize.define('Token', {
 });
 
 var Message = sequelize.define('Message', {
-    title: { type: Sequelize.STRING, allowNull: false},
+    publicId: { type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, allowNull: false},
+    title: { type: Sequelize.STRING, allowNull: false, defaultValue: 'untitled'},
     url: { type: Sequelize.STRING, allowNull: true},
     body: { type: Sequelize.STRING, allowNull: true},
     source: { type: Sequelize.STRING, allowNull: true},
@@ -82,7 +83,6 @@ app.param('u', function(req, res, next, value) {
 
 app.param('count', function (req, res, next, value) {
     req.params.count = parseInt(value, 10) || 0;
-    console.log('Count is ' + req.params.count);
     next();
 });
 
@@ -154,6 +154,8 @@ var publishMessage = function (message) {
         channel = 'speech';
     }
 
+    delete message.values.id;
+
     bayeuxClient.publish('/messages/' + channel + '/' + primaryGroup, JSON.stringify(message));
 };
 
@@ -182,11 +184,12 @@ app.post('/message', function (req, res) {
     var message;
 
     message = Message.build();
-    message.values.noarchive = parseInt(req.body.noarchive, 10);
+
+    message.values.noarchive = parseInt(req.body.noarchive, 10) || 0;
     message.values.received = new Date();
 
     message.attributes.forEach(function (key) {
-        if (key === 'id') {
+        if (key === 'id' || key === 'publicId') {
             return;
         }
 
@@ -205,6 +208,7 @@ app.post('/message', function (req, res) {
     if (message.values.noarchive === 1) {
         res.send(204);
     } else {
+        console.log(message.values);
         message.save().success(function () {
             res.send(204);
         });
@@ -227,8 +231,6 @@ app.get('/archive/:count/:u?', requireAuth, function (req, res) {
             };
         }
     }
-
-    console.log(filters);
 
     Message.findAll(filters).success(function (messages) {
         res.send(messages);
