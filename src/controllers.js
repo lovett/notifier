@@ -33,7 +33,6 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
 
     $scope.showAll = function () {
         Queue.sinceEver();
-        $window.location.reload();
     };
 
 

@@ -80,6 +80,11 @@ app.param('u', function(req, res, next, value) {
     next();
 });
 
+app.param('count', function (req, res, next, value) {
+    req.params.count = parseInt(value, 10) || 0;
+    console.log('Count is ' + req.params.count);
+    next();
+});
 
 app.use(passport.initialize());
 
@@ -208,10 +213,24 @@ app.post('/message', function (req, res) {
 
 // Endpoint for archived messages
 app.get('/archive/:count/:u?', requireAuth, function (req, res) {
-    Message.findAll({
+    var filters = {
         limit: req.params.count,
-        order: 'received DESC'
-    }).success(function (messages) {
+        order: 'received DESC',
+        where: {}
+    };
+
+    if (req.query.since) {
+        req.query.since = parseInt(req.query.since, 10) || 0;
+        if (req.query.since > 0) {
+            filters.where.received = {
+                gte: new Date(req.query.since)
+            };
+        }
+    }
+
+    console.log(filters);
+
+    Message.findAll(filters).success(function (messages) {
         res.send(messages);
     });
 });

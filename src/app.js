@@ -218,25 +218,30 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
         sinceNow: function () {
             this.asOf = +new Date();
             localStorage.asOf = this.asOf;
-            this.members = [];
+            this.read = this.unread;
+            this.unread = [];
         },
 
         sinceEver: function () {
             this.asOf = 0;
             localStorage.asOf = this.asOf;
+            this.unread = this.read;
+            this.read = [];
         },
 
-        members: [],
+        unread: [],
+
+        read: [],
 
         isEmpty: function () {
-            return this.members.length === 0;
+            return this.unread.length === 0;
         },
 
         populate: function () {
             var self = this;
             $http({
                 method: 'GET',
-                url: '/archive/10'
+                url: '/archive/10?since=' + self.asOf
             }).success(function(data) {
                 self.ready = true;
                 if (data instanceof Array) {
@@ -270,7 +275,7 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
                 message.badge = message.group.split('.').pop();
             }
 
-            this.members.unshift(message);
+            this.unread.unshift(message);
 
             if (message.group !== 'internal') {
                 BrowserNotification.send(message);
@@ -278,8 +283,14 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
         },
 
         remove: function (id) {
-            this.members = this.members.filter(function (element) {
-                return element.id !== id;
+            var self = this;
+            self.unread = self.unread.filter(function (element) {
+                if (element.id === id) {
+                    self.read.unshift(element);
+                    return false;
+                } else {
+                    return true;
+                }
             });
         }
     };
