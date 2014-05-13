@@ -254,10 +254,6 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
         },
 
         add: function (message) {
-            if (typeof message === 'string') {
-                message = JSON.parse(message);
-            }
-
             if (!message.received) {
                 message.received = +new Date();
             }
@@ -275,7 +271,10 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
             }
 
             this.members.unshift(message);
-            BrowserNotification.send(message);
+
+            if (message.group !== 'internal') {
+                BrowserNotification.send(message);
+            }
         },
 
         remove: function (id) {
