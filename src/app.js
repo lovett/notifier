@@ -145,6 +145,13 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($loca
         subscribe: function (channel, callback) {
             subscription = client.subscribe(channel, function (message) {
                 if (callback) {
+                    if (typeof message === 'string') {
+                        try {
+                            message = JSON.parse(message);
+                        } catch (e) {
+                            $log.error('Unable to parse message: ', e);
+                        }
+                    }
                     callback(message);
                 }
                 $rootScope.$apply();
