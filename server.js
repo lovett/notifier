@@ -178,7 +178,7 @@ app.post('/message', function (req, res) {
 
     message = Message.build();
     message.values.noarchive = parseInt(req.body.noarchive, 10);
-    message.values.received = +new Date();
+    message.values.received = new Date();
 
     message.attributes.forEach(function (key) {
         if (key === 'id') {
