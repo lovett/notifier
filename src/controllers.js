@@ -23,8 +23,8 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
 
     $scope.browserNotification = BrowserNotification;
 
-    $scope.clearOne = function (id) {
-        Queue.remove(id);
+    $scope.clearOne = function (publicId) {
+        Queue.remove(publicId);
     };
 
     $scope.clearAll = function () {

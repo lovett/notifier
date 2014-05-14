@@ -289,10 +289,10 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
             }
         },
 
-        remove: function (id) {
+        remove: function (publicId) {
             var self = this;
             self.unread = self.unread.filter(function (element) {
-                if (element.id === id) {
+                if (element.publicId === publicId) {
                     self.read.unshift(element);
                     return false;
                 } else {
