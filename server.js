@@ -15,6 +15,12 @@ var subscribers = {
     speech: []
 };
 
+if (CONFIG.livereload) {
+    app.use(require('connect-livereload')({
+        port: CONFIG.livereload
+    }));
+}
+
 var sequelize = new Sequelize('', '', '', {
     dialect: 'sqlite',
     storage: './dev.sqlite'

@@ -6,6 +6,8 @@
         }
     ],
 
+    "livereload": 35729,
+
     "ssl": {
         "enabled": 0,
         "key": "",

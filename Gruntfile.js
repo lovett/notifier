@@ -2,10 +2,11 @@ module.exports = function(grunt) {
 
     require("load-grunt-tasks")(grunt);
 
+    var CONFIG = grunt.file.readJSON("config/default.json");
+
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
 
-        CONFIG: grunt.file.readJSON("config/default.json"),
 
         clean: {
             preBuild: {
@@ -175,7 +176,7 @@ module.exports = function(grunt) {
 
         watch: {
             options: {
-                livereload: true,
+                livereload: CONFIG.livereload
             },
             src: {
                 files: ["src/**", "Gruntfile.js"],
