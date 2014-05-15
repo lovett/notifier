@@ -112,9 +112,9 @@ app.factory('HttpInterceptor', ['$q', '$location', function ($q, $location) {
     };
 }]);
 
-app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($location, $rootScope, $log, Queue) {
+app.factory('Faye', ['$location', '$rootScope', '$log', function ($location, $rootScope, $log) {
     'use strict';
-    var client, subscription, disconnected;
+    var client, subscription;
 
 
     client = new Faye.Client($location.absUrl() + 'faye', {
@@ -122,22 +122,12 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'Queue', function ($loca
     });
 
     client.on('transport:down', function () {
-        Queue.add({
-            group: 'internal',
-            title: 'Disconnected'
-        });
-        disconnected = true;
+        $rootScope.connectionStatus = 'Disconnected';
         $rootScope.$apply();
     });
 
     client.on('transport:up', function () {
-        if (disconnected) {
-            Queue.add({
-                group: 'internal',
-                title: 'Reconnected'
-            });
-            disconnected = false;
-        }
+        $rootScope.connectionStatus = 'Connected';
         $rootScope.$apply();
     });
 

@@ -1,6 +1,9 @@
 <header class="clearfix">
-    <div class="left" ng-if="queue.ready && queue.isEmpty()">
-        No messages <span ng-if="queue.asOf">since {{ queue.asOf |  amCalendar }}</span>
+    <div class="left" >
+        <span id="connection-status">{{ connectionStatus }}</span>
+        <span ng-if="queue.ready && queue.isEmpty()">
+            No messages <span ng-if="queue.asOf">since {{ queue.asOf |  amCalendar }}</span>.
+        </span>
     </div>
 
     <div class="right">
