@@ -233,7 +233,7 @@ app.get('/archive/:count/:u?', requireAuth, function (req, res) {
         req.query.since = parseInt(req.query.since, 10) || 0;
         if (req.query.since > 0) {
             filters.where.received = {
-                gte: new Date(req.query.since)
+                gt: new Date(req.query.since)
             };
         }
     }

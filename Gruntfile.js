@@ -129,7 +129,7 @@ module.exports = function(grunt) {
 
             "db-populate": {
                 command: [
-                    "curl -s -d 'title=Unarchived Example' -d 'noarchive=1' -d 'body=Testing testing' -d 'url=http://example.com' http://localhost:8080/message",
+                    "curl -s -d 'title=Archived Example' -d 'noarchive=0' -d 'body=Testing testing' -d 'url=http://example.com' http://localhost:8080/message",
                 ].join(" && ")
             }
         },

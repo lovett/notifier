@@ -142,6 +142,7 @@ app.factory('Faye', ['$location', '$rootScope', '$log', function ($location, $ro
                             $log.error('Unable to parse message: ', e);
                         }
                     }
+
                     callback(message);
                 }
                 $rootScope.$apply();
@@ -210,20 +211,20 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
     return {
         ready: false,
 
-        asOf: parseInt(localStorage.asOf, 10),
-
-        sinceNow: function () {
-            this.asOf = +new Date();
-            localStorage.asOf = this.asOf;
-            this.read = this.unread;
-            this.unread = [];
+        getAsOfDate: function () {
+            return new Date(localStorage.asOf || new Date());
         },
 
-        sinceEver: function () {
-            this.asOf = 0;
-            localStorage.asOf = this.asOf;
-            this.unread = this.read;
-            this.read = [];
+        setAsOfDate: function (date) {
+            date = new Date(date || new Date());
+
+            localStorage.asOf = date;
+        },
+
+        sinceNow: function () {
+            this.setAsOfDate();
+            this.read = this.unread;
+            this.unread = [];
         },
 
         unread: [],
@@ -238,7 +239,7 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
             var self = this;
             $http({
                 method: 'GET',
-                url: '/archive/10?since=' + self.asOf
+                url: '/archive/10?since=' + (+self.getAsOfDate())
             }).success(function(data) {
                 self.ready = true;
                 if (data instanceof Array) {
@@ -256,15 +257,9 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
         },
 
         add: function (message) {
-            if (!message.received) {
-                message.received = +new Date();
-            }
+            message.received = new Date(message.received || new Date());
 
-            if (this.asOf > message.received) {
-                return null;
-            }
-
-            if (message.hasOwnProperty('body')) {
+            if (message.body) {
                 message.body = message.body.replace(/\n/g, '<br/>');
             }
 
@@ -273,6 +268,10 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
             }
 
             this.unread.unshift(message);
+
+            if (message.received > this.getAsOfDate()) {
+                this.setAsOfDate(message.received);
+            }
 
             if (message.group !== 'internal') {
                 BrowserNotification.send(message);

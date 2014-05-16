@@ -31,11 +31,6 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
         Queue.sinceNow();
     };
 
-    $scope.showAll = function () {
-        Queue.sinceEver();
-    };
-
-
 }]);
 
 appControllers.controller('LoginController', ['$scope', '$rootScope', '$route', '$location', 'Queue', 'AuthService', 'User', function ($scope, $rootScope, $route, $location, Queue, AuthService, User) {

@@ -1,16 +1,11 @@
 <header class="clearfix">
     <div class="left" >
-        <span id="connection-status">{{ connectionStatus }}</span>
-        <span ng-if="queue.ready && queue.isEmpty()">
-            No messages <span ng-if="queue.asOf">since {{ queue.asOf |  amCalendar }}</span>.
-        </span>
+        {{ connectionStatus }}<span ng-if="queue.isEmpty()">. No messages since {{ queue.getAsOfDate() |  amCalendar }}.</span>
     </div>
 
     <div class="right">
         <a ng-click="browserNotification.enable()" ng-href="" class="button" ng-show="browserNotification.supported && browserNotification.enabled == false">Enable Notifications</a>
         <a ng-click="clearAll()" ng-if="!queue.isEmpty()" ng-href="" class="button">Clear All</a>
-
-        <a ng-click="showAll()" ng-if="queue.isEmpty() && queue.read.length > 0" ng-href="">Show All</a>
 
         <a ng-if="isLoggedIn" ng-href="/logout">Log out</a>
 
