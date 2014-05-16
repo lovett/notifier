@@ -3,54 +3,54 @@
 <ng-include src="'header.html'"></ng-include>
 
 <main class="message-wrapper">
-    <article class="message rounded" ng-repeat="item in queue.unread">
-        <a ng-href="" ng-click="clearOne(item.publicId)" class="right">
+    <article class="message rounded" ng-repeat="message in queue.messages">
+        <a ng-href="" ng-click="clearOne(message.publicId)" class="right">
             <svg viewBox="0 0 32 32" class="icon">
                 <use xlink:href="#icon-close"></use>
             </svg>
         </a>
 
-        <div class="badge {{ item.badge }}" ng-show="item.badge !== 'default'">
+        <div class="badge {{ message.badge }}" ng-show="message.badge !== 'default'">
 
-            <svg viewBox="0 0 32 32" class="icon" ng-show="item.badge == 'internal'">
+            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'internal'">
                 <use xlink:href="#icon-megaphone"></use>
             </svg>
 
-            <svg viewBox="0 0 87.041 108.445" class="icon" ng-show="item.badge == 'debian'">
+            <svg viewBox="0 0 87.041 108.445" class="icon" ng-show="message.badge == 'debian'">
                 <use xlink:href="#icon-debian"></use>
             </svg>
 
-            <svg viewBox="0 0 32 32" class="icon" ng-show="item.badge == 'web'">
+            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'web'">
                 <use xlink:href="#icon-earth"></use>
             </svg>
-            <svg viewBox="0 0 32 32" class="icon" ng-show="item.badge == 'email'">
+            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'email'">
                 <use xlink:href="#icon-envelope"></use>
             </svg>
-            <svg viewBox="0 0 32 32" class="icon" ng-show="item.badge == 'reminder'">
+            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'reminder'">
                 <use xlink:href="#icon-pushpin"></use>
             </svg>
-            <svg viewBox="0 0 32 32" class="icon" ng-show="item.badge == 'phone'">
+            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'phone'">
                 <use xlink:href="#icon-phone"></use>
             </svg>
-            <svg viewBox="0 0 32 32" class="icon" ng-show="item.badge == 'git'">
+            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'git'">
                 <use xlink:href="#icon-github"></use>
             </svg>
-            <svg viewBox="0 0 32 32" class="icon" ng-show="item.badge == 'sysdown'">
+            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'sysdown'">
                 <use xlink:href="#icon-fire"></use>
             </svg>
-            <svg viewBox="0 0 32 32" class="icon" ng-show="item.badge == 'sysup'">
+            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'sysup'">
                 <use xlink:href="#icon-cool"></use>
             </svg>
 
         </div>
 
-        <div class="noarchive" ng-show="item.noarchive">Not archived</div>
+        <div class="noarchive" ng-show="message.noarchive">Not archived</div>
 
-        <h1 ng-show="item.title">
-            <a ng-if="item.url" ng-href="{{ item.url }}" target="_blank">{{ item.title }}</a>
-            <span ng-if="!item.url">{{ item.title }}</span>
+        <h1 ng-show="message.title">
+            <a ng-if="message.url" ng-href="{{ message.url }}" target="_blank">{{ message.title }}</a>
+            <span ng-if="!message.url">{{ message.title }}</span>
         </h1>
-        <time datetime="{{ item.received | date:'yyyy-MM-ddTHH:mmZ' }}" am-time-ago="item.received"></time>
-        <p ng-show="item.body" ng-bind-html="item.body"></p>
+        <time datetime="{{ message.received | date:'yyyy-MM-ddTHH:mmZ' }}" am-time-ago="message.received"></time>
+        <p ng-show="message.body" ng-bind-html="message.body"></p>
     </article>
 </main>

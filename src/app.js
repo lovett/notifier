@@ -223,16 +223,13 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
 
         sinceNow: function () {
             this.setAsOfDate();
-            this.read = this.unread;
-            this.unread = [];
+            this.messages = {};
         },
 
-        unread: [],
-
-        read: [],
+        messages: {},
 
         isEmpty: function () {
-            return this.unread.length === 0;
+            return Object.keys(this.messages).length === 0;
         },
 
         populate: function () {
@@ -267,7 +264,7 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
                 message.badge = message.group.split('.').pop();
             }
 
-            this.unread.unshift(message);
+            this.messages[message.publicId] = message;
 
             if (message.received > this.getAsOfDate()) {
                 this.setAsOfDate(message.received);
@@ -279,15 +276,7 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
         },
 
         remove: function (publicId) {
-            var self = this;
-            self.unread = self.unread.filter(function (element) {
-                if (element.publicId === publicId) {
-                    self.read.unshift(element);
-                    return false;
-                } else {
-                    return true;
-                }
-            });
+            delete this.messages[publicId];
         }
     };
 }]);
