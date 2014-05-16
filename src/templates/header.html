@@ -1,6 +1,6 @@
 <header class="clearfix">
     <div class="left" >
-        {{ connectionStatus }}<span ng-if="queue.isEmpty()">. No messages since {{ queue.getAsOfDate() |  amCalendar }}.</span>
+        <span class="state">{{ connectionStatus }}</span><span ng-show="queue.isEmpty()">. No messages since {{ queue.getAsOfDate() |  amCalendar }}.</span>
     </div>
 
     <div class="right">

@@ -18,8 +18,13 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
         Queue.add(message);
     });
 
-    Queue.populate();
 
+    $scope.$on('connection:changed', function (e, state) {
+        $rootScope.connectionStatus = state;
+        if (state === 'connected') {
+            Queue.populate();
+        }
+    });
 
     $scope.browserNotification = BrowserNotification;
 

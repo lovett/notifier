@@ -122,12 +122,12 @@ app.factory('Faye', ['$location', '$rootScope', '$log', function ($location, $ro
     });
 
     client.on('transport:down', function () {
-        $rootScope.connectionStatus = 'Disconnected';
+        $rootScope.$broadcast('connection:changed', 'disconnected');
         $rootScope.$apply();
     });
 
     client.on('transport:up', function () {
-        $rootScope.connectionStatus = 'Connected';
+        $rootScope.$broadcast('connection:changed', 'connected');
         $rootScope.$apply();
     });
 
