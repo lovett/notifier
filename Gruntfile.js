@@ -161,19 +161,6 @@ module.exports = function(grunt) {
               }
         },
 
-        svgstore: {
-            options: {
-                prefix : "icon-",
-                svg: {
-                }
-            },
-            default: {
-                files: {
-                    "public/sprites.svg": ["src/svg/*.svg"]
-                }
-            },
-        },
-
         watch: {
             options: {
                 livereload: CONFIG.livereload
@@ -216,7 +203,7 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "svgstore", "clean:postBuild", "shell:favicons-dev", "ver"]);
+    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-dev", "ver"]);
     grunt.registerTask("default", ["githooks", "build", "watch"]);
 
 

@@ -4,45 +4,9 @@
 
 <main class="message-wrapper">
     <article class="message rounded" ng-repeat="message in queue.messages">
-        <a ng-href="" ng-click="clearOne(message.publicId)" class="right">
-            <svg viewBox="0 0 32 32" class="icon">
-                <use xlink:href="#icon-close"></use>
-            </svg>
-        </a>
+        <a ng-href="" ng-click="clearOne(message.publicId)" class="close right hide-text">Close</a>
 
-        <div class="badge {{ message.badge }}" ng-show="message.badge !== 'default'">
-
-            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'internal'">
-                <use xlink:href="#icon-megaphone"></use>
-            </svg>
-
-            <svg viewBox="0 0 87.041 108.445" class="icon" ng-show="message.badge == 'debian'">
-                <use xlink:href="#icon-debian"></use>
-            </svg>
-
-            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'web'">
-                <use xlink:href="#icon-earth"></use>
-            </svg>
-            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'email'">
-                <use xlink:href="#icon-envelope"></use>
-            </svg>
-            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'reminder'">
-                <use xlink:href="#icon-pushpin"></use>
-            </svg>
-            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'phone'">
-                <use xlink:href="#icon-phone"></use>
-            </svg>
-            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'git'">
-                <use xlink:href="#icon-github"></use>
-            </svg>
-            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'sysdown'">
-                <use xlink:href="#icon-fire"></use>
-            </svg>
-            <svg viewBox="0 0 32 32" class="icon" ng-show="message.badge == 'sysup'">
-                <use xlink:href="#icon-cool"></use>
-            </svg>
-
-        </div>
+        <div class="badge {{ message.badge }}" ng-show="message.badge !== 'default'"></div>
 
         <div class="noarchive" ng-show="message.noarchive">Not archived</div>
 
