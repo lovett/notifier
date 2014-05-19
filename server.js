@@ -39,6 +39,7 @@ var Token = sequelize.define('Token', {
 
 var Message = sequelize.define('Message', {
     publicId: { type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, allowNull: false},
+    userId: { type: Sequelize.INTEGER, allowNull: false},
     title: { type: Sequelize.STRING, allowNull: false, defaultValue: 'untitled'},
     url: { type: Sequelize.STRING, allowNull: true},
     body: { type: Sequelize.STRING, allowNull: true},
@@ -126,7 +127,7 @@ app.get('/logout', function (req, res) {
 var requireAuth = function (req, res, next) {
     var cookies = new Cookies(req, res);
 
-    var tokenValue = cookies.get('u') || req.params.u;
+    var tokenValue = cookies.get('u') || req.body.u || req.params.u;
 
     if (!tokenValue) {
         res.send(401);
@@ -186,16 +187,17 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
 app.use(express.static(__dirname + '/public'));
 
 // Endpoint for receiving messages
-app.post('/message', function (req, res) {
+app.post('/message', requireAuth, function (req, res) {
     var message;
 
-    message = Message.build();
-
-    message.values.noarchive = parseInt(req.body.noarchive, 10) || 0;
-    message.values.received = new Date();
+    message = Message.build({
+        noarchive: parseInt(req.body.noarchive, 10) || 0,
+        received: new Date(),
+        userId: req.userId
+    });
 
     message.attributes.forEach(function (key) {
-        if (key === 'id' || key === 'publicId') {
+        if (key === 'id' || key === 'publicId' || key === 'userId') {
             return;
         }
 
