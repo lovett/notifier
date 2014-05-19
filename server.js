@@ -191,7 +191,6 @@ app.post('/message', requireAuth, function (req, res) {
     var message;
 
     message = Message.build({
-        noarchive: parseInt(req.body.noarchive, 10) || 0,
         received: new Date(),
         userId: req.userId
     });
@@ -206,21 +205,11 @@ app.post('/message', requireAuth, function (req, res) {
         }
     });
 
-    if (message.values === undefined) {
-        res.send(404, 'Message is empty');
-        return;
-    }
-
     publishMessage(message);
 
-    if (message.values.noarchive === 1) {
+    message.save().success(function () {
         res.send(204);
-    } else {
-        console.log(message.values);
-        message.save().success(function () {
-            res.send(204);
-        });
-    }
+    });
 });
 
 // Endpoint for archived messages

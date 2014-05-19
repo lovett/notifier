@@ -8,8 +8,6 @@
 
         <div class="badge {{ message.badge }}" ng-show="message.badge !== 'default'"></div>
 
-        <div class="noarchive" ng-show="message.noarchive">Not archived</div>
-
         <h1 ng-show="message.title">
             <a ng-if="message.url" ng-href="{{ message.url }}" target="_blank">{{ message.title }}</a>
             <span ng-if="!message.url">{{ message.title }}</span>
