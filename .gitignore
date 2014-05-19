@@ -10,3 +10,4 @@ config/*.json
 .nodemonignore
 *.scpt
 *.sqlite
+*.log

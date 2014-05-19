@@ -7,6 +7,7 @@
     ],
 
     "livereload": 35729,
+    "log": "notifier.log",
 
     "ssl": {
         "enabled": 0,

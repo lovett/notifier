@@ -1,4 +1,5 @@
 var CONFIG = require('config');
+var bunyan = require('bunyan');
 var https = require('https');
 var fs = require('fs');
 var faye = require('faye');
@@ -21,9 +22,29 @@ if (CONFIG.livereload) {
     }));
 }
 
+var log = bunyan.createLogger({
+    name: 'notifier',
+    streams: [
+        {
+            path: CONFIG.log,
+            level: 'trace'
+        }
+    ],
+    serializers: {
+        req: bunyan.stdSerializers.req,
+        res: bunyan.stdSerializers.res
+    }
+});
+
+
 var sequelize = new Sequelize('', '', '', {
     dialect: 'sqlite',
-    storage: './dev.sqlite'
+    storage: './dev.sqlite',
+    logging: function (msg) {
+        log.info({
+            sequelize: msg
+        }, 'query');
+    }
 });
 
 var User = sequelize.define('User', {
@@ -111,17 +132,23 @@ app.use(bodyParser());
 
 app.use(Cookies.express());
 
-app.use(function(req, res, next){
-    console.log('%s %s', req.method, req.url);
+app.use(function(req, res, next) {
+    req._requestId = +new Date();
+    log.info({
+        requestId: req._requestId,
+        req: req
+    }, 'start');
     next();
 });
 
-app.get('/login', function (req, res) {
+app.get('/login', function (req, res, next) {
     res.sendfile(__dirname + '/public/index.html');
+    next();
 });
 
-app.get('/logout', function (req, res) {
+app.get('/logout', function (req, res, next) {
     res.sendfile(__dirname + '/public/index.html');
+    next();
 });
 
 var requireAuth = function (req, res, next) {
@@ -166,7 +193,7 @@ var publishMessage = function (message) {
     bayeuxClient.publish('/messages/' + channel + '/' + primaryGroup, JSON.stringify(message));
 };
 
-app.post('/auth', passport.authenticate('local', { session: false }), function (req, res) {
+app.post('/auth', passport.authenticate('local', { session: false }), function (req, res, next) {
     var tokenLabel = req.body.label || '';
     tokenLabel = tokenLabel.replace(/[^a-zA-Z0-9-\.]/, '');
     if (tokenLabel === '') {
@@ -180,6 +207,7 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
 
     token.save().success(function (token) {
         res.json({token: token.value});
+        next();
     });
 });
 
@@ -187,7 +215,7 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
 app.use(express.static(__dirname + '/public'));
 
 // Endpoint for receiving messages
-app.post('/message', requireAuth, function (req, res) {
+app.post('/message', requireAuth, function (req, res, next) {
     var message;
 
     message = Message.build({
@@ -208,12 +236,13 @@ app.post('/message', requireAuth, function (req, res) {
     publishMessage(message);
 
     message.save().success(function () {
-        res.send(204);
+        res.status(204);
+        next();
     });
 });
 
 // Endpoint for archived messages
-app.get('/archive/:count/:u?', requireAuth, function (req, res) {
+app.get('/archive/:count/:u?', requireAuth, function (req, res, next) {
     var filters = {
         limit: req.params.count,
         order: 'received DESC',
@@ -231,7 +260,16 @@ app.get('/archive/:count/:u?', requireAuth, function (req, res) {
 
     Message.findAll(filters).success(function (messages) {
         res.send(messages);
+        next();
     });
+});
+
+app.use(function(req, res, next) {
+    log.info({
+        requestId: req._requestId,
+        res: res
+    }, 'end');
+    next();
 });
 
 
@@ -245,7 +283,6 @@ if (CONFIG.ssl.enabled !== 1) {
         cert: fs.readFileSync(CONFIG.ssl.cert)
     }, app).listen(CONFIG.http.port);
 }
-
 
 // Attach to the express server returned by listen, rather than app itself.
 // See https://github.com/faye/faye/issues/256
@@ -283,4 +320,4 @@ bayeux.on('disconnect', function (clientId) {
     });
 });
 
-console.log('Listening on port ' + CONFIG.http.port);
+log.info({port: CONFIG.http.port}, 'appstart');
