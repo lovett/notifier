@@ -36,7 +36,6 @@ var log = bunyan.createLogger({
     }
 });
 
-
 var sequelize = new Sequelize('', '', '', {
     dialect: 'sqlite',
     storage: './dev.sqlite',
@@ -48,25 +47,25 @@ var sequelize = new Sequelize('', '', '', {
 });
 
 var User = sequelize.define('User', {
-    username: { type: Sequelize.STRING, unique: true, allowNull: false},
-    passwordHash: { type: Sequelize.STRING, allowNull: true}
+    username: { type: Sequelize.STRING(20), unique: true, allowNull: false},
+    passwordHash: { type: Sequelize.STRING(60), allowNull: true}
 });
 
 var Token = sequelize.define('Token', {
     userId: { type: Sequelize.INTEGER, allowNull: false},
     value: { type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, allowNull: false},
-    label: { type: Sequelize.STRING, allowNull: true}
+    label: { type: Sequelize.STRING(20), allowNull: true}
 });
 
 var Message = sequelize.define('Message', {
     publicId: { type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, allowNull: false},
     userId: { type: Sequelize.INTEGER, allowNull: false},
-    title: { type: Sequelize.STRING, allowNull: false, defaultValue: 'untitled'},
-    url: { type: Sequelize.STRING, allowNull: true},
-    body: { type: Sequelize.STRING, allowNull: true},
-    source: { type: Sequelize.STRING, allowNull: true},
-    group: { type: Sequelize.STRING, allowNull: true, defaultValue: 'default'},
-    event: { type: Sequelize.STRING, allowNull: true},
+    title: { type: Sequelize.STRING(50), allowNull: false, defaultValue: 'untitled'},
+    url: { type: Sequelize.STRING(255), allowNull: true},
+    body: { type: Sequelize.STRING(500), allowNull: true},
+    source: { type: Sequelize.STRING(20), allowNull: true},
+    group: { type: Sequelize.STRING(20), allowNull: true, defaultValue: 'default'},
+    event: { type: Sequelize.STRING(20), allowNull: true},
 }, { timestamps: true, updatedAt: false, createdAt: 'received' });
 
 sequelize.sync();
@@ -114,8 +113,6 @@ app.param('count', function (req, res, next, value) {
     next();
 });
 
-app.use(passport.initialize());
-
 // Websocket endpoint for browser clients
 var bayeux = new faye.NodeAdapter({
     mount: '/faye',
@@ -126,12 +123,6 @@ var bayeuxClient = bayeux.getClient();
 
 //app.use(express.compress());
 
-// Express should only accept regular, urlencoded requests.
-// No json, no file uploads.
-app.use(bodyParser());
-
-app.use(Cookies.express());
-
 app.use(function(req, res, next) {
     req._requestId = +new Date();
     log.info({
@@ -140,6 +131,14 @@ app.use(function(req, res, next) {
     }, 'start');
     next();
 });
+
+app.use(bodyParser({
+    limit: '5kb'
+}));
+
+app.use(Cookies.express());
+
+app.use(passport.initialize());
 
 app.get('/login', function (req, res, next) {
     res.sendfile(__dirname + '/public/index.html');
@@ -236,7 +235,7 @@ app.post('/message', requireAuth, function (req, res, next) {
     publishMessage(message);
 
     message.save().success(function () {
-        res.status(204);
+        res.send(204);
         next();
     });
 });
@@ -264,6 +263,11 @@ app.get('/archive/:count/:u?', requireAuth, function (req, res, next) {
     });
 });
 
+app.use(function(err, req, res, next){
+    res.send(err.status);
+    next();
+});
+
 app.use(function(req, res, next) {
     log.info({
         requestId: req._requestId,
@@ -271,7 +275,6 @@ app.use(function(req, res, next) {
     }, 'end');
     next();
 });
-
 
 if (CONFIG.ssl.enabled !== 1) {
     // non-SSL
