@@ -198,6 +198,9 @@ passport.use(new LocalStrategy(function (username, password, done) {
     });
 }));
 
+
+app.disable('x-powered-by');
+
 app.param('u', function(req, res, next, value) {
     var pattern = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
     if (!pattern.test(value)) {
