@@ -47,25 +47,123 @@ var sequelize = new Sequelize('', '', '', {
 });
 
 var User = sequelize.define('User', {
-    username: { type: Sequelize.STRING(20), unique: true, allowNull: false},
-    passwordHash: { type: Sequelize.STRING(60), allowNull: true}
+    username: {
+        type: Sequelize.STRING(20),
+        unique: true,
+        allowNull: false,
+        validate: {
+            len: {
+                args: [1, 20],
+                msg: 'Should be between 1 and 20 characters'
+            }
+        }
+    },
+    passwordHash: {
+        type: Sequelize.STRING(60),
+        allowNull: true,
+        validate: {
+            len: {
+                args: [1, 60],
+                msg: 'Should be between 1 and 60 characters'
+            }
+        }
+    }
 });
 
 var Token = sequelize.define('Token', {
-    userId: { type: Sequelize.INTEGER, allowNull: false},
-    value: { type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, allowNull: false},
-    label: { type: Sequelize.STRING(20), allowNull: true}
+    userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+    },
+    value: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false
+    },
+    label: {
+        type: Sequelize.STRING(20),
+        allowNull: true,
+        validate: {
+            len: {
+                args: [1, 20],
+                msg: 'Should be between 1 and 20 characters'
+            }
+        }
+    }
 });
 
 var Message = sequelize.define('Message', {
-    publicId: { type: Sequelize.UUID, defaultValue: Sequelize.UUIDV4, allowNull: false},
-    userId: { type: Sequelize.INTEGER, allowNull: false},
-    title: { type: Sequelize.STRING(50), allowNull: false, defaultValue: 'untitled'},
-    url: { type: Sequelize.STRING(255), allowNull: true},
-    body: { type: Sequelize.STRING(500), allowNull: true},
-    source: { type: Sequelize.STRING(20), allowNull: true},
-    group: { type: Sequelize.STRING(20), allowNull: true, defaultValue: 'default'},
-    event: { type: Sequelize.STRING(20), allowNull: true},
+    publicId: {
+        type: Sequelize.UUID,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false
+    },
+    userId: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+    },
+    title: {
+        type: Sequelize.STRING(50),
+        allowNull: false,
+        defaultValue: 'untitled',
+        validate: {
+            len: {
+                args: [1, 50],
+                msg: 'Should be between 1 and 50 characters'
+            }
+        }
+    },
+    url: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+        validate: {
+            len: {
+                args: [1, 255],
+                msg: 'Should be between 1 and 255 characters'
+            }
+        }
+    },
+    body: {
+        type: Sequelize.STRING(500),
+        allowNull: true,
+        validate: {
+            len: {
+                args: [1,500],
+                msg: 'Should be between 1 and 500 characters'
+            }
+        }
+    },
+    source: {
+        type: Sequelize.STRING(20),
+        allowNull: true,
+        validate: {
+            len: {
+                args: [1,20],
+                msg: 'Should be between 1 and 20 characters'
+            }
+        }
+    },
+    group: {
+        type: Sequelize.STRING(20),
+        allowNull: true,
+        defaultValue: 'default',
+        validate: {
+            len: {
+                args: [1,20],
+                msg: 'Should be between 1 and 20 characters'
+            }
+        }
+    },
+    event: {
+        type: Sequelize.STRING(20),
+        allowNull: true,
+        validate: {
+            len: {
+                args: [1,20],
+                msg: 'Should be between 1 and 20 characters'
+            }
+        }
+    },
 }, { timestamps: true, updatedAt: false, createdAt: 'received' });
 
 sequelize.sync();
@@ -207,6 +305,9 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
     token.save().success(function (token) {
         res.json({token: token.value});
         next();
+    }).error(function (error) {
+        res.json(400, error);
+        next();
     });
 });
 
@@ -232,10 +333,12 @@ app.post('/message', requireAuth, function (req, res, next) {
         }
     });
 
-    publishMessage(message);
-
     message.save().success(function () {
+        publishMessage(message);
         res.send(204);
+        next();
+    }).error(function (error) {
+        res.json(400, error);
         next();
     });
 });
@@ -268,12 +371,11 @@ app.use(function(err, req, res, next){
     next();
 });
 
-app.use(function(req, res, next) {
+app.use(function(req, res) {
     log.info({
         requestId: req._requestId,
         res: res
     }, 'end');
-    next();
 });
 
 if (CONFIG.ssl.enabled !== 1) {
