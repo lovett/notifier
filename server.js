@@ -6,6 +6,7 @@ var faye = require('faye');
 var express = require('express');
 var bodyParser = require('body-parser');
 var Cookies = require('cookies');
+var responseTime = require('response-time');
 var app = express();
 var Sequelize = require('sequelize');
 var bcrypt = require('bcrypt');
@@ -15,6 +16,8 @@ var subscribers = {
     browser: [],
     speech: []
 };
+
+app.use(responseTime());
 
 if (CONFIG.livereload) {
     app.use(require('connect-livereload')({
