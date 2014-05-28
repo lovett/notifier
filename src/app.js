@@ -15,9 +15,9 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($h
 
     moment.lang('en', {
         calendar : {
-            lastDay : '[Yesterday at] LT',
+            lastDay : '[yesterday at] LT',
             sameDay : 'LT',
-            nextDay : '[Tomorrow at] LT',
+            nextDay : '[yomorrow at] LT',
             lastWeek : '[last] dddd [at] LT',
             nextWeek : 'dddd [at] LT',
             sameElse : 'L'
