@@ -1,3 +1,5 @@
+var tokenFile = ".token";
+
 module.exports = function(grunt) {
 
     require("load-grunt-tasks")(grunt);
@@ -7,6 +9,14 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
 
+        token: (function () {
+            try {
+                return grunt.file.readJSON(tokenFile);
+            } catch (e) {
+            }
+        }()),
+
+        CONFIG: CONFIG,
 
         clean: {
             preBuild: {
@@ -69,6 +79,34 @@ module.exports = function(grunt) {
             }
         },
 
+        http: {
+            authtoken: {
+                options: {
+                    url: "http://localhost:<%= CONFIG.http.port %>/auth",
+                    method: "POST",
+                    form: {
+                        username: CONFIG.defaultUsers[0].username,
+                        password: CONFIG.defaultUsers[0].password,
+                        label: "grunt",
+                    },
+                    callback: function (error, response, body) {
+                        grunt.file.write(tokenFile, body);
+                    }
+                }
+            },
+            onemessage: {
+                options: {
+                    url: "http://localhost:<%= CONFIG.http.port %>/message",
+                    method: "POST",
+                    form: {
+                        title: "Test message",
+                        body: "Testing testing. This message was sent via Grunt on " + new Date(),
+                        u: "<%= token.token %>"
+                    }
+                }
+            }
+        },
+
         jshint: {
             node: {
                 options: {
@@ -124,12 +162,6 @@ module.exports = function(grunt) {
                     "convert src/favicon/favicon.svg -geometry 32x32 -transparent white public/favicon/favicon-32.png",
                     "convert src/favicon/favicon.svg -geometry 48x48 -transparent white public/favicon/favicon-48.png",
                     "convert public/favicon/favicon-16.png public/favicon/favicon-32.png public/favicon/favicon-48.png public/favicon/favicon.ico"
-                ].join(" && ")
-            },
-
-            "db-populate": {
-                command: [
-                    "curl -s -d 'title=Archived Example' -d 'noarchive=0' -d 'body=Testing testing' -d 'url=http://example.com' http://localhost:8080/message",
                 ].join(" && ")
             }
         },

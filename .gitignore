@@ -11,3 +11,4 @@ config/*.json
 *.scpt
 *.sqlite
 *.log
+.token
