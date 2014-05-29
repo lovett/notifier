@@ -223,6 +223,42 @@ var bayeux = new faye.NodeAdapter({
     timeout: 30
 });
 
+bayeux.addExtension({
+    incoming: function(message, callback) {
+        if (message.channel !== '/meta/subscribe') {
+            return callback(message);
+        }
+
+        log.info({message: message}, 'subscription request');
+
+        var setError = function() {
+            message.error = '403::Unauthorized';
+        };
+
+        if (!message.token) {
+            setError();
+            return callback(message);
+        }
+
+        Token.find({
+            where: {
+                value: message.token
+            }
+        }).success(function (token) {
+            if (!token) {
+                setError();
+                return;
+            }
+        }).error(function () {
+            setError();
+            return;
+        });
+
+        callback(message);
+    }
+});
+
+
 var bayeuxClient = bayeux.getClient();
 
 //app.use(express.compress());

@@ -74,7 +74,21 @@ app.factory('User', ['$document', function ($document) {
     'use strict';
     var key = 'u';
 
+    var getToken = function () {
+        var fields, i, segments;
+        fields = $document[0].cookie.split(';');
+        for (i=0; i < fields.length; i = i + 1) {
+            segments = fields[i].split('=');
+            if (segments[0] === 'u') {
+                return segments[1];
+            }
+        }
+        return false;
+    };
+
     return {
+        getToken: getToken,
+
         setToken: function (value) {
             var date = new Date();
             date.setTime(date.getTime()+(365*24*60*60*1000));
@@ -88,15 +102,7 @@ app.factory('User', ['$document', function ($document) {
         },
 
         isLoggedIn: function () {
-            var fields, i, segments;
-            fields = $document[0].cookie.split(';');
-            for (i=0; i < fields.length; i = i + 1) {
-                segments = fields[i].split('=');
-                if (segments[0] === 'u') {
-                    return true;
-                }
-            }
-            return false;
+            return (getToken() !== false);
         }
     };
 }]);
@@ -112,13 +118,24 @@ app.factory('HttpInterceptor', ['$q', '$location', function ($q, $location) {
     };
 }]);
 
-app.factory('Faye', ['$location', '$rootScope', '$log', function ($location, $rootScope, $log) {
+app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($location, $rootScope, $log, User) {
     'use strict';
     var client, subscription;
 
 
     client = new Faye.Client($location.absUrl() + 'faye', {
         retry: 10
+    });
+
+    client.addExtension({
+        outgoing: function(message, callback) {
+            if (message.channel !== '/meta/subscribe') {
+                return callback(message);
+            }
+
+            message.token = User.getToken();
+            callback(message);
+        }
     });
 
     client.on('transport:down', function () {
@@ -149,8 +166,9 @@ app.factory('Faye', ['$location', '$rootScope', '$log', function ($location, $ro
             });
 
             subscription.then(function () {
-                $log.info('Subscribed to ' + channel);
                 $rootScope.$apply();
+            }, function (err) {
+                $log.warn(err.message);
             });
         },
 
