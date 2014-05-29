@@ -17,14 +17,11 @@ var subscribers = {
     speech: []
 };
 
-app.use(responseTime());
 
-if (CONFIG.livereload) {
-    app.use(require('connect-livereload')({
-        port: CONFIG.livereload
-    }));
-}
-
+/**
+ * Logging configuration
+ * --------------------------------------------------------------------
+ */
 var log = bunyan.createLogger({
     name: 'notifier',
     streams: [
@@ -39,6 +36,11 @@ var log = bunyan.createLogger({
     }
 });
 
+
+/**
+ * ORM configuration
+ * --------------------------------------------------------------------
+ */
 var sequelize = new Sequelize('', '', '', {
     dialect: 'sqlite',
     storage: './dev.sqlite',
@@ -49,6 +51,11 @@ var sequelize = new Sequelize('', '', '', {
     }
 });
 
+
+/**
+ * ORM models
+ * --------------------------------------------------------------------
+ */
 var User = sequelize.define('User', {
     username: {
         type: Sequelize.STRING(20),
@@ -171,6 +178,7 @@ var Message = sequelize.define('Message', {
 
 sequelize.sync();
 
+// Populate default users from config
 CONFIG.defaultUsers.forEach(function (element) {
     User.findOrCreate({ username: element.username}).success(function (user, created) {
         if (created === true) {
@@ -181,6 +189,11 @@ CONFIG.defaultUsers.forEach(function (element) {
     });
 });
 
+
+/**
+ * Authentication configuration
+ * --------------------------------------------------------------------
+ */
 passport.use(new LocalStrategy(function (username, password, done) {
     if (username === false || password === false) {
         return done();
@@ -202,8 +215,182 @@ passport.use(new LocalStrategy(function (username, password, done) {
 }));
 
 
+/**
+ * Websocket setup
+ * --------------------------------------------------------------------
+ */
+var bayeux = new faye.NodeAdapter({
+    mount: '/faye',
+    timeout: 30
+});
+
+
+/**
+ * Websocket authorization
+ * --------------------------------------------------------------------
+ * Websocket clients must provide a token during subscription to
+ * ensure the client is logged in. They must also provide a secret
+ * known only by the server and its clients in order to publish
+ * websocket messages.
+ */
+bayeux.addExtension({
+    incoming: function(message, callback) {
+        message.ext = message.ext || {};
+
+        // Subscriptions must be accompanied by a token
+        if (message.channel === '/meta/subscribe') {
+            log.info({message: message}, 'subscription request');
+            if (!message.ext.authToken) {
+                log.notice({message: message}, 'credentials missing');
+                message.error = '401::Credentials missing';
+                return callback(message);
+            }
+
+            Token.find({
+                where: {
+                    value: message.ext.authToken
+                }
+            }).success(function (token) {
+                if (!token) {
+                    log.notice({message: message}, 'invalid credentials');
+                    message.error = '401::Invalid Credentials';
+                    return;
+                }
+            }).error(function () {
+                log.error({message: message}, 'token lookup failed');
+                message.error = '500::Unable to verify credentials at this time';
+                return;
+            });
+
+            return callback(message);
+        }
+
+        // Other meta messages are allowed (handshake, etc)
+        if (message.channel.indexOf('/meta/') === 0) {
+            return callback(message);
+        }
+
+        // Anything else must have the application secret
+        if (message.ext.secret !== CONFIG.fayeSecret) {
+            log.warn({message: message}, 'suspicious message');
+            message.error = '403::Forbidden';
+        }
+
+        // The application secret is never revealed
+        delete message.ext.secret;
+
+        return callback(message);
+    }
+});
+
+
+/**
+ * Websocket event handlers
+ * --------------------------------------------------------------------
+ */
+bayeux.on('subscribe', function (clientId, channel) {
+    channel = channel.replace(/\/+/, '/');
+    channel = channel.replace(/^\//, '');
+
+    var segments = channel.split('/');
+    var channelRoot = segments[0];
+    var subscriberType = segments[1];
+
+    if (channelRoot !== 'messages') {
+        return;
+    }
+
+    if (Object.keys(subscribers).indexOf(subscriberType) === -1) {
+        return;
+    }
+
+    subscribers[subscriberType].push(clientId);
+});
+
+bayeux.on('disconnect', function (clientId) {
+    var keys, index;
+
+    keys = Object.keys(subscribers);
+
+    keys.forEach(function (key) {
+        index = subscribers[key].indexOf(clientId);
+        if (index > -1) {
+            subscribers[key].splice(index, 1);
+        }
+    });
+});
+
+
+/**
+ * Serverside websocket client configuration
+ * --------------------------------------------------------------------
+ * Add the application secret to outgoing messages
+ */
+var bayeuxClient = bayeux.getClient();
+
+bayeuxClient.addExtension({
+    outgoing: function(message, callback) {
+        message.ext = message.ext || {};
+        message.ext.secret = CONFIG.fayeSecret;
+        callback(message);
+    }
+});
+
+
+/**
+ * Customize Express server headers
+ * --------------------------------------------------------------------
+ */
 app.disable('x-powered-by');
 
+
+/**
+ * Express middleware
+ * --------------------------------------------------------------------
+ */
+
+// Enable live reload (for dev environment)
+if (CONFIG.livereload) {
+    app.use(require('connect-livereload')({
+        port: CONFIG.livereload
+    }));
+}
+
+// Populate the X-Response-Time header
+app.use(responseTime());
+
+// Use compression
+//app.use(express.compress());
+
+// Log requests and track them via an id
+app.use(function(req, res, next) {
+    req._requestId = +new Date();
+    log.info({
+        requestId: req._requestId,
+        req: req
+    }, 'start');
+    next();
+});
+
+// Refuse large request bodies
+app.use(bodyParser({
+    limit: '5kb'
+}));
+
+// Access cookies
+app.use(Cookies.express());
+
+// Authentication
+app.use(passport.initialize());
+
+// Static fileserving
+app.use(express.static(__dirname + '/public'));
+
+
+/**
+ * Parameter validation
+ * --------------------------------------------------------------------
+ */
 app.param('u', function(req, res, next, value) {
     var pattern = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
     if (!pattern.test(value)) {
@@ -217,103 +404,11 @@ app.param('count', function (req, res, next, value) {
     next();
 });
 
-// Websocket endpoint for browser clients
-var bayeux = new faye.NodeAdapter({
-    mount: '/faye',
-    timeout: 30
-});
 
-bayeux.addExtension({
-    incoming: function(message, callback) {
-        var setError = function() {
-            message.error = '401::Unauthorized';
-        };
-
-        // subscriptions must be accompanied by a token
-        if (message.channel === '/meta/subscribe') {
-            log.info({message: message}, 'subscription request');
-            if (!message.ext.authToken) {
-                setError();
-                return callback(message);
-            }
-
-            Token.find({
-                where: {
-                    value: message.ext.authToken
-                }
-            }).success(function (token) {
-                if (!token) {
-                    setError();
-                    return;
-                }
-            }).error(function () {
-                setError();
-                return;
-            });
-
-            return callback(message);
-        }
-
-        // other meta messages are allowed
-        if (message.channel.indexOf('/meta/') === 0) {
-            return callback(message);
-        }
-
-        // anything else must have the application secret
-        console.log(message);
-
-        /*
-        if (!message.ext || message.ext.secret !== CONFIG.fayeSecret) {
-            log.warn({message: message}, 'suspicious message');
-            message.error = '403::Forbidden';
-        }
-        */
-        delete message.ext.secret;
-        return callback(message);
-
-    }
-});
-
-
-var bayeuxClient = bayeux.getClient();
-
-bayeuxClient.addExtension({
-    outgoing: function(message, callback) {
-        message.ext = message.ext || {};
-        message.ext.secret = CONFIG.fayeSecret;
-        callback(message);
-    }
-});
-
-//app.use(express.compress());
-
-app.use(function(req, res, next) {
-    req._requestId = +new Date();
-    log.info({
-        requestId: req._requestId,
-        req: req
-    }, 'start');
-    next();
-});
-
-app.use(bodyParser({
-    limit: '5kb'
-}));
-
-app.use(Cookies.express());
-
-app.use(passport.initialize());
-
-app.get('/login', function (req, res, next) {
-    res.sendfile(__dirname + '/public/index.html');
-    next();
-});
-
-app.get('/logout', function (req, res, next) {
-    res.sendfile(__dirname + '/public/index.html');
-    next();
-});
-
+/**
+ * Route helpers
+ * --------------------------------------------------------------------
+ */
 var requireAuth = function (req, res, next) {
     var cookies = new Cookies(req, res);
 
@@ -354,6 +449,17 @@ var publishMessage = function (message) {
     bayeuxClient.publish('/messages/' + channel + '/' + primaryGroup, JSON.stringify(message));
 };
 
+
+/**
+ * Routing
+ * --------------------------------------------------------------------
+ */
+app.get(/^\/login|logout$/, function (req, res, next) {
+    // For pushState compatibility, some URLs are treated as aliases of index.html
+    res.sendfile(__dirname + '/public/index.html');
+    next();
+});
+
 app.post('/auth', passport.authenticate('local', { session: false }), function (req, res, next) {
     var tokenLabel = req.body.label || '';
     tokenLabel = tokenLabel.replace(/[^a-zA-Z0-9-\.]/, '');
@@ -375,10 +481,6 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
     });
 });
 
-// Static fileserving
-app.use(express.static(__dirname + '/public'));
-
-// Endpoint for receiving messages
 app.post('/message', requireAuth, function (req, res, next) {
     var message;
 
@@ -407,7 +509,6 @@ app.post('/message', requireAuth, function (req, res, next) {
     });
 });
 
-// Endpoint for archived messages
 app.get('/archive/:count/:u?', requireAuth, function (req, res, next) {
     var filters = {
         limit: req.params.count,
@@ -430,11 +531,25 @@ app.get('/archive/:count/:u?', requireAuth, function (req, res, next) {
     });
 });
 
+
+/**
+ * Error handling
+ * --------------------------------------------------------------------
+ *
+ * This should come after all other routes and middleware (other than
+ * the response logger)
+ */
 app.use(function(err, req, res, next){
     res.send(err.status);
     next();
 });
 
+
+/**
+ * Response logger
+ * --------------------------------------------------------------------
+ * Log the response and its corresponding request id
+ */
 app.use(function(req, res) {
     log.info({
         requestId: req._requestId,
@@ -442,11 +557,14 @@ app.use(function(req, res) {
     }, 'end');
 });
 
+
+/**
+ * Server startup
+ * --------------------------------------------------------------------
+ */
 if (CONFIG.ssl.enabled !== 1) {
-    // non-SSL
     var server = app.listen(CONFIG.http.port);
 } else {
-    // SSL
     var server = https.createServer({
         key: fs.readFileSync(CONFIG.ssl.key),
         cert: fs.readFileSync(CONFIG.ssl.cert)
@@ -456,37 +574,5 @@ if (CONFIG.ssl.enabled !== 1) {
 // Attach to the express server returned by listen, rather than app itself.
 // See https://github.com/faye/faye/issues/256
 bayeux.attach(server);
-
-bayeux.on('subscribe', function (clientId, channel) {
-    channel = channel.replace(/\/+/, '/');
-    channel = channel.replace(/^\//, '');
-
-    var segments = channel.split('/');
-    var channelRoot = segments[0];
-    var subscriberType = segments[1];
-
-    if (channelRoot !== 'messages') {
-        return;
-    }
-
-    if (Object.keys(subscribers).indexOf(subscriberType) === -1) {
-        return;
-    }
-
-    subscribers[subscriberType].push(clientId);
-});
-
-bayeux.on('disconnect', function (clientId) {
-    var keys, index;
-
-    keys = Object.keys(subscribers);
-
-    keys.forEach(function (key) {
-        index = subscribers[key].indexOf(clientId);
-        if (index > -1) {
-            subscribers[key].splice(index, 1);
-        }
-    });
-});
 
 log.info({port: CONFIG.http.port}, 'appstart');
