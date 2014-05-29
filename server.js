@@ -241,7 +241,7 @@ bayeux.addExtension({
         if (message.channel === '/meta/subscribe') {
             log.info({message: message}, 'subscription request');
             if (!message.ext.authToken) {
-                log.notice({message: message}, 'credentials missing');
+                log.warn({message: message}, 'credentials missing');
                 message.error = '401::Credentials missing';
                 return callback(message);
             }
@@ -252,7 +252,7 @@ bayeux.addExtension({
                 }
             }).success(function (token) {
                 if (!token) {
-                    log.notice({message: message}, 'invalid credentials');
+                    log.warn({message: message}, 'invalid credentials');
                     message.error = '401::Invalid Credentials';
                     return;
                 }
