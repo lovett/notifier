@@ -38,7 +38,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
 
 }]);
 
-appControllers.controller('LoginController', ['$scope', '$rootScope', '$route', '$location', 'Queue', 'AuthService', 'User', function ($scope, $rootScope, $route, $location, Queue, AuthService, User) {
+appControllers.controller('LoginController', ['$scope', '$rootScope', '$route', '$location', 'Faye', 'Queue', 'AuthService', 'User', function ($scope, $rootScope, $route, $location, Faye, Queue, AuthService, User) {
     'use strict';
 
     var loginSuccess, loginFailure;

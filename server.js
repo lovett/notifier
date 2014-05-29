@@ -225,41 +225,65 @@ var bayeux = new faye.NodeAdapter({
 
 bayeux.addExtension({
     incoming: function(message, callback) {
-        if (message.channel !== '/meta/subscribe') {
-            return callback(message);
-        }
-
-        log.info({message: message}, 'subscription request');
-
         var setError = function() {
-            message.error = '403::Unauthorized';
+            message.error = '401::Unauthorized';
         };
 
-        if (!message.token) {
-            setError();
+        // subscriptions must be accompanied by a token
+        if (message.channel === '/meta/subscribe') {
+            log.info({message: message}, 'subscription request');
+            if (!message.ext.authToken) {
+                setError();
+                return callback(message);
+            }
+
+            Token.find({
+                where: {
+                    value: message.ext.authToken
+                }
+            }).success(function (token) {
+                if (!token) {
+                    setError();
+                    return;
+                }
+            }).error(function () {
+                setError();
+                return;
+            });
+
             return callback(message);
         }
 
-        Token.find({
-            where: {
-                value: message.token
-            }
-        }).success(function (token) {
-            if (!token) {
-                setError();
-                return;
-            }
-        }).error(function () {
-            setError();
-            return;
-        });
+        // other meta messages are allowed
+        if (message.channel.indexOf('/meta/') === 0) {
+            return callback(message);
+        }
 
-        callback(message);
+        // anything else must have the application secret
+        console.log(message);
+
+        /*
+        if (!message.ext || message.ext.secret !== CONFIG.fayeSecret) {
+            log.warn({message: message}, 'suspicious message');
+            message.error = '403::Forbidden';
+        }
+        */
+        delete message.ext.secret;
+        return callback(message);
+
     }
 });
 
 
 var bayeuxClient = bayeux.getClient();
+
+bayeuxClient.addExtension({
+    outgoing: function(message, callback) {
+        message.ext = message.ext || {};
+        message.ext.secret = CONFIG.fayeSecret;
+        callback(message);
+    }
+});
 
 //app.use(express.compress());
 
@@ -326,8 +350,6 @@ var publishMessage = function (message) {
     } else if (subscribers.speech.length > 0) {
         channel = 'speech';
     }
-
-    delete message.values.id;
 
     bayeuxClient.publish('/messages/' + channel + '/' + primaryGroup, JSON.stringify(message));
 };

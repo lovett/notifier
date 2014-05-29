@@ -133,7 +133,11 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
                 return callback(message);
             }
 
-            message.token = User.getToken();
+            if (!message.ext) {
+                message.ext = {};
+            }
+            message.ext.authToken = User.getToken();
+
             callback(message);
         }
     });
