@@ -1,7 +1,7 @@
 /* global angular */
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('MessageController', ['$rootScope', '$scope', '$window', '$location', 'Faye', 'BrowserNotification', 'Queue', 'User', function ($rootScope, $scope, $window, $location, Faye, BrowserNotification, Queue, User) {
+appControllers.controller('MessageController', ['$rootScope', '$scope', '$window', '$location', 'Faye', 'BrowserNotification', 'Queue', 'User', '$log', function ($rootScope, $scope, $window, $location, Faye, BrowserNotification, Queue, User, $log) {
     'use strict';
 
     $scope.isLoggedIn = User.isLoggedIn();
@@ -13,13 +13,15 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
 
     $rootScope.queue = Queue;
 
+    Faye.init();
 
+    $log.info('Defining subscription');
     Faye.subscribe('/messages/browser/*', function (message) {
         Queue.add(message);
     });
 
-
     $scope.$on('connection:changed', function (e, state) {
+        $log.info('Connection status has changed to ' + state);
         $rootScope.connectionStatus = state;
         if (state === 'connected') {
             Queue.populate();
@@ -42,8 +44,6 @@ appControllers.controller('LoginController', ['$scope', '$rootScope', '$route', 
     'use strict';
 
     var loginSuccess, loginFailure;
-
-    $rootScope.queue = Queue;
 
     loginSuccess = function () {
         $location.path('/');
@@ -71,7 +71,9 @@ appControllers.controller('LoginController', ['$scope', '$rootScope', '$route', 
         $location.path('/login');
     };
 
-    if ($route.current.appEvent === 'logout') {
+    if ($route.current.action === 'logout') {
         User.logOut();
+        Faye.unsubscribe();
+        Queue.sinceNow();
     }
 }]);

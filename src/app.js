@@ -32,7 +32,7 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($h
     $routeProvider.when('/logout', {
         controller: 'LoginController',
         templateUrl: '/logout.html',
-        appEvent: 'logout'
+        action: 'logout'
     });
 
     $routeProvider.when('/', {
@@ -73,6 +73,7 @@ app.factory('AuthService', ['$rootScope', '$resource', 'User', function ($rootSc
 app.factory('User', ['$document', function ($document) {
     'use strict';
     var key = 'u';
+    var expirationIntervalMs = 365 * 24 * 60 * 60 * 1000;
 
     var getToken = function () {
         var fields, i, segments;
@@ -91,13 +92,13 @@ app.factory('User', ['$document', function ($document) {
 
         setToken: function (value) {
             var date = new Date();
-            date.setTime(date.getTime()+(365*24*60*60*1000));
+            date.setTime(date.getTime() + expirationIntervalMs);
             $document[0].cookie = key + '=' + value + '; expires=' + date.toGMTString() + '; path=/';
         },
 
         logOut: function () {
             var date = new Date();
-            date.setTime(date.getTime() - (365*24*60*60*1000));
+            date.setTime(date.getTime() - expirationIntervalMs);
             $document[0].cookie = key + '=' + '; expires=' + date.toGMTString() + '; path=/';
         },
 
@@ -123,36 +124,39 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
     var client, subscription;
 
 
-    client = new Faye.Client($location.absUrl() + 'faye', {
-        retry: 10
-    });
-
-    client.addExtension({
-        outgoing: function(message, callback) {
-            if (message.channel !== '/meta/subscribe') {
-                return callback(message);
-            }
-
-            if (!message.ext) {
-                message.ext = {};
-            }
-            message.ext.authToken = User.getToken();
-
-            callback(message);
-        }
-    });
-
-    client.on('transport:down', function () {
-        $rootScope.$broadcast('connection:changed', 'disconnected');
-        $rootScope.$apply();
-    });
-
-    client.on('transport:up', function () {
-        $rootScope.$broadcast('connection:changed', 'connected');
-        $rootScope.$apply();
-    });
-
     return {
+        init: function () {
+            client = new Faye.Client($location.absUrl() + 'faye', {
+                retry: 10
+            });
+
+            client.addExtension({
+                outgoing: function(message, callback) {
+                    if (message.channel !== '/meta/subscribe') {
+                        return callback(message);
+                    }
+
+                    if (!message.ext) {
+                        message.ext = {};
+                    }
+                    message.ext.authToken = User.getToken();
+
+                    callback(message);
+                }
+            });
+
+            client.on('transport:down', function () {
+                $log.info('Faye transport is down');
+                $rootScope.$broadcast('connection:changed', 'disconnected');
+                $rootScope.$apply();
+            });
+
+            client.on('transport:up', function () {
+                $log.info('Faye transport is up');
+                $rootScope.$broadcast('connection:changed', 'connected');
+                $rootScope.$apply();
+            });
+        },
         subscribe: function (channel, callback) {
             subscription = client.subscribe(channel, function (message) {
                 if (callback) {
@@ -165,21 +169,22 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
                     }
 
                     callback(message);
+                    $rootScope.$apply();
                 }
-                $rootScope.$apply();
             });
 
             subscription.then(function () {
-                $rootScope.$apply();
+                $log.info('Subscription successful');
             }, function (err) {
-                $log.warn(err.message);
+                $log.warn('Suscription error: ' + err.message);
             });
         },
 
         unsubscribe: function() {
-            $log.info('Unsubscribed from ' + subscription._channels);
-            subscription.cancel();
-            $rootScope.$apply();
+            if (angular.isDefined(client)) {
+                client.disconnect();
+                $log.info('Disconnecting');
+            }
         }
     };
 }]);
