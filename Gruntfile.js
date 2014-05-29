@@ -1,3 +1,4 @@
+var touch = require("touch");
 var tokenFile = ".token";
 
 module.exports = function(grunt) {
@@ -233,6 +234,11 @@ module.exports = function(grunt) {
                 versionFile: "public/version.json"
             }
         }
+    });
+
+    grunt.registerTask("reset", "Delete the dev database, restart the server", function () {
+        grunt.file.delete(CONFIG.sqlite.path);
+        touch("server.js");
     });
 
     grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-dev", "ver"]);

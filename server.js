@@ -43,7 +43,7 @@ var log = bunyan.createLogger({
  */
 var sequelize = new Sequelize('', '', '', {
     dialect: 'sqlite',
-    storage: './dev.sqlite',
+    storage: CONFIG.sqlite.path,
     logging: function (msg) {
         log.info({
             sequelize: msg

@@ -7,6 +7,7 @@
     ],
 
     "livereload": 35729,
+
     "log": "notifier.log",
 
     "ssl": {
@@ -29,5 +30,10 @@
             "path": "/var/www/"
         }
     }
-    "fayeSecret": "Change this value to something hard to guess"
+
+    "fayeSecret": "Change this value to something hard to guess",
+
+    "sqlite": {
+        "path": "./dev.sqlite"
+    }
 }
