@@ -53,7 +53,7 @@ var sequelize = new Sequelize('', '', '', {
 
 
 /**
- * ORM models
+ * ORM model definition
  * --------------------------------------------------------------------
  */
 var User = sequelize.define('User', {
@@ -81,10 +81,6 @@ var User = sequelize.define('User', {
 });
 
 var Token = sequelize.define('Token', {
-    userId: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-    },
     value: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
@@ -106,10 +102,6 @@ var Message = sequelize.define('Message', {
     publicId: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
-        allowNull: false
-    },
-    userId: {
-        type: Sequelize.INTEGER,
         allowNull: false
     },
     title: {
@@ -176,6 +168,21 @@ var Message = sequelize.define('Message', {
     },
 }, { timestamps: true, updatedAt: false, createdAt: 'received' });
 
+/**
+ * ORM associations
+ * --------------------------------------------------------------------
+ */
+User.hasMany(Token);
+Token.belongsTo(User);
+
+User.hasMany(Message);
+Message.belongsTo(User);
+
+
+/**
+ * ORM initialization
+ * --------------------------------------------------------------------
+ */
 sequelize.sync();
 
 // Populate default users from config
@@ -420,15 +427,17 @@ var requireAuth = function (req, res, next) {
     }
 
     Token.find({
-        where: { value: tokenValue },
-        attributes: ['userId']
+        include: [ User],
+        where: { value: tokenValue }
     }).success(function (token) {
         if (!token) {
             res.send(401);
             return;
         }
-        req.userId = token.values.userId;
+
+        req.user = token.user;
         next();
+
     }).error(function () {
         res.send(500);
         return;
@@ -468,13 +477,15 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
     }
 
     var token = Token.build({
-        userId: req.user.values.id,
         label: tokenLabel
     });
 
+
     token.save().success(function (token) {
-        res.json({token: token.value});
-        next();
+        token.setUser(req.user).success(function () {
+            res.json({token: token.value});
+            next();
+        });
     }).error(function (error) {
         res.json(400, error);
         next();
@@ -485,12 +496,11 @@ app.post('/message', requireAuth, function (req, res, next) {
     var message;
 
     message = Message.build({
-        received: new Date(),
-        userId: req.userId
+        received: new Date()
     });
 
     message.attributes.forEach(function (key) {
-        if (key === 'id' || key === 'publicId' || key === 'userId') {
+        if (key === 'id' || key === 'publicId') {
             return;
         }
 
@@ -500,9 +510,14 @@ app.post('/message', requireAuth, function (req, res, next) {
     });
 
     message.save().success(function () {
-        publishMessage(message);
-        res.send(204);
-        next();
+        message.setUser(req.user).success(function () {
+            publishMessage(message);
+            res.send(204);
+            next();
+        }).error(function (error) {
+            res.json(400, error);
+            next();
+        });
     }).error(function (error) {
         res.json(400, error);
         next();
@@ -513,6 +528,7 @@ app.get('/archive/:count/:u?', requireAuth, function (req, res, next) {
     var filters = {
         limit: req.params.count,
         order: 'received DESC',
+        UserId: req.user.id,
         where: {}
     };
 
