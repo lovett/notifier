@@ -5,18 +5,13 @@ var fs = require('fs');
 var faye = require('faye');
 var express = require('express');
 var bodyParser = require('body-parser');
-var Cookies = require('cookies');
 var responseTime = require('response-time');
 var app = express();
 var Sequelize = require('sequelize');
 var bcrypt = require('bcrypt');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var subscribers = {
-    browser: [],
-    speech: []
-};
-
+var crypto = require('crypto');
 
 /**
  * Logging configuration
@@ -76,6 +71,16 @@ var User = sequelize.define('User', {
                 args: [1, 60],
                 msg: 'Should be between 1 and 60 characters'
             }
+        }
+    }
+}, {
+    instanceMethods: {
+        getChannel: function () {
+            var hmac = crypto.createHmac('sha256', CONFIG.fayeSecret);
+            hmac.setEncoding('hex');
+            hmac.write(this.id.toString());
+            hmac.end();
+            return hmac.read();
         }
     }
 });
@@ -254,6 +259,7 @@ bayeux.addExtension({
             }
 
             Token.find({
+                include: [ User ],
                 where: {
                     value: message.ext.authToken
                 }
@@ -269,6 +275,7 @@ bayeux.addExtension({
                 return;
             });
 
+            
             return callback(message);
         }
 
@@ -301,32 +308,11 @@ bayeux.on('subscribe', function (clientId, channel) {
 
     var segments = channel.split('/');
     var channelRoot = segments[0];
-    var subscriberType = segments[1];
 
     if (channelRoot !== 'messages') {
         return;
     }
-
-    if (Object.keys(subscribers).indexOf(subscriberType) === -1) {
-        return;
-    }
-
-    subscribers[subscriberType].push(clientId);
 });
-
-bayeux.on('disconnect', function (clientId) {
-    var keys, index;
-
-    keys = Object.keys(subscribers);
-
-    keys.forEach(function (key) {
-        index = subscribers[key].indexOf(clientId);
-        if (index > -1) {
-            subscribers[key].splice(index, 1);
-        }
-    });
-});
-
 
 /**
  * Serverside websocket client configuration
@@ -384,9 +370,6 @@ app.use(bodyParser({
     limit: '5kb'
 }));
 
-// Access cookies
-app.use(Cookies.express());
-
 // Authentication
 app.use(passport.initialize());
 
@@ -417,9 +400,7 @@ app.param('count', function (req, res, next, value) {
  * --------------------------------------------------------------------
  */
 var requireAuth = function (req, res, next) {
-    var cookies = new Cookies(req, res);
-
-    var tokenValue = cookies.get('u') || req.body.u || req.params.u;
+    var tokenValue = req.headers['x-token'] || req.body.u || req.params.u;
 
     if (!tokenValue) {
         res.send(401);
@@ -444,18 +425,8 @@ var requireAuth = function (req, res, next) {
     });
 };
 
-var publishMessage = function (message) {
-    var channel, primaryGroup;
-
-    primaryGroup = message.values.group.split('.').pop();
-
-    if (subscribers.browser.length > 0) {
-        channel = 'browser';
-    } else if (subscribers.speech.length > 0) {
-        channel = 'speech';
-    }
-
-    bayeuxClient.publish('/messages/' + channel + '/' + primaryGroup, JSON.stringify(message));
+var publishMessage = function (user, message) {
+    bayeuxClient.publish('/messages/' + user.getChannel(), JSON.stringify(message));
 };
 
 
@@ -483,7 +454,10 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
 
     token.save().success(function (token) {
         token.setUser(req.user).success(function () {
-            res.json({token: token.value});
+            res.json({
+                token: token.value,
+                channel: req.user.getChannel()
+            });
             next();
         });
     }).error(function (error) {
@@ -511,7 +485,7 @@ app.post('/message', requireAuth, function (req, res, next) {
 
     message.save().success(function () {
         message.setUser(req.user).success(function () {
-            publishMessage(message);
+            publishMessage(req.user, message);
             res.send(204);
             next();
         }).error(function (error) {

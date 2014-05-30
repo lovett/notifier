@@ -7,16 +7,20 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
     $scope.isLoggedIn = User.isLoggedIn();
 
     if ($scope.isLoggedIn === false) {
+        $log.info('Not logged in');
         $location.path('/login');
         return;
     }
 
+    $log.info('Logged in');
+    
     $rootScope.queue = Queue;
 
     Faye.init();
 
-    $log.info('Defining subscription');
-    Faye.subscribe('/messages/browser/*', function (message) {
+    $log.info('Subscribing to ' + User.getChannel());
+
+    Faye.subscribe(User.getChannel(), function (message) {
         Queue.add(message);
     });
 
@@ -24,7 +28,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
         $log.info('Connection status has changed to ' + state);
         $rootScope.connectionStatus = state;
         if (state === 'connected') {
-            Queue.populate();
+            Queue.populate(User.getToken());
         }
     });
 

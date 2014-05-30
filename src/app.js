@@ -61,6 +61,7 @@ app.factory('AuthService', ['$rootScope', '$resource', 'User', function ($rootSc
 
                 if (data.hasOwnProperty('token')) {
                     User.setToken(data.token);
+                    User.setChannel(data.channel);
                 } else {
                     User.logOut();
                 }
@@ -70,36 +71,33 @@ app.factory('AuthService', ['$rootScope', '$resource', 'User', function ($rootSc
     });
 }]);
 
-app.factory('User', ['$document', function ($document) {
+app.factory('User', [function () {
     'use strict';
-    var key = 'u';
-    var expirationIntervalMs = 365 * 24 * 60 * 60 * 1000;
 
     var getToken = function () {
-        var fields, i, segments;
-        fields = $document[0].cookie.split(';');
-        for (i=0; i < fields.length; i = i + 1) {
-            segments = fields[i].split('=');
-            if (segments[0] === 'u') {
-                return segments[1];
-            }
-        }
-        return false;
+        return sessionStorage.token || false;
+    };
+
+    var getChannel = function () {
+        return '/messages/' + sessionStorage.channel || false;
     };
 
     return {
         getToken: getToken,
 
         setToken: function (value) {
-            var date = new Date();
-            date.setTime(date.getTime() + expirationIntervalMs);
-            $document[0].cookie = key + '=' + value + '; expires=' + date.toGMTString() + '; path=/';
+            sessionStorage.token = value;
+        },
+
+        getChannel: getChannel,
+        
+        setChannel: function (value) {
+            sessionStorage.channel = value;
         },
 
         logOut: function () {
-            var date = new Date();
-            date.setTime(date.getTime() - expirationIntervalMs);
-            $document[0].cookie = key + '=' + '; expires=' + date.toGMTString() + '; path=/';
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('channel');
         },
 
         isLoggedIn: function () {
@@ -183,7 +181,7 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
         unsubscribe: function() {
             if (angular.isDefined(client)) {
                 client.disconnect();
-                $log.info('Disconnecting');
+                $log.info('Disconnected');
             }
         }
     };
@@ -259,11 +257,14 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
             return Object.keys(this.messages).length === 0;
         },
 
-        populate: function () {
+        populate: function (token) {
             var self = this;
             $http({
                 method: 'GET',
-                url: '/archive/10?since=' + (+self.getAsOfDate())
+                url: '/archive/10?since=' + (+self.getAsOfDate()),
+                headers: {
+                    'X-Token': token
+                }
             }).success(function(data) {
                 self.ready = true;
                 if (data instanceof Array) {
