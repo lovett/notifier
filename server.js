@@ -1,4 +1,3 @@
-var CONFIG = require('config');
 var bunyan = require('bunyan');
 var https = require('https');
 var fs = require('fs');
@@ -13,6 +12,28 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var crypto = require('crypto');
 
+
+/**
+ * Environment variables
+ * --------------------------------------------------------------------
+ *
+ * If the file env.json exists, declare its contents as environtment
+ * variables.
+ */
+var env;
+try {
+    env = fs.readFileSync('env.json', {encoding: 'utf8'});
+    env = JSON.parse(env);
+} catch (e) {
+    env = {};
+}
+
+Object.keys(env).forEach(function (key) {
+    process.env[key] = env[key];
+});
+
+env = {};
+
 /**
  * Logging configuration
  * --------------------------------------------------------------------
@@ -21,7 +42,7 @@ var log = bunyan.createLogger({
     name: 'notifier',
     streams: [
         {
-            path: CONFIG.log,
+            path: process.env.NOTIFIER_LOG || 'notifier.log',
             level: 'trace'
         }
     ],
@@ -37,8 +58,8 @@ var log = bunyan.createLogger({
  * --------------------------------------------------------------------
  */
 var sequelize = new Sequelize('', '', '', {
-    dialect: 'sqlite',
-    storage: CONFIG.sqlite.path,
+    dialect: process.env.NOTIFIER_DB_DRIVER,
+    storage: process.env.NOTIFIER_SQLITE_PATH,
     logging: function (msg) {
         log.info({
             sequelize: msg
@@ -76,7 +97,7 @@ var User = sequelize.define('User', {
 }, {
     instanceMethods: {
         getChannel: function () {
-            var hmac = crypto.createHmac('sha256', CONFIG.fayeSecret);
+            var hmac = crypto.createHmac('sha256', process.env.NOTIFIER_SECRET);
             hmac.setEncoding('hex');
             hmac.write(this.id.toString());
             hmac.end();
@@ -190,16 +211,16 @@ Message.belongsTo(User);
  */
 sequelize.sync();
 
-// Populate default users from config
-CONFIG.defaultUsers.forEach(function (element) {
-    User.findOrCreate({ username: element.username}).success(function (user, created) {
+// Create the default user
+if (process.env.NOTIFIER_DEFAULT_USER) {
+    User.findOrCreate({ username: process.env.NOTIFIER_DEFAULT_USER}).success(function (user, created) {
         if (created === true) {
             var salt = bcrypt.genSaltSync(10);
-            user.values.passwordHash = bcrypt.hashSync(element.password, salt);
+            user.values.passwordHash = bcrypt.hashSync(process.env.NOTIFIER_DEFAULT_PASSWORD, salt);
             user.save();
         }
     });
-});
+}
 
 
 /**
@@ -275,7 +296,7 @@ bayeux.addExtension({
                 return;
             });
 
-            
+
             return callback(message);
         }
 
@@ -285,7 +306,7 @@ bayeux.addExtension({
         }
 
         // Anything else must have the application secret
-        if (message.ext.secret !== CONFIG.fayeSecret) {
+        if (message.ext.secret !== process.env.NOTIFIER_SECRET) {
             log.warn({message: message}, 'suspicious message');
             message.error = '403::Forbidden';
         }
@@ -324,7 +345,7 @@ var bayeuxClient = bayeux.getClient();
 bayeuxClient.addExtension({
     outgoing: function(message, callback) {
         message.ext = message.ext || {};
-        message.ext.secret = CONFIG.fayeSecret;
+        message.ext.secret = process.env.NOTIFIER_SECRET;
         callback(message);
     }
 });
@@ -343,9 +364,9 @@ app.disable('x-powered-by');
  */
 
 // Enable live reload (for dev environment)
-if (CONFIG.livereload) {
+if (process.env.NOTIFIER_LIVERELOAD) {
     app.use(require('connect-livereload')({
-        port: CONFIG.livereload
+        port: process.env.NOTIFIER_LIVERELOAD
     }));
 }
 
@@ -552,17 +573,17 @@ app.use(function(req, res) {
  * Server startup
  * --------------------------------------------------------------------
  */
-if (CONFIG.ssl.enabled !== 1) {
-    var server = app.listen(CONFIG.http.port);
+if (process.env.NOTIFIER_SSL !== '1') {
+    var server = app.listen(process.env.NOTIFIER_HTTP_PORT);
 } else {
     var server = https.createServer({
-        key: fs.readFileSync(CONFIG.ssl.key),
-        cert: fs.readFileSync(CONFIG.ssl.cert)
-    }, app).listen(CONFIG.http.port);
+        key: fs.readFileSync(process.env.NOTIFIER_SSL_KEY),
+        cert: fs.readFileSync(process.env.NOTIFIER_SSL_CERT)
+    }, app).listen(process.env.NOTIFIER_HTTP_PORT);
 }
 
 // Attach to the express server returned by listen, rather than app itself.
 // See https://github.com/faye/faye/issues/256
 bayeux.attach(server);
 
-log.info({port: CONFIG.http.port}, 'appstart');
+log.info({port: process.env.NOTIFIER_HTTP_PORT}, 'appstart');

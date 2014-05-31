@@ -6,9 +6,9 @@ TAGS
 node_modules
 bower_components
 public
-config/*.json
 .nodemonignore
 *.scpt
 *.sqlite
 *.log
 .token
+env.json

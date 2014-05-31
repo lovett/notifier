@@ -5,10 +5,9 @@ module.exports = function(grunt) {
 
     require("load-grunt-tasks")(grunt);
 
-    var CONFIG = grunt.file.readJSON("config/default.json");
-
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
+        env: grunt.file.readJSON("env.json"),
 
         token: (function () {
             try {
@@ -17,7 +16,6 @@ module.exports = function(grunt) {
             }
         }()),
 
-        CONFIG: CONFIG,
 
         clean: {
             preBuild: {
@@ -83,11 +81,11 @@ module.exports = function(grunt) {
         http: {
             authtoken: {
                 options: {
-                    url: "http://localhost:<%= CONFIG.http.port %>/auth",
+                    url: "http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/auth",
                     method: "POST",
                     form: {
-                        username: CONFIG.defaultUsers[0].username,
-                        password: CONFIG.defaultUsers[0].password,
+                        username: "<%= env.NOTIFIER_DEFAULT_USER %>",
+                        password: "<%= env.NOTIFIER_DEFAULT_PASSWORD %>",
                         label: "grunt",
                     },
                     callback: function (error, response, body) {
@@ -97,7 +95,7 @@ module.exports = function(grunt) {
             },
             onemessage: {
                 options: {
-                    url: "http://localhost:<%= CONFIG.http.port %>/message",
+                    url: "http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/message",
                     method: "POST",
                     form: {
                         title: "Test message",
@@ -138,7 +136,7 @@ module.exports = function(grunt) {
         nodemon: {
             dev: {
                 options: {
-                    file: "index.js",
+                    file: "server.js",
                     ignoredFiles: ["public/**", "src/**", "Gruntfile.js"],
                 }
             }
@@ -167,36 +165,9 @@ module.exports = function(grunt) {
             }
         },
 
-        rsync: {
-            options: {
-                args: ["--verbose"],
-                exclude: [".git*", "node_modules", "bower_components", "clients", "src", "bower.json", ".jshintrc*", ".nodemonignore", "Gruntfile.js", ".DS_Store"],
-                recursive: true,
-                syncDestIgnoreExcl: true
-            },
-            production: {
-                options: {
-                    host: "<%= CONFIG.deployment.production.host %>",
-                    src: "./",
-                    dest: "<%= CONFIG.deployment.production.path %>",
-                }
-            }
-        },
-
-        sshexec: {
-              production: {
-                  command: "cd <%= CONFIG.deployment.production.path %>; npm install",
-                  options: {
-                      host: "<%= CONFIG.deployment.production.host %>",
-                      username: process.env.USER,
-                      agent: process.env.SSH_AUTH_SOCK
-                  }
-              }
-        },
-
         watch: {
             options: {
-                livereload: CONFIG.livereload
+                livereload: "<%= env.NOTIFIER_LIVERELOAD %>"
             },
             src: {
                 files: ["src/**", "Gruntfile.js"],
@@ -237,7 +208,10 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask("reset", "Delete the dev database, restart the server", function () {
-        grunt.file.delete(CONFIG.sqlite.path);
+        var env = grunt.config.get("env");
+        if (env.NOTIFIER_DB_DRIVER === "sqlite") {
+            grunt.file.delete(env.NOTIFIER_SQLITE_PATH);
+        }
         touch("server.js");
     });
 
