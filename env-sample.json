@@ -5,7 +5,6 @@
     "NOTIFIER_SSL_KEY": "",
     "NOTIFIER_SSL_CERT": "",
     "NOTIFIER_HTTP_PORT": 8080,
-    "NOTIFIER_SECRET": "",
     "NOTIFIER_SQLITE_PATH": "./notifier.sqlite",
     "NOTIFIER_DB_DRIVER": "sqlite",
     "NOTIFIER_DEFAULT_USER": "",

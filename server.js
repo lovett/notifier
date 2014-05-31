@@ -12,7 +12,6 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var crypto = require('crypto');
 
-
 /**
  * Environment variables
  * --------------------------------------------------------------------
@@ -33,6 +32,7 @@ Object.keys(env).forEach(function (key) {
 });
 
 env = {};
+ 
 
 /**
  * Logging configuration
@@ -51,6 +51,19 @@ var log = bunyan.createLogger({
         res: bunyan.stdSerializers.res
     }
 });
+
+/**
+ * Application secret
+ * --------------------------------------------------------------------
+ */
+var APPSECRET;
+try {
+    APPSECRET = crypto.randomBytes(60).toString('hex');
+    log.trace('app secret generated');
+} catch (ex) {
+    log.fatal('unable to generate app secret - entropy sources drained?');
+    process.exit();
+}
 
 
 /**
@@ -97,7 +110,7 @@ var User = sequelize.define('User', {
 }, {
     instanceMethods: {
         getChannel: function () {
-            var hmac = crypto.createHmac('sha256', process.env.NOTIFIER_SECRET);
+            var hmac = crypto.createHmac('sha256', APPSECRET);
             hmac.setEncoding('hex');
             hmac.write(this.id.toString());
             hmac.end();
@@ -259,6 +272,55 @@ var bayeux = new faye.NodeAdapter({
 
 
 /**
+ * Websocket helpers
+ * --------------------------------------------------------------------
+ */
+var verifySubscription = function (message, callback) {
+    log.info({message: message}, 'verifying subscription request');
+
+    if (!message.ext.authToken) {
+        log.warn({message: message}, 'credentials missing');
+        message.error = '401::Credentials missing';
+        callback(message);
+        return;
+    }
+    
+    
+    Token.find({
+        include: [ User ],
+        where: {
+            value: message.ext.authToken
+        }
+    }).success(function (token) {
+        if (!token) {
+            log.warn({message: message}, 'invalid credentials');
+            message.error = '401::Invalid Credentials';
+            callback(message);
+            return;
+        }
+        
+        // Is the requested channel still valid?
+        if (message.subscription.replace('/messages/', '') !== token.user.getChannel()) {
+            log.info({channel: message.subscription}, 'stale channel');
+            message.error = '301::' + token.user.getChannel();
+            callback(message);
+            return;
+        }
+
+        // Looks good
+        log.info('subscription looks good');
+        callback(message);
+        
+    }).error(function () {
+        log.error({message: message}, 'token lookup failed');
+        message.error = '500::Unable to verify credentials at this time';
+        callback(message);
+        return;
+    });
+};
+
+
+/**
  * Websocket authorization
  * --------------------------------------------------------------------
  * Websocket clients must provide a token during subscription to
@@ -272,48 +334,26 @@ bayeux.addExtension({
 
         // Subscriptions must be accompanied by a token
         if (message.channel === '/meta/subscribe') {
-            log.info({message: message}, 'subscription request');
-            if (!message.ext.authToken) {
-                log.warn({message: message}, 'credentials missing');
-                message.error = '401::Credentials missing';
-                return callback(message);
-            }
-
-            Token.find({
-                include: [ User ],
-                where: {
-                    value: message.ext.authToken
-                }
-            }).success(function (token) {
-                if (!token) {
-                    log.warn({message: message}, 'invalid credentials');
-                    message.error = '401::Invalid Credentials';
-                    return;
-                }
-            }).error(function () {
-                log.error({message: message}, 'token lookup failed');
-                message.error = '500::Unable to verify credentials at this time';
-                return;
-            });
-
-
-            return callback(message);
+            verifySubscription(message, callback);
+            return;
         }
 
         // Other meta messages are allowed (handshake, etc)
         if (message.channel.indexOf('/meta/') === 0) {
             return callback(message);
         }
-
+        
         // Anything else must have the application secret
-        if (message.ext.secret !== process.env.NOTIFIER_SECRET) {
-            log.warn({message: message}, 'suspicious message');
+        if (message.ext.secret !== APPSECRET) {
+            log.warn({message: message}, 'suspicious message, no secret');
             message.error = '403::Forbidden';
+        } else {
+            log.info({message: message}, 'legit message');
         }
-
-        // The application secret is never revealed
+        
+        // The application secret should never be revealed
         delete message.ext.secret;
-
+        
         return callback(message);
     }
 });
@@ -345,7 +385,7 @@ var bayeuxClient = bayeux.getClient();
 bayeuxClient.addExtension({
     outgoing: function(message, callback) {
         message.ext = message.ext || {};
-        message.ext.secret = process.env.NOTIFIER_SECRET;
+        message.ext.secret = APPSECRET;
         callback(message);
     }
 });
@@ -447,7 +487,8 @@ var requireAuth = function (req, res, next) {
 };
 
 var publishMessage = function (user, message) {
-    bayeuxClient.publish('/messages/' + user.getChannel(), JSON.stringify(message));
+    var channel = '/messages/' + user.getChannel();
+    bayeuxClient.publish(channel, JSON.stringify(message));
 };
 
 
@@ -550,7 +591,7 @@ app.get('/archive/:count/:u?', requireAuth, function (req, res, next) {
  * This should come after all other routes and middleware (other than
  * the response logger)
  */
-app.use(function(err, req, res, next){
+app.use(function(err, req, res, next) {
     res.send(err.status);
     next();
 });

@@ -82,6 +82,7 @@ app.factory('User', [function () {
         return '/messages/' + sessionStorage.channel || false;
     };
 
+    
     return {
         getToken: getToken,
 
@@ -121,7 +122,6 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
     'use strict';
     var client, subscription;
 
-
     return {
         init: function () {
             client = new Faye.Client($location.absUrl() + 'faye', {
@@ -129,6 +129,21 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
             });
 
             client.addExtension({
+                incoming: function (message, callback) {
+                    if (message.error) {
+                        var segments = message.error.split('::');
+                        var code = parseInt(segments[0], 10);
+                        var value = segments[1];
+
+                        if (code === 301) {
+                            $rootScope.$broadcast('connection:resubscribe', value);
+                        } else {
+                            $log.error(message.error);
+                        }
+                    }
+                    $rootScope.$apply();
+                    return callback(message);
+                },
                 outgoing: function(message, callback) {
                     if (message.channel !== '/meta/subscribe') {
                         return callback(message);
@@ -138,8 +153,9 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
                         message.ext = {};
                     }
                     message.ext.authToken = User.getToken();
+                    $rootScope.$apply();
 
-                    callback(message);
+                    return callback(message);
                 }
             });
 
@@ -156,6 +172,7 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
             });
         },
         subscribe: function (channel, callback) {
+            $log.info('Subscribing to ' + channel);
             subscription = client.subscribe(channel, function (message) {
                 if (callback) {
                     if (typeof message === 'string') {
@@ -180,10 +197,18 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
 
         unsubscribe: function() {
             if (angular.isDefined(client)) {
+                client.unsubscribe();
+                $log.info('Unsubscribed client');
+            }
+        },
+        
+        disconnect: function () {
+            if (angular.isDefined(client)) {
                 client.disconnect();
-                $log.info('Disconnected');
+                $log.info('Disconnected client');
             }
         }
+            
     };
 }]);
 

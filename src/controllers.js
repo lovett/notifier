@@ -18,11 +18,13 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
 
     Faye.init();
 
-    $log.info('Subscribing to ' + User.getChannel());
+    var subscribe = function () {
+        Faye.subscribe(User.getChannel(), function (message) {
+            Queue.add(message);
+        });
+    };
 
-    Faye.subscribe(User.getChannel(), function (message) {
-        Queue.add(message);
-    });
+    subscribe();
 
     $scope.$on('connection:changed', function (e, state) {
         $log.info('Connection status has changed to ' + state);
@@ -30,6 +32,15 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
         if (state === 'connected') {
             Queue.populate(User.getToken());
         }
+    });
+
+    $scope.$on('connection:resubscribe', function (e, channel) {
+        $log.info('Redirected to a new channel, resubscribing');
+        $log.info('Old channel: ' + User.getChannel());
+        User.setChannel(channel);
+        $log.info('New channel: ' + User.getChannel());
+        Faye.unsubscribe();
+        subscribe();
     });
 
     $scope.browserNotification = BrowserNotification;
@@ -78,6 +89,7 @@ appControllers.controller('LoginController', ['$scope', '$rootScope', '$route', 
     if ($route.current.action === 'logout') {
         User.logOut();
         Faye.unsubscribe();
+        Faye.disconnect();
         Queue.sinceNow();
     }
 }]);
