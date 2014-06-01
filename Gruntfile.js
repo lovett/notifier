@@ -133,15 +133,6 @@ module.exports = function(grunt) {
             }
         },
 
-        nodemon: {
-            dev: {
-                options: {
-                    file: "server.js",
-                    ignoredFiles: ["public/**", "src/**", "Gruntfile.js"],
-                }
-            }
-        },
-
         shell: {
             "favicons-dev": {
                 command: [
