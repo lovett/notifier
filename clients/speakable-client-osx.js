@@ -1,36 +1,30 @@
-#!/usr/bin/env node
-
 var path = require('path');
-var faye = require('faye');
 var util = require('util');
 var execSync = require('exec-sync');
-var program = require('commander');
-
-program.option('-s, --server <url>', 'The notifier server to connect to, such as http://localhost:8080/faye');
-program.parse(process.argv);
-
-if (!program.server) {
-    program.help();
+var client = require('./client');
+var applescriptPath = path.join(__dirname, 'speak.scpt');
+var remoteServer = process.argv[2];
+            
+if (!remoteServer) {
+    console.error('Specify the server to connect to. For example, http://localhost:8080');
+    process.exit();
 }
 
-var client = new faye.Client(program.server, {
-    retry: 10,
-    timeout: 45
-});
+// Using the contents of $HOME/.notifier, authenticate with the server
+// and get an auth token
+client.authorize(remoteServer);
 
-client.subscribe("/messages/speech/*", function (message) {
-    try {
-        message = JSON.parse(message);
-    } catch (e) {
-        return;
-    }
+// Listen for messages
+client.emitter.on('message', function (message) {
+    var command = util.format('osascript %s "%s"', applescriptPath, message.title.replace(/"/g, '\\"'));
 
-    var script_path = path.join(__dirname, 'speak.scpt');
-
-    var command = util.format("osascript %s '%s'", script_path, message.title.replace(/"/g, '\\"'));
+    // execSync prevents simultaneous enunciations when messages
+    // arrive in quick succession
     var result = execSync(command, true);
-
+    
     if (result.sterr !== '') {
         console.log(result.stderr);
     }
 });
+
+
