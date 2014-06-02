@@ -100,6 +100,7 @@ module.exports = function(grunt) {
                     form: {
                         title: "Test message",
                         body: "Testing testing. This message was sent via Grunt on " + new Date(),
+                        url: "http://example.com",
                         u: "<%= token.token %>"
                     }
                 }

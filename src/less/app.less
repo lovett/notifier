@@ -35,10 +35,6 @@ BODY {
     font-family: 'Roboto', sans-serif;
 }
 
-MAIN.message-wrapper {
-    margin: 0 1em;
-}
-
 MAIN.flex-wrapper {
     min-height: 100%;
     display: -webkit-flex;
@@ -46,7 +42,7 @@ MAIN.flex-wrapper {
 }
 
 A {
-    color: #65809D;
+    color: @green;
     text-decoration: none;
 }
 
@@ -69,12 +65,10 @@ A:hover {
 }
 
 HEADER {
-    margin-bottom: 1em;
     color: white;
-    line-height: 3em;
     font-size: .75em;
     letter-spacing: 1px;
-    padding: 0 1em;
+    padding: .75em;
     white-space: nowrap;
 
     .state {
@@ -98,24 +92,28 @@ HEADER {
 
     A {
         color: white;
-        text-decoration: underline;
     }
 
     .right A {
-        margin-left: 1.5em;
+        padding: .75em;
         text-transform: uppercase;
-        display: inline-block;
-        color: white;
+    }
+
+    .right A:hover {
+        background-color: rgba(255, 255, 255, .3);
+        color: black;
         text-decoration: none;
     }
+
+
 }
 
 .message {
-    background-color: white;
-    margin-bottom: 1em;
+    background-color: rgba(255, 255, 255, .85);
+    margin-bottom: .5em;
     overflow: hidden;
     position: relative;
-    padding: 1em;
+    padding: 1em 1.5em;
 
     H1 {
         font-size: 1.25em;
