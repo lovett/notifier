@@ -82,7 +82,7 @@ app.factory('User', [function () {
         return '/messages/' + sessionStorage.channel || false;
     };
 
-    
+
     return {
         getToken: getToken,
 
@@ -91,7 +91,7 @@ app.factory('User', [function () {
         },
 
         getChannel: getChannel,
-        
+
         setChannel: function (value) {
             sessionStorage.channel = value;
         },
@@ -201,14 +201,14 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
                 $log.info('Unsubscribed client');
             }
         },
-        
+
         disconnect: function () {
             if (angular.isDefined(client)) {
                 client.disconnect();
                 $log.info('Disconnected client');
             }
         }
-            
+
     };
 }]);
 
@@ -267,7 +267,6 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
 
         setAsOfDate: function (date) {
             date = new Date(date || new Date());
-
             localStorage.asOf = date;
         },
 
@@ -278,9 +277,7 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
 
         messages: {},
 
-        isEmpty: function () {
-            return Object.keys(this.messages).length === 0;
-        },
+        length: 0,
 
         populate: function (token) {
             var self = this;
@@ -326,10 +323,12 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
             if (message.group !== 'internal') {
                 BrowserNotification.send(message);
             }
+            this.length = this.length + 1;
         },
 
         remove: function (publicId) {
             delete this.messages[publicId];
+            this.length = this.length - 1;
         }
     };
 }]);

@@ -70,17 +70,30 @@ A:hover {
 
 HEADER {
     margin-bottom: 1em;
-    background-color: #666;
-    background-color: #28572B;
     color: white;
     line-height: 3em;
     font-size: .75em;
     letter-spacing: 1px;
-    padding: 0 1.5em;
+    padding: 0 1em;
     white-space: nowrap;
 
     .state {
-        text-transform: capitalize;
+        font-size: .75em;
+        text-transform: uppercase;
+        -webkit-border-radius: 1em;
+        -moz-border-radius: 1em;
+        border-radius: 1em;
+        padding: .5em 1em;
+        margin-right: 1em;
+    }
+
+    .state.connected {
+        background-color: green;
+    }
+
+    .state.disconnected {
+        background-color: #666;
+        color: #ccc;
     }
 
     A {

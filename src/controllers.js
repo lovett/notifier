@@ -13,7 +13,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
     }
 
     $log.info('Logged in');
-    
+
     $rootScope.queue = Queue;
 
     Faye.init();
@@ -29,6 +29,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
     $scope.$on('connection:changed', function (e, state) {
         $log.info('Connection status has changed to ' + state);
         $rootScope.connectionStatus = state;
+        $rootScope.connectionChangedAt = new Date();
         if (state === 'connected') {
             Queue.populate(User.getToken());
         }
