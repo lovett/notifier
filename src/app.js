@@ -273,6 +273,7 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
         sinceNow: function () {
             this.setAsOfDate();
             this.messages = {};
+            this.length = 0;
         },
 
         messages: {},
