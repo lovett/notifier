@@ -226,7 +226,7 @@ sequelize.sync();
 
 // Create the default user
 if (process.env.NOTIFIER_DEFAULT_USER) {
-    User.findOrCreate({ username: process.env.NOTIFIER_DEFAULT_USER}).success(function (user, created) {
+    User.findOrCreate({ username: process.env.NOTIFIER_DEFAULT_USER.toLowerCase()}).success(function (user, created) {
         if (created === true) {
             var salt = bcrypt.genSaltSync(10);
             user.values.passwordHash = bcrypt.hashSync(process.env.NOTIFIER_DEFAULT_PASSWORD, salt);
@@ -244,6 +244,10 @@ passport.use(new LocalStrategy(function (username, password, done) {
     if (username === false || password === false) {
         return done();
     }
+
+    // username is case insensitive
+    // password is case sensitive
+    username = username.toLowerCase();
 
     User.find({ where: { username: username } }).success(function (user) {
         if (!user) {
