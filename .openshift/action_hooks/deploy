@@ -1,0 +1,33 @@
+#!/usr/bin/env node
+
+/**
+ * Populate the file env.json with modified values derived from
+ * OpenShift environment variables
+ *
+ * OpenShift environment variables have a trailing slash
+ */
+
+var fs = require('fs');
+
+console.log('Starting deploy hook');
+
+var appEnv = {};
+
+appEnv.NOTIFIER_LOG = process.env.OPENSHIFT_LOG_DIR + 'notifier.log';
+appEnv.NOTIFIER_HTTP_PORT = process.env.OPENSHIFT_NODEJS_PORT;
+appEnv.NOTIFIER_SQLITE_PATH = process.env.OPENSHIFT_DATA_DIR + 'notifier.sqlite';
+appEnv.NOTIFIER_DB_DRIVER = 'sqlite';
+
+// SSL vars (NOTIFIER_SSL, NOTIFIER_SSL_KEY, NOTIFIER_SSL_CERT) are not needed
+// Set NOTIFIER_DEFAULT_USER and NOTIFIER_DEFAULT_PASSWORD via rch, not here
+
+var appEnvString = JSON.stringify(appEnv, null, 2);
+
+fs.writeFile(process.env.OPENSHIFT_REPO_DIR + 'env.json', appEnvString, function (err) {
+    if (err) {
+        console.log(err);
+    }
+
+    console.log('env.json: ' + appEnvString);
+    console.log('Finished deploy hook');
+});

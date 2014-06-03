@@ -1,0 +1,20 @@
+#!/bin/bash
+
+#
+# Install npm packages using the alterate versions of node and npm
+# installed via pre_build
+#
+# OpenShift environment variables have a trailing slash
+#
+
+echo "Starting build hook"
+
+cd $OPENSHIFT_REPO_DIR
+
+if [[ -f "package.json.bak" ]]; then
+    mv package.json.bak package.json
+fi
+
+npm install
+
+echo "Finished build hook"

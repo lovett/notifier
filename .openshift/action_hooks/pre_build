@@ -1,0 +1,42 @@
+#!/bin/bash
+
+#
+# Install an alternative version of node and npm
+#
+# OpenShift environment variables have a trailing slash
+#
+
+echo "Starting pre_build hook"
+
+ARCH="linux-x64"
+VERSION_FILE="${OPENSHIFT_REPO_DIR}.openshift/node_version"
+
+# Download node and symlink it into the path
+if [[ -f "$VERSION_FILE" ]]; then
+    NODE_VERSION=$(cat "${VERSION_FILE}");
+
+    ARCHIVE="node-${NODE_VERSION}-${ARCH}.tar.gz"
+    DOWNLOAD_URL="http://nodejs.org/dist/$NODE_VERSION/$ARCHIVE"
+    DESTINATION="${OPENSHIFT_DATA_DIR}${ARCHIVE}"
+    NODE_DIR=${ARCHIVE%.tar.gz}
+
+    if [[ ! -d "$NODE_DIR" ]]; then
+        echo "Downloading $DOWNLOAD_URL"
+        curl -s -L -o "$DESTINATION" "$DOWNLOAD_URL"
+        tar -x -z -C "$OPENSHIFT_DATA_DIR" -f "$DESTINATION"
+        
+        mkdir -p "${HOME}/.node_modules/.bin"
+        
+        ln -sf "${OPENSHIFT_DATA_DIR}${NODE_DIR}/bin/node" "${HOME}/.node_modules/.bin/"
+        ln -sf "${OPENSHIFT_DATA_DIR}${NODE_DIR}/bin/npm" "${HOME}/.node_modules/.bin/"
+    fi
+fi
+
+# Move package.json out of the way to block the Openshift post-receive hook
+# See https://github.com/ramr/nodejs-custom-version-openshift/blob/b99acf40eff4bb67f9bd8d1464fefd9e0a9ec930/.openshift/action_hooks/pre_build
+if [[ -f "${OPENSHIFT_REPO_DIR}package.json" ]]; then
+    mv  "${OPENSHIFT_REPO_DIR}package.json" "${OPENSHIFT_REPO_DIR}package.json.bak"
+fi
+
+echo "Finished pre_build hook"
+
