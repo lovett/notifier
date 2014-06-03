@@ -1,7 +1,8 @@
 #!/bin/bash
 
 #
-# Install an alternative version of node and npm
+# Install an alternative version of node and npm.
+# Install global versions of grunt and bower 
 #
 # OpenShift environment variables have a trailing slash
 #
@@ -38,5 +39,12 @@ if [[ -f "${OPENSHIFT_REPO_DIR}package.json" ]]; then
     mv  "${OPENSHIFT_REPO_DIR}package.json" "${OPENSHIFT_REPO_DIR}package.json.bak"
 fi
 
+# Install grunt-cli globally
+npm install -g grunt-cli
+ln -sf "${OPENSHIFT_DEPENDENCIES_DIR}nodejs/node_modules/lib/node_modules/grunt-cli/bin/grunt" "${HOME}.node_modules/.bin/"
+
+# Install bower globally
+npm install -g bower
+ln -sf "${OPENSHIFT_DEPENDENCIES_DIR}nodejs/node_modules/lib/node_modules/bower/bin/bower" "${HOME}.node_modules/.bin/"
 echo "Finished pre_build hook"
 
