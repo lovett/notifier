@@ -15,6 +15,7 @@ var appEnv = {};
 
 appEnv.NOTIFIER_LOG = process.env.OPENSHIFT_LOG_DIR + 'notifier.log';
 appEnv.NOTIFIER_HTTP_PORT = process.env.OPENSHIFT_NODEJS_PORT;
+appEnv.NOTIFIER_HTTP_IP = process.env.OPENSHIFT_NODEJS_IP;
 appEnv.NOTIFIER_SQLITE_PATH = process.env.OPENSHIFT_DATA_DIR + 'notifier.sqlite';
 appEnv.NOTIFIER_DB_DRIVER = 'sqlite';
 
