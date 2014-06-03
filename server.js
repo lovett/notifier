@@ -619,12 +619,12 @@ app.use(function(req, res) {
  * --------------------------------------------------------------------
  */
 if (process.env.NOTIFIER_SSL !== '1') {
-    var server = app.listen(process.env.NOTIFIER_HTTP_IP + ':' + process.env.NOTIFIER_HTTP_PORT);
+    var server = app.listen(process.env.NOTIFIER_HTTP_PORT, process.env.NOTIFIER_HTTP_IP);
 } else {
     var server = https.createServer({
         key: fs.readFileSync(process.env.NOTIFIER_SSL_KEY),
         cert: fs.readFileSync(process.env.NOTIFIER_SSL_CERT)
-    }, app).listen(process.env.NOTIFIER_HTTP_IP + ':' + process.env.NOTIFIER_HTTP_PORT);
+    }, app).listen(process.env.NOTIFIER_HTTP_PORT, process.env.NOTIFIER_HTTP_IP);
 }
 
 // Attach to the express server returned by listen, rather than app itself.
