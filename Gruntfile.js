@@ -208,6 +208,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-dev", "ver"]);
+    grunt.registerTask("build-production", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-production", "ver"]);
     grunt.registerTask("default", ["githooks", "build", "watch"]);
 
 
