@@ -1,7 +1,7 @@
 /* global angular */
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('MessageController', ['$rootScope', '$scope', '$window', '$location', 'Faye', 'BrowserNotification', 'Queue', 'User', '$log', function ($rootScope, $scope, $window, $location, Faye, BrowserNotification, Queue, User, $log) {
+appControllers.controller('MessageController', ['$rootScope', '$scope', '$window', '$document', '$location', 'Faye', 'BrowserNotification', 'Queue', 'User', '$log', function ($rootScope, $scope, $window, $document, $location, Faye, BrowserNotification, Queue, User, $log) {
     'use strict';
 
     $scope.isLoggedIn = User.isLoggedIn();
@@ -16,7 +16,18 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
 
     $rootScope.queue = Queue;
 
-    Faye.init();
+    var websocketPort;
+
+    angular.forEach($document.find('META'), function (tag) {
+        if (!tag.name || !tag.content) {
+            return;
+        }
+        if (tag.name === 'websocket port') {
+            websocketPort = parseInt(tag.content, 10) || 0;
+        }
+    });
+
+    Faye.init(websocketPort);
 
     var subscribe = function () {
         Faye.subscribe(User.getChannel(), function (message) {

@@ -134,6 +134,17 @@ module.exports = function(grunt) {
             }
         },
 
+        replace: {
+            html: {
+                src: ["public/*.html"],
+                overwrite: true,
+                replacements: [{
+                    from: "<meta name=\"websocket port\" content=\"\" />",
+                    to: "<meta name=\"websocket port\" content=\"<%= env.NOTIFIER_WEBSOCKET_PORT %>\" />"
+                }]
+            }
+        },
+
         shell: {
             "favicons-dev": {
                 command: [
@@ -207,8 +218,8 @@ module.exports = function(grunt) {
         touch("server.js");
     });
 
-    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-dev", "ver"]);
-    grunt.registerTask("build-production", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-production", "ver"]);
+    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-dev", "replace", "ver"]);
+    grunt.registerTask("build-production", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-production", "replace", "ver"]);
     grunt.registerTask("default", ["githooks", "build", "watch"]);
 
 

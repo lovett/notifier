@@ -19,6 +19,7 @@
     "exec-sync": "0.1.6",
     "express": "4.1.0",
     "faye": "1.0.1",
+    "grunt-text-replace": "^0.3.12",
     "passport": "0.2.0",
     "passport-local": "1.0.0",
     "request": "2.36.0",

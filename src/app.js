@@ -123,7 +123,14 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
     var client, subscription;
 
     return {
-        init: function () {
+        init: function (port) {
+            port = parseInt(port, 10) || 0;
+            if (port === 0) {
+                port = $location.port();
+            }
+            
+            var url = $location.protocol() + '://' + $location.host() + ':' + port + '/faye';
+            $log.info('Faye url is ' + url);
             client = new Faye.Client($location.absUrl() + 'faye', {
                 retry: 10
             });
