@@ -407,6 +407,18 @@ app.disable('x-powered-by');
  * --------------------------------------------------------------------
  */
 
+// Requre HTTPS
+if (process.env.NOTIFIER_FORCE_HTTPS) {
+    app.use(function (req, res, next) {
+        if (req.headers['x-forwarded-proto'] === 'http') {
+            res.redirect('https://' + req.headers['x-forwarded-host'] + req.url);
+        } else {
+            return next();
+        }
+    });
+}
+
+
 // Enable live reload (for dev environment)
 if (process.env.NOTIFIER_LIVERELOAD) {
     app.use(require('connect-livereload')({
