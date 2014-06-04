@@ -480,7 +480,9 @@ var requireAuth = function (req, res, next) {
     var tokenValue = req.headers['x-token'] || req.body.u || req.params.u;
 
     if (!tokenValue) {
-        res.send(401);
+        var err = new Error('Unauthorized');
+        err.status = 401;
+        next(err);
         return;
     }
 
@@ -489,7 +491,9 @@ var requireAuth = function (req, res, next) {
         where: { value: tokenValue }
     }).success(function (token) {
         if (!token) {
-            res.send(401);
+            var err = new Error('Unauthorized');
+            err.status = 401;
+            next(err);
             return;
         }
 
@@ -497,7 +501,9 @@ var requireAuth = function (req, res, next) {
         next();
 
     }).error(function () {
-        res.send(500);
+        var err = new Error('Application error');
+        err.status = 500;
+        next(err);
         return;
     });
 };
@@ -567,11 +573,15 @@ app.post('/message', requireAuth, function (req, res, next) {
             res.send(204);
             next();
         }).error(function (error) {
-            res.json(400, error);
+            var err = new Error(error);
+            err.status = 400;
+            next(err);
             next();
         });
     }).error(function (error) {
-        res.json(400, error);
+        var err = new Error(error);
+        err.status = 400;
+        next(err);
         next();
     });
 });
@@ -621,6 +631,7 @@ app.use(function(err, req, res, next) {
 app.use(function(req, res, next) {
     log.info({
         requestId: req._requestId,
+        req: req,
         res: res
     }, 'end');
     next();
