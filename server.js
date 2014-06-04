@@ -618,11 +618,12 @@ app.use(function(err, req, res, next) {
  * --------------------------------------------------------------------
  * Log the response and its corresponding request id
  */
-app.use(function(req, res) {
+app.use(function(req, res, next) {
     log.info({
         requestId: req._requestId,
         res: res
     }, 'end');
+    next();
 });
 
 
