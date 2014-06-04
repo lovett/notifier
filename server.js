@@ -519,10 +519,9 @@ var publishMessage = function (user, message) {
  * Routing
  * --------------------------------------------------------------------
  */
-app.get(/^\/login|logout$/, function (req, res, next) {
+app.get(/^\/(login|logout)$/, function (req, res) {
     // For pushState compatibility, some URLs are treated as aliases of index.html
     res.sendfile(__dirname + '/public/index.html');
-    next();
 });
 
 app.post('/auth', passport.authenticate('local', { session: false }), function (req, res, next) {
@@ -535,7 +534,6 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
     var token = Token.build({
         label: tokenLabel
     });
-
 
     token.save().success(function (token) {
         token.setUser(req.user).success(function () {
