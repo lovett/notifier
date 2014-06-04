@@ -57,8 +57,8 @@ module.exports = function(grunt) {
                               "bower_components/angular/angular.js",
                               "bower_components/angular-cookies/angular-cookies.min.js.map",
                               "bower_components/angular-resource/angular-resource.min.js.map",
-                              "src/templates/**",
                               "src/svg/megaphone.svg",
+                              "src/index.html",
                               "src/robots.txt"
                              ],
                         dest: "public/"
@@ -68,6 +68,12 @@ module.exports = function(grunt) {
                         cwd: "src/images/",
                         src: ["**"],
                         dest: "public/images"
+                    },
+                    {
+                        expand: true,
+                        cwd: "src/templates/",
+                        src: ["**"],
+                        dest: "public/templates"
                     }
                 ]
             }

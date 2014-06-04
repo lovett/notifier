@@ -18,7 +18,7 @@ var request = require('request');
  * will be broadcast via the 'message' event.
  */
 var initClient = function (server, auth) {
-    var client = new faye.Client(server + '/faye', {
+    var client = new faye.Client(server + '/messages', {
         retry: 10,
         timeout: 45
     });

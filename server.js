@@ -270,7 +270,7 @@ passport.use(new LocalStrategy(function (username, password, done) {
  * --------------------------------------------------------------------
  */
 var bayeux = new faye.NodeAdapter({
-    mount: '/faye',
+    mount: '/messages',
     timeout: 30
 });
 

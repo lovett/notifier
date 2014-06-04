@@ -26,18 +26,18 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($h
 
     $routeProvider.when('/login', {
         controller: 'LoginController',
-        templateUrl: '/login.html'
+        templateUrl: '/templates/login.html'
     });
 
     $routeProvider.when('/logout', {
         controller: 'LoginController',
-        templateUrl: '/logout.html',
+        templateUrl: '/templates/logout.html',
         action: 'logout'
     });
 
     $routeProvider.when('/', {
         controller: 'MessageController',
-        templateUrl: '/messages.html'
+        templateUrl: '/templates/messages.html'
     });
 
     $routeProvider.otherwise('/', {
@@ -129,9 +129,9 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
                 port = $location.port();
             }
             
-            var url = $location.protocol() + '://' + $location.host() + ':' + port + '/faye';
+            var url = $location.protocol() + '://' + $location.host() + ':' + port + '/messages';
             $log.info('Faye url is ' + url);
-            client = new Faye.Client($location.absUrl() + 'faye', {
+            client = new Faye.Client(url, {
                 retry: 10
             });
 
