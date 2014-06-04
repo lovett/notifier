@@ -16,6 +16,7 @@
     "body-parser": "1.0.2",
     "bunyan": "0.22.3",
     "commander": "2.2.0",
+    "compression": "^1.0.6",
     "exec-sync": "0.1.6",
     "express": "4.1.0",
     "faye": "1.0.1",

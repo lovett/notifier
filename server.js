@@ -11,6 +11,7 @@ var bcrypt = require('bcrypt');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var crypto = require('crypto');
+var compress = require('compression');
 
 /**
  * Environment variables
@@ -430,7 +431,7 @@ if (process.env.NOTIFIER_LIVERELOAD) {
 app.use(responseTime());
 
 // Use compression
-//app.use(express.compress());
+app.use(compress());
 
 // Log requests and track them via an id
 app.use(function(req, res, next) {
