@@ -58,7 +58,8 @@ module.exports = function(grunt) {
                               "bower_components/angular-cookies/angular-cookies.min.js.map",
                               "bower_components/angular-resource/angular-resource.min.js.map",
                               "src/templates/**",
-                              "src/svg/megaphone.svg"
+                              "src/svg/megaphone.svg",
+                              "src/robots.txt"
                              ],
                         dest: "public/"
                     },
