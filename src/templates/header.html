@@ -6,10 +6,9 @@
     </div>
 
     <div class="right">
-        <a ng-click="browserNotification.enable()" ng-href="" class="button" ng-show="browserNotification.supported && browserNotification.enabled == false">Browser Notifications</a>
         <a ng-click="clearAll()" ng-if="queue.length > 1" ng-href="" class="button">Clear All</a>
-
         <a ng-if="isLoggedIn" ng-href="/logout">Log out</a>
+        <a ng-click="browserNotification.enable()" ng-href="" class="button" ng-show="browserNotification.supported && browserNotification.enabled == false">Browser Notifications</a>
 
     </div>
 </header>
