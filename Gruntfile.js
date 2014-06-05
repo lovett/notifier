@@ -136,6 +136,7 @@ module.exports = function(grunt) {
                 },
                 files: {
                     "public/all.min.css": ["bower_components/normalize-css/normalize.css",
+                                           "bower_components/angular/angular-csp.css",
                                            "src/less/*"]
                 }
             }

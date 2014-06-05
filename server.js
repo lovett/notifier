@@ -12,6 +12,7 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var crypto = require('crypto');
 var compress = require('compression');
+var util = require('util');
 
 /**
  * Environment variables
@@ -408,7 +409,52 @@ app.disable('x-powered-by');
  * --------------------------------------------------------------------
  */
 
-// Requre HTTPS
+// Enable live reload (for dev environment)
+if (process.env.NOTIFIER_LIVERELOAD) {
+    app.use(require('connect-livereload')({
+        port: process.env.NOTIFIER_LIVERELOAD
+    }));
+}
+
+// Security safeguards
+app.use(function (req, res, next) {
+    // Clickjacking - see https://www.owasp.org/index.php/Clickjacking
+    // --------------------------------------------------------------------
+    res.setHeader('X-Frame-Options', 'DENY');
+    
+    // Content security policy - see http://content-security-policy.com
+    // --------------------------------------------------------------------
+
+    // get hostname without port
+    var hostname = req.headers['x-forwarded-host'] || req.headers.host;
+    hostname = hostname.replace(/:[0-9]+$/, '', hostname);  
+
+    // account for custom websocket port
+    var connectSrc = 'connect-src \'self\'';
+    var scriptSrc = 'script-src \'self\'';
+
+
+    if (process.env.NOTIFIER_WEBSOCKET_PORT) {
+        connectSrc += util.format(' ws://%s:%s', hostname, process.env.NOTIFIER_WEBSOCKET_PORT);
+    }
+
+    if (process.env.NOTIFIER_LIVERELOAD) {
+        connectSrc += util.format(' ws://%s:%s', hostname, process.env.NOTIFIER_LIVERELOAD);
+        scriptSrc += util.format(' \'unsafe-inline\' http://%s:%s', hostname, process.env.NOTIFIER_LIVERELOAD);
+    }
+
+    var headerValue = [];
+    headerValue.push('default-src \'self\'');
+    headerValue.push('style-src \'self\' fonts.googleapis.com');
+    headerValue.push('font-src themes.googleusercontent.com');
+    headerValue.push(connectSrc);
+    headerValue.push(scriptSrc);
+
+    res.setHeader('Content-Security-Policy', headerValue.join('; '));
+    next();
+});
+
+// Require HTTPS
 if (process.env.NOTIFIER_FORCE_HTTPS) {
     app.use(function (req, res, next) {
         if (req.headers['x-forwarded-proto'] === 'http') {
@@ -417,14 +463,6 @@ if (process.env.NOTIFIER_FORCE_HTTPS) {
             return next();
         }
     });
-}
-
-
-// Enable live reload (for dev environment)
-if (process.env.NOTIFIER_LIVERELOAD) {
-    app.use(require('connect-livereload')({
-        port: process.env.NOTIFIER_LIVERELOAD
-    }));
 }
 
 // Populate the X-Response-Time header
