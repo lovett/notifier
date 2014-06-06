@@ -571,7 +571,7 @@ app.get(/^\/(login|logout)$/, function (req, res) {
     res.sendfile(__dirname + '/public/index.html');
 });
 
-app.post('/auth', passport.authenticate('local', { session: false }), function (req, res, next) {
+app.post('/auth', passport.authenticate('local', { session: false }), function (req, res) {
     var tokenLabel = req.body.label || '';
     tokenLabel = tokenLabel.replace(/[^a-zA-Z0-9-\.]/, '');
     if (tokenLabel === '') {
@@ -588,11 +588,9 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
                 token: token.value,
                 channel: req.user.getChannel()
             });
-            next();
         });
     }).error(function (error) {
         res.json(400, error);
-        next();
     });
 });
 
