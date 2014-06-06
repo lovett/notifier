@@ -444,11 +444,11 @@ app.use(function (req, res, next) {
 
 
     if (process.env.NOTIFIER_WEBSOCKET_PORT) {
-        connectSrc += util.format(' ws://%s:%s', hostname, process.env.NOTIFIER_WEBSOCKET_PORT);
+        connectSrc += util.format(' %s://%s:%s', (process.env.NOTIFIER_FORCE_HTTPS === true)? 'wss':'ws', hostname, process.env.NOTIFIER_WEBSOCKET_PORT);
     }
 
     if (process.env.NOTIFIER_LIVERELOAD) {
-        connectSrc += util.format(' ws://%s:%s', hostname, process.env.NOTIFIER_LIVERELOAD);
+        connectSrc += util.format(' %s://%s:%s', (process.env.NOTIFIER_FORCE_HTTPS === true)? 'wss':'ws', hostname, process.env.NOTIFIER_LIVERELOAD);
         scriptSrc += util.format(' \'unsafe-inline\' http://%s:%s', hostname, process.env.NOTIFIER_LIVERELOAD);
     }
 
