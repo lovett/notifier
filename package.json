@@ -26,7 +26,8 @@
     "request": "2.36.0",
     "response-time": "2.0.0",
     "sequelize": "1.7.8",
-    "sqlite3": "2.2.3"
+    "sqlite3": "2.2.3",
+    "useragent": "^2.0.8"
   },
   "devDependencies": {
     "connect-livereload": "0.4.0",

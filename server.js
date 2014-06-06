@@ -13,6 +13,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var crypto = require('crypto');
 var compress = require('compression');
 var util = require('util');
+var useragent = require('useragent');
 
 /**
  * Environment variables
@@ -34,7 +35,7 @@ Object.keys(env).forEach(function (key) {
 });
 
 env = {};
- 
+
 
 /**
  * Logging configuration
@@ -128,12 +129,12 @@ var Token = sequelize.define('Token', {
         allowNull: false
     },
     label: {
-        type: Sequelize.STRING(20),
+        type: Sequelize.STRING(100),
         allowNull: true,
         validate: {
             len: {
-                args: [1, 20],
-                msg: 'Should be between 1 and 20 characters'
+                args: [1, 100],
+                msg: 'Should be between 1 and 100 characters'
             }
         }
     }
@@ -290,8 +291,8 @@ var verifySubscription = function (message, callback) {
         callback(message);
         return;
     }
-    
-    
+
+
     Token.find({
         include: [ User ],
         where: {
@@ -304,7 +305,7 @@ var verifySubscription = function (message, callback) {
             callback(message);
             return;
         }
-        
+
         // Is the requested channel still valid?
         if (message.subscription.replace('/messages/', '') !== token.user.getChannel()) {
             log.info({channel: message.subscription}, 'stale channel');
@@ -316,7 +317,7 @@ var verifySubscription = function (message, callback) {
         // Looks good
         log.info('subscription looks good');
         callback(message);
-        
+
     }).error(function () {
         log.error({message: message}, 'token lookup failed');
         message.error = '500::Unable to verify credentials at this time';
@@ -348,7 +349,7 @@ bayeux.addExtension({
         if (message.channel.indexOf('/meta/') === 0) {
             return callback(message);
         }
-        
+
         // Anything else must have the application secret
         if (message.ext.secret !== APPSECRET) {
             log.warn({message: message}, 'suspicious message, no secret');
@@ -356,10 +357,10 @@ bayeux.addExtension({
         } else {
             log.info({message: message}, 'legit message');
         }
-        
+
         // The application secret should never be revealed
         delete message.ext.secret;
-        
+
         return callback(message);
     }
 });
@@ -429,14 +430,14 @@ app.use(function (req, res, next) {
     if (process.env.NOTIFIER_FORCE_HTTPS === true) {
         res.setHeader('Strict-Transport-Security', util.format('max-age=%d', 60 * 60 * 24 * 30));
     }
-    
+
     // Content security policy - see
     // http://content-security-policy.com
     // --------------------------------------------------------------------
 
     // get hostname without port
     var hostname = req.headers['x-forwarded-host'] || req.headers.host;
-    hostname = hostname.replace(/:[0-9]+$/, '', hostname);  
+    hostname = hostname.replace(/:[0-9]+$/, '', hostname);
 
     // account for custom websocket port
     var connectSrc = 'connect-src \'self\'';
@@ -483,7 +484,7 @@ app.use(compress());
 // Request logging
 app.use(function(req, res, next) {
     res.locals.requestId = +new Date();
-    
+
     log.info({
         requestId: req._requestId,
         req: req
@@ -582,9 +583,10 @@ app.get(/^\/(login|logout)$/, function (req, res) {
 
 app.post('/auth', passport.authenticate('local', { session: false }), function (req, res) {
     var tokenLabel = req.body.label || '';
-    tokenLabel = tokenLabel.replace(/[^a-zA-Z0-9-\.]/, '');
+    tokenLabel = tokenLabel.replace(/[^a-zA-Z0-9-\.\/ ]/, '');
     if (tokenLabel === '') {
-        tokenLabel = null;
+        var agent =  useragent.parse(req.headers['user-agent']);
+        tokenLabel = agent.toString();
     }
 
     var token = Token.build({
