@@ -9,6 +9,17 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON("package.json"),
         env: grunt.file.readJSON("env.json"),
 
+        appcache: {
+            options: {
+                basePath: "public"
+            },
+            all: {
+                dest: "public/notifier.appcache",
+                cache: "public/**/*",
+                network: "*"
+            }
+        },
+
         token: (function () {
             try {
                 return grunt.file.readJSON(tokenFile);
@@ -226,8 +237,8 @@ module.exports = function(grunt) {
         touch("server.js");
     });
 
-    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-dev", "replace", "ver"]);
-    grunt.registerTask("build-production", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-production", "replace", "ver"]);
+    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-dev", "replace", "ver", "appcache"]);
+    grunt.registerTask("build-production", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-production", "replace", "ver", "appcache"]);
     grunt.registerTask("default", ["githooks", "build", "watch"]);
 
 
