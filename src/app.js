@@ -222,7 +222,10 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
 app.factory('BrowserNotification', ['$window', function ($window) {
     'use strict';
 
-    var enabled = $window.Notification.permission === 'granted' || false;
+    var enabled = false;
+    if ($window.Notification) {
+        enabled = $window.Notification.permission === 'granted' || false;
+    }
 
     var send = function (message, ignoreFocus) {
         if (enabled === false) {
@@ -246,6 +249,10 @@ app.factory('BrowserNotification', ['$window', function ($window) {
         enabled: enabled,
 
         enable: function () {
+            if (enabled === false) {
+                return;
+            }
+            
             $window.Notification.requestPermission(function (permission) {
                 enabled = permission;
                 if (permission === 'granted') {
