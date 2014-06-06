@@ -471,13 +471,22 @@ app.use(responseTime());
 // Use compression
 app.use(compress());
 
-// Log requests and track them via an id
+// Request logging
 app.use(function(req, res, next) {
-    req._requestId = +new Date();
+    res.locals.requestId = +new Date();
+    
     log.info({
         requestId: req._requestId,
         req: req
     }, 'start');
+
+    res.on('finish', function () {
+        log.info({
+            requestId: res.locals.requestId,
+            res: res
+        }, 'end');
+    });
+
     next();
 });
 
@@ -623,7 +632,7 @@ app.post('/message', requireAuth, function (req, res, next) {
     });
 });
 
-app.get('/archive/:count/:u?', requireAuth, function (req, res, next) {
+app.get('/archive/:count/:u?', requireAuth, function (req, res) {
     var filters = {
         limit: req.params.count,
         order: 'received DESC',
@@ -642,7 +651,6 @@ app.get('/archive/:count/:u?', requireAuth, function (req, res, next) {
 
     Message.findAll(filters).success(function (messages) {
         res.send(messages);
-        next();
     });
 });
 
@@ -651,26 +659,10 @@ app.get('/archive/:count/:u?', requireAuth, function (req, res, next) {
  * Error handling
  * --------------------------------------------------------------------
  *
- * This should come after all other routes and middleware (other than
- * the response logger)
+ * This should come after all other routes and middleware
  */
 app.use(function(err, req, res, next) {
     res.send(err.status);
-    next();
-});
-
-
-/**
- * Response logger
- * --------------------------------------------------------------------
- * Log the response and its corresponding request id
- */
-app.use(function(req, res, next) {
-    log.info({
-        requestId: req._requestId,
-        req: req,
-        res: res
-    }, 'end');
     next();
 });
 
