@@ -1,5 +1,6 @@
 {
     "NOTIFIER_LIVERELOAD": 35729,
+    "NOTIFIER_DEV_HOST": "localhost",
     "NOTIFIER_LOG": "notifier.log",
     "NOTIFIER_SSL": 0,
     "NOTIFIER_SSL_KEY": "",

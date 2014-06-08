@@ -410,13 +410,6 @@ app.disable('x-powered-by');
  * --------------------------------------------------------------------
  */
 
-// Enable live reload (for dev environment)
-if (process.env.NOTIFIER_LIVERELOAD) {
-    app.use(require('connect-livereload')({
-        port: process.env.NOTIFIER_LIVERELOAD
-    }));
-}
-
 // Security safeguards
 app.use(function (req, res, next) {
     // Clickjacking - see

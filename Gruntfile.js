@@ -154,15 +154,58 @@ module.exports = function(grunt) {
         },
 
         replace: {
-            html: {
+            websocket: {
                 src: ["public/*.html"],
                 overwrite: true,
                 replacements: [{
                     from: "<meta name=\"websocket port\" content=\"\" />",
                     to: "<meta name=\"websocket port\" content=\"<%= env.NOTIFIER_WEBSOCKET_PORT %>\" />"
                 }]
+            },
+            dev: {
+                src: ["public/index.html"],
+                overwrite: true,
+                replacements: [{
+                    from: "<!-- livereload placeholder -->",
+                    to: "<script src=\"//<%= env.NOTIFIER_DEV_HOST %>:<%= env.NOTIFIER_LIVERELOAD %>/livereload.js\"></script>"
+                }]
+            },
+            prod: {
+                src: ["public/index.html"],
+                overwrite: true,
+                replacements: [{
+                    from: "<!-- livereload placeholder -->",
+                    to: ""
+                }]
             }
         },
+
+        "string-replace": {
+            dev: {
+                files: {
+                    "dist/index.html": "dist/index.html"
+                },
+                options: {
+                    replacements: [{
+                        pattern: "<!-- livereload placeholder -->",
+                        replacement: "<script src="//<%= env.HEADLINES_DEV_HOST %>:<%= env.HEADLINES_LIVERELOAD %>/livereload.js"></script>"
+                    }]
+                }
+            },
+
+            prod: {
+                files: {
+                    "dist/index.html": "dist/index.html"
+                },
+                options: {
+                    replacements: [{
+                        pattern: "<!-- livereload placeholder -->",
+                        replacement: ""
+                    }]
+                }
+            }
+        },
+
 
         shell: {
             "favicons-dev": {
@@ -237,8 +280,8 @@ module.exports = function(grunt) {
         touch("server.js");
     });
 
-    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-dev", "replace", "ver", "appcache"]);
-    grunt.registerTask("build-production", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-production", "replace", "ver", "appcache"]);
+    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-dev", "replace:websocket", "replace:dev", "ver", "appcache"]);
+    grunt.registerTask("build-production", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-production", "replace:websocket", "replace:dev", "ver", "appcache"]);
     grunt.registerTask("default", ["githooks", "build", "watch"]);
 
 
