@@ -265,11 +265,13 @@ module.exports = function(grunt) {
                             "public/favicon/*",
                             "public/*.png",
                             "public/all.js",
-                            "public/*.css"
+                            "public/*.css",
+                            "public/templates/*.html"
                         ],
                         references: [
                             "public/index.html",
-                            "public/*.js"
+                            "public/*.js",
+                            "public/templates/*.html"
                         ]
                     }
                 ],
