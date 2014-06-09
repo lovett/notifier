@@ -1,6 +1,12 @@
 <ng-include src="'/templates/header.html'"></ng-include>
 
+<main id="no-messages" ng-show="connectionStatus == 'connected' && queue.length === 0">
+    <p>No new messages since {{ queue.getAsOfDate() |  amCalendar }}</p>
+</main>
+
 <main class="message-wrapper">
+
+
     <article class="message" ng-repeat="message in queue.messages">
         <a ng-href="" ng-click="clearOne(message.publicId)" class="close right hide-text">Close</a>
 

@@ -2,11 +2,11 @@
     <div class="left" >
         <span class="state {{connectionStatus}}">{{ connectionStatus }}</span>
         <span ng-show="connectionStatus == 'disconnected'">Offline since {{ connectionChangedAt | amCalendar }}</span>
-        <span ng-show="connectionStatus == 'connected'" ng-pluralize count="queue.length" when="{'0': 'No new messages since {{ queue.getAsOfDate() |  amCalendar }}', '1': '1 new message', 'other': '{{ queue.length}} new messages'}"></span>
+        <span ng-show="connectionStatus == 'connected'" ng-pluralize count="queue.length" when="{'0': '', '1': '1 new message', 'other': '{{ queue.length}} new messages'}"></span>
     </div>
 
     <div class="right">
-        <a ng-click="clearAll()" ng-if="queue.length > 1" ng-href="" class="button">Clear All</a>
+        <a ng-click="clearAll()" ng-hide="queue.length === 0" ng-href="" class="button">Clear All</a>
         <a ng-if="isLoggedIn" ng-href="/logout">Log out</a>
         <a ng-click="browserNotification.enable()" ng-href="" class="button" ng-show="browserNotification.supported && browserNotification.enabled == false">Browser Notifications</a>
 
