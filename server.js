@@ -448,7 +448,7 @@ app.use(function (req, res, next) {
 
     var headerValue = [];
     headerValue.push('default-src \'self\'');
-    headerValue.push('style-src \'self\' fonts.googleapis.com');
+    headerValue.push('style-src \'self\'');
     headerValue.push('img-src \'self\' data:');
     headerValue.push(connectSrc);
     headerValue.push(scriptSrc);
