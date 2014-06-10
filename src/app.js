@@ -5,7 +5,9 @@ var app = angular.module('App', [
     'ngSanitize',
     'angularMoment',
     'ngCookies',
-    'ngResource'
+    'ngResource',
+    'ngTouch',
+    'ngAnimate'
 ]);
 
 app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($httpProvider, $routeProvider, $locationProvider) {
@@ -128,7 +130,7 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
             if (port === 0) {
                 port = $location.port();
             }
-            
+
             var url = $location.protocol() + '://' + $location.host() + ':' + port + '/messages';
             $log.info('Faye url is ' + url);
             client = new Faye.Client(url, {
@@ -252,7 +254,7 @@ app.factory('BrowserNotification', ['$window', function ($window) {
             if (enabled === false) {
                 return;
             }
-            
+
             $window.Notification.requestPermission(function (permission) {
                 enabled = permission;
                 if (permission === 'granted') {

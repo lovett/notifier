@@ -6,8 +6,7 @@
 
 <main class="message-wrapper">
 
-
-    <article class="message" ng-repeat="message in queue.messages">
+    <article class="message" ng-repeat="message in queue.messages" ng-swipe-right="clearOne(message.publicId)">
         <a ng-href="" ng-click="clearOne(message.publicId)" class="close right hide-text">Close</a>
 
         <div class="badge {{ message.badge }}" ng-show="message.badge !== 'default'"></div>

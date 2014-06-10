@@ -50,6 +50,8 @@ module.exports = function(grunt) {
                       "bower_components/angular-moment/angular-moment.min.js",
                       "bower_components/angular-cookies/angular-cookies.min.js",
                       "bower_components/angular-resource/angular-resource.min.js",
+                      "bower_components/angular-touch/angular-touch.min.js",
+                      "bower_components/angular-animate/angular-animate.min.js",
                       "public/app.min.js",
                      ],
                 dest: "public/all.js",
@@ -68,6 +70,8 @@ module.exports = function(grunt) {
                               "bower_components/angular/angular.js",
                               "bower_components/angular-cookies/angular-cookies.min.js.map",
                               "bower_components/angular-resource/angular-resource.min.js.map",
+                              "bower_components/angular-touch/angular-touch.min.js.map",
+                              "bower_components/angular-animate/angular-animate.min.js.map",
                               "src/svg/megaphone.svg",
                               "src/index.html",
                               "src/robots.txt"
@@ -288,8 +292,8 @@ module.exports = function(grunt) {
         touch("server.js");
     });
 
-    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-dev", "replace:websocket", "replace:dev", "ver", "appcache"]);
-    grunt.registerTask("build-production", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-production", "replace:websocket", "replace:dev", "ver", "appcache"]);
+    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-dev", "replace:websocket", "replace:dev", "ver"]);
+    grunt.registerTask("build-production", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-production", "replace:websocket", "replace:dev", "ver"]);
     grunt.registerTask("default", ["githooks", "build", "watch"]);
 
 
