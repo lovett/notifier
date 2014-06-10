@@ -1,4 +1,5 @@
 {
+    "NOTIFIER_ENVIRONMENT": "dev",
     "NOTIFIER_LIVERELOAD": 35729,
     "NOTIFIER_DEV_HOST": "localhost",
     "NOTIFIER_LOG": "notifier.log",

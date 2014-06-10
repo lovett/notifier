@@ -180,7 +180,7 @@ module.exports = function(grunt) {
                     to: "<script src=\"//<%= env.NOTIFIER_DEV_HOST %>:<%= env.NOTIFIER_LIVERELOAD %>/livereload.js\"></script>"
                 }]
             },
-            prod: {
+            production: {
                 src: ["public/index.html"],
                 overwrite: true,
                 replacements: [{
@@ -203,7 +203,7 @@ module.exports = function(grunt) {
                 }
             },
 
-            prod: {
+            production: {
                 files: {
                     "dist/index.html": "dist/index.html"
                 },
@@ -292,8 +292,20 @@ module.exports = function(grunt) {
         touch("server.js");
     });
 
-    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-dev", "replace:websocket", "replace:dev", "ver", "appcache"]);
-    grunt.registerTask("build-production", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-production", "replace:websocket", "replace:dev", "ver", "appcache"]);
+    grunt.registerTask("build", "Build the application", function () {
+        var environment = grunt.template.process("<%= env.NOTIFIER_ENVIRONMENT %>");
+
+        grunt.task.run(["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "replace:websocket"]);
+
+        if (environment === "dev") {
+            grunt.task.run(["shell:favicons-dev", "replace:dev"]);
+        } else {
+            grunt.task.run(["shell:favicons-production", "replace:production"]);
+        }
+
+        grunt.task.run(["ver", "appcache"]);
+    });
+
     grunt.registerTask("default", ["githooks", "build", "watch"]);
 
 
