@@ -1,22 +1,22 @@
-var touch = require("touch");
-var tokenFile = ".token";
+var touch = require('touch');
+var tokenFile = '.token';
 
 module.exports = function(grunt) {
 
-    require("load-grunt-tasks")(grunt);
+    require('load-grunt-tasks')(grunt);
 
     grunt.initConfig({
-        pkg: grunt.file.readJSON("package.json"),
-        env: grunt.file.readJSON("env.json"),
+        pkg: grunt.file.readJSON('package.json'),
+        env: grunt.file.readJSON('env.json'),
 
         appcache: {
             options: {
-                basePath: "public"
+                basePath: 'public'
             },
             all: {
-                dest: "public/notifier.appcache",
-                cache: "public/**/*",
-                network: "*"
+                dest: 'public/notifier.appcache',
+                cache: 'public/**/*',
+                network: '*'
             }
         },
 
@@ -30,31 +30,31 @@ module.exports = function(grunt) {
 
         clean: {
             preBuild: {
-                src: ["public/*"]
+                src: ['public/*']
             },
             postBuild: {
-                src: ["public/app.min.js", "public/version.json"]
+                src: ['public/app.min.js', 'public/version.json']
             }
         },
 
         concat: {
             options: {
-                separator: "\n",
+                separator: '\n',
             },
             dist: {
-                src: ["bower_components/angular/angular.min.js",
-                      "bower_components/angular-route/angular-route.min.js",
-                      "node_modules/faye/browser/faye-browser-min.js",
-                      "bower_components/angular-sanitize/angular-sanitize.min.js",
-                      "bower_components/moment/min/moment.min.js",
-                      "bower_components/angular-moment/angular-moment.min.js",
-                      "bower_components/angular-cookies/angular-cookies.min.js",
-                      "bower_components/angular-resource/angular-resource.min.js",
-                      "bower_components/angular-touch/angular-touch.min.js",
-                      "bower_components/angular-animate/angular-animate.min.js",
-                      "public/app.min.js",
+                src: ['bower_components/angular/angular.min.js',
+                      'bower_components/angular-route/angular-route.min.js',
+                      'node_modules/faye/browser/faye-browser-min.js',
+                      'bower_components/angular-sanitize/angular-sanitize.min.js',
+                      'bower_components/moment/min/moment.min.js',
+                      'bower_components/angular-moment/angular-moment.min.js',
+                      'bower_components/angular-cookies/angular-cookies.min.js',
+                      'bower_components/angular-resource/angular-resource.min.js',
+                      'bower_components/angular-touch/angular-touch.min.js',
+                      'bower_components/angular-animate/angular-animate.min.js',
+                      'public/app.min.js',
                      ],
-                dest: "public/all.js",
+                dest: 'public/all.js',
             },
         },
 
@@ -64,37 +64,37 @@ module.exports = function(grunt) {
                     {
                         expand: true,
                         flatten: true,
-                        src: ["bower_components/angular/angular.min.js.map",
-                              "bower_components/angular-route/angular-route.min.js.map",
-                              "bower_components/angular-sanitize/angular-sanitize.min.js.map",
-                              "bower_components/angular/angular.js",
-                              "bower_components/angular-cookies/angular-cookies.min.js.map",
-                              "bower_components/angular-resource/angular-resource.min.js.map",
-                              "bower_components/angular-touch/angular-touch.min.js.map",
-                              "bower_components/angular-animate/angular-animate.min.js.map",
-                              "src/svg/megaphone.svg",
-                              "src/index.html",
-                              "src/robots.txt"
+                        src: ['bower_components/angular/angular.min.js.map',
+                              'bower_components/angular-route/angular-route.min.js.map',
+                              'bower_components/angular-sanitize/angular-sanitize.min.js.map',
+                              'bower_components/angular/angular.js',
+                              'bower_components/angular-cookies/angular-cookies.min.js.map',
+                              'bower_components/angular-resource/angular-resource.min.js.map',
+                              'bower_components/angular-touch/angular-touch.min.js.map',
+                              'bower_components/angular-animate/angular-animate.min.js.map',
+                              'src/svg/megaphone.svg',
+                              'src/index.html',
+                              'src/robots.txt'
                              ],
-                        dest: "public/"
+                        dest: 'public/'
                     },
                     {
                         expand: true,
-                        cwd: "src/images/",
-                        src: ["**"],
-                        dest: "public/images"
+                        cwd: 'src/images/',
+                        src: ['**'],
+                        dest: 'public/images'
                     },
                     {
                         expand: true,
-                        cwd: "src/font/",
-                        src: ["**.ttf"],
-                        dest: "public/font"
+                        cwd: 'src/font/',
+                        src: ['**.ttf'],
+                        dest: 'public/font'
                     },
                     {
                         expand: true,
-                        cwd: "src/templates/",
-                        src: ["**"],
-                        dest: "public/templates"
+                        cwd: 'src/templates/',
+                        src: ['**'],
+                        dest: 'public/templates'
                     }
                 ]
             }
@@ -102,19 +102,19 @@ module.exports = function(grunt) {
 
         githooks: {
             all: {
-                "pre-commit": "jshint"
+                'pre-commit': 'jshint'
             }
         },
 
         http: {
             authtoken: {
                 options: {
-                    url: "http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/auth",
-                    method: "POST",
+                    url: 'http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/auth',
+                    method: 'POST',
                     form: {
-                        username: "<%= env.NOTIFIER_DEFAULT_USER %>",
-                        password: "<%= env.NOTIFIER_DEFAULT_PASSWORD %>",
-                        label: "grunt",
+                        username: '<%= env.NOTIFIER_DEFAULT_USER %>',
+                        password: '<%= env.NOTIFIER_DEFAULT_PASSWORD %>',
+                        label: 'grunt',
                     },
                     callback: function (error, response, body) {
                         grunt.file.write(tokenFile, body);
@@ -123,13 +123,13 @@ module.exports = function(grunt) {
             },
             onemessage: {
                 options: {
-                    url: "http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/message",
-                    method: "POST",
+                    url: 'http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/message',
+                    method: 'POST',
                     form: {
-                        title: "Test message",
-                        body: "Testing testing. This message was sent via Grunt on " + new Date(),
-                        url: "http://example.com",
-                        u: "<%= token.token %>"
+                        title: 'Test message',
+                        body: 'Testing testing. This message was sent via Grunt on ' + new Date(),
+                        url: 'http://example.com',
+                        u: '<%= token.token %>'
                     }
                 }
             }
@@ -138,15 +138,15 @@ module.exports = function(grunt) {
         jshint: {
             node: {
                 options: {
-                    jshintrc: ".jshintrc-node"
+                    jshintrc: '.jshintrc-node'
                 },
-                src: ["server.js", "Gruntfile.js", "clients/*.js"]
+                src: ['server.js', 'Gruntfile.js', 'clients/*.js']
             },
             browser: {
                 options: {
-                    jshintrc: ".jshintrc-browser"
+                    jshintrc: '.jshintrc-browser'
                 },
-                src: ["src/**.js"]
+                src: ['src/**.js']
             }
         },
 
@@ -156,80 +156,80 @@ module.exports = function(grunt) {
                     cleancss: true
                 },
                 files: {
-                    "public/all.min.css": ["bower_components/normalize-css/normalize.css",
-                                           "bower_components/angular/angular-csp.css",
-                                           "src/less/*"]
+                    'public/all.min.css': ['bower_components/normalize-css/normalize.css',
+                                           'bower_components/angular/angular-csp.css',
+                                           'src/less/*']
                 }
             }
         },
 
         replace: {
             websocket: {
-                src: ["public/*.html"],
+                src: ['public/*.html'],
                 overwrite: true,
                 replacements: [{
-                    from: "<meta name=\"websocket port\" content=\"\" />",
-                    to: "<meta name=\"websocket port\" content=\"<%= env.NOTIFIER_WEBSOCKET_PORT %>\" />"
+                    from: '<meta name=\'websocket port\' content=\'\' />',
+                    to: '<meta name=\'websocket port\' content=\'<%= env.NOTIFIER_WEBSOCKET_PORT %>\' />'
                 }]
             },
             dev: {
-                src: ["public/index.html"],
+                src: ['public/index.html'],
                 overwrite: true,
                 replacements: [{
-                    from: "<!-- livereload placeholder -->",
-                    to: "<script src=\"//<%= env.NOTIFIER_DEV_HOST %>:<%= env.NOTIFIER_LIVERELOAD %>/livereload.js\"></script>"
+                    from: '<!-- livereload placeholder -->',
+                    to: '<script src=\'//<%= env.NOTIFIER_DEV_HOST %>:<%= env.NOTIFIER_LIVERELOAD %>/livereload.js\'></script>'
                 }]
             },
             production: {
-                src: ["public/index.html"],
+                src: ['public/index.html'],
                 overwrite: true,
                 replacements: [{
-                    from: "<!-- livereload placeholder -->",
-                    to: ""
+                    from: '<!-- livereload placeholder -->',
+                    to: ''
                 }]
             }
         },
 
         shell: {
-            "favicons-dev": {
+            'favicons-dev': {
                 command: [
-                    "rm -rf public/favicons",
-                    "mkdir public/favicon",
-                    "convert src/favicon/favicon-dev.svg -geometry 16x16 -transparent white public/favicon/favicon-16.png",
-                    "convert src/favicon/favicon-dev.svg -geometry 32x32 -transparent white public/favicon/favicon-32.png",
-                    "convert src/favicon/favicon-dev.svg -geometry 48x48 -transparent white public/favicon/favicon-48.png",
-                    "convert public/favicon/favicon-16.png public/favicon/favicon-32.png public/favicon/favicon-48.png public/favicon/favicon.ico"
-                ].join(" && ")
+                    'rm -rf public/favicons',
+                    'mkdir public/favicon',
+                    'convert src/favicon/favicon-dev.svg -geometry 16x16 -transparent white public/favicon/favicon-16.png',
+                    'convert src/favicon/favicon-dev.svg -geometry 32x32 -transparent white public/favicon/favicon-32.png',
+                    'convert src/favicon/favicon-dev.svg -geometry 48x48 -transparent white public/favicon/favicon-48.png',
+                    'convert public/favicon/favicon-16.png public/favicon/favicon-32.png public/favicon/favicon-48.png public/favicon/favicon.ico'
+                ].join(' && ')
             },
-            "favicons-production": {
+            'favicons-production': {
                 command: [
-                    "rm -rf public/favicons",
-                    "mkdir public/favicon",
-                    "convert src/favicon/favicon.svg -geometry 16x16 -transparent white public/favicon/favicon-16.png",
-                    "convert src/favicon/favicon.svg -geometry 32x32 -transparent white public/favicon/favicon-32.png",
-                    "convert src/favicon/favicon.svg -geometry 48x48 -transparent white public/favicon/favicon-48.png",
-                    "convert public/favicon/favicon-16.png public/favicon/favicon-32.png public/favicon/favicon-48.png public/favicon/favicon.ico"
-                ].join(" && ")
+                    'rm -rf public/favicons',
+                    'mkdir public/favicon',
+                    'convert src/favicon/favicon.svg -geometry 16x16 -transparent white public/favicon/favicon-16.png',
+                    'convert src/favicon/favicon.svg -geometry 32x32 -transparent white public/favicon/favicon-32.png',
+                    'convert src/favicon/favicon.svg -geometry 48x48 -transparent white public/favicon/favicon-48.png',
+                    'convert public/favicon/favicon-16.png public/favicon/favicon-32.png public/favicon/favicon-48.png public/favicon/favicon.ico'
+                ].join(' && ')
             }
         },
 
         watch: {
             options: {
-                livereload: "<%= env.NOTIFIER_LIVERELOAD %>"
+                livereload: '<%= env.NOTIFIER_LIVERELOAD %>'
             },
             src: {
-                files: ["src/**", "Gruntfile.js"],
-                tasks: ["build"]
+                files: ['src/**', 'Gruntfile.js'],
+                tasks: ['build']
             }
         },
 
         uglify: {
             js: {
                 options: {
-                    sourceMap: "public/app.min.js.map"
+                    sourceMap: 'public/app.min.js.map'
                 },
                 files: {
-                    "public/app.min.js": ["src/app.js", "src/controllers.js"]
+                    'public/app.min.js': ['src/app.js', 'src/controllers.js']
                 }
             }
         },
@@ -239,47 +239,47 @@ module.exports = function(grunt) {
                 phases: [
                     {
                         files: [
-                            "public/favicon/*",
-                            "public/*.png",
-                            "public/all.js",
-                            "public/*.css",
-                            "public/templates/*.html"
+                            'public/favicon/*',
+                            'public/*.png',
+                            'public/all.js',
+                            'public/*.css',
+                            'public/templates/*.html'
                         ],
                         references: [
-                            "public/index.html",
-                            "public/*.js",
-                            "public/templates/*.html"
+                            'public/index.html',
+                            'public/*.js',
+                            'public/templates/*.html'
                         ]
                     }
                 ],
-                versionFile: "public/version.json"
+                versionFile: 'public/version.json'
             }
         }
     });
 
-    grunt.registerTask("reset", "Delete the dev database, restart the server", function () {
-        var env = grunt.config.get("env");
-        if (env.NOTIFIER_DB_DRIVER === "sqlite") {
+    grunt.registerTask('reset', 'Delete the dev database, restart the server', function () {
+        var env = grunt.config.get('env');
+        if (env.NOTIFIER_DB_DRIVER === 'sqlite') {
             grunt.file.delete(env.NOTIFIER_SQLITE_PATH);
         }
-        touch("server.js");
+        touch('server.js');
     });
 
-    grunt.registerTask("build", "Build the application", function () {
-        var environment = grunt.template.process("<%= env.NOTIFIER_ENVIRONMENT %>");
+    grunt.registerTask('build', 'Build the application', function () {
+        var environment = grunt.template.process('<%= env.NOTIFIER_ENVIRONMENT %>');
 
-        grunt.task.run(["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "replace:websocket"]);
+        grunt.task.run(['clean:preBuild', 'uglify', 'less', 'concat', 'copy', 'clean:postBuild', 'replace:websocket']);
 
-        if (environment === "dev") {
-            grunt.task.run(["shell:favicons-dev", "replace:dev"]);
+        if (environment === 'dev') {
+            grunt.task.run(['shell:favicons-dev', 'replace:dev']);
         } else {
-            grunt.task.run(["shell:favicons-production", "replace:production"]);
+            grunt.task.run(['shell:favicons-production', 'replace:production']);
         }
 
-        grunt.task.run(["ver", "appcache"]);
+        grunt.task.run(['ver', 'appcache']);
     });
 
-    grunt.registerTask("default", ["githooks", "build", "watch"]);
+    grunt.registerTask('default', ['githooks', 'build', 'watch']);
 
 
 };
