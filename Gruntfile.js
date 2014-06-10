@@ -190,33 +190,6 @@ module.exports = function(grunt) {
             }
         },
 
-        "string-replace": {
-            dev: {
-                files: {
-                    "dist/index.html": "dist/index.html"
-                },
-                options: {
-                    replacements: [{
-                        pattern: "<!-- livereload placeholder -->",
-                        replacement: "<script src="//<%= env.HEADLINES_DEV_HOST %>:<%= env.HEADLINES_LIVERELOAD %>/livereload.js"></script>"
-                    }]
-                }
-            },
-
-            production: {
-                files: {
-                    "dist/index.html": "dist/index.html"
-                },
-                options: {
-                    replacements: [{
-                        pattern: "<!-- livereload placeholder -->",
-                        replacement: ""
-                    }]
-                }
-            }
-        },
-
-
         shell: {
             "favicons-dev": {
                 command: [
