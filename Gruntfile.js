@@ -292,8 +292,8 @@ module.exports = function(grunt) {
         touch("server.js");
     });
 
-    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-dev", "replace:websocket", "replace:dev", "ver"]);
-    grunt.registerTask("build-production", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-production", "replace:websocket", "replace:dev", "ver"]);
+    grunt.registerTask("build", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-dev", "replace:websocket", "replace:dev", "ver", "appcache"]);
+    grunt.registerTask("build-production", ["clean:preBuild", "uglify", "less", "concat", "copy", "clean:postBuild", "shell:favicons-production", "replace:websocket", "replace:dev", "ver", "appcache"]);
     grunt.registerTask("default", ["githooks", "build", "watch"]);
 
 
