@@ -6,8 +6,12 @@
 
     }
 
-    .message .close {
-        display: none;
+    .message .options {
+        visibility: hidden;
+    }
+
+    .message.extended .options {
+        visibility: visible;
     }
 
     #no-messages {
@@ -21,6 +25,13 @@
         min-width: 14em;
     }
 
+    .message .options {
+        visibility: hidden;
+    }
+
+    .message.extended .options {
+        visibility: visible;
+    }
 
     #login-form {
         text-align: left;

@@ -18,6 +18,14 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
 
     var websocketPort;
 
+    $scope.showOptions = function (message) {
+        message.extended = true;
+    };
+
+    $scope.hideOptions = function (message) {
+        message.extended = false;
+    };
+
     angular.forEach($document.find('META'), function (tag) {
         if (!tag.name || !tag.content) {
             return;
