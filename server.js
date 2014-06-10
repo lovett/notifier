@@ -619,18 +619,15 @@ app.post('/message', requireAuth, function (req, res, next) {
         message.setUser(req.user).success(function () {
             publishMessage(req.user, message);
             res.send(204);
-            next();
         }).error(function (error) {
             var err = new Error(error);
             err.status = 400;
             next(err);
-            next();
         });
     }).error(function (error) {
         var err = new Error(error);
         err.status = 400;
         next(err);
-        next();
     });
 });
 
