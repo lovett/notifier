@@ -420,7 +420,7 @@ app.use(function (req, res, next) {
     // HTTP Strict Transport Security - see
     // https://www.owasp.org/index.php/HTTP_Strict_Transport_Security
     // --------------------------------------------------------------------
-    if (process.env.NOTIFIER_FORCE_HTTPS === true) {
+    if (process.env.NOTIFIER_FORCE_HTTPS === 'true') {
         res.setHeader('Strict-Transport-Security', util.format('max-age=%d', 60 * 60 * 24 * 30));
     }
 
@@ -438,11 +438,11 @@ app.use(function (req, res, next) {
 
 
     if (process.env.NOTIFIER_WEBSOCKET_PORT) {
-        connectSrc += util.format(' %s://%s:%s', (process.env.NOTIFIER_FORCE_HTTPS === true)? 'wss':'ws', hostname, process.env.NOTIFIER_WEBSOCKET_PORT);
+        connectSrc += util.format(' %s://%s:%s', (process.env.NOTIFIER_FORCE_HTTPS === 'true')? 'wss':'ws', hostname, process.env.NOTIFIER_WEBSOCKET_PORT);
     }
 
     if (process.env.NOTIFIER_LIVERELOAD) {
-        connectSrc += util.format(' %s://%s:%s', (process.env.NOTIFIER_FORCE_HTTPS === true)? 'wss':'ws', process.env.NOTIFIER_DEV_HOST, process.env.NOTIFIER_LIVERELOAD);
+        connectSrc += util.format(' %s://%s:%s', (process.env.NOTIFIER_FORCE_HTTPS === 'true')? 'wss':'ws', process.env.NOTIFIER_DEV_HOST, process.env.NOTIFIER_LIVERELOAD);
         scriptSrc += util.format(' \'unsafe-inline\' http://%s:%s', process.env.NOTIFIER_DEV_HOST, process.env.NOTIFIER_LIVERELOAD);
     }
 
@@ -458,7 +458,7 @@ app.use(function (req, res, next) {
 });
 
 // Require HTTPS
-if (process.env.NOTIFIER_FORCE_HTTPS) {
+if (process.env.NOTIFIER_FORCE_HTTPS === 'true') {
     app.use(function (req, res, next) {
         if (req.headers['x-forwarded-proto'] === 'http') {
             res.redirect('https://' + req.headers['x-forwarded-host'] + req.url);
@@ -500,6 +500,16 @@ app.use(bodyParser({
 
 // Authentication
 app.use(passport.initialize());
+
+
+// Appcache manifest override.
+// Uncomment to expire or otherwise temporarily deactivate the client's appcache.
+// Must appear before static middleware.
+if (process.env.NOTIFIER_APPCACHE_ENABLED === 'false') {
+    app.get('/notifier.appcache', function (req, res) {
+        res.send(410);
+    });
+}
 
 // Static fileserving
 app.use(express.static(__dirname + '/public'));
@@ -569,6 +579,7 @@ var publishMessage = function (user, message) {
  * Routing
  * --------------------------------------------------------------------
  */
+
 app.get(/^\/(login|logout)$/, function (req, res) {
     // For pushState compatibility, some URLs are treated as aliases of index.html
     res.sendfile(__dirname + '/public/index.html');
