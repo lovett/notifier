@@ -11,4 +11,6 @@ public
 *.sqlite
 *.log
 .token
-env.json
+env*.json
+!env-sample.json
+

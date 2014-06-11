@@ -14,28 +14,34 @@ var crypto = require('crypto');
 var compress = require('compression');
 var util = require('util');
 var useragent = require('useragent');
+var nconf = require('nconf');
+
 
 /**
- * Environment variables
+ * Application configuration
  * --------------------------------------------------------------------
  *
- * If the file env.json exists, declare its contents as environtment
- * variables.
+ * Configuration settings will be sourced from:
+ *
+ * 1. command line arguments
+ * 2. environment variables
+ * 3. the file env-{NODE_ENV}.json
+ * 4. the file env.json
+ * 5. default values
  */
-var env;
-try {
-    env = fs.readFileSync('env.json', {encoding: 'utf8'});
-    env = JSON.parse(env);
-} catch (e) {
-    env = {};
+
+nconf.argv();
+nconf.env();
+
+if (process.env.NODE_ENV) {
+    nconf.file('custom', { file: 'env-' + process.env.NODE_ENV + '.json' });
 }
 
-Object.keys(env).forEach(function (key) {
-    process.env[key] = env[key];
+nconf.defaults({
+    'NOTIFIER_LOG': 'notifier.log'
 });
 
-env = {};
-
+nconf.file('default', {file: 'env.json'});
 
 /**
  * Logging configuration
@@ -45,7 +51,7 @@ var log = bunyan.createLogger({
     name: 'notifier',
     streams: [
         {
-            path: process.env.NOTIFIER_LOG || 'notifier.log',
+            path: nconf.get('NOTIFIER_LOG'),
             level: 'trace'
         }
     ],
@@ -74,8 +80,8 @@ try {
  * --------------------------------------------------------------------
  */
 var sequelize = new Sequelize('', '', '', {
-    dialect: process.env.NOTIFIER_DB_DRIVER,
-    storage: process.env.NOTIFIER_SQLITE_PATH,
+    dialect: nconf.get('NOTIFIER_DB_DRIVER'),
+    storage: nconf.get('NOTIFIER_SQLITE_PATH'),
     logging: function (msg) {
         log.info({
             sequelize: msg
@@ -228,11 +234,11 @@ Message.belongsTo(User);
 sequelize.sync();
 
 // Create the default user
-if (process.env.NOTIFIER_DEFAULT_USER) {
-    User.findOrCreate({ username: process.env.NOTIFIER_DEFAULT_USER.toLowerCase()}).success(function (user, created) {
+if (nconf.get('NOTIFIER_DEFAULT_USER')) {
+    User.findOrCreate({ username: nconf.get('NOTIFIER_DEFAULT_USER').toLowerCase()}).success(function (user, created) {
         if (created === true) {
             var salt = bcrypt.genSaltSync(10);
-            user.values.passwordHash = bcrypt.hashSync(process.env.NOTIFIER_DEFAULT_PASSWORD, salt);
+            user.values.passwordHash = bcrypt.hashSync(nconf.get('NOTIFIER_DEFAULT_PASSWORD'), salt);
             user.save();
         }
     });
@@ -420,7 +426,7 @@ app.use(function (req, res, next) {
     // HTTP Strict Transport Security - see
     // https://www.owasp.org/index.php/HTTP_Strict_Transport_Security
     // --------------------------------------------------------------------
-    if (process.env.NOTIFIER_FORCE_HTTPS === 'true') {
+    if (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true') {
         res.setHeader('Strict-Transport-Security', util.format('max-age=%d', 60 * 60 * 24 * 30));
     }
 
@@ -437,13 +443,13 @@ app.use(function (req, res, next) {
     var scriptSrc = 'script-src \'self\'';
 
 
-    if (process.env.NOTIFIER_WEBSOCKET_PORT) {
-        connectSrc += util.format(' %s://%s:%s', (process.env.NOTIFIER_FORCE_HTTPS === 'true')? 'wss':'ws', hostname, process.env.NOTIFIER_WEBSOCKET_PORT);
+    if (nconf.get('NOTIFIER_WEBSOCKET_PORT')) {
+        connectSrc += util.format(' %s://%s:%s', (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'wss':'ws', hostname, nconf.get('NOTIFIER_WEBSOCKET_PORT'));
     }
 
-    if (process.env.NOTIFIER_LIVERELOAD) {
-        connectSrc += util.format(' %s://%s:%s', (process.env.NOTIFIER_FORCE_HTTPS === 'true')? 'wss':'ws', process.env.NOTIFIER_DEV_HOST, process.env.NOTIFIER_LIVERELOAD);
-        scriptSrc += util.format(' \'unsafe-inline\' http://%s:%s', process.env.NOTIFIER_DEV_HOST, process.env.NOTIFIER_LIVERELOAD);
+    if (nconf.get('NOTIFIER_LIVERELOAD')) {
+        connectSrc += util.format(' %s://%s:%s', (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'wss':'ws', nconf.get('NOTIFIER_DEV_HOST'), nconf.get('NOTIFIER_LIVERELOAD'));
+        scriptSrc += util.format(' \'unsafe-inline\' http://%s:%s', nconf.get('NOTIFIER_DEV_HOST'), nconf.get('NOTIFIER_LIVERELOAD'));
     }
 
     var headerValue = [];
@@ -458,7 +464,7 @@ app.use(function (req, res, next) {
 });
 
 // Require HTTPS
-if (process.env.NOTIFIER_FORCE_HTTPS === 'true') {
+if (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true') {
     app.use(function (req, res, next) {
         if (req.headers['x-forwarded-proto'] === 'http') {
             res.redirect('https://' + req.headers['x-forwarded-host'] + req.url);
@@ -505,7 +511,7 @@ app.use(passport.initialize());
 // Appcache manifest override.
 // Uncomment to expire or otherwise temporarily deactivate the client's appcache.
 // Must appear before static middleware.
-if (process.env.NOTIFIER_APPCACHE_ENABLED === 'false') {
+if (nconf.get('NOTIFIER_APPCACHE_ENABLED') === 'false') {
     app.get('/notifier.appcache', function (req, res) {
         res.send(410);
     });
@@ -681,17 +687,19 @@ app.use(function(err, req, res, next) {
  * Server startup
  * --------------------------------------------------------------------
  */
-if (process.env.NOTIFIER_SSL !== '1') {
-    var server = app.listen(process.env.NOTIFIER_HTTP_PORT, process.env.NOTIFIER_HTTP_IP);
+if (nconf.get('NOTIFIER_SSL') !== '1') {
+    var server = app.listen(nconf.get('NOTIFIER_HTTP_PORT'), nconf.get('NOTIFIER_HTTP_IP'));
 } else {
     var server = https.createServer({
-        key: fs.readFileSync(process.env.NOTIFIER_SSL_KEY),
-        cert: fs.readFileSync(process.env.NOTIFIER_SSL_CERT)
-    }, app).listen(process.env.NOTIFIER_HTTP_PORT, process.env.NOTIFIER_HTTP_IP);
+        key: fs.readFileSync(nconf.get('NOTIFIER_SSL_KEY')),
+        cert: fs.readFileSync(nconf.get('NOTIFIER_SSL_CERT'))
+    }, app).listen(nconf.get('NOTIFIER_HTTP_PORT'), nconf.get('NOTIFIER_HTTP_IP'));
 }
 
 // Attach to the express server returned by listen, rather than app itself.
 // See https://github.com/faye/faye/issues/256
 bayeux.attach(server);
 
-log.info({ip: process.env.NOTIFIER_HTTP_IP, port: process.env.NOTIFIER_HTTP_PORT}, 'appstart');
+log.info({ip: nconf.get('NOTIFIER_HTTP_IP'), port: nconf.get('NOTIFIER_HTTP_PORT')}, 'appstart');
+
+exports = module.exports = app;
