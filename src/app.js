@@ -10,6 +10,22 @@ var app = angular.module('App', [
     'ngAnimate'
 ]);
 
+app.directive('notifierAppcacheReload', ['$window', '$log', function ($window, $log) {
+    'use strict';
+
+    return {
+        restrict: 'A',
+        link: function () {
+            if ($window.applicationCache) {
+                $window.applicationCache.addEventListener('updateready', function() {
+                    $log.info('An appcache update is ready, reloading');
+                    $window.location.reload();
+                });
+            }
+        }
+    };
+}]);
+
 app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($httpProvider, $routeProvider, $locationProvider) {
     'use strict';
 
