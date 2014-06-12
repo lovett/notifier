@@ -423,13 +423,6 @@ app.use(function (req, res, next) {
     // --------------------------------------------------------------------
     res.setHeader('X-Frame-Options', 'DENY');
 
-    // HTTP Strict Transport Security - see
-    // https://www.owasp.org/index.php/HTTP_Strict_Transport_Security
-    // --------------------------------------------------------------------
-    if (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true') {
-        res.setHeader('Strict-Transport-Security', util.format('max-age=%d', 60 * 60 * 24 * 30));
-    }
-
     // Content security policy - see
     // http://content-security-policy.com
     // --------------------------------------------------------------------
@@ -466,6 +459,11 @@ app.use(function (req, res, next) {
 // Require HTTPS
 if (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true') {
     app.use(function (req, res, next) {
+        // HTTP Strict Transport Security - see
+        // https://www.owasp.org/index.php/HTTP_Strict_Transport_Security
+        // --------------------------------------------------------------------
+        res.setHeader('Strict-Transport-Security', util.format('max-age=%d', 60 * 60 * 24 * 30));
+
         if (req.headers['x-forwarded-proto'] === 'http') {
             res.redirect('https://' + req.headers['x-forwarded-host'] + req.url);
         } else {
