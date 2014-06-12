@@ -13,4 +13,4 @@ public
 .token
 env*.json
 !env-sample.json
-
+coverage

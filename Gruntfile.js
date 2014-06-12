@@ -163,6 +163,25 @@ module.exports = function(grunt) {
             }
         },
 
+        mochaTest: {
+            server: {
+                options: {
+                    reporter: 'spec',
+                    bail: true
+                },
+                src: ['test/server/*-spec.js']
+            }
+        },
+
+        'mocha_istanbul': {
+            server: {
+                src: 'test/server',
+                options: {
+                    mask: '*-spec.js'
+                }
+            }
+        },
+
         replace: {
             websocket: {
                 src: ['public/*.html'],
@@ -278,6 +297,8 @@ module.exports = function(grunt) {
 
         grunt.task.run(['ver', 'appcache']);
     });
+
+    grunt.registerTask('coverage', ['mocha_istanbul:server']);
 
     grunt.registerTask('default', ['githooks', 'build', 'watch']);
 
