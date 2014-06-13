@@ -532,8 +532,15 @@ app.param('u', function(req, res, next, value) {
 });
 
 app.param('count', function (req, res, next, value) {
-    req.params.count = parseInt(value, 10) || 0;
-    next();
+
+    if (/\D/.test(value) === true) {
+        var err = new Error('Invalid count');
+        err.status = 400;
+        next(err);
+    } else {
+        req.params.count = parseInt(value, 10);
+        next();
+    }
 });
 
 
@@ -673,11 +680,19 @@ app.get('/archive/:count/:u?', requireAuth, function (req, res) {
  * Error handling
  * --------------------------------------------------------------------
  *
- * This should come after all other routes and middleware
+ * This should come after all other routes and middleware.
+ *
+ * The 'next' argument is only specified so that Express treats this
+ * as an error handler. Calling it after sending a response will
+ * trigger "Can't set headers after they are sent", but not including
+ * it at all will make express treat this as regular middleware.
  */
 app.use(function(err, req, res, next) {
-    res.send(err.status);
-    next();
+    if (err) {
+        res.send(err.status, {message: err.message});
+    } else {
+        next();
+    }
 });
 
 
