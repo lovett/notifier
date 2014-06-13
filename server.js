@@ -523,14 +523,6 @@ app.use(express.static(__dirname + '/public'));
  * Parameter validation
  * --------------------------------------------------------------------
  */
-app.param('u', function(req, res, next, value) {
-    var pattern = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
-    if (!pattern.test(value)) {
-        delete req.params.u;
-    }
-    next();
-});
-
 app.param('count', function (req, res, next, value) {
 
     if (/\D/.test(value) === true) {
@@ -549,11 +541,20 @@ app.param('count', function (req, res, next, value) {
  * --------------------------------------------------------------------
  */
 var requireAuth = function (req, res, next) {
-    var tokenValue = req.headers['x-token'] || req.body.u || req.params.u;
+    var err = new Error('Invalid token');
+    err.status = 401;
+
+    var tokenValue = req.headers['x-token'];
 
     if (!tokenValue) {
-        var err = new Error('Unauthorized');
+        err = new Error('Unauthorized');
         err.status = 401;
+        next(err);
+        return;
+    }
+
+    var pattern = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
+    if (pattern.test(tokenValue) === false) {
         next(err);
         return;
     }
@@ -563,8 +564,6 @@ var requireAuth = function (req, res, next) {
         where: { value: tokenValue }
     }).success(function (token) {
         if (!token) {
-            var err = new Error('Unauthorized');
-            err.status = 401;
             next(err);
             return;
         }
@@ -573,7 +572,7 @@ var requireAuth = function (req, res, next) {
         next();
 
     }).error(function () {
-        var err = new Error('Application error');
+        err = new Error('Application error');
         err.status = 500;
         next(err);
         return;
@@ -653,7 +652,7 @@ app.post('/message', requireAuth, function (req, res, next) {
     });
 });
 
-app.get('/archive/:count/:u?', requireAuth, function (req, res) {
+app.get('/archive/:count', requireAuth, function (req, res) {
     var filters = {
         limit: req.params.count,
         order: 'received DESC',

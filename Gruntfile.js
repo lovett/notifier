@@ -125,11 +125,13 @@ module.exports = function(grunt) {
                 options: {
                     url: 'http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/message',
                     method: 'POST',
+                    headers: {
+                        'x-token': '<%= token.token %>'
+                    },
                     form: {
                         title: 'Test message',
                         body: 'Testing testing. This message was sent via Grunt on ' + new Date(),
-                        url: 'http://example.com',
-                        u: '<%= token.token %>'
+                        url: 'http://example.com'
                     }
                 }
             }

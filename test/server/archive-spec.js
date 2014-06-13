@@ -27,8 +27,15 @@ describe('/archive', function () {
                 .expect(200).end(done);
         });
 
+        it('rejects missing authorization', function (done) {
+            agent.get(endpoint)
+                .expect('Content-Type', /json/)
+                .expect(401).end(done);
+        });
+
         it('rejects invalid authorization', function (done) {
             agent.get(endpoint)
+                .set('X-Token', 'test')
                 .expect('Content-Type', /json/)
                 .expect(401).end(done);
         });
@@ -37,6 +44,10 @@ describe('/archive', function () {
             agent.get('/archive/foo')
                 .expect('Content-Type', /json/)
                 .expect(400).end(done);
+        });
+
+        it('rejects user token passed on querystring', function (done) {
+            agent.get('/archive/10/' + token).expect(404).end(done);
         });
 
     });
