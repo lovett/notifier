@@ -50,6 +50,14 @@ describe('/archive', function () {
             agent.get('/archive/10/' + token).expect(404).end(done);
         });
 
+        xit('does not expose message id', function (done) {
+            done();
+        });
+
+        xit('does not expose user id', function (done) {
+            done();
+        });
+
     });
 
     describe('POST', function () {

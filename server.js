@@ -654,6 +654,7 @@ app.post('/message', requireAuth, function (req, res, next) {
 
 app.get('/archive/:count', requireAuth, function (req, res) {
     var filters = {
+        attributes: ['publicId', 'title', 'url', 'body', 'source', 'group', 'event', 'received'],
         limit: req.params.count,
         order: 'received DESC',
         UserId: req.user.id,
