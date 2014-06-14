@@ -250,9 +250,6 @@ if (nconf.get('NOTIFIER_DEFAULT_USER')) {
  * --------------------------------------------------------------------
  */
 passport.use(new LocalStrategy(function (username, password, done) {
-    if (username === false || password === false) {
-        return done();
-    }
 
     // username is case insensitive
     // password is case sensitive

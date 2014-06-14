@@ -6,7 +6,7 @@ var agent = supertest.agent(server);
 
 describe('/auth', function () {
     var endpoint = '/auth';
-    
+
     describe('GET', function () {
         var request;
 
@@ -25,7 +25,7 @@ describe('/auth', function () {
         beforeEach(function () {
             request = agent.post(endpoint);
         });
-        
+
         it('rejects empty request', function (done) {
             request.expect(400).end(done);
         });
@@ -35,8 +35,13 @@ describe('/auth', function () {
             request.expect(400).end(done);
         });
 
-        it('rejects invalid login', function (done) {
+        it('rejects invalid username', function (done) {
             request = request.send({'username': 'foo', 'password': 'bar'});
+            request.expect(401).end(done);
+        });
+
+        it('rejects invalid password', function (done) {
+            request = request.send({'username': 'test', 'password': 'bar'});
             request.expect(401).end(done);
         });
 
@@ -57,7 +62,6 @@ describe('/auth', function () {
                 }
             }).end(done);
         });
-        
 
     });
 });
