@@ -50,8 +50,19 @@ describe('/archive', function () {
             agent.get('/archive/10/' + token).expect(404).end(done);
         });
 
-        xit('does not expose message id', function (done) {
-            done();
+        it('does not expose message id', function (done) {
+            agent.post('/message')
+                .set('X-Token', token)
+                .send({ title: 'test'})
+                .end(function (err, res) {
+                    agent.get(endpoint)
+                        .set('X-Token', token)
+                        .expect(function (res) {
+                            if (res.body[0].hasOwnProperty('id')) {
+                                throw new Error('Message contains id property');
+                            }
+                        }).end(done);
+                    });
         });
 
         xit('does not expose user id', function (done) {

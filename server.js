@@ -671,6 +671,10 @@ app.get('/archive/:count', requireAuth, function (req, res) {
     }
 
     Message.findAll(filters).success(function (messages) {
+        messages = messages.map(function (message) {
+            delete message.values.id;
+            return message;
+        });
         res.send(messages);
     });
 });

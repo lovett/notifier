@@ -132,6 +132,18 @@ module.exports = function(grunt) {
                         url: 'http://example.com'
                     }
                 }
+            },
+            archive: {
+                options: {
+                    url: 'http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/archive/10',
+                    method: 'GET',
+                    headers: {
+                        'x-token': '<%= token.token %>'
+                    },
+                    callback: function (error, response, body) {
+                        console.dir(JSON.parse(body, undefined, 2));
+                    }
+                }
             }
         },
 
