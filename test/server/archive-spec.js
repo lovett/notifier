@@ -65,8 +65,19 @@ describe('/archive', function () {
                     });
         });
 
-        xit('does not expose user id', function (done) {
-            done();
+        it('does not expose message user id', function (done) {
+            agent.post('/message')
+                .set('X-Token', token)
+                .send({ title: 'test'})
+                .end(function (err, res) {
+                    agent.get(endpoint)
+                        .set('X-Token', token)
+                        .expect(function (res) {
+                            if (res.body[0].hasOwnProperty('UserId')) {
+                                throw new Error('Message contains UserId property');
+                            }
+                        }).end(done);
+                    });
         });
 
     });
