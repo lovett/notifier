@@ -155,7 +155,6 @@ var Message = sequelize.define('Message', {
     title: {
         type: Sequelize.STRING(50),
         allowNull: false,
-        defaultValue: 'untitled',
         validate: {
             len: {
                 args: [1, 50],
@@ -214,7 +213,23 @@ var Message = sequelize.define('Message', {
             }
         }
     },
-}, { timestamps: true, updatedAt: false, createdAt: 'received' });
+}, {
+    instanceMethods: {
+        isEmpty: function () {
+            console.log(this.values);
+            var fieldsWithDefaultValues = ['publicId', 'id', 'received', 'group'];
+            var fieldsWithCustomValues = Object.keys(this.values).filter(function (key) {
+                return (fieldsWithDefaultValues.indexOf(key) === -1) ;
+            });
+
+            return fieldsWithCustomValues.length === 0;
+        }
+    },
+
+    timestamps: true,
+    updatedAt: false,
+    createdAt: 'received'
+});
 
 /**
  * ORM associations
@@ -628,10 +643,17 @@ app.post('/message', requireAuth, function (req, res, next) {
             return;
         }
 
-        if (req.body.hasOwnProperty(key)) {
+        if (req.body.hasOwnProperty(key) && req.body[key]) {
             message.values[key] = req.body[key];
         }
     });
+
+    if (message.isEmpty()) {
+        var err = new Error('Message is blank');
+        err.status = 400;
+        next(err);
+        return;
+    }
 
     message.save().success(function () {
         message.setUser(req.user).success(function () {
