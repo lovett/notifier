@@ -15,7 +15,7 @@ var compress = require('compression');
 var util = require('util');
 var useragent = require('useragent');
 var nconf = require('nconf');
-
+var sanitizeHtml = require('sanitize-html');
 
 /**
  * Application configuration
@@ -216,7 +216,6 @@ var Message = sequelize.define('Message', {
 }, {
     instanceMethods: {
         isEmpty: function () {
-            console.log(this.values);
             var fieldsWithDefaultValues = ['publicId', 'id', 'received', 'group'];
             var fieldsWithCustomValues = Object.keys(this.values).filter(function (key) {
                 return (fieldsWithDefaultValues.indexOf(key) === -1) ;
@@ -639,12 +638,33 @@ app.post('/message', requireAuth, function (req, res, next) {
     });
 
     message.attributes.forEach(function (key) {
+        var cleanedValue;
         if (key === 'id' || key === 'publicId') {
             return;
         }
 
+        var cleanDefault = {
+            allowedTags: [],
+            allowedAttributes: {}
+        };
+
+        var cleanTolerant = {
+            allowedTags: [ 'b', 'i', 'em', 'strong', 'a', 'p' ],
+            allowedAttributes: {
+                'a': [ 'href' ]
+            }
+        };
+
         if (req.body.hasOwnProperty(key) && req.body[key]) {
-            message.values[key] = req.body[key];
+            if (key === 'body') {
+                cleanedValue = sanitizeHtml(req.body[key], cleanTolerant);
+            } else {
+                cleanedValue = sanitizeHtml(req.body[key], cleanDefault);
+            }
+
+            if (cleanedValue !== '') {
+                message.values[key] = cleanedValue;
+            }
         }
     });
 
