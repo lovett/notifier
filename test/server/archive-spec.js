@@ -18,7 +18,6 @@ describe('/archive', function () {
     });
 
     describe('GET', function () {
-        var request;
 
         it('accepts valid authorization', function (done) {
             agent.get(endpoint)
@@ -54,7 +53,7 @@ describe('/archive', function () {
             agent.post('/message')
                 .set('X-Token', token)
                 .send({ title: 'test'})
-                .end(function (err, res) {
+                .end(function () {
                     agent.get(endpoint)
                         .set('X-Token', token)
                         .expect(function (res) {
@@ -69,7 +68,7 @@ describe('/archive', function () {
             agent.post('/message')
                 .set('X-Token', token)
                 .send({ title: 'test'})
-                .end(function (err, res) {
+                .end(function () {
                     agent.get(endpoint)
                         .set('X-Token', token)
                         .expect(function (res) {

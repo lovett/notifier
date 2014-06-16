@@ -154,6 +154,14 @@ module.exports = function(grunt) {
                 },
                 src: ['server.js', 'Gruntfile.js', 'clients/*.js']
             },
+
+            mocha: {
+                options: {
+                    jshintrc: '.jshintrc-node'
+                },
+                src: ['test/server/*-spec.js']
+            },
+            
             browser: {
                 options: {
                     jshintrc: '.jshintrc-browser'

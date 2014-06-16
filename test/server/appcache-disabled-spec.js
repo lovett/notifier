@@ -1,10 +1,9 @@
 var supertest = require('supertest');
-var chai = require('chai');
 
 process.env.NOTIFIER_APPCACHE_ENABLED = 'false';
 process.env.NODE_ENV = 'test';
 
-delete require.cache[require.resolve('../../server.js')]
+delete require.cache[require.resolve('../../server.js')];
 
 var server = require('../../server');
 var agent = supertest.agent(server);

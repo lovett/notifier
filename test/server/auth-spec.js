@@ -46,12 +46,12 @@ describe('/auth', function () {
         });
 
         it('accepts valid login with label', function (done) {
-            request = request.send({'username': 'test', 'password': 'test', 'label': 'test'})
+            request = request.send({'username': 'test', 'password': 'test', 'label': 'test'});
             request.expect(200).end(done);
         });
 
         it('returns token and channel', function (done) {
-            request = request.send({'username': 'test', 'password': 'test'})
+            request = request.send({'username': 'test', 'password': 'test'});
             request.expect('Content-Type', /json/).expect(function (res) {
                 if (!res.body.hasOwnProperty('token')) {
                     throw new Error('No token');

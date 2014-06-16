@@ -18,8 +18,6 @@ describe('/message', function () {
     });
 
     describe('GET', function () {
-        var request;
-
         it('is refused', function (done) {
             agent.get(endpoint).expect(404).end(done);
         });

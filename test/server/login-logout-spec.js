@@ -1,5 +1,4 @@
 var supertest = require('supertest');
-var chai = require('chai');
 
 process.env.NODE_ENV = 'test';
 var server = require('../../server');
