@@ -57,12 +57,40 @@ describe('/message', function () {
                 .expect(400).end(done);
         });
 
-        it('rejects blank value', function (done) {
+        it('requires title', function (done) {
             agent.post(endpoint)
                 .set('X-Token', token)
-                .send({'title': ''})
+                .send({'url': 'http://example.com'})
                 .expect(400).end(done);
         });
+
+        it('rejects blank required value', function (done) {
+            agent.post(endpoint)
+                .set('X-Token', token)
+                .send({'title': '', 'url': 'http://example.com'})
+                .expect(400).end(done);
+        });
+
+        it('accepts body with markup', function (done) {
+            agent.post(endpoint)
+                .set('X-Token', token)
+                .send({'title': 'Test', 'body': '<p>This string contains <em>acceptable</em> markup</p>'})
+                .expect(204).end(done);
+        });
+
+        it('accepts a fully-populated message', function (done) {
+            agent.post(endpoint)
+                .set('X-Token', token)
+                .send({'title': 'test',
+                       'url': 'http://example.com',
+                       'source': 'mocha',
+                       'body': 'testing',
+                       'group': 'message-spec',
+                       'event': 'test'
+                      })
+                .expect(204).end(done);
+        });
+
         
         
     });
