@@ -89,6 +89,35 @@ var sequelize = new Sequelize('', '', '', {
     }
 });
 
+/**
+ * HTML sanitizer configuration
+ * --------------------------------------------------------------------
+ */
+var sanitizeStrictConfig = {
+    allowedTags: [],
+    allowedAttributes: {}
+};
+
+var sanitizeStrict = function (context, field, value) {
+    var clean = sanitizeHtml(value, sanitizeStrictConfig);
+    log.trace({field: field, before: value, after: clean}, 'sanitized');
+    return context.setDataValue(field, clean);
+};
+
+var sanitizeTolerantConfig = {
+    allowedTags: [ 'b', 'i', 'em', 'strong', 'a', 'p' ],
+    allowedAttributes: {
+        'a': [ 'href' ]
+    },
+    allowedSchemes: [ 'http', 'https', 'mailto' ]
+};
+
+var sanitizeTolerant = function (context, field, value) {
+    var clean = sanitizeHtml(value, sanitizeTolerantConfig);
+    log.trace({field: field, before: value, after: clean}, 'sanitized');
+    return context.setDataValue(field, clean);
+};
+
 
 /**
  * ORM model definition
@@ -102,7 +131,7 @@ var User = sequelize.define('User', {
         validate: {
             len: {
                 args: [1, 20],
-                msg: 'Should be between 1 and 20 characters'
+                msg: 'should be between 1 and 20 characters'
             }
         }
     },
@@ -112,7 +141,7 @@ var User = sequelize.define('User', {
         validate: {
             len: {
                 args: [1, 60],
-                msg: 'Should be between 1 and 60 characters'
+                msg: 'should be between 1 and 60 characters'
             }
         }
     }
@@ -140,7 +169,7 @@ var Token = sequelize.define('Token', {
         validate: {
             len: {
                 args: [1, 100],
-                msg: 'Should be between 1 and 100 characters'
+                msg: 'should be between 1 and 100 characters'
             }
         }
     }
@@ -158,18 +187,25 @@ var Message = sequelize.define('Message', {
         validate: {
             len: {
                 args: [1, 50],
-                msg: 'Should be between 1 and 50 characters'
+                msg: 'should be between 1 and 50 characters'
             }
+        },
+        set: function (value) {
+            return sanitizeStrict(this, 'title', value);
         }
     },
     url: {
         type: Sequelize.STRING(255),
         allowNull: true,
         validate: {
+            isUrl: true,
             len: {
                 args: [1, 255],
-                msg: 'Should be between 1 and 255 characters'
+                msg: 'should be between 1 and 255 characters'
             }
+        },
+        set: function (value) {
+            return sanitizeStrict(this, 'url', value);
         }
     },
     body: {
@@ -178,8 +214,11 @@ var Message = sequelize.define('Message', {
         validate: {
             len: {
                 args: [1,500],
-                msg: 'Should be between 1 and 500 characters'
+                msg: 'should be between 1 and 500 characters'
             }
+        },
+        set: function (value) {
+            return sanitizeTolerant(this, 'body', value);
         }
     },
     source: {
@@ -188,8 +227,11 @@ var Message = sequelize.define('Message', {
         validate: {
             len: {
                 args: [1,20],
-                msg: 'Should be between 1 and 20 characters'
+                msg: 'should be between 1 and 20 characters'
             }
+        },
+        set: function (value) {
+            return sanitizeStrict(this, 'source', value);
         }
     },
     group: {
@@ -199,8 +241,11 @@ var Message = sequelize.define('Message', {
         validate: {
             len: {
                 args: [1,20],
-                msg: 'Should be between 1 and 20 characters'
+                msg: 'should be between 1 and 20 characters'
             }
+        },
+        set: function (value) {
+            return sanitizeStrict(this, 'group', value);
         }
     },
     event: {
@@ -209,8 +254,11 @@ var Message = sequelize.define('Message', {
         validate: {
             len: {
                 args: [1,20],
-                msg: 'Should be between 1 and 20 characters'
+                msg: 'should be between 1 and 20 characters'
             }
+        },
+        set: function (value) {
+            return sanitizeStrict(this, 'event', value);
         }
     },
 }, {
@@ -638,33 +686,12 @@ app.post('/message', requireAuth, function (req, res, next) {
     });
 
     message.attributes.forEach(function (key) {
-        var cleanedValue;
         if (key === 'id' || key === 'publicId') {
             return;
         }
 
-        var cleanDefault = {
-            allowedTags: [],
-            allowedAttributes: {}
-        };
-
-        var cleanTolerant = {
-            allowedTags: [ 'b', 'i', 'em', 'strong', 'a', 'p' ],
-            allowedAttributes: {
-                'a': [ 'href' ]
-            }
-        };
-
         if (req.body.hasOwnProperty(key) && req.body[key]) {
-            if (key === 'body') {
-                cleanedValue = sanitizeHtml(req.body[key], cleanTolerant);
-            } else {
-                cleanedValue = sanitizeHtml(req.body[key], cleanDefault);
-            }
-
-            if (cleanedValue !== '') {
-                message.values[key] = cleanedValue;
-            }
+            message[key] = req.body[key];
         }
     });
 
@@ -685,7 +712,12 @@ app.post('/message', requireAuth, function (req, res, next) {
             next(err);
         });
     }).error(function (error) {
-        var err = new Error(error);
+        var message = '';
+        Object.keys(error).forEach(function (key) {
+            message += key + ' ' + error[key].join('\\n') + ';';
+        });
+
+        var err = new Error(message);
         err.status = 400;
         next(err);
     });
