@@ -187,7 +187,8 @@ module.exports = function(grunt) {
             server: {
                 options: {
                     reporter: 'spec',
-                    bail: true
+                    bail: true,
+                    require: 'test/server/world.js'
                 },
                 src: ['test/server/*-spec.js']
             }
@@ -197,7 +198,8 @@ module.exports = function(grunt) {
             server: {
                 src: 'test/server',
                 options: {
-                    mask: '*-spec.js'
+                    mask: '*-spec.js',
+                    require: ['test/server/world.js']
                 }
             }
         },

@@ -293,18 +293,22 @@ Message.belongsTo(User);
  * ORM initialization
  * --------------------------------------------------------------------
  */
-sequelize.sync();
-
-// Create the default user
-if (nconf.get('NOTIFIER_DEFAULT_USER')) {
-    User.findOrCreate({ username: nconf.get('NOTIFIER_DEFAULT_USER').toLowerCase()}).success(function (user, created) {
-        if (created === true) {
-            var salt = bcrypt.genSaltSync(10);
-            user.values.passwordHash = bcrypt.hashSync(nconf.get('NOTIFIER_DEFAULT_PASSWORD'), salt);
-            user.save();
-        }
-    });
-}
+sequelize.sync().success(function () {
+    // Create the default user
+    if (nconf.get('NOTIFIER_DEFAULT_USER')) {
+        User.findOrCreate({ username: nconf.get('NOTIFIER_DEFAULT_USER').toLowerCase()}).success(function (user, created) {
+            if (created === true) {
+                var salt = bcrypt.genSaltSync(10);
+                user.values.passwordHash = bcrypt.hashSync(nconf.get('NOTIFIER_DEFAULT_PASSWORD'), salt);
+                user.save();
+            }
+        }).error(function (error) {
+            log.error(error);
+        });
+    }
+}).error(function () {
+    log.fatal('Failed to sync database');
+});
 
 
 /**

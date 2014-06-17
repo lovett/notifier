@@ -1,7 +1,4 @@
-var supertest = require('supertest');
-
 process.env.NOTIFIER_APPCACHE_ENABLED = 'true';
-process.env.NODE_ENV = 'test';
 
 delete require.cache[require.resolve('../../server.js')];
 

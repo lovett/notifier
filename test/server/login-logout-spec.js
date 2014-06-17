@@ -1,6 +1,3 @@
-var supertest = require('supertest');
-
-process.env.NODE_ENV = 'test';
 var server = require('../../server');
 var agent = supertest.agent(server);
 

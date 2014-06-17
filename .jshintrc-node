@@ -5,7 +5,8 @@
         "before": false,
         "beforeEach": false,
         "after": false,
-        "afterEach": false
+        "afterEach": false,
+        "supertest": false
     },
     "bitwise": true,
     "camelcase": true,
