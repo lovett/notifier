@@ -348,9 +348,7 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
 
             this.messages[message.publicId] = message;
 
-            if (message.received > this.getAsOfDate()) {
-                this.setAsOfDate(message.received);
-            }
+            this.setAsOfDate(message.received);
 
             if (message.group !== 'internal') {
                 BrowserNotification.send(message);
