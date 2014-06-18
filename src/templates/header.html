@@ -2,7 +2,7 @@
     <div class="left" >
         <span class="state {{connectionStatus}}">{{ connectionStatus }}</span>
         <span ng-show="connectionStatus == 'disconnected'">Offline since {{ connectionChangedAt | amCalendar }}</span>
-        <span ng-show="connectionStatus == 'connected'" ng-pluralize count="queue.length" when="{'0': '', '1': '1 new message', 'other': '{{ queue.length}} new messages'}"></span>
+        <span id="message-tally" ng-show="connectionStatus == 'connected'" ng-pluralize count="queue.length" when="{'0': '', '1': '1 new message', 'other': '{{ queue.length}} new messages'}"></span>
     </div>
 
     <div class="right">
