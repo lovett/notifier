@@ -11,7 +11,7 @@ var bcrypt = require('bcrypt');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var crypto = require('crypto');
-var compress = require('compression');
+var compression = require('compression');
 var util = require('util');
 var useragent = require('useragent');
 var nconf = require('nconf');
@@ -539,7 +539,9 @@ if (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true') {
 app.use(responseTime());
 
 // Use compression
-app.use(compress());
+app.use(compression({
+    threshold: 0
+}));
 
 // Request logging
 app.use(function(req, res, next) {
