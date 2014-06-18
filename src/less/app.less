@@ -130,7 +130,7 @@ HEADER {
     margin-top: .5em;
     overflow: hidden;
     position: relative;
-    padding: 1em;
+    padding: 1em 6em 1em 1em;
 
     .options {
         position: absolute;
@@ -143,12 +143,18 @@ HEADER {
             height: 100%;
             background-color: #666;
             color: white;
-            display: block;
             float: right;
             font-size: .75em;
             text-transform: uppercase;
-            padding: 25% 1.5em 0 1.5em;
             margin-left: .25em;
+            padding: 0 1.5em;
+            display: table;
+
+            SPAN {
+                display: table-cell;
+                vertical-align: middle;
+            }
+
         }
         A:hover {
             background-color: darken(#666, 10%);
