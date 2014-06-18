@@ -247,20 +247,7 @@ var Message = sequelize.define('Message', {
         set: function (value) {
             return sanitizeStrict(this, 'group', value);
         }
-    },
-    event: {
-        type: Sequelize.STRING(20),
-        allowNull: true,
-        validate: {
-            len: {
-                args: [1,20],
-                msg: 'should be between 1 and 20 characters'
-            }
-        },
-        set: function (value) {
-            return sanitizeStrict(this, 'event', value);
-        }
-    },
+    }
 }, {
     instanceMethods: {
         isEmpty: function () {
@@ -731,7 +718,7 @@ app.post('/message', requireAuth, function (req, res, next) {
 
 app.get('/archive/:count', requireAuth, function (req, res) {
     var filters = {
-        attributes: ['publicId', 'title', 'url', 'body', 'source', 'group', 'event', 'received'],
+        attributes: ['publicId', 'title', 'url', 'body', 'source', 'group', 'received'],
         limit: req.params.count,
         order: 'received DESC',
         UserId: req.user.id,

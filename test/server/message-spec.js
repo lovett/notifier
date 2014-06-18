@@ -82,8 +82,7 @@ describe('/message', function () {
                        'url': 'http://example.com',
                        'source': 'mocha',
                        'body': 'testing',
-                       'group': 'message-spec',
-                       'event': 'test'
+                       'group': 'message-spec'
                       })
                 .expect(204).end(done);
         });
