@@ -79,15 +79,18 @@ try {
  * ORM configuration
  * --------------------------------------------------------------------
  */
-var sequelize = new Sequelize('', '', '', {
-    dialect: nconf.get('NOTIFIER_DB_DRIVER'),
-    storage: nconf.get('NOTIFIER_SQLITE_PATH'),
-    logging: function (msg) {
-        log.info({
-            sequelize: msg
-        }, 'query');
-    }
-});
+
+var dbConfig = nconf.get('NOTIFIER_DB_CONFIG');
+dbConfig.logging = function (msg) {
+    log.info({
+        sequelize: msg
+    }, 'query');
+};
+
+var sequelize = new Sequelize(nconf.get('NOTIFIER_DB_NAME'),
+                              nconf.get('NOTIFIER_DB_USER'),
+                              nconf.get('NOTIFIER_DB_PASS'),
+                              dbConfig);
 
 /**
  * HTML sanitizer configuration

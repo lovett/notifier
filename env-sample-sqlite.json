@@ -11,8 +11,11 @@
     "NOTIFIER_HTTP_PORT": 8080,
     "NOTIFIER_WEBSOCKET_PORT": 8080,
     "NOTIFIER_FORCE_HTTPS": "false",
-    "NOTIFIER_SQLITE_PATH": "./notifier.sqlite",
-    "NOTIFIER_DB_DRIVER": "sqlite",
     "NOTIFIER_DEFAULT_USER": "",
-    "NOTIFIER_DEFAULT_PASSWORD": ""
+    "NOTIFIER_DEFAULT_PASSWORD": "",
+    "NOTIFIER_DB_CONFIG": {
+        "storage": "./notifier.sqlite",
+        "dialect": "sqlite"
+    }
+    
 }

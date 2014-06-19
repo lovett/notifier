@@ -1,0 +1,25 @@
+{
+    "NOTIFIER_APPCACHE_ENABLED": "true",
+    "NOTIFIER_ENVIRONMENT": "dev",
+    "NOTIFIER_LIVERELOAD": 35729,
+    "NOTIFIER_DEV_HOST": "localhost",
+    "NOTIFIER_LOG": "notifier.log",
+    "NOTIFIER_SSL": 0,
+    "NOTIFIER_SSL_KEY": "",
+    "NOTIFIER_SSL_CERT": "",
+    "NOTIFIER_HTTP_IP": "0.0.0.0",
+    "NOTIFIER_HTTP_PORT": 8080,
+    "NOTIFIER_WEBSOCKET_PORT": 8080,
+    "NOTIFIER_FORCE_HTTPS": "false",
+    "NOTIFIER_DEFAULT_USER": "",
+    "NOTIFIER_DEFAULT_PASSWORD": "",
+    "NOTIFIER_DB_NAME": "notifier_dev",
+    "NOTIFIER_DB_USER": "notifier_dev",
+    "NOTIFIER_DB_PASS": "notifier_dev",
+    "NOTIFIER_DB_CONFIG": {
+        "host": "localhost",
+        "port": "3306",
+        "dialect": "mysql"
+    }
+    
+}
