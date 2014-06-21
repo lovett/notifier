@@ -552,8 +552,14 @@ app.use(function(req, res, next) {
     next();
 });
 
-// Refuse large request bodies
-app.use(bodyParser({
+// Parse urlencoded request bodies
+app.use(bodyParser.urlencoded({
+    extended: false,
+    limit: '5kb'
+}));
+
+// Parse json request bodies
+app.use(bodyParser.json({
     limit: '5kb'
 }));
 
