@@ -293,11 +293,13 @@ sequelize.sync().success(function () {
                 user.save();
             }
         }).error(function (error) {
-            log.error(error);
+            log.fatal(error);
+            process.exit();
         });
     }
 }).error(function () {
     log.fatal('Failed to sync database');
+    process.exit();
 });
 
 
