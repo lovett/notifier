@@ -204,6 +204,12 @@ module.exports = function(grunt) {
             }
         },
 
+        open : {
+            'coverage-server': {
+                path: 'coverage/lcov-report/notifier/server.js.html'
+            }
+        },
+
         replace: {
             websocket: {
                 src: ['public/*.html'],
@@ -320,7 +326,7 @@ module.exports = function(grunt) {
         grunt.task.run(['ver', 'appcache']);
     });
 
-    grunt.registerTask('coverage', ['mocha_istanbul:server']);
+    grunt.registerTask('coverage', ['mocha_istanbul:server', 'open:coverage-server']);
 
     grunt.registerTask('default', ['githooks', 'build', 'watch']);
 
