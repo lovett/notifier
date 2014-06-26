@@ -5,7 +5,6 @@ var faye = require('faye');
 var express = require('express');
 var bodyParser = require('body-parser');
 var responseTime = require('response-time');
-var app = express();
 var Sequelize = require('sequelize');
 var bcrypt = require('bcrypt');
 var passport = require('passport');
@@ -21,7 +20,7 @@ var sanitizeHtml = require('sanitize-html');
  * Application configuration
  * --------------------------------------------------------------------
  *
- * Configuration settings will be sourced from:
+ * Configuration settings are sourced from:
  *
  * 1. command line arguments
  * 2. environment variables
@@ -156,6 +155,12 @@ var User = sequelize.define('User', {
             hmac.write(this.id.toString());
             hmac.end();
             return hmac.read();
+        },
+
+        hashPassword: function (password) {
+            var salt = bcrypt.genSaltSync(10);
+            var hash = bcrypt.hashSync(password, salt);
+            this.setDataValue('passwordHash', hash);
         }
     }
 });
@@ -280,28 +285,31 @@ Message.belongsTo(User);
 
 
 /**
- * ORM initialization
+ * Database population
  * --------------------------------------------------------------------
  */
-sequelize.sync().success(function () {
-    // Create the default user
-    if (nconf.get('NOTIFIER_DEFAULT_USER')) {
-        User.findOrCreate({ username: nconf.get('NOTIFIER_DEFAULT_USER').toLowerCase()}).success(function (user, created) {
-            if (created === true) {
-                var salt = bcrypt.genSaltSync(10);
-                user.values.passwordHash = bcrypt.hashSync(nconf.get('NOTIFIER_DEFAULT_PASSWORD'), salt);
-                user.save();
-            }
-        }).error(function (error) {
-            log.fatal(error);
-            process.exit();
-        });
+var createDefaultUser = function (callback) {
+    if (!nconf.get('NOTIFIER_DEFAULT_USER')) {
+        return callback();
     }
-}).error(function () {
-    log.fatal('Failed to sync database');
-    process.exit();
-});
 
+    var userName = nconf.get('NOTIFIER_DEFAULT_USER').toLowerCase();
+
+    User.findOrCreate({ username: userName}).success(function (user, created) {
+        if (created === false) {
+            callback();
+        } else {
+            user.hashPassword(nconf.get('NOTIFIER_DEFAULT_PASSWORD'));
+            user.save().success(function () {
+                callback();
+            }).error(function (err) {
+                callback(err);
+            });
+        }
+    }).error(function (err) {
+        callback(err);
+    });
+};
 
 /**
  * Authentication configuration
@@ -460,9 +468,10 @@ bayeuxClient.addExtension({
 
 
 /**
- * Customize Express server headers
+ * The Express application
  * --------------------------------------------------------------------
  */
+var app = express();
 app.disable('x-powered-by');
 
 
@@ -779,19 +788,44 @@ app.use(function(err, req, res, next) {
  * Server startup
  * --------------------------------------------------------------------
  */
-if (nconf.get('NOTIFIER_SSL') !== '1') {
-    var server = app.listen(nconf.get('NOTIFIER_HTTP_PORT'), nconf.get('NOTIFIER_HTTP_IP'));
-} else {
-    var server = https.createServer({
-        key: fs.readFileSync(nconf.get('NOTIFIER_SSL_KEY')),
-        cert: fs.readFileSync(nconf.get('NOTIFIER_SSL_CERT'))
-    }, app).listen(nconf.get('NOTIFIER_HTTP_PORT'), nconf.get('NOTIFIER_HTTP_IP'));
+var sync = function (callback) {
+    sequelize.sync().complete(function (err) {
+        if (err) {
+            log.fatal(err);
+            process.exit();
+        }
+
+        createDefaultUser(function (err) {
+            if (err) {
+                log.fatal(err);
+                process.exit();
+            }
+            callback();
+        });
+    });
+};
+
+if (!module.parent) {
+    sync(function () {
+        var server;
+        if (nconf.get('NOTIFIER_SSL') !== '1') {
+            server = app.listen(nconf.get('NOTIFIER_HTTP_PORT'), nconf.get('NOTIFIER_HTTP_IP'));
+        } else {
+            server = https.createServer({
+                key: fs.readFileSync(nconf.get('NOTIFIER_SSL_KEY')),
+                cert: fs.readFileSync(nconf.get('NOTIFIER_SSL_CERT'))
+            }, app).listen(nconf.get('NOTIFIER_HTTP_PORT'), nconf.get('NOTIFIER_HTTP_IP'));
+        }
+
+        server.on('listening', function () {
+            log.info({ip: nconf.get('NOTIFIER_HTTP_IP'), port: nconf.get('NOTIFIER_HTTP_PORT')}, 'appstart');
+
+            // Attach to the express server returned by listen, rather than app itself.
+            // https://github.com/faye/faye/issues/256
+            bayeux.attach(server);
+        });
+    });
 }
 
-// Attach to the express server returned by listen, rather than app itself.
-// See https://github.com/faye/faye/issues/256
-bayeux.attach(server);
-
-log.info({ip: nconf.get('NOTIFIER_HTTP_IP'), port: nconf.get('NOTIFIER_HTTP_PORT')}, 'appstart');
-
-exports = module.exports = app;
+exports.sync = sync;
+exports.app = app;

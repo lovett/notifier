@@ -6,7 +6,9 @@
         "beforeEach": false,
         "after": false,
         "afterEach": false,
-        "supertest": false
+        "supertest": false,
+        "server": false,
+        "agent": false
     },
     "bitwise": true,
     "camelcase": true,

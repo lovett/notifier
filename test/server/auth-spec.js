@@ -1,8 +1,11 @@
-var server = require('../../server');
-var agent = supertest.agent(server);
-
 describe('/auth', function () {
     var endpoint = '/auth';
+
+    before(function (done) {
+        server.sync(function () {
+            done();
+        });
+    });
 
     describe('GET', function () {
         var request;

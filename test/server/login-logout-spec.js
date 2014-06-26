@@ -1,8 +1,11 @@
-var server = require('../../server');
-var agent = supertest.agent(server);
-
 describe('/login', function () {
     var endpoint = '/login';
+
+    before(function (done) {
+        server.sync(function () {
+            done();
+        });
+    });
     
     describe('GET', function () {
         it('returns 200 as text/html with Angular markup', function (done) {
@@ -24,6 +27,12 @@ describe('/login', function () {
 
 describe('/logout', function () {
     var endpoint = '/logout';
+
+    before(function (done) {
+        server.sync(function () {
+            done();
+        });
+    });
     
     describe('GET', function () {
         it('returns 200 as text/html with Angular markup', function (done) {

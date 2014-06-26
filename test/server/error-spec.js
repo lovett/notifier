@@ -1,8 +1,11 @@
-var server = require('../../server');
-var agent = supertest.agent(server);
-
 describe('invalid route', function () {
     var endpoint = '/invalid';
+
+    before(function (done) {
+        server.sync(function () {
+            done();
+        });
+    });
 
     describe('GET', function () {
         it('is refused', function (done) {

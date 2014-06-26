@@ -1,10 +1,14 @@
-var fs = require('fs');
-global.supertest = require('supertest');
-
 process.env.NODE_ENV = 'test';
 
-try {
-    fs.unlinkSync('./test.sqlite');
-    fs.unlinkSync('./test.log');
-} catch (e) {
-};
+var fs = require('fs');
+var server = require('../../server');
+var supertest = require('supertest');
+
+fs.unlink('test.log', function () {});
+fs.unlink('test.sqlite', function () {});
+
+global.supertest = supertest;
+global.server = server;
+global.agent = supertest.agent(server.app);
+
+

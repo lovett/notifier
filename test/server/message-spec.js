@@ -1,17 +1,16 @@
-var server = require('../../server');
-var agent = supertest.agent(server);
-
 describe('/message', function () {
     var endpoint = '/message';
     var token;
 
-    beforeEach(function (done) {
-        agent.post('/auth')
-            .send({'username': 'test', 'password': 'test'})
-            .end(function (err, res) {
-                token = res.body.token;
-                done();
-            });
+    before(function (done) {
+        server.sync(function () {
+            agent.post('/auth')
+                .send({'username': 'test', 'password': 'test'})
+                .end(function (err, res) {
+                    token = res.body.token;
+                    done();
+                });
+        });
     });
 
     describe('GET', function () {

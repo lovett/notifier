@@ -2,10 +2,17 @@ process.env.NOTIFIER_APPCACHE_ENABLED = 'true';
 
 delete require.cache[require.resolve('../../server.js')];
 
-var server = require('../../server');
-var agent = supertest.agent(server);
+server = require('../../server');
+agent = supertest.agent(server.app);
 
 describe('/notifier.appcache', function () {
+
+    before(function (done) {
+        server.sync(function () {
+            done();
+        });
+    });
+    
     describe('GET', function () {
         it('returns 200 when appcache is enabled', function (done) {
             agent.get('/notifier.appcache')
