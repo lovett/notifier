@@ -1,5 +1,6 @@
 {
   "name": "notifier",
+  "private": true,  
   "version": "0.0.0",
   "description": "A notification service for user-generated events",
   "main": "server.js",
