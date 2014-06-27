@@ -579,13 +579,13 @@ app.use(passport.initialize());
 
 
 // Appcache manifest override.
-// Uncomment to expire or otherwise temporarily deactivate the client's appcache.
-// Must appear before static middleware.
-if (nconf.get('NOTIFIER_APPCACHE_ENABLED') === 'false') {
-    app.get('/notifier.appcache', function (req, res) {
+app.get('/notifier.appcache', function (req, res, next) {
+    if (nconf.get('NOTIFIER_APPCACHE_ENABLED')) {
+        next();
+    } else {
         res.send(410);
-    });
-}
+    }
+});
 
 // Static fileserving
 app.use(express.static(__dirname + '/public'));
@@ -828,4 +828,9 @@ if (!module.parent) {
 }
 
 exports.sync = sync;
+
 exports.app = app;
+
+exports.setAppcache = function (booleanValue) {
+    nconf.set('NOTIFIER_APPCACHE_ENABLED', booleanValue);
+};

@@ -39,21 +39,21 @@ var initClient = function (server, auth) {
     
     client.addExtension({
         incoming: function (message, callback) {
-            if (message.error) {
-                var segments = message.error.split('::');
-                var code = parseInt(segments[0], 10);
-                var value = segments[1];
-                
-                if (code === 301) {
-                    auth.channel = value;
-                    client.unsubscribe();
-                    subscribe();
-                } else {
-                    console.error(message.error);
-                    process.exit();
-                }
+            if (!message.error) {
+                return callback(message);
             }
-            return callback(message);
+            
+            var segments = message.error.split('::');
+            var code = parseInt(segments[0], 10);
+            var value = segments[1];
+            
+            if (code === 301) {
+                auth.channel = value;
+                client.unsubscribe();
+                subscribe();
+            } else {
+                emitter.emit('error', message.error);
+            }
         },
         outgoing: function(message, callback) {
             if (message.channel !== '/meta/subscribe') {
@@ -69,7 +69,7 @@ var initClient = function (server, auth) {
         }
     });
 
-    subscribe();
+    subscribe(); 
 };
 
 /**
@@ -119,5 +119,6 @@ var authorize = function (server) {
 
 module.exports = {
     emitter: emitter,    
-    authorize: authorize
+    authorize: authorize,
+    init: initClient
 };
