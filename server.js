@@ -161,6 +161,10 @@ var User = sequelize.define('User', {
             var salt = bcrypt.genSaltSync(10);
             var hash = bcrypt.hashSync(password, salt);
             this.setDataValue('passwordHash', hash);
+        },
+
+        checkPassword: function (password) {
+            return bcrypt.compareSync(password, this.getDataValue('passwordHash'));
         }
     }
 });
@@ -326,7 +330,7 @@ passport.use(new LocalStrategy(function (username, password, done) {
             return done(null, false);
         }
 
-        if (!bcrypt.compareSync(password, user.values.passwordHash)) {
+        if (!user.checkPassword(password)) {
             return done(null, false);
         }
 
