@@ -358,13 +358,12 @@ var bayeux = new faye.NodeAdapter({
 var verifySubscription = function (message, callback) {
     log.info({message: message}, 'verifying subscription request');
 
-    if (!message.ext.authToken) {
+    if (!message.ext || !message.ext.authToken) {
         log.warn({message: message}, 'credentials missing');
         message.error = '401::Credentials missing';
         callback(message);
         return;
     }
-
 
     Token.find({
         include: [ User ],
@@ -380,7 +379,16 @@ var verifySubscription = function (message, callback) {
         }
 
         // Is the requested channel still valid?
-        if (message.subscription.replace('/messages/', '') !== token.user.getChannel()) {
+        var channelSegments = message.subscription.replace(/^\//, '').split('/');
+
+        if (channelSegments[0] !== 'messages') {
+            log.info({channel: message.subscription}, 'invalid channel');
+            message.error = '400::Invalid subscription channel';
+            callback(message);
+            return;
+        }
+
+        if (channelSegments[1] !== token.user.getChannel()) {
             log.info({channel: message.subscription}, 'stale channel');
             message.error = '301::' + token.user.getChannel();
             callback(message);
@@ -435,23 +443,6 @@ bayeux.addExtension({
         delete message.ext.secret;
 
         return callback(message);
-    }
-});
-
-
-/**
- * Websocket event handlers
- * --------------------------------------------------------------------
- */
-bayeux.on('subscribe', function (clientId, channel) {
-    channel = channel.replace(/\/+/, '/');
-    channel = channel.replace(/^\//, '');
-
-    var segments = channel.split('/');
-    var channelRoot = segments[0];
-
-    if (channelRoot !== 'messages') {
-        return;
     }
 });
 
@@ -831,10 +822,11 @@ if (!module.parent) {
     });
 }
 
+// These exports are all for the benefit of testing
 exports.sync = sync;
-
 exports.app = app;
-
+exports.bayeuxClient = bayeuxClient;
+exports.verifySubscription = verifySubscription;
 exports.setAppcache = function (booleanValue) {
     nconf.set('NOTIFIER_APPCACHE_ENABLED', booleanValue);
 };
