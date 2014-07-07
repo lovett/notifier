@@ -76,6 +76,20 @@ describe('/archive', function () {
                     });
         });
 
+        it('returns successfully if a numeric since value is provided', function (done) {
+            agent.get(endpoint + '?since=' + (new Date()).getTime())
+                .set('X-Token', token)
+                .expect('Content-Type', /json/)
+                .expect(200).end(done);
+        });
+
+        it('returns successfully if a non-numeric since value is provided', function (done) {
+            agent.get(endpoint + '?since=' + (new Date()).getTime())
+                .set('X-Token', token)
+                .expect('Content-Type', /json/)
+                .expect(200).end(done);
+        });
+
     });
 
     describe('POST', function () {
