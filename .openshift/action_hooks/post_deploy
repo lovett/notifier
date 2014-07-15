@@ -1,3 +1,13 @@
 #!/bin/bash
 
+#
+# Build the application
+#
+
+echo "Starting pre_build hook"
+
+cd $OPENSHIFT_REPO_DIR
+
 grunt build
+
+echo "Finished pre_build hook"
