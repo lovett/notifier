@@ -215,8 +215,8 @@ module.exports = function(grunt) {
                 src: ['public/*.html'],
                 overwrite: true,
                 replacements: [{
-                    from: '<meta name=\'websocket port\' content=\'\' />',
-                    to: '<meta name=\'websocket port\' content=\'<%= env.NOTIFIER_WEBSOCKET_PORT %>\' />'
+                    from: '<meta name=\"websocket port\" content=\"\" />',
+                    to: '<meta name=\"websocket port\" content=\"<%= env.NOTIFIER_WEBSOCKET_PORT %>\" />'
                 }]
             },
             dev: {
