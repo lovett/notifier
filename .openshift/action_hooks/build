@@ -27,8 +27,4 @@ HOME="$BOWER_TMP_HOME"
 bower install
 HOME="$ORIGINAL_HOME"
 
-# Write a temporary version of env.json so that the Gruntfile can be processed
-echo "{}" > env.json
-grunt build
-
 echo "Finished build hook"
