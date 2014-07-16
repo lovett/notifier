@@ -497,6 +497,7 @@ app.use(function (req, res, next) {
 
     if (nconf.get('NOTIFIER_WEBSOCKET_PORT')) {
         connectSrc += util.format(' %s://%s:%s', (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'wss':'ws', hostname, nconf.get('NOTIFIER_WEBSOCKET_PORT'));
+        scriptSrc  += util.format(' %s://%s:%s', (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'https':'http', hostname, nconf.get('NOTIFIER_WEBSOCKET_PORT'));
     }
 
     if (nconf.get('NOTIFIER_LIVERELOAD')) {
