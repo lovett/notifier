@@ -21,7 +21,7 @@ if [[ -f "$VERSION_FILE" ]]; then
     DESTINATION="${OPENSHIFT_DATA_DIR}${ARCHIVE}"
     NODE_DIR=${ARCHIVE%.tar.gz}
 
-    if [[ ! -d "$DESTINATION/$NODE_DIR" ]]; then
+    if [[ ! -f "$DESTINATION" ]]; then
         echo "Downloading $DOWNLOAD_URL"
         curl -s -L -o "$DESTINATION" "$DOWNLOAD_URL"
         tar -x -z -C "$OPENSHIFT_DATA_DIR" -f "$DESTINATION"
