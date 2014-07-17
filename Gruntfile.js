@@ -129,6 +129,7 @@ module.exports = function(grunt) {
                     form: {
                         title: 'Test message',
                         body: 'Testing testing. This message was sent via Grunt on ' + new Date(),
+                        group: 'test',
                         url: 'http://example.com'
                     }
                 }
@@ -161,7 +162,7 @@ module.exports = function(grunt) {
                 },
                 src: ['test/server/*-spec.js']
             },
-            
+
             browser: {
                 options: {
                     jshintrc: '.jshintrc-browser'
