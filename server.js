@@ -36,11 +36,11 @@ if (process.env.NODE_ENV) {
     nconf.file('custom', { file: 'env-' + process.env.NODE_ENV + '.json' });
 }
 
+nconf.file('env.json');
+
 nconf.defaults({
     'NOTIFIER_LOG': 'notifier.log'
 });
-
-nconf.file('default', {file: 'env.json'});
 
 /**
  * Logging configuration
