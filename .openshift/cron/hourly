@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#
+# Create a local backup of this application's MySQL database
+#
+
+CURRENT_DATE=$(date +"%Y%m%d")
+CURRENT_TIME=$(date +"%H%M")
+
+DB_NAME=notifier
+
+BACKUP_DIR="$OPENSHIFT_DATA_DIR/backup/$CURRENT_DATE"
+
+mkdir -p "$BACKUP_DIR"
+
+mysqldump -u$OPENSHIFT_MYSQL_DB_USERNAME  -p$OPENSHIFT_MYSQL_DB_PASSWORD -h$OPENSHIFT_MYSQL_DB_HOST $DB_NAME | gzip > "$BACKUP_DIR/$DB_NAME.$CURRENT_TIME.sql.gz"
+
+find $BACKUP_DIR/* -mtime +3 -exec rm {} \;
