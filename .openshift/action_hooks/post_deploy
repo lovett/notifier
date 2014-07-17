@@ -10,4 +10,8 @@ cd $OPENSHIFT_REPO_DIR
 
 grunt build
 
+rm env-sample-*.json
+rm env-test.json
+rm -rf test
+
 echo "Finished pre_build hook"
