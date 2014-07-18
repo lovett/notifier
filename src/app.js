@@ -147,7 +147,6 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
             }
 
             var url = $location.protocol() + '://' + $location.host() + ':' + port + '/messages';
-            $log.info('Faye url is ' + url);
             client = new Faye.Client(url, {
                 retry: 10
             });
@@ -236,19 +235,10 @@ app.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($locat
     };
 }]);
 
-app.factory('BrowserNotification', ['$window', function ($window) {
+app.service('BrowserNotification', ['$window', '$rootScope', function ($window, $rootScope) {
     'use strict';
 
-    var enabled = false;
-    if ($window.Notification) {
-        enabled = $window.Notification.permission === 'granted' || false;
-    }
-
-    var send = function (message, ignoreFocus) {
-        if (enabled === false) {
-            return false;
-        }
-
+    this.send = function (message, ignoreFocus) {
         if ($window.document.hasFocus() && ignoreFocus !== true) {
             return;
         }
@@ -260,33 +250,32 @@ app.factory('BrowserNotification', ['$window', function ($window) {
 
     };
 
-    return {
-        supported: $window.Notification,
+    this.offered = $window.Notification !== undefined;
 
-        enabled: enabled,
+    this.enabled = (this.offered && $window.Notification.permission === 'granted');
 
-        enable: function () {
-            if (enabled === false) {
-                return;
+    this.enable = function () {
+        var self = this;
+
+        if (self.enabled === true) {
+            $window.alert('Notifications are enabled. They can be turned off by editing your browser settings.');
+            return;
+        }
+
+        $window.Notification.requestPermission(function (permission) {
+            if (permission === 'granted') {
+                self.send({
+                    group: 'internal',
+                    title: 'Browser notifications enabled'
+                }, true);
+                self.enabled = true;
+                $rootScope.$apply();
             }
-
-            $window.Notification.requestPermission(function (permission) {
-                enabled = permission;
-                if (permission === 'granted') {
-                    send({
-                        group: 'internal',
-                        title: 'Browser notifications enabled',
-                        body: 'They can be turned off by editing your browser settings.'
-                    }, true);
-                }
-            });
-        },
-
-        send: send
+        });
     };
 }]);
 
-app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNotification) {
+app.factory('Queue', ['$http', '$log', 'BrowserNotification', function ($http, $log, BrowserNotification) {
     'use strict';
 
     return {
@@ -313,6 +302,9 @@ app.factory('Queue', ['$http', 'BrowserNotification', function ($http, BrowserNo
 
         populate: function (token) {
             var self = this;
+
+            $log.info('Requesting message queue since ' + moment(self.getAsOfDate().getTime()).format('MMMM D h:mm:ss A'));
+
             $http({
                 method: 'GET',
                 url: '/archive/10?since=' + (+self.getAsOfDate()),
