@@ -1,8 +1,10 @@
 #!/bin/bash
 
 #
-# Create a local backup of this application's MySQL database
+# Create a local backup of this application's MySQL database, and upload it to OneDrive
 #
+
+SCRIPT_DIR=$(dirname "$0")
 
 CURRENT_DATE=$(date +"%Y%m%d-%H%M")
 
@@ -10,9 +12,13 @@ DB_NAME=notifier
 
 BACKUP_DIR="$OPENSHIFT_DATA_DIR/backup-mysql"
 
+BACKUP_FILE="$BACKUP_DIR/$CURRENT_DATE.$DB_NAME.sql.gz"
+
 mkdir -p "$BACKUP_DIR"
 
-mysqldump -u$OPENSHIFT_MYSQL_DB_USERNAME  -p$OPENSHIFT_MYSQL_DB_PASSWORD -h$OPENSHIFT_MYSQL_DB_HOST $DB_NAME | gzip > "$BACKUP_DIR/$CURRENT_DATE.$DB_NAME.sql.gz"
+mysqldump -u$OPENSHIFT_MYSQL_DB_USERNAME  -p$OPENSHIFT_MYSQL_DB_PASSWORD -h$OPENSHIFT_MYSQL_DB_HOST $DB_NAME | gzip > "$BACKUP_FILE"
+
+$SCRIPT_DIR/../../util/upload-to-onedrive.js "$BACKUP_FILE"
 
 find $BACKUP_DIR/* -mtime +3 -exec rm {} \;
 
