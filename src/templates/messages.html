@@ -1,6 +1,6 @@
 <ng-include src="'/templates/header.html'"></ng-include>
 
-<main id="no-messages" ng-show="connectionStatus == 'connected' && queue.length === 0">
+<main id="no-messages" ng-show="connectionStatus == 'connected' && queue.messages.length === 0">
     <p>There are no new messages.</p>
 </main>
 

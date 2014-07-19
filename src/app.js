@@ -292,13 +292,10 @@ app.factory('Queue', ['$http', '$log', 'BrowserNotification', function ($http, $
 
         sinceNow: function () {
             this.setAsOfDate();
-            this.messages = {};
-            this.length = 0;
+            this.messages = [];
         },
 
-        messages: {},
-
-        length: 0,
+        messages: [],
 
         populate: function (token) {
             var self = this;
@@ -338,19 +335,23 @@ app.factory('Queue', ['$http', '$log', 'BrowserNotification', function ($http, $
                 message.badge = message.group.split('.').pop();
             }
 
-            this.messages[message.publicId] = message;
+            this.messages.unshift(message);
 
             this.setAsOfDate(message.received);
 
             if (message.group !== 'internal') {
                 BrowserNotification.send(message);
             }
-            this.length = this.length + 1;
         },
 
         remove: function (publicId) {
-            delete this.messages[publicId];
-            this.length = this.length - 1;
+            this.messages.every(function (message, index) {
+                if (message.publicId === publicId) {
+                    this.messages.splice(index, 1);
+                    return false;
+                }
+                return true;
+            }, this);
         }
     };
 }]);
