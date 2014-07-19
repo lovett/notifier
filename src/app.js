@@ -346,8 +346,6 @@ app.factory('Queue', ['$http', '$log', 'BrowserNotification', function ($http, $
 
             this.messages.unshift(message);
 
-            this.setAsOfDate(message.received);
-
             if (message.group !== 'internal') {
                 BrowserNotification.send(message);
             }
