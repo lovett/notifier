@@ -250,25 +250,34 @@ app.service('BrowserNotification', ['$window', '$rootScope', function ($window, 
 
     };
 
-    this.offered = $window.Notification !== undefined;
-
-    this.enabled = (this.offered && $window.Notification.permission === 'granted');
+    if (!$window.Notification) {
+        this.state = 'unavailable';
+    } else if ($window.Notification.permission === 'granted') {
+        this.state = 'active';
+    } else {
+        this.state = 'inactive';
+    }
 
     this.enable = function () {
         var self = this;
 
-        if (self.enabled === true) {
-            $window.alert('Notifications are enabled. They can be turned off by editing your browser settings.');
+        if (self.state === 'active') {
+            $window.alert('Notifications are active. They can be turned off from the browser\'s Notification settings.');
             return;
         }
 
         $window.Notification.requestPermission(function (permission) {
+            if (permission === 'denied') {
+                $window.alert('Notifications are inactive, but they can be turned on via the browser\'s Notifications settings');
+                return;
+            }
+
             if (permission === 'granted') {
                 self.send({
                     group: 'internal',
                     title: 'Browser notifications enabled'
                 }, true);
-                self.enabled = true;
+                self.state = 'active';
                 $rootScope.$apply();
             }
         });
