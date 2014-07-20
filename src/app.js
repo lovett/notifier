@@ -320,6 +320,11 @@ app.factory('Queue', ['$http', '$log', 'BrowserNotification', function ($http, $
             }).success(function(data) {
                 self.ready = true;
                 if (data instanceof Array) {
+
+                    // messages will be ordered newest first, but if they are added to the queue
+                    // sequentially they will end up oldest first
+                    data.reverse();
+
                     data.forEach(function (message) {
                         self.add(message);
                     });
