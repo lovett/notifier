@@ -291,7 +291,11 @@ app.factory('Queue', ['$http', '$log', 'BrowserNotification', function ($http, $
         ready: false,
 
         getAsOfDate: function () {
-            return new Date(localStorage.asOf || new Date());
+            if (localStorage.asOf) {
+                return new Date(localStorage.asOf);
+            } else {
+                return undefined;
+            }
         },
 
         setAsOfDate: function (date) {
@@ -309,11 +313,18 @@ app.factory('Queue', ['$http', '$log', 'BrowserNotification', function ($http, $
         populate: function (token) {
             var self = this;
 
-            $log.info('Requesting message queue since ' + moment(self.getAsOfDate().getTime()).format('MMMM D h:mm:ss A'));
+            var asOf = self.getAsOfDate();
+
+            var url = '/archive/10';
+
+            if (asOf instanceof Date) {
+                $log.info('Requesting message queue since ' + moment(asOf.getTime()).format('MMMM D h:mm:ss A'));
+                url += '?since=' + asOf.getTime();
+            }
 
             $http({
                 method: 'GET',
-                url: '/archive/10?since=' + (+self.getAsOfDate()),
+                url: url,
                 headers: {
                     'X-Token': token
                 }
