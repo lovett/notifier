@@ -284,52 +284,47 @@ app.service('BrowserNotification', ['$window', '$rootScope', function ($window, 
     };
 }]);
 
-app.factory('Queue', ['$http', '$log', 'BrowserNotification', function ($http, $log, BrowserNotification) {
+app.factory('Queue', ['$http', '$log', 'User', 'BrowserNotification', function ($http, $log, User, BrowserNotification) {
     'use strict';
 
     return {
-        ready: false,
-
-        getAsOfDate: function () {
-            if (localStorage.asOf) {
-                return new Date(localStorage.asOf);
-            } else {
-                return undefined;
-            }
-        },
-
-        setAsOfDate: function (date) {
-            date = new Date(date || new Date());
-            localStorage.asOf = date;
-        },
-
-        sinceNow: function () {
-            this.setAsOfDate();
-            this.messages = [];
-        },
-
         messages: [],
 
-        populate: function (token) {
+        asOf: function (id) {
+            var params = {
+                method: 'POST',
+                url: '/since',
+                headers: {
+                    'X-Token': User.getToken()
+                }
+            };
+
+            if (id) {
+                params.data = {
+                    'publicId': id
+                };
+            }
+
+            $http(params);
+        },
+
+        empty: function () {
+            this.messages = [];
+            this.asOf();
+        },
+
+        populate: function () {
             var self = this;
 
-            var asOf = self.getAsOfDate();
-
             var url = '/archive/10';
-
-            if (asOf instanceof Date) {
-                $log.info('Requesting message queue since ' + moment(asOf.getTime()).format('MMMM D h:mm:ss A'));
-                url += '?since=' + asOf.getTime();
-            }
 
             $http({
                 method: 'GET',
                 url: url,
                 headers: {
-                    'X-Token': token
+                    'X-Token': User.getToken()
                 }
             }).success(function(data) {
-                self.ready = true;
                 if (data instanceof Array) {
 
                     // messages will be ordered newest first, but if they are added to the queue
@@ -371,6 +366,7 @@ app.factory('Queue', ['$http', '$log', 'BrowserNotification', function ($http, $
             this.messages.every(function (message, index) {
                 if (message.publicId === publicId) {
                     this.messages.splice(index, 1);
+                    this.asOf(message.publicId);
                     return false;
                 }
                 return true;

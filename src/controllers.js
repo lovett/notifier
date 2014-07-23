@@ -49,7 +49,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
         $rootScope.connectionStatus = state;
         $rootScope.connectionChangedAt = new Date();
         if (state === 'connected') {
-            Queue.populate(User.getToken());
+            Queue.populate();
         }
     });
 
@@ -69,7 +69,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
     };
 
     $scope.clearAll = function () {
-        Queue.sinceNow();
+        Queue.empty();
     };
 
 }]);
@@ -109,6 +109,5 @@ appControllers.controller('LoginController', ['$scope', '$rootScope', '$route', 
         User.logOut();
         Faye.unsubscribe();
         Faye.disconnect();
-        Queue.sinceNow();
     }
 }]);

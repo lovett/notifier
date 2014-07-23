@@ -146,6 +146,11 @@ var User = sequelize.define('User', {
                 msg: 'should be between 1 and 60 characters'
             }
         }
+    },
+    messagesSince: {
+        type: Sequelize.DATE,
+        defaultValue: new Date(),
+        allowNull: true
     }
 }, {
     instanceMethods: {
@@ -738,7 +743,11 @@ app.get('/archive/:count', requireAuth, function (req, res) {
         limit: req.params.count,
         order: 'received DESC',
         UserId: req.user.id,
-        where: {}
+        where: {
+            received: {
+                gt: req.user.messagesSince
+            }
+        }
     };
 
     if (req.query.since) {
@@ -757,6 +766,33 @@ app.get('/archive/:count', requireAuth, function (req, res) {
         });
         res.send(messages);
     });
+});
+
+app.post('/since', requireAuth, function (req, res) {
+    var saveCallback = function () {
+        req.user.save(['messagesSince']).success(function () {
+            res.send(204);
+        }).error(function () {
+            res.send(500);
+        });
+    };
+
+    if (!req.body.publicId) {
+        req.user.messagesSince = new Date();
+        saveCallback();
+    } else {
+        Message.find({
+            attributes: ['received'],
+            where: {
+                publicId: req.body.publicId
+            }
+        }).success(function(message) {
+            req.user.messagesSince = message.received;
+            saveCallback();
+        }).error(function () {
+            res.send(500);
+        });
+    }
 });
 
 
