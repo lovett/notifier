@@ -8,7 +8,7 @@
     <article ng-class="{message: true, extended: message.extended}" ng-repeat="message in queue.messages" ng-swipe-left="showOptions(message)" ng-swipe-right="hideOptions(message)">
 
         <div class="options standard-options">
-            <a ng-href="" ng-click="clearOne(message.publicId)"><span>Clear</span></a>
+            <a ng-href="" ng-hide="connectionStatus !== 'connected'" ng-click="clearOne(message.publicId)"><span>Clear</span></a>
         </div>
 
         <div class="badge {{ message.badge }}" ng-show="message.badge !== 'default'"></div>
