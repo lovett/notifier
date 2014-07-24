@@ -49,7 +49,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
         $rootScope.connectionStatus = state;
         $rootScope.connectionChangedAt = new Date();
         if (state === 'connected') {
-            Queue.populate();
+            Queue.fill();
         }
     });
 
@@ -65,11 +65,11 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
     $scope.browserNotification = BrowserNotification;
 
     $scope.clearOne = function (publicId) {
-        Queue.remove(publicId);
+        Queue.drop(publicId);
     };
 
     $scope.clearAll = function () {
-        Queue.empty();
+        Queue.drain();
     };
 
 }]);

@@ -290,30 +290,38 @@ app.factory('Queue', ['$http', '$log', 'User', 'BrowserNotification', function (
     return {
         messages: [],
 
-        asOf: function (id) {
-            var params = {
-                method: 'POST',
-                url: '/since',
-                headers: {
-                    'X-Token': User.getToken()
-                }
-            };
+        drain: function () {
+            var ids = this.messages.map(function (message) {
+                return message.publicId;
+            });
 
-            if (id) {
-                params.data = {
-                    'publicId': id
-                };
+            this.drop(ids);
+        },
+
+        drop: function (ids) {
+            var self = this;
+
+            if (!ids instanceof Array) {
+                ids = [ids];
             }
 
-            $http(params);
+            $http({
+                method: 'POST',
+                url: '/message/read',
+                headers: {
+                    'X-Token': User.getToken()
+                },
+                data: {
+                    publicId: ids
+                }
+            }).success(function () {
+                self.messages = self.messages.filter(function (message) {
+                    return ids.indexOf(message.publicId) === -1;
+                });
+            });
         },
 
-        empty: function () {
-            this.messages = [];
-            this.asOf();
-        },
-
-        populate: function () {
+        fill: function () {
             var self = this;
 
             var url = '/archive/10';
@@ -325,6 +333,11 @@ app.factory('Queue', ['$http', '$log', 'User', 'BrowserNotification', function (
                     'X-Token': User.getToken()
                 }
             }).success(function(data) {
+
+                // Empty the queue, but do not inform the server.
+                // This avoids the need to check for dupliates following a reconnect.
+                self.messages = [];
+
                 if (data instanceof Array) {
 
                     // messages will be ordered newest first, but if they are added to the queue
@@ -361,16 +374,5 @@ app.factory('Queue', ['$http', '$log', 'User', 'BrowserNotification', function (
                 BrowserNotification.send(message);
             }
         },
-
-        remove: function (publicId) {
-            this.messages.every(function (message, index) {
-                if (message.publicId === publicId) {
-                    this.messages.splice(index, 1);
-                    this.asOf(message.publicId);
-                    return false;
-                }
-                return true;
-            }, this);
-        }
     };
 }]);

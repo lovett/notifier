@@ -146,11 +146,6 @@ var User = sequelize.define('User', {
                 msg: 'should be between 1 and 60 characters'
             }
         }
-    },
-    messagesSince: {
-        type: Sequelize.DATE,
-        defaultValue: new Date(),
-        allowNull: true
     }
 }, {
     instanceMethods: {
@@ -264,6 +259,11 @@ var Message = sequelize.define('Message', {
         set: function (value) {
             return sanitizeStrict(this, 'group', value);
         }
+    },
+    unread: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
     }
 }, {
     instanceMethods: {
@@ -744,9 +744,7 @@ app.get('/archive/:count', requireAuth, function (req, res) {
         order: 'received DESC',
         UserId: req.user.id,
         where: {
-            received: {
-                gt: req.user.messagesSince
-            }
+            unread: true
         }
     };
 
@@ -768,31 +766,14 @@ app.get('/archive/:count', requireAuth, function (req, res) {
     });
 });
 
-app.post('/since', requireAuth, function (req, res) {
-    var saveCallback = function () {
-        req.user.save(['messagesSince']).success(function () {
-            res.send(204);
-        }).error(function () {
-            res.send(500);
-        });
-    };
+app.post('/message/read', requireAuth, function (req, res) {
 
-    if (!req.body.publicId) {
-        req.user.messagesSince = new Date();
-        saveCallback();
-    } else {
-        Message.find({
-            attributes: ['received'],
-            where: {
-                publicId: req.body.publicId
-            }
-        }).success(function(message) {
-            req.user.messagesSince = message.received;
-            saveCallback();
-        }).error(function () {
-            res.send(500);
-        });
-    }
+    Message.update(
+        {unread: false},
+        {publicId: req.body.publicId}
+    ).success(function () {
+        res.send(204);
+    });
 });
 
 
