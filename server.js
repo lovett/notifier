@@ -185,6 +185,18 @@ var Token = sequelize.define('Token', {
             }
         }
     }
+}, {
+    classMethods: {
+        prune: function (callback) {
+            Token.destroy({
+                updatedAt: {
+                    lt: new Date(new Date().getTime() - (60 * 60 * 24 * 1000))
+                }
+            }).success(function () {
+                callback();
+            });
+        }
+    }
 });
 
 var Message = sequelize.define('Message', {
@@ -401,7 +413,9 @@ var verifySubscription = function (message, callback) {
 
         // Looks good
         log.info('subscription looks good');
-        callback(message);
+        token.save([]).success(function () {
+            callback(message);
+        });
 
     }).error(function () {
         log.error({message: message}, 'token lookup failed');
@@ -640,8 +654,10 @@ var requireAuth = function (req, res, next) {
             return;
         }
 
-        req.user = token.user;
-        next();
+        token.save([]).success(function () {
+            req.user = token.user;
+            next();
+        });
 
     }).error(function () {
         err = new Error('Application error');
@@ -671,23 +687,25 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
     var tokenLabel = req.body.label || '';
     tokenLabel = tokenLabel.replace(/[^a-zA-Z0-9-\.\/ ]/, '');
     if (tokenLabel === '') {
-        var agent =  useragent.parse(req.headers['user-agent']);
-        tokenLabel = agent.toString();
+        tokenLabel =  useragent.parse(req.headers['user-agent']).toString();
     }
 
     var token = Token.build({
         label: tokenLabel
     });
 
-    token.save().success(function (token) {
-        token.setUser(req.user).success(function () {
-            res.json({
-                token: token.value,
-                channel: req.user.getChannel()
+
+    Token.prune(function () {
+        token.save().success(function (token) {
+            token.setUser(req.user).success(function () {
+                res.json({
+                    token: token.value,
+                    channel: req.user.getChannel()
+                });
             });
+        }).error(function (error) {
+            res.json(400, error);
         });
-    }).error(function (error) {
-        res.json(400, error);
     });
 });
 
