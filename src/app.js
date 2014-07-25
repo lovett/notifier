@@ -290,34 +290,39 @@ app.factory('Queue', ['$http', '$log', 'User', 'BrowserNotification', function (
     return {
         messages: [],
 
-        drain: function () {
-            var ids = this.messages.map(function (message) {
-                return message.publicId;
-            });
-
-            this.drop(ids);
-        },
-
-        drop: function (ids) {
-            var self = this;
-
+        clear: function (ids) {
             if (!ids instanceof Array) {
                 ids = [ids];
             }
 
             $http({
                 method: 'POST',
-                url: '/message/read',
+                url: '/message/clear',
                 headers: {
                     'X-Token': User.getToken()
                 },
                 data: {
                     publicId: ids
                 }
-            }).success(function () {
-                self.messages = self.messages.filter(function (message) {
-                    return ids.indexOf(message.publicId) === -1;
-                });
+            });
+        },
+
+        purge: function () {
+            var ids = this.messages.map(function (message) {
+                return message.publicId;
+            });
+
+            this.clear(ids);
+        },
+
+        drop: function (ids) {
+            var self = this;
+            if (!ids instanceof Array) {
+                ids = [ids];
+            }
+
+            self.messages = self.messages.filter(function (message) {
+                return ids.indexOf(message.publicId) === -1;
             });
         },
 

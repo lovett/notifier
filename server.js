@@ -355,7 +355,6 @@ var bayeux = new faye.NodeAdapter({
     timeout: 30
 });
 
-
 /**
  * Websocket helpers
  * --------------------------------------------------------------------
@@ -766,12 +765,15 @@ app.get('/archive/:count', requireAuth, function (req, res) {
     });
 });
 
-app.post('/message/read', requireAuth, function (req, res) {
+app.post('/message/clear', requireAuth, function (req, res) {
 
     Message.update(
         {unread: false},
         {publicId: req.body.publicId}
     ).success(function () {
+        publishMessage(req.user, {
+            'cleared': req.body.publicId
+        });
         res.send(204);
     });
 });
