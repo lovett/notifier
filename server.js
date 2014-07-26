@@ -597,7 +597,7 @@ app.get('/notifier.appcache', function (req, res, next) {
     if (nconf.get('NOTIFIER_APPCACHE_ENABLED')) {
         next();
     } else {
-        res.send(410);
+        res.status(410).end();
     }
 });
 
@@ -736,7 +736,7 @@ app.post('/message', requireAuth, function (req, res, next) {
     message.save().success(function () {
         message.setUser(req.user).success(function () {
             publishMessage(req.user, message);
-            res.send(204);
+            res.status(204).end();
         }).error(function (error) {
             var err = new Error(error);
             err.status = 400;
@@ -792,7 +792,7 @@ app.post('/message/clear', requireAuth, function (req, res) {
         publishMessage(req.user, {
             'cleared': req.body.publicId
         });
-        res.send(204);
+        res.status(204).end();
     });
 });
 
@@ -810,7 +810,7 @@ app.post('/message/clear', requireAuth, function (req, res) {
  */
 app.use(function(err, req, res, next) {
     if (err) {
-        res.send(err.status, {message: err.message});
+        res.status(err.status).send({message: err.message});
     } else {
         next();
     }
