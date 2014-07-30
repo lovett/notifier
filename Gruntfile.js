@@ -277,7 +277,7 @@ module.exports = function(grunt) {
                     sourceMap: 'public/app.min.js.map'
                 },
                 files: {
-                    'public/app.min.js': ['src/app.js', 'src/controllers.js']
+                    'public/app.min.js': ['src/app.js', 'src/controllers.js', 'src/services.js']
                 }
             }
         },

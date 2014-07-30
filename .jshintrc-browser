@@ -1,4 +1,9 @@
 {
+    "globals": {
+        "angular": false,
+        "Faye": false,
+        "Notification": false
+    },
     "bitwise": true,
     "camelcase": true,
     "curly": true,

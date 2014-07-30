@@ -1,12 +1,9 @@
-/* global angular */
 var appControllers = angular.module('appControllers', []);
 
 appControllers.controller('MessageController', ['$rootScope', '$scope', '$window', '$document', '$location', 'Faye', 'BrowserNotification', 'Queue', 'User', '$log', function ($rootScope, $scope, $window, $document, $location, Faye, BrowserNotification, Queue, User, $log) {
     'use strict';
 
-    $scope.isLoggedIn = User.isLoggedIn();
-
-    if ($scope.isLoggedIn === false) {
+    if (User.getToken() === false) {
         $log.info('Not logged in');
         $location.path('/login');
         return;
@@ -78,40 +75,39 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
 
 }]);
 
-appControllers.controller('LoginController', ['$scope', '$rootScope', '$route', '$location', 'Faye', 'Queue', 'AuthService', 'User', function ($scope, $rootScope, $route, $location, Faye, Queue, AuthService, User) {
+appControllers.controller('LoginController', ['$scope', '$location', 'User', function ($scope, $location, User) {
     'use strict';
 
-    var loginSuccess, loginFailure;
-
-    loginSuccess = function () {
-        $location.path('/');
-    };
-
-    loginFailure = function () {
-        $scope.message = 'Please try again';
-    };
-
-    $scope.login = function () {
-        if ($scope.loginForm.$invalid) {
+    $scope.submitLogin = function (form) {
+        if (form.$invalid) {
             $scope.message = 'All fields are required';
             return;
         }
 
         $scope.message = null;
 
-        AuthService.login({}, {
-            'username': $scope.login.username,
-            'password': $scope.login.password
-        }, loginSuccess, loginFailure);
+        var promise = User.logIn(form);
+
+        promise.success(function () {
+            $location.path('/');
+        });
+
+        promise.error(function () {
+            $scope.message = 'Please try again';
+        });
     };
 
-    $scope.gotoLogin = function () {
+}]);
+
+appControllers.controller('LogoutController', ['$scope', '$location', 'User', 'Faye', function ($scope, $location, User, Faye) {
+    'use strict';
+
+    User.logOut();
+    Faye.unsubscribe();
+    Faye.disconnect();
+
+    $scope.visitLogin = function () {
         $location.path('/login');
     };
 
-    if ($route.current.action === 'logout') {
-        User.logOut();
-        Faye.unsubscribe();
-        Faye.disconnect();
-    }
 }]);
