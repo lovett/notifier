@@ -55,10 +55,8 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
     });
 
     $scope.$on('connection:resubscribe', function (e, channel) {
-        $log.info('Redirected to a new channel, resubscribing');
-        $log.info('Old channel: ' + User.getChannel());
-        User.setChannel(channel);
-        $log.info('New channel: ' + User.getChannel());
+        $log.info('Redirected to a new channel, resubscribing to ' + channel);
+        User.replaceChannel(channel);
         Faye.unsubscribe();
         subscribe();
     });

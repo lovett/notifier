@@ -26,7 +26,16 @@ appServices.factory('User', ['$http', function ($http) {
             }
         },
 
+        replaceChannel: function (value) {
+            if (localStorage.channel) {
+                localStorage.channel = value;
+            } else if (sessionStorage.channel) {
+                sessionStorage.channel = value;
+            }
+        },
+
         logIn: function (form) {
+            var self = this;
             persist = form.remember;
 
             return $http({
@@ -46,12 +55,11 @@ appServices.factory('User', ['$http', function ($http) {
                     if (data.hasOwnProperty('token')) {
                         if (persist === true) {
                             localStorage.token = data.token;
-                            localStorage.channel = data.channel;
                         } else {
                             sessionStorage.token = data.token;
-                            sessionStorage.channel = data.channel;
                         }
                     }
+                    self.setChannel(data.channel);
                 }
             });
         },
@@ -155,8 +163,6 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', function
 
             subscription.then(function () {
                 $log.info('Subscription successful');
-            }, function (err) {
-                $log.warn('Suscription error: ' + err.message);
             });
         },
 
@@ -226,7 +232,7 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
     };
 }]);
 
-appServices.factory('Queue', ['$http', '$log', 'User', 'BrowserNotification', function ($http, $log, User, BrowserNotification) {
+appServices.factory('Queue', ['$rootScope', '$http', '$log', 'User', 'BrowserNotification', function ($rootScope, $http, $log, User, BrowserNotification) {
     'use strict';
 
     return {
@@ -296,11 +302,7 @@ appServices.factory('Queue', ['$http', '$log', 'User', 'BrowserNotification', fu
                     });
                 }
             }).error(function() {
-                self.add({
-                    group: 'internal',
-                    title: 'Unable to get messages from archive'
-                });
-
+                self.messages = [];
             });
         },
 
@@ -320,6 +322,8 @@ appServices.factory('Queue', ['$http', '$log', 'User', 'BrowserNotification', fu
             if (message.group !== 'internal') {
                 BrowserNotification.send(message);
             }
+
+            $rootScope.userMessage = null;
         },
     };
 }]);
