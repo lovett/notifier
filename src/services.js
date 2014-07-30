@@ -35,7 +35,6 @@ appServices.factory('User', ['$http', function ($http) {
         },
 
         logIn: function (form) {
-            var self = this;
             persist = form.remember;
 
             return $http({
@@ -55,11 +54,12 @@ appServices.factory('User', ['$http', function ($http) {
                     if (data.hasOwnProperty('token')) {
                         if (persist === true) {
                             localStorage.token = data.token;
+                            localStorage.channel = data.channel;
                         } else {
                             sessionStorage.token = data.token;
+                            sessionStorage.channel = data.channel;
                         }
                     }
-                    self.setChannel(data.channel);
                 }
             });
         },
