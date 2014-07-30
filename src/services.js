@@ -236,6 +236,8 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', 'User', 'BrowserNot
     'use strict';
 
     return {
+        pristine: true,
+
         messages: [],
 
         clear: function (ids) {
@@ -300,13 +302,17 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', 'User', 'BrowserNot
                     data.forEach(function (message) {
                         self.add(message);
                     });
+
                 }
+                self.pristine = false;
             }).error(function() {
                 self.messages = [];
             });
         },
 
         add: function (message) {
+            this.pristine = false;
+
             message.received = new Date(message.received || new Date());
 
             if (message.body) {
@@ -322,8 +328,6 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', 'User', 'BrowserNot
             if (message.group !== 'internal') {
                 BrowserNotification.send(message);
             }
-
-            $rootScope.userMessage = null;
         },
     };
 }]);
