@@ -85,9 +85,9 @@ appServices.factory('HttpInterceptor', ['$q', '$location', function ($q, $locati
     };
 }]);
 
-appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', function ($location, $rootScope, $log, User) {
+appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue', function ($location, $rootScope, $log, User) {
     'use strict';
-    var client, subscription;
+    var client, subscription, subscriptionCallback;
 
     return {
         init: function (port) {
@@ -95,6 +95,8 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', function
             if (port === 0) {
                 port = $location.port();
             }
+
+            $log.info('Websocket port is ' + port);
 
             var url = $location.protocol() + '://' + $location.host() + ':' + port + '/messages';
             client = new Faye.Client(url, {
@@ -134,31 +136,45 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', function
 
             client.on('transport:down', function () {
                 $log.info('Faye transport is down');
-                $rootScope.$broadcast('connection:changed', 'disconnected');
+                $rootScope.$broadcast('connection:change', 'disconnected');
                 $rootScope.$apply();
             });
 
             client.on('transport:up', function () {
                 $log.info('Faye transport is up');
-                $rootScope.$broadcast('connection:changed', 'connected');
+                $rootScope.$broadcast('connection:change', 'connected');
                 $rootScope.$apply();
             });
         },
-        subscribe: function (channel, callback) {
-            $log.info('Subscribing to ' + channel);
-            subscription = client.subscribe(channel, function (message) {
-                if (callback) {
-                    if (typeof message === 'string') {
-                        try {
-                            message = JSON.parse(message);
-                        } catch (e) {
-                            $log.error('Unable to parse message: ', e);
-                        }
-                    }
 
-                    callback(message);
-                    $rootScope.$apply();
+        subscribe: function (callback) {
+            var channel = User.getChannel();
+
+            if (callback) {
+                subscriptionCallback = callback;
+            }
+
+            $log.info('Subscribing to ' + channel);
+
+            if (angular.isDefined(client)) {
+                client.unsubscribe();
+            }
+
+            subscription = client.subscribe(channel, function (message) {
+                if (!subscriptionCallback) {
+                    return;
                 }
+
+                if (typeof message === 'string') {
+                    try {
+                        message = JSON.parse(message);
+                    } catch (e) {
+                        $log.error('Unable to parse message: ', e);
+                    }
+                }
+
+                callback(message);
+                $rootScope.$apply();
             });
 
             subscription.then(function () {
@@ -166,15 +182,9 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', function
             });
         },
 
-        unsubscribe: function() {
-            if (angular.isDefined(client)) {
-                client.unsubscribe();
-                $log.info('Unsubscribed client');
-            }
-        },
-
         disconnect: function () {
             if (angular.isDefined(client)) {
+                client.unsubscribe();
                 client.disconnect();
                 $log.info('Disconnected client');
             }

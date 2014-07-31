@@ -1,6 +1,28 @@
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('MessageController', ['$rootScope', '$scope', '$window', '$document', '$location', 'Faye', 'BrowserNotification', 'Queue', 'User', '$log', function ($rootScope, $scope, $window, $document, $location, Faye, BrowserNotification, Queue, User, $log) {
+appControllers.controller('AppController', ['$scope', '$document', 'Queue', 'BrowserNotification', function ($scope, $document, Queue, BrowserNotification) {
+    'use strict';
+
+    $scope.queue = Queue;
+    $scope.browserNotification = BrowserNotification;
+
+    angular.forEach($document.find('META'), function (tag) {
+        if (tag.name === 'websocket port') {
+            $scope.websocketPort = tag.content;
+        }
+    });
+
+    $scope.$on('connection:change', function (e, state) {
+        $scope.connectionStatus = state;
+        $scope.connectionChangedAt = new Date();
+        if (state === 'connected') {
+            $scope.queue.fill();
+        }
+    });
+
+}]);
+
+appControllers.controller('MessageController', ['$scope', '$location', '$log', 'User', 'Faye', function ($scope, $location, $log, User, Faye) {
     'use strict';
 
     if (User.getToken() === false) {
@@ -9,67 +31,21 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$window
         return;
     }
 
-    $log.info('Logged in');
+    Faye.init($scope.websocketPort);
 
-    $rootScope.queue = Queue;
-
-    var websocketPort;
-
-    $scope.showOptions = function (message) {
-        message.extended = true;
-    };
-
-    $scope.hideOptions = function (message) {
-        message.extended = false;
-    };
-
-    angular.forEach($document.find('META'), function (tag) {
-        if (!tag.name || !tag.content) {
-            return;
-        }
-        if (tag.name === 'websocket port') {
-            websocketPort = parseInt(tag.content, 10) || 0;
-        }
-    });
-
-    Faye.init(websocketPort);
-
-    var subscribe = function () {
-        Faye.subscribe(User.getChannel(), function (message) {
-            if (message.hasOwnProperty('cleared')) {
-                Queue.drop(message.cleared);
-            } else {
-                Queue.add(message);
-            }
-        });
-    };
-
-    subscribe();
-
-    $scope.$on('connection:changed', function (e, state) {
-        $rootScope.connectionStatus = state;
-        $rootScope.connectionChangedAt = new Date();
-        if (state === 'connected') {
-            Queue.fill();
+    Faye.subscribe(function (message) {
+        if (message.hasOwnProperty('cleared')) {
+            $scope.queue.drop(message.cleared);
+        } else {
+            $scope.queue.add(message);
         }
     });
 
     $scope.$on('connection:resubscribe', function (e, channel) {
         $log.info('Redirected to a new channel, resubscribing to ' + channel);
         User.replaceChannel(channel);
-        Faye.unsubscribe();
-        subscribe();
+        Faye.subscribe();
     });
-
-    $scope.browserNotification = BrowserNotification;
-
-    $scope.clearOne = function (publicId) {
-        Queue.clear(publicId);
-    };
-
-    $scope.clearAll = function () {
-        Queue.purge();
-    };
 
 }]);
 
@@ -101,7 +77,6 @@ appControllers.controller('LogoutController', ['$scope', '$location', 'User', 'F
     'use strict';
 
     User.logOut();
-    Faye.unsubscribe();
     Faye.disconnect();
 
     $scope.visitLogin = function () {

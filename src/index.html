@@ -1,5 +1,5 @@
 <!doctype html>
-<html manifest="/notifier.appcache" ng-app="App" class="no-js" lang="en" ng-csp notifier-appcache-reload>
+<html manifest="/notifier.appcache" ng-app="App" ng-controller="AppController" class="no-js" lang="en" ng-csp notifier-appcache-reload>
     <head>
         <title ng-pluralize count="queue.messages.length" when="{'0': 'Notifier', 'one': '1 Message', 'other': '{} Messages'}"></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>

@@ -5,7 +5,7 @@
     </div>
 
     <div class="right">
-        <a ng-click="clearAll()" ng-hide="queue.messages.length === 0 || connectionStatus !== 'connected'" ng-href="" class="button">Clear All</a>
+        <a ng-click="queue.purge()" ng-hide="queue.messages.length === 0 || connectionStatus !== 'connected'" ng-href="" class="button">Clear All</a>
         <a ng-href="/logout">Log out</a>
         <a ng-click="browserNotification.enable()" ng-href="" class="button" ng-hide="browserNotification.state == 'unavailable'">
             Browser Notifications {{ browserNotification.state}}</span>
