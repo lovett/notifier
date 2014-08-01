@@ -15,13 +15,13 @@
   "homepage": "https://github.com/lovett/notifier",
   "dependencies": {
     "bcrypt": "0.7.8",
-    "body-parser": "1.5.0",
+    "body-parser": "1.5.2",
     "bunyan": "0.23.1",
     "chai": "1.9.1",
     "commander": "2.3.0",
     "compression": "1.0.9",
     "exec-sync": "0.1.6",
-    "express": "4.7.0",
+    "express": "4.7.2",
     "faye": "1.0.3",
     "grunt-text-replace": "0.3.12",
     "nconf": "0.6.9",
@@ -37,12 +37,12 @@
   },
   "devDependencies": {
     "grunt": "0.4.5",
-    "grunt-appcache": "0.1.6",
-    "grunt-contrib-clean": "0.5.0",
+    "grunt-appcache": "0.1.7",
+    "grunt-contrib-clean": "0.6.0",
     "grunt-contrib-concat": "0.5.0",
     "grunt-contrib-copy": "0.5.0",
     "grunt-contrib-jshint": "0.10.0",
-    "grunt-contrib-less": "0.11.3",
+    "grunt-contrib-less": "0.11.4",
     "grunt-contrib-uglify": "0.5.1",
     "grunt-contrib-watch": "0.6.1",
     "grunt-githooks": "0.3.1",
@@ -53,7 +53,7 @@
     "grunt-shell": "0.7.0",
     "grunt-ver": "0.5.1",
     "load-grunt-tasks": "0.6.0",
-    "mocha": "1.21.0",
+    "mocha": "1.21.3",
     "touch": "0.0.3"
   }
 }
