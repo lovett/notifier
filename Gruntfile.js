@@ -258,6 +258,10 @@ module.exports = function(grunt) {
                     'convert src/favicon/favicon.svg -geometry 48x48 -transparent white public/favicon/favicon-48.png',
                     'convert public/favicon/favicon-16.png public/favicon/favicon-32.png public/favicon/favicon-48.png public/favicon/favicon.ico'
                 ].join(' && ')
+            },
+
+            'server': {
+                command: 'nodemon --watch server.js'
             }
         },
 
