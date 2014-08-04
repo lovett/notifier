@@ -241,7 +241,7 @@ module.exports = function(grunt) {
         shell: {
             'favicons-dev': {
                 command: [
-                    'rm -rf public/favicons',
+                    'rm -rf public/favicon',
                     'mkdir public/favicon',
                     'convert src/favicon/favicon-dev.svg -geometry 16x16 -transparent white public/favicon/favicon-16.png',
                     'convert src/favicon/favicon-dev.svg -geometry 32x32 -transparent white public/favicon/favicon-32.png',
@@ -251,7 +251,7 @@ module.exports = function(grunt) {
             },
             'favicons-production': {
                 command: [
-                    'rm -rf public/favicons',
+                    'rm -rf public/favicon',
                     'mkdir public/favicon',
                     'convert src/favicon/favicon.svg -geometry 16x16 -transparent white public/favicon/favicon-16.png',
                     'convert src/favicon/favicon.svg -geometry 32x32 -transparent white public/favicon/favicon-32.png',
