@@ -436,6 +436,7 @@ var verifySubscription = function (message, callback) {
  */
 bayeux.addExtension({
     incoming: function(message, callback) {
+        log.debug({message: message}, 'faye server incoming message');
         message.ext = message.ext || {};
 
         // Subscriptions must be accompanied by a token
@@ -473,6 +474,7 @@ var bayeuxClient = bayeux.getClient();
 
 bayeuxClient.addExtension({
     outgoing: function(message, callback) {
+        log.debug({message: message}, 'faye server-side client outgoing message');
         message.ext = message.ext || {};
         message.ext.secret = APPSECRET;
         callback(message);
@@ -592,18 +594,8 @@ app.use(bodyParser.json({
 app.use(passport.initialize());
 
 
-// Appcache manifest override.
-app.get('/notifier.appcache', function (req, res, next) {
-    if (nconf.get('NOTIFIER_APPCACHE_ENABLED')) {
-        next();
-    } else {
-        res.status(410).end();
-    }
-});
-
 // Static fileserving
 app.use(express.static(__dirname + '/public'));
-
 
 /**
  * Parameter validation
@@ -865,6 +857,3 @@ exports.sync = sync;
 exports.app = app;
 exports.bayeuxClient = bayeuxClient;
 exports.verifySubscription = verifySubscription;
-exports.setAppcache = function (booleanValue) {
-    nconf.set('NOTIFIER_APPCACHE_ENABLED', booleanValue);
-};
