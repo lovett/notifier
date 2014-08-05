@@ -27,72 +27,47 @@ module.exports = function(grunt) {
             }
         }()),
 
-
         clean: {
-            preBuild: {
-                src: ['public/*']
+            app: {
+                src: ['public/app*', 'public/all*']
+            },
+            lib: {
+                src: ['public/lib*']
             },
             postBuild: {
-                src: ['public/app.min.js', 'public/version.json']
+                src: ['public/version.json', 'public/favicon/*.png']
             }
         },
 
-        concat: {
-            options: {
-                separator: '\n',
-            },
-            dist: {
-                src: ['bower_components/angular/angular.min.js',
-                      'bower_components/angular-route/angular-route.min.js',
-                      'node_modules/faye/browser/faye-browser-min.js',
-                      'bower_components/angular-sanitize/angular-sanitize.min.js',
-                      'bower_components/moment/min/moment.min.js',
-                      'bower_components/angular-moment/angular-moment.min.js',
-                      'bower_components/angular-resource/angular-resource.min.js',
-                      'bower_components/angular-touch/angular-touch.min.js',
-                      'bower_components/angular-animate/angular-animate.min.js',
-                      'public/app.min.js',
-                     ],
-                dest: 'public/all.js',
-            },
-        },
-
         copy: {
-            main: {
+            app: {
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'src/',
+                        src: ['**'],
+                        dest: 'public/'
+                    }
+                ]
+            },
+
+            lib: {
                 files: [
                     {
                         expand: true,
                         flatten: true,
-                        src: ['bower_components/angular/angular.min.js.map',
-                              'bower_components/angular-route/angular-route.min.js.map',
-                              'bower_components/angular-sanitize/angular-sanitize.min.js.map',
-                              'bower_components/angular/angular.js',
-                              'bower_components/angular-resource/angular-resource.min.js.map',
-                              'bower_components/angular-touch/angular-touch.min.js.map',
-                              'bower_components/angular-animate/angular-animate.min.js.map',
-                              'src/svg/megaphone.svg',
-                              'src/index.html',
-                              'src/robots.txt'
-                             ],
+                        src: [
+                            'bower_components/angular/angular.js',
+                            'bower_components/angular-route/angular-route.js',
+                            'node_modules/faye/browser/faye-browser.js',
+                            'bower_components/angular-sanitize/angular-sanitize.js',
+                            'bower_components/moment/moment.js',
+                            'bower_components/angular-moment/angular-moment.js',
+                            'bower_components/angular-resource/angular-resource.js',
+                            'bower_components/angular-touch/angular-touch.js',
+                            'bower_components/angular-animate/angular-animate.js',
+                        ],
                         dest: 'public/'
-                    },
-                    {
-                        expand: true,
-                        cwd: 'src/images/',
-                        src: ['**'],
-                        dest: 'public/images'
-                    },
-                    {
-                        expand: true,
-                        cwd: 'src/font/',
-                        src: ['**.ttf'],
-                        dest: 'public/font'
-                    },
-                    {
-                        expand: true,
-                        cwd: 'src/templates/',
-                        src: ['**'],
-                        dest: 'public/templates'
                     }
                 ]
             }
@@ -276,37 +251,35 @@ module.exports = function(grunt) {
         },
 
         uglify: {
-            js: {
+            app: {
                 options: {
                     sourceMap: 'public/app.min.js.map'
                 },
                 files: {
-                    'public/app.min.js': ['src/app.js', 'src/controllers.js', 'src/services.js']
+                    'public/app.min.js': ['public/app.js', 'public/controllers.js', 'public/services.js']
+                }
+            },
+            lib: {
+                options: {
+                    sourceMap: 'public/lib.min.js.map',
+                },
+                files: {
+                    'public/lib.min.js': [
+                        'public/angular.js',
+                        'public/angular-route.js',
+                        'public/faye-browser.js',
+                        'public/angular-sanitize.js',
+                        'public/moment.js',
+                        'public/angular-moment.js',
+                        'public/angular-resource.js',
+                        'public/angular-touch.js',
+                        'public/angular-animate.js'
+                    ]
                 }
             }
+
         },
 
-        ver: {
-            main: {
-                phases: [
-                    {
-                        files: [
-                            'public/favicon/*',
-                            'public/*.png',
-                            'public/all.js',
-                            'public/*.css',
-                            'public/templates/*.html'
-                        ],
-                        references: [
-                            'public/index.html',
-                            'public/*.js',
-                            'public/templates/*.html'
-                        ]
-                    }
-                ],
-                versionFile: 'public/version.json'
-            }
-        }
     });
 
     grunt.registerTask('reset', 'Delete the dev database, restart the server', function () {
@@ -317,23 +290,31 @@ module.exports = function(grunt) {
         touch('server.js');
     });
 
-    grunt.registerTask('build', 'Build the application', function () {
+    grunt.registerTask('build', 'Build the application', function (buildType) {
         var environment = grunt.template.process('<%= env.NOTIFIER_ENVIRONMENT %>');
 
-        grunt.task.run(['clean:preBuild', 'uglify', 'less', 'concat', 'copy', 'clean:postBuild', 'replace:websocket']);
+        var tasks = [];
 
-        if (environment === 'dev') {
-            grunt.task.run(['shell:favicons-dev', 'replace:dev']);
+        if (buildType === 'full') {
+            tasks = tasks.concat(['clean', 'copy', 'uglify']);
         } else {
-            grunt.task.run(['shell:favicons-production', 'replace:production']);
+            tasks = tasks.concat(['clean:app', 'copy:app', 'uglify:app']);
         }
 
-        grunt.task.run(['ver', 'appcache']);
+        tasks = tasks.concat(['less', 'replace:websocket']);
+
+        if (environment === 'dev') {
+            tasks = tasks.concat(['shell:favicons-dev', 'replace:dev']);
+        } else {
+            tasks = tasks.concat(['shell:favicons-production', 'replace:production']);
+        }
+
+        tasks = tasks.concat(['clean:postBuild', 'appcache']);
+
+        grunt.task.run(tasks);
     });
 
     grunt.registerTask('coverage', ['mocha_istanbul:server', 'open:coverage-server']);
 
-    grunt.registerTask('default', ['githooks', 'build', 'watch']);
-
-
+    grunt.registerTask('default', ['githooks', 'build:full', 'watch']);
 };
