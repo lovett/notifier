@@ -85,9 +85,9 @@ appServices.factory('HttpInterceptor', ['$q', '$location', function ($q, $locati
     };
 }]);
 
-appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue', function ($location, $rootScope, $log, User) {
+appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue', function ($location, $rootScope, $log, User, Queue) {
     'use strict';
-    var client, subscription, subscriptionCallback;
+    var client, subscription;
 
     return {
         init: function (port) {
@@ -147,24 +147,12 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
             });
         },
 
-        subscribe: function (callback) {
+        subscribe: function () {
             var channel = User.getChannel();
-
-            if (callback) {
-                subscriptionCallback = callback;
-            }
 
             $log.info('Subscribing to ' + channel);
 
-            if (angular.isDefined(client)) {
-                client.unsubscribe();
-            }
-
             subscription = client.subscribe(channel, function (message) {
-                if (!subscriptionCallback) {
-                    return;
-                }
-
                 if (typeof message === 'string') {
                     try {
                         message = JSON.parse(message);
@@ -173,13 +161,18 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
                     }
                 }
 
-                callback(message);
+                if (message.hasOwnProperty('cleared')) {
+                    Queue.drop(message.cleared);
+                } else {
+                    Queue.add(message);
+                }
+
                 $rootScope.$apply();
             });
+        },
 
-            subscription.then(function () {
-                $log.info('Subscription successful');
-            });
+        unsubscribe: function (channel) {
+            client.unsubscribe(channel);
         },
 
         disconnect: function () {

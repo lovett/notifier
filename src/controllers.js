@@ -33,16 +33,10 @@ appControllers.controller('MessageController', ['$scope', '$location', '$log', '
 
     Faye.init($scope.websocketPort);
 
-    Faye.subscribe(function (message) {
-        if (message.hasOwnProperty('cleared')) {
-            $scope.queue.drop(message.cleared);
-        } else {
-            $scope.queue.add(message);
-        }
-    });
+    Faye.subscribe();
 
     $scope.$on('connection:resubscribe', function (e, channel) {
-        $log.info('Redirected to a new channel, resubscribing to ' + channel);
+        Faye.unsubscribe(User.getChannel());
         User.replaceChannel(channel);
         Faye.subscribe();
     });
