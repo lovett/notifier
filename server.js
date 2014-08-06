@@ -436,7 +436,14 @@ var verifySubscription = function (message, callback) {
  */
 bayeux.addExtension({
     incoming: function(message, callback) {
-        log.debug({message: message}, 'faye server incoming message');
+
+        // Connect messages are not logged because they are passed
+        // back and forth continuously as part of normal operation.
+        // See https://github.com/faye/faye/issues/28
+        if (message.channel !== '/meta/connect') {
+            log.debug({message: message}, 'faye server incoming message');
+        }
+
         message.ext = message.ext || {};
 
         // Subscriptions must be accompanied by a token
@@ -454,8 +461,6 @@ bayeux.addExtension({
         if (message.ext.secret !== APPSECRET) {
             log.warn({message: message}, 'suspicious message, no secret');
             message.error = '403::Forbidden';
-        } else {
-            log.info({message: message}, 'legit message');
         }
 
         // The application secret should never be revealed
@@ -474,7 +479,12 @@ var bayeuxClient = bayeux.getClient();
 
 bayeuxClient.addExtension({
     outgoing: function(message, callback) {
-        log.debug({message: message}, 'faye server-side client outgoing message');
+
+        // Connect messages are not logged. See comments in bayeux
+        // incoming extension
+        if (message.channel !== '/meta/connect') {
+            log.debug({message: message}, 'faye server-side client outgoing message');
+        }
         message.ext = message.ext || {};
         message.ext.secret = APPSECRET;
         callback(message);
