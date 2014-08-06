@@ -15,7 +15,15 @@ module.exports = function(grunt) {
             },
             all: {
                 dest: 'public/notifier.appcache',
-                cache: 'public/**/*',
+                cache: {
+                    patterns: [
+                        'public/*.min.js',
+                        'public/*.min.css',
+                        'public/templates/*.html',
+                        'public/font/*',
+                        'public/favicon/*'
+                    ]
+                },
                 network: '*'
             }
         },
