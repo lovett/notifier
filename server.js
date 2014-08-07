@@ -39,7 +39,8 @@ if (process.env.NODE_ENV) {
 nconf.file('env.json');
 
 nconf.defaults({
-    'NOTIFIER_LOG': 'notifier.log'
+    'NOTIFIER_LOG': 'notifier.log',
+    'NOTIFIER_LOG_LEVEL': 'warn'
 });
 
 /**
@@ -51,7 +52,7 @@ var log = bunyan.createLogger({
     streams: [
         {
             path: nconf.get('NOTIFIER_LOG'),
-            level: 'trace'
+            level: nconf.get('NOTIFIER_LOG_LEVEL')
         }
     ],
     serializers: {
@@ -435,14 +436,14 @@ var verifySubscription = function (message, callback) {
  * websocket messages.
  */
 bayeux.addExtension({
+    outgoing: function (message, callback) {
+        log.trace({message: message}, 'faye server outgoing message');
+        return callback(message);
+    },
+
     incoming: function(message, callback) {
 
-        // Connect messages are not logged because they are passed
-        // back and forth continuously as part of normal operation.
-        // See https://github.com/faye/faye/issues/28
-        if (message.channel !== '/meta/connect') {
-            log.debug({message: message}, 'faye server incoming message');
-        }
+        log.trace({message: message}, 'faye server incoming message');
 
         message.ext = message.ext || {};
 
@@ -479,12 +480,7 @@ var bayeuxClient = bayeux.getClient();
 
 bayeuxClient.addExtension({
     outgoing: function(message, callback) {
-
-        // Connect messages are not logged. See comments in bayeux
-        // incoming extension
-        if (message.channel !== '/meta/connect') {
-            log.debug({message: message}, 'faye server-side client outgoing message');
-        }
+        log.trace({message: message}, 'faye server-side client outgoing message');
         message.ext = message.ext || {};
         message.ext.secret = APPSECRET;
         callback(message);

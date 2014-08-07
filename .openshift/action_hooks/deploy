@@ -14,6 +14,7 @@ console.log('Starting deploy hook');
 var appEnv = {};
 
 appEnv.NOTIFIER_LOG = process.env.OPENSHIFT_LOG_DIR + 'notifier.log';
+appEnv.NOTIFIER_LOG_LEVEL = 'warn';
 appEnv.NOTIFIER_HTTP_IP = process.env.OPENSHIFT_NODEJS_IP;
 appEnv.NOTIFIER_HTTP_PORT = process.env.OPENSHIFT_NODEJS_PORT;
 appEnv.NOTIFIER_WEBSOCKET_PORT = '8443';
