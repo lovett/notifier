@@ -105,6 +105,7 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
 
             client.addExtension({
                 incoming: function (message, callback) {
+                    $log.debug('faye incoming', message);
                     if (message.error) {
                         var segments = message.error.split('::');
                         var code = parseInt(segments[0], 10);
@@ -112,14 +113,13 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
 
                         if (code === 301) {
                             $rootScope.$broadcast('connection:resubscribe', value);
-                        } else {
-                            $log.error(message.error);
                         }
                     }
                     $rootScope.$apply();
                     return callback(message);
                 },
                 outgoing: function(message, callback) {
+                    $log.debug('faye outgoing', message);
                     if (message.channel !== '/meta/subscribe') {
                         return callback(message);
                     }
@@ -135,7 +135,7 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
             });
 
             client.on('transport:down', function () {
-                $log.info('Faye transport is down');
+                $log.warn('Faye transport is down');
                 $rootScope.$broadcast('connection:change', 'disconnected');
                 $rootScope.$apply();
             });
@@ -149,8 +149,6 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
 
         subscribe: function () {
             var channel = User.getChannel();
-
-            $log.info('Subscribing to ' + channel);
 
             subscription = client.subscribe(channel, function (message) {
                 if (typeof message === 'string') {
