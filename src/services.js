@@ -275,6 +275,8 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', 'User', 'BrowserNot
             self.messages = self.messages.filter(function (message) {
                 return ids.indexOf(message.publicId) === -1;
             });
+
+            $rootScope.$broadcast('queue:change', self.messages.length);
         },
 
         fill: function () {
@@ -325,6 +327,8 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', 'User', 'BrowserNot
             }
 
             this.messages.unshift(message);
+
+            $rootScope.$broadcast('queue:change', this.messages.length);
 
             if (message.group !== 'internal') {
                 BrowserNotification.send(message);

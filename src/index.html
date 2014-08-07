@@ -1,7 +1,7 @@
 <!doctype html>
 <html manifest="/notifier.appcache" ng-app="App" ng-controller="AppController" class="no-js" lang="en" ng-csp notifier-appcache-reload>
     <head>
-        <title ng-pluralize count="queue.messages.length" when="{'0': 'Notifier', 'one': '1 Message', 'other': '{} Messages'}"></title>
+        <title ng-bind="windowTitle"></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
         <meta name="websocket port" content="" />
         <link rel="shortcut icon" href="/favicon/favicon.ico" />
