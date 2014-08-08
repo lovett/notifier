@@ -679,7 +679,7 @@ var publishMessage = function (user, message) {
 
 app.get(/^\/(login|logout)$/, function (req, res) {
     // For pushState compatibility, some URLs are treated as aliases of index.html
-    res.sendfile(__dirname + '/public/index.html');
+    res.sendFile(__dirname + '/public/index.html');
 });
 
 app.post('/deauth', requireAuth, function (req, res) {
