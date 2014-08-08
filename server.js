@@ -653,6 +653,7 @@ var requireAuth = function (req, res, next) {
         }
 
         token.save([]).success(function () {
+            req.token = tokenValue;
             req.user = token.user;
             next();
         });
@@ -679,6 +680,16 @@ var publishMessage = function (user, message) {
 app.get(/^\/(login|logout)$/, function (req, res) {
     // For pushState compatibility, some URLs are treated as aliases of index.html
     res.sendfile(__dirname + '/public/index.html');
+});
+
+app.post('/deauth', requireAuth, function (req, res) {
+    Token.destroy({
+        value: req.token
+    }).success(function () {
+        res.status(200).end();
+    }).error(function () {
+        res.status(500).end();
+    });
 });
 
 app.post('/auth', passport.authenticate('local', { session: false }), function (req, res) {

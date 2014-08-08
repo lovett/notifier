@@ -65,11 +65,20 @@ appServices.factory('User', ['$http', function ($http) {
         },
 
         logOut: function () {
+            var token = this.getToken();
             localStorage.removeItem('token');
             localStorage.removeItem('channel');
             sessionStorage.removeItem('token');
             sessionStorage.removeItem('channel');
-        },
+
+            $http({
+                method: 'POST',
+                url: '/deauth',
+                headers: {
+                    'X-Token': token
+                }
+            });
+        }
     };
 }]);
 
