@@ -66,13 +66,17 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($h
 
 app.config(['$provide', function ($provide) {
     'use strict';
-    $provide.decorator('$log', ['$delegate', 'moment', function ($delegate, moment) {
+    $provide.decorator('$log', ['$window', '$delegate', 'moment', function ($window, $delegate, moment) {
 
         var original = $delegate.debug;
 
         $delegate.debug = function () {
             var argsArray = Array.prototype.slice.call(arguments);
             var fayeMessage;
+
+            if (!$window.DEBUG) {
+                return;
+            }
 
             if (argsArray[0].indexOf('faye') === 0) {
                 fayeMessage = argsArray.pop();
