@@ -43,7 +43,7 @@ module.exports = function(grunt) {
                 src: ['public/lib*']
             },
             postBuild: {
-                src: ['public/version.json', 'public/favicon/*.png']
+                src: ['public/version.json', 'public/favicon/*.png', 'public/font/LICENSE.txt']
             }
         },
 
