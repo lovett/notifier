@@ -48,4 +48,6 @@ ln -sf "${OPENSHIFT_DEPENDENCIES_DIR}nodejs/node_modules/lib/node_modules/grunt-
 npm install -g bower
 ln -sf "${OPENSHIFT_DEPENDENCIES_DIR}nodejs/node_modules/lib/node_modules/bower/bin/bower" "${HOME}.node_modules/.bin/"
 
-echo "Finished pre_buidl hook in $DURATION seconds"
+DURATION=$(($(date +'%s') - START))
+
+echo "Finished pre_build hook in $DURATION seconds"
