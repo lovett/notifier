@@ -9,6 +9,8 @@
 
 var fs = require('fs');
 
+var start = new Date();
+
 console.log('Starting deploy hook');
 
 var appEnv = {};
@@ -34,5 +36,5 @@ fs.writeFile(process.env.OPENSHIFT_REPO_DIR + 'env.json', appEnvString, function
     }
 
     console.log('env.json: ' + appEnvString);
-    console.log('Finished deploy hook');
+    console.log('Finished deploy hook in ' + (new Date().getTime() - start.getTime()) + ' seconds');
 });

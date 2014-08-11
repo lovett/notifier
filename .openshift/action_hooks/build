@@ -9,6 +9,8 @@
 
 echo "Starting build hook"
 
+START=$(date +'%s')
+
 cd $OPENSHIFT_REPO_DIR
 
 if [[ -f "package.json.bak" ]]; then
@@ -27,4 +29,6 @@ HOME="$BOWER_TMP_HOME"
 bower install
 HOME="$ORIGINAL_HOME"
 
-echo "Finished build hook"
+DURATION=$(($(date +'%s') - START))
+
+echo "Finished build hook in $DURATION seconds"

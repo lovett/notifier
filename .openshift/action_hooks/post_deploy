@@ -4,7 +4,9 @@
 # Build the application
 #
 
-echo "Starting pre_build hook"
+echo "Starting post_deploy hook"
+
+START=$(date +'%s')
 
 cd $OPENSHIFT_REPO_DIR
 
@@ -14,4 +16,6 @@ rm env-sample-*.json
 rm env-test.json
 rm -rf test
 
-echo "Finished pre_build hook"
+DURATION=$(($(date +'%s') - START))
+
+echo "Finished post_deploy hook in $DURATION seconds"

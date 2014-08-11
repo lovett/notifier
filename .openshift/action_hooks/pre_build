@@ -9,6 +9,7 @@
 
 echo "Starting pre_build hook"
 
+START=$(date +'%s')
 ARCH="linux-x64"
 VERSION_FILE="${OPENSHIFT_REPO_DIR}.openshift/node_version"
 
@@ -46,5 +47,5 @@ ln -sf "${OPENSHIFT_DEPENDENCIES_DIR}nodejs/node_modules/lib/node_modules/grunt-
 # Install bower globally
 npm install -g bower
 ln -sf "${OPENSHIFT_DEPENDENCIES_DIR}nodejs/node_modules/lib/node_modules/bower/bin/bower" "${HOME}.node_modules/.bin/"
-echo "Finished pre_build hook"
 
+echo "Finished pre_buidl hook in $DURATION seconds"
