@@ -105,19 +105,34 @@ HEADER {
         color: #ccc;
     }
 
-    A {
-        color: white;
-    }
-
     .right A {
         padding: .75em;
+        color: white;
         text-transform: uppercase;
+        margin-left: 1.5em;
     }
 
-    .right A:hover {
+    .right A:hover, .right A.active {
         background-color: rgba(255, 255, 255, .3);
         color: black;
         text-decoration: none;
+    }
+
+    #app-settings {
+        background-color: rgba(255, 255, 255, .3);
+        margin-top: 2.1em;
+        padding: .5em;
+        text-align: center;
+        clear: both;
+        color: black;
+
+        A {
+            color: white;
+        }
+        LI {
+            display: inline;
+            margin: 1.5em;
+        }
     }
 }
 

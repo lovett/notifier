@@ -6,9 +6,13 @@
 
     <div class="right">
         <a ng-click="queue.purge()" ng-hide="queue.messages.length === 0 || connectionStatus !== 'connected'" ng-href="" class="button">Clear All</a>
+        <a ng-click="settingsVisibility = (!settingsVisibility)" ng-class="{ active: settingsVisibility }" class="button" ng-hide="browserNotification.state == 'unavailable'">Settings</a>
         <a ng-href="/logout">Log out</a>
-        <a ng-click="browserNotification.enable()" ng-href="" class="button" ng-hide="browserNotification.state == 'unavailable'">
-            Browser Notifications {{ browserNotification.state}}</span>
-        </a>
     </div>
+
+    <ul id="app-settings" ng-show="settingsVisibility">
+        <li ng-hide="browserNotification.state == 'unavailable'">
+            Browser notifications are <a ng-click="browserNotification.enable()" ng-href="" class="button">{{ browserNotification.state}}</a>.
+        </li>
+    </ul>
 </header>
