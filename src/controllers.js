@@ -33,7 +33,7 @@ appControllers.controller('AppController', ['$scope', '$document', 'Queue', 'Bro
         } else if (size === 1) {
             $scope.windowTitle = '1 Message';
         } else {
-            $scope.windowtitle = size + ' Messages';
+            $scope.windowTitle = size + ' Messages';
         }
     });
 
