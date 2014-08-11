@@ -10,7 +10,7 @@ START=$(date +'%s')
 
 cd $OPENSHIFT_REPO_DIR
 
-grunt build
+grunt build:full
 
 rm env-sample-*.json
 rm env-test.json
