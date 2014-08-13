@@ -17,7 +17,10 @@
             <a ng-if="message.url" ng-href="{{ message.url }}" target="_blank">{{ message.title }}</a>
             <span ng-if="!message.url">{{ message.title }}</span>
         </h1>
-        <time datetime="{{ message.received | date:'yyyy-MM-ddTHH:mmZ' }}" am-time-ago="message.received"></time>
+        <time datetime="{{ message.received | date:'yyyy-MM-ddTHH:mmZ' }}">
+            {{ message.received | date:'h:mm a' }}
+            {{ message.received | reldate | date: 'EEEE MMMM d' }}
+        </time>
         <p ng-show="message.body" ng-bind-html="message.body"></p>
     </article>
 </main>

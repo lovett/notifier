@@ -69,8 +69,6 @@ module.exports = function(grunt) {
                             'bower_components/angular-route/angular-route.js',
                             'node_modules/faye/browser/faye-browser.js',
                             'bower_components/angular-sanitize/angular-sanitize.js',
-                            'bower_components/moment/moment.js',
-                            'bower_components/angular-moment/angular-moment.js',
                             'bower_components/angular-resource/angular-resource.js',
                             'bower_components/angular-touch/angular-touch.js',
                             'bower_components/angular-animate/angular-animate.js',
@@ -277,8 +275,6 @@ module.exports = function(grunt) {
                         'public/angular-route.js',
                         'public/faye-browser.js',
                         'public/angular-sanitize.js',
-                        'public/moment.js',
-                        'public/angular-moment.js',
                         'public/angular-resource.js',
                         'public/angular-touch.js',
                         'public/angular-animate.js'

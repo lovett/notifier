@@ -1,7 +1,7 @@
 <header class="clearfix">
     <div class="left" >
         <span class="state {{connectionStatus}}">{{ connectionStatus }}</span>
-        <span ng-show="connectionStatus == 'disconnected'">Offline since {{ connectionChangedAt | amCalendar }}</span>
+        <span ng-show="connectionStatus == 'disconnected'">Offline since {{ connectionChangedAt | date:'shortTime' }}</span>
     </div>
 
     <div class="right">

@@ -1,14 +1,35 @@
-/* global angular, moment */
+/* global angular */
 var app = angular.module('App', [
     'ngRoute',
     'appControllers',
     'appServices',
     'ngSanitize',
-    'angularMoment',
     'ngResource',
     'ngTouch',
     'ngAnimate'
 ]);
+
+app.filter('reldate', function () {
+    'use strict';
+    return function (d) {
+        if (!d instanceof Date) {
+            return d;
+        }
+
+        var now = new Date();
+
+        var delta = Math.abs(now.getTime() - d.getTime());
+        delta = Math.round(delta/86400/1000);
+
+        if (delta <= 1) {
+            return 'today';
+        } else if (delta < 2) {
+            return 'yesterday';
+        } else {
+            return d;
+        }
+    };
+});
 
 app.directive('notifierAppcacheReload', ['$window', '$log', function ($window, $log) {
     'use strict';
@@ -30,17 +51,6 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($h
     'use strict';
 
     $httpProvider.interceptors.push('HttpInterceptor');
-
-    moment.lang('en', {
-        calendar : {
-            lastDay : '[yesterday at] LT',
-            sameDay : 'LT',
-            nextDay : '[yomorrow at] LT',
-            lastWeek : '[last] dddd [at] LT',
-            nextWeek : 'dddd [at] LT',
-            sameElse : 'L'
-        }
-    });
 
     $routeProvider.when('/login', {
         controller: 'LoginController',
@@ -66,7 +76,7 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($h
 
 app.config(['$provide', function ($provide) {
     'use strict';
-    $provide.decorator('$log', ['$window', '$delegate', 'moment', function ($window, $delegate, moment) {
+    $provide.decorator('$log', ['$window', '$delegate', function ($window, $delegate) {
 
         var original = $delegate.debug;
 
@@ -94,7 +104,7 @@ app.config(['$provide', function ($provide) {
 
             }
 
-            argsArray.unshift(moment().format('hh:mm:ss:SSS A'));
+            argsArray.unshift(new Date().toTimeString());
             original.apply(null, argsArray);
             original.call(null, fayeMessage);
         };
