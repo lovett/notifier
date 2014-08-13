@@ -109,7 +109,7 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
 
             var url = $location.protocol() + '://' + $location.host() + ':' + port + '/messages';
             client = new Faye.Client(url, {
-                timeout: 120,
+                timeout: 45,
                 retry: 5
             });
 

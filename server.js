@@ -365,7 +365,7 @@ passport.use(new LocalStrategy(function (username, password, done) {
  */
 var bayeux = new faye.NodeAdapter({
     mount: '/messages',
-    timeout: 45
+    timeout: 120
 });
 
 /**
