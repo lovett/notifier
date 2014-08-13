@@ -207,12 +207,12 @@ var Message = sequelize.define('Message', {
         allowNull: false
     },
     title: {
-        type: Sequelize.STRING(50),
+        type: Sequelize.STRING(255),
         allowNull: false,
         validate: {
             len: {
-                args: [1, 50],
-                msg: 'should be between 1 and 50 characters'
+                args: [1,255],
+                msg: 'should be 1-255 characters long'
             }
         },
         set: function (value) {
@@ -225,8 +225,8 @@ var Message = sequelize.define('Message', {
         validate: {
             isUrl: true,
             len: {
-                args: [1, 255],
-                msg: 'should be between 1 and 255 characters'
+                args: [1,255],
+                msg: 'should be 1-255 characters long'
             }
         },
         set: function (value) {
@@ -239,7 +239,7 @@ var Message = sequelize.define('Message', {
         validate: {
             len: {
                 args: [1,500],
-                msg: 'should be between 1 and 500 characters'
+                msg: 'should be 1-500 characters long'
             }
         },
         set: function (value) {
@@ -252,7 +252,7 @@ var Message = sequelize.define('Message', {
         validate: {
             len: {
                 args: [1,20],
-                msg: 'should be between 1 and 20 characters'
+                msg: 'should be 1-20 characters long'
             }
         },
         set: function (value) {
@@ -266,7 +266,7 @@ var Message = sequelize.define('Message', {
         validate: {
             len: {
                 args: [1,20],
-                msg: 'should be between 1 and 20 characters'
+                msg: 'should be 1-20 characters long'
             }
         },
         set: function (value) {
