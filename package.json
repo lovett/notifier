@@ -14,7 +14,6 @@
   "author": "Bill Lovett",
   "homepage": "https://github.com/lovett/notifier",
   "dependencies": {
-    "bcrypt": "0.8.0",
     "body-parser": "1.6.2",
     "bunyan": "1.0.0",
     "chai": "1.9.1",

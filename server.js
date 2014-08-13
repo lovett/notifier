@@ -6,7 +6,6 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var responseTime = require('response-time');
 var Sequelize = require('sequelize');
-var bcrypt = require('bcrypt');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var crypto = require('crypto');
@@ -40,7 +39,10 @@ nconf.file('env.json');
 
 nconf.defaults({
     'NOTIFIER_LOG': 'notifier.log',
-    'NOTIFIER_LOG_LEVEL': 'warn'
+    'NOTIFIER_LOG_LEVEL': 'warn',
+    'NOTIFIER_PASSWORD_HASH_RANDBYTES': 64,
+    'NOTIFIER_PASSWORD_HASH_KEYLENGTH': 64,
+    'NOTIFIER_PASSWORD_HASH_ITERATIONS': 20000
 });
 
 /**
@@ -139,12 +141,12 @@ var User = sequelize.define('User', {
         }
     },
     passwordHash: {
-        type: Sequelize.STRING(60),
+        type: Sequelize.STRING(258),
         allowNull: true,
         validate: {
             len: {
-                args: [1, 60],
-                msg: 'should be between 1 and 60 characters'
+                args: [1, 258],
+                msg: 'should be between 1 and 258 characters'
             }
         }
     }
@@ -158,14 +160,35 @@ var User = sequelize.define('User', {
             return hmac.read();
         },
 
-        hashPassword: function (password) {
-            var salt = bcrypt.genSaltSync(10);
-            var hash = bcrypt.hashSync(password, salt);
-            this.setDataValue('passwordHash', hash);
+        hashPassword: function (password, callback) {
+            var self = this;
+            var randBytes = nconf.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
+            var keyLength = nconf.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
+            var iterations = nconf.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
+            
+            crypto.randomBytes(randBytes, function(err, buf) {
+                var salt;
+                if (err) {
+                    log.error({err: err}, 'error while generating random bytes');
+                }
+                
+                salt = buf.toString('hex');
+                
+                crypto.pbkdf2(password, salt, iterations, keyLength, function (err, key) {
+                    self.setDataValue('passwordHash', util.format('%s::%s', salt, key.toString('hex')));
+                    callback();
+                }); 
+            });
         },
 
-        checkPassword: function (password) {
-            return bcrypt.compareSync(password, this.getDataValue('passwordHash'));
+        checkPassword: function (password, callback) {
+            var segments = this.getDataValue('passwordHash').split('::');
+            var keyLength = nconf.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
+            var iterations = nconf.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
+
+            crypto.pbkdf2(password, segments[0], iterations, keyLength, function (err, key) {
+                callback(key.toString('hex') === segments[1]);
+            });
         }
     }
 });
@@ -321,11 +344,12 @@ var createDefaultUser = function (callback) {
         if (created === false) {
             callback();
         } else {
-            user.hashPassword(nconf.get('NOTIFIER_DEFAULT_PASSWORD'));
-            user.save().success(function () {
-                callback();
-            }).error(function (err) {
-                callback(err);
+            user.hashPassword(nconf.get('NOTIFIER_DEFAULT_PASSWORD'), function () {
+                user.save().success(function () {
+                    callback();
+                }).error(function (err) {
+                    callback(err);
+                });
             });
         }
     }).error(function (err) {
@@ -348,11 +372,13 @@ passport.use(new LocalStrategy(function (username, password, done) {
             return done(null, false);
         }
 
-        if (!user.checkPassword(password)) {
-            return done(null, false);
-        }
-
-        return done(null, user);
+        user.checkPassword(password, function (valid) {
+            if (valid) {
+                return done(null, user);
+            } else {
+                return done(null, false);
+            }
+        });
     }).error(function (error) {
         return done(error);
     });
@@ -388,12 +414,13 @@ var verifySubscription = function (message, callback) {
             value: message.ext.authToken
         }
     }).success(function (token) {
-        if (!token) {
+        if (!token || !token.user) {
             log.warn({message: message}, 'invalid credentials');
             message.error = '401::Invalid Credentials';
             callback(message);
             return;
         }
+
 
         // Is the requested channel still valid?
         var channelSegments = message.subscription.replace(/^\//, '').split('/');
