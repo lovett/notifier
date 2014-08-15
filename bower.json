@@ -16,15 +16,15 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "1.2.21",
-    "angular-route": "1.2.21",
-    "angular-resource": "1.2.21",
-    "angular-sanitize": "1.2.21",
+    "angular": "1.2.22",
+    "angular-route": "1.2.22",
+    "angular-resource": "1.2.22",
+    "angular-sanitize": "1.2.22",
     "normalize-css": "3.0.1",
-    "angular-touch": "1.2.21",
-    "angular-animate": "1.2.21"
+    "angular-touch": "1.2.22",
+    "angular-animate": "1.2.22"
   },
   "resolutions": {
-    "angular": "1.2.21"
+    "angular": "1.2.22"
   }
 }
