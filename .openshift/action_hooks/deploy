@@ -4,7 +4,11 @@
  * Populate the file env.json with modified values derived from
  * OpenShift environment variables
  *
- * OpenShift environment variables have a trailing slash
+ * This hook runs after pre_build and build, and occurs right before
+ * the application is started. Anything needed to get the application
+ * to start should be done here.
+ *
+ * Note that OpenShift environment variables have a trailing slash.
  */
 
 var fs = require('fs');

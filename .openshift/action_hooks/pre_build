@@ -1,10 +1,13 @@
 #!/bin/bash
 
 #
-# Install an alternative version of node and npm.
-# Install global versions of grunt and bower 
+# Install an alternative version of node and npm and global versions
+# of grunt and bower.
 #
-# OpenShift environment variables have a trailing slash
+# This is the earliest hook, which run after the application is
+# stopped but before the build hook.
+#
+# Note that OpenShift environment variables have a trailing slash.
 #
 
 echo "Starting pre_build hook"

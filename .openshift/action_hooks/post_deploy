@@ -1,7 +1,12 @@
 #!/bin/bash
 
 #
-# Build the application
+# Build the web UI and clean up unnecessary files.
+#
+# This is the last hook. The node server is already running at this
+# point.
+#
+# Note that OpenShift environment variables have a trailing slash.
 #
 
 echo "Starting post_deploy hook"

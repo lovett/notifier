@@ -2,9 +2,12 @@
 
 #
 # Install npm packages using the alterate versions of node and npm
-# installed via pre_build
+# that were installed by the pre_build hook.
 #
-# OpenShift environment variables have a trailing slash
+# This hook runs after pre_build, but before deploy. It is responsible
+# for getting the appliation into a runnable state.
+#
+# Note that OpenShift environment variables have a trailing slash.
 #
 
 echo "Starting build hook"
