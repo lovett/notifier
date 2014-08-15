@@ -64,12 +64,14 @@ appControllers.controller('LoginController', ['$scope', '$location', 'User', fun
     'use strict';
 
     $scope.submitLogin = function (form) {
+
         if (form.$invalid) {
             $scope.message = 'All fields are required';
             return;
         }
 
         $scope.message = null;
+        $scope.progress = 'Logging in...';
 
         var promise = User.logIn(form);
 
@@ -79,6 +81,7 @@ appControllers.controller('LoginController', ['$scope', '$location', 'User', fun
 
         promise.error(function () {
             $scope.message = 'Please try again';
+            $scope.progress = null;
         });
     };
 

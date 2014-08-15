@@ -22,8 +22,10 @@
             </div>
 
             <div class="field">
-                <button>Sign in</button>
+                <button ng-disabled="progress" ng-class="{disabled: progress}">Sign in</button>
             </div>
+
+            <p class="field" ng-show="progress">{{progress}}</p>
         </fieldset>
     </form>
 </main>
