@@ -3,6 +3,8 @@
 #
 # Build the web UI and clean up unnecessary files.
 #
+# Also attempt to create the MySQL database if it does not exist
+#
 # This is the last hook. The node server is already running at this
 # point.
 #
@@ -10,6 +12,17 @@
 #
 
 echo "Starting post_deploy hook"
+
+# Database creation
+DB_EXISTS=$(mysql -B -e 'show databases' | grep -c notifier)
+
+if [[ $DB_EXISTS == 0 ]]; then
+    echo -n "MySQL database does not exist, creating..."
+    mysqladmin -h$OPENSHIFT_MYSQL_DB_HOST -u$OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSHIFT_MYSQL_DB_PASSWORD create notifier
+    echo "done"
+else
+    echo "The MySQL database exists, will not attempt to create."
+fi
 
 START=$(date +'%s')
 

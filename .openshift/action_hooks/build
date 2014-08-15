@@ -4,8 +4,6 @@
 # Install npm packages using the alterate versions of node and npm
 # that were installed by the pre_build hook.
 #
-# Also attempt to create the MySQL database if it does not exist
-#
 # This hook runs after pre_build, but before deploy. It is responsible
 # for getting the appliation into a runnable state.
 #
@@ -33,18 +31,6 @@ ORIGINAL_HOME="$HOME"
 HOME="$BOWER_TMP_HOME"
 bower install
 HOME="$ORIGINAL_HOME"
-
-
-# Database creation
-DB_EXISTS=$(mysql -B -e 'show databases' | grep -c notifier)
-
-if [ $DB_EXISTS == 0 ]; then
-    echo -n "MySQL database does not exist, creating..."
-    mysqladmin -h$OPENSHIFT_MYSQL_DB_HOST -u$OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSHIFT_MYSQL_DB_PASSWORD create notifier
-    echo "done"
-else
-    echo "The MySQL database exists, will not attempt to create."
-fi
 
 DURATION=$(($(date +'%s') - START))
 
