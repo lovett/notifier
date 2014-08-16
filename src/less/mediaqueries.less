@@ -6,12 +6,24 @@
 
     }
 
-    .message .options {
-        visibility: hidden;
+    .message {
+        padding-right: 0;
+
+        .options {
+            visibility: hidden;
+        }
     }
 
-    .message.extended .options {
-        visibility: visible;
+    .message.extended {
+        padding-left: .5em;
+
+        .badge {
+            width: 0;
+        }
+
+        .options {
+            visibility: visible;
+        }
     }
 
     #no-messages {
@@ -24,12 +36,28 @@
         min-width: 14em;
     }
 
-    .message .options {
-        visibility: hidden;
+    .message {
+        padding-right: 0;
+
+        .options {
+            visibility: hidden;
+        }
+
+        .close {
+            display: none;
+        }
     }
 
-    .message.extended .options {
-        visibility: visible;
+    .message.extended {
+        padding-left: .5em;
+        .badge {
+            width: 0;
+        }
+
+        .options {
+            visibility: visible;
+        }
+
     }
 
     #login-form {
@@ -53,10 +81,6 @@
             margin: auto;
             width: 10em;
         }
-    }
-
-    .message .close {
-        display: none;
     }
 
     #no-messages {

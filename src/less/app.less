@@ -145,7 +145,7 @@ HEADER {
     margin-top: .5em;
     overflow: hidden;
     position: relative;
-    padding: 1em 6em 1em 1em;
+    padding: 1em 6em;
 
     .options {
         position: absolute;
@@ -185,11 +185,13 @@ HEADER {
 
     P {
         .box-reset;
+        line-height: 1.4;
     }
 
     TIME {
         font-size: .8em;
-        line-height: 2.5;
+        display: block;
+        margin-bottom: 1em;
     }
 
     .right {
@@ -199,12 +201,12 @@ HEADER {
 }
 
 .badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
     width: 5em;
-    height: 6em;
     float: left;
-    margin: -0.5em 1em -0.5em -0.5em;
-    text-align: center;
-    line-height: 7.5;
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 60%;
