@@ -208,11 +208,17 @@ var Token = sequelize.define('Token', {
                 msg: 'should be between 1 and 100 characters'
             }
         }
+    },
+    persist: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+        allowNull: false
     }
 }, {
     classMethods: {
         prune: function (callback) {
             Token.destroy({
+                persist: false,
                 updatedAt: {
                     lt: new Date(new Date().getTime() - (60 * 60 * 24 * 1000))
                 }
@@ -726,10 +732,12 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
         tokenLabel =  useragent.parse(req.headers['user-agent']).toString();
     }
 
-    var token = Token.build({
-        label: tokenLabel
-    });
+    var tokenPersist = req.body.persist || false;
 
+    var token = Token.build({
+        label: tokenLabel,
+        persist: tokenPersist
+    });
 
     Token.prune(function () {
         token.save().success(function (token) {
