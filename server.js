@@ -165,19 +165,19 @@ var User = sequelize.define('User', {
             var randBytes = nconf.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
             var keyLength = nconf.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
             var iterations = nconf.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
-            
+
             crypto.randomBytes(randBytes, function(err, buf) {
                 var salt;
                 if (err) {
                     log.error({err: err}, 'error while generating random bytes');
                 }
-                
+
                 salt = buf.toString('hex');
-                
+
                 crypto.pbkdf2(password, salt, iterations, keyLength, function (err, key) {
                     self.setDataValue('passwordHash', util.format('%s::%s', salt, key.toString('hex')));
                     callback();
-                }); 
+                });
             });
         },
 
@@ -758,7 +758,7 @@ app.post('/message', requireAuth, function (req, res, next) {
         }
 
         if (req.body.hasOwnProperty(key) && req.body[key]) {
-            message[key] = req.body[key];
+            message[key] = req.body[key].trim();
         }
     });
 
