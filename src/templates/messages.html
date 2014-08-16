@@ -5,13 +5,12 @@
 </main>
 
 <main class="message-wrapper">
-    <article ng-class="{message: true, extended: message.extended}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false">
-
+    <article class="message {{ message.badge }}" ng-class="{extended: message.extended}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false">
         <div class="options standard-options">
             <a ng-href="" ng-hide="connectionStatus !== 'connected'" ng-click="queue.clear(message.publicId)"><span>Clear</span></a>
         </div>
 
-        <div class="badge {{ message.badge }}" ng-show="message.badge !== 'default'"></div>
+        <div class="badge"></div>
 
         <h1 ng-show="message.title">
             <a ng-if="message.url" ng-href="{{ message.url }}" target="_blank">{{ message.title }}</a>
