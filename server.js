@@ -235,6 +235,13 @@ var Message = sequelize.define('Message', {
         defaultValue: Sequelize.UUIDV4,
         allowNull: false
     },
+    localId: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
+        set: function (value) {
+            return sanitizeStrict(this, 'localId', value);
+        }
+    },
     title: {
         type: Sequelize.STRING(255),
         allowNull: false,
@@ -470,6 +477,9 @@ var verifySubscription = function (message, callback) {
  */
 bayeux.addExtension({
     outgoing: function (message, callback) {
+        // the localId is not sent to clients
+        delete message.localId;
+        
         log.trace({message: message}, 'faye server outgoing message');
         return callback(message);
     },
@@ -829,15 +839,41 @@ app.get('/archive/:count', requireAuth, function (req, res) {
 
 app.post('/message/clear', requireAuth, function (req, res) {
 
-    Message.update(
-        {unread: false},
-        {publicId: req.body.publicId}
-    ).success(function () {
-        publishMessage(req.user, {
-            'retracted': req.body.publicId
+    var update = function (id) {
+        Message.update(
+            {unread: false},
+            {publicId: id}
+        ).success(function () {
+            publishMessage(req.user, {
+                'retracted': id
+            });
+            res.status(204).end();
+        }).error(function () {
+            res.status(500).end();
         });
-        res.status(204).end();
-    });
+    };
+    
+    if (req.body.hasOwnProperty('publicId')) {
+        update(req.body.publicId);
+    } else if (req.body.hasOwnProperty('localId')) {
+        Message.find({
+            where: {
+                localId: req.body.localId,
+                unread: true
+            },
+            limit: 1
+        }).success(function (message) {
+            if (!message) {
+                res.status(400).end();
+            } else {
+                update(message.publicId);
+            }
+            
+        });
+    } else {
+        res.status(400).end();
+    }
+            
 });
 
 
