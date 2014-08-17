@@ -834,7 +834,7 @@ app.post('/message/clear', requireAuth, function (req, res) {
         {publicId: req.body.publicId}
     ).success(function () {
         publishMessage(req.user, {
-            'cleared': req.body.publicId
+            'retracted': req.body.publicId
         });
         res.status(204).end();
     });

@@ -169,8 +169,8 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
                     }
                 }
 
-                if (message.hasOwnProperty('cleared')) {
-                    Queue.drop(message.cleared);
+                if (message.hasOwnProperty('retracted')) {
+                    Queue.drop(message.retracted);
                 } else {
                     Queue.add(message);
                 }
