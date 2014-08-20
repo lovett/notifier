@@ -11,22 +11,32 @@ var app = angular.module('App', [
 
 app.filter('reldate', function () {
     'use strict';
-    return function (d) {
-        if (!d instanceof Date) {
-            return d;
+    return function (when) {
+        var d;
+
+        if (when instanceof Date) {
+            // this avoids clobbering the original value
+            d = new Date(when.getTime());
+        } else {
+            d = new Date(parseInt(d, 10));
         }
 
         var now = new Date();
 
-        var delta = Math.abs(now.getTime() - d.getTime());
-        delta = Math.round(delta/86400/1000);
+        // roll back to midnight
+        d.setHours(0,0,0,0);
+        now.setHours(0,0,0,0);
 
-        if (delta <= 1) {
+        var delta = (now - d) / 86400 / 1000;
+
+        if (delta === -1) {
+            return 'tomorrow';
+        } else if (delta === 0) {
             return 'today';
-        } else if (delta < 2) {
+        } else if (delta === 1) {
             return 'yesterday';
         } else {
-            return d;
+            return when;
         }
     };
 });
