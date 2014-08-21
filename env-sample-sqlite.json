@@ -16,6 +16,6 @@
     "NOTIFIER_DB_CONFIG": {
         "storage": "./notifier.sqlite",
         "dialect": "sqlite"
-    }
-
+    },
+    "NOTIFIER_DB_BACKUP_DIR": ""
 }

@@ -240,9 +240,14 @@ module.exports = function(grunt) {
                     'convert public/favicon/favicon-16.png public/favicon/favicon-32.png public/favicon/favicon-48.png public/favicon/favicon.ico'
                 ].join(' && ')
             },
-
             'server': {
                 command: 'nodemon --watch server.js'
+            },
+            'mysqlimport': {
+                command: [
+                    'BACKUP_FILE=$(find "<%= env.NOTIFIER_DB_BACKUP_DIR %>" -type f -name *.gz | tail -n 1)',
+                    'gunzip -c "$BACKUP_FILE"  | mysql <%= env.NOTIFIER_DB_NAME %>'
+                ].join(' && ')
             }
         },
 
