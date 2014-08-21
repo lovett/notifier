@@ -23,6 +23,7 @@
     "express": "4.8.4",
     "faye": "1.0.3",
     "grunt-text-replace": "0.3.12",
+    "mysql": "2.4.2",
     "nconf": "0.6.9",
     "passport": "0.2.0",
     "passport-local": "1.0.0",
