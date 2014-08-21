@@ -14,11 +14,11 @@
 echo "Starting post_deploy hook"
 
 # Database creation
-DB_EXISTS=$(mysql -h$OPENSHIFT_MYSQL_DB_HOST -u$OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSHIFT_MYSQL_DB_PASSWORD -B -e 'show databases' | grep -c notifier)
+DB_EXISTS=$(mysql -h$OPENSHIFT_MYSQL_DB_HOST -u$OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSHIFT_MYSQL_DB_PASSWORD -B -e 'show databases' | grep -c $NOTIFIER_DB_NAME)
 
 if [[ $DB_EXISTS == 0 ]]; then
     echo -n "MySQL database does not exist, creating..."
-    mysqladmin -h$OPENSHIFT_MYSQL_DB_HOST -u$OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSHIFT_MYSQL_DB_PASSWORD create notifier
+    mysqladmin -h$OPENSHIFT_MYSQL_DB_HOST -u$OPENSHIFT_MYSQL_DB_USERNAME -p$OPENSHIFT_MYSQL_DB_PASSWORD create $NOTIFIER_DB_NAME
     echo "done"
 else
     echo "The MySQL database exists, will not attempt to create."
