@@ -14,11 +14,10 @@ echo "Starting pre_build hook"
 
 START=$(date +'%s')
 ARCH="linux-x64"
-VERSION_FILE="${OPENSHIFT_REPO_DIR}.openshift/node_version"
+NODE_VERSION=$NOTIFIER_NODE_VERSION;
 
 # Download node and symlink it into the path
-if [[ -f "$VERSION_FILE" ]]; then
-    NODE_VERSION=$(cat "${VERSION_FILE}");
+if [[ ! -z "$NODE_VERSION" ]]; then
 
     ARCHIVE="node-${NODE_VERSION}-${ARCH}.tar.gz"
     DOWNLOAD_URL="http://nodejs.org/dist/$NODE_VERSION/$ARCHIVE"
