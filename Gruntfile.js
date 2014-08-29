@@ -20,7 +20,6 @@ module.exports = function(grunt) {
                         'public/*.min.js',
                         'public/*.min.css',
                         'public/templates/*.html',
-                        'public/font/*',
                         'public/favicon/*'
                     ]
                 },
@@ -43,7 +42,7 @@ module.exports = function(grunt) {
                 src: ['public/lib*']
             },
             postBuild: {
-                src: ['public/version.json', 'public/favicon/*.png', 'public/font/LICENSE.txt']
+                src: ['public/version.json', 'public/favicon/*.png']
             }
         },
 
