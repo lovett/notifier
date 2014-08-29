@@ -31,14 +31,23 @@ HTML {
 }
 
 BODY {
-    height: 100%;
     font-family: 'Roboto', sans-serif;
+    height: 100%;
 }
 
 #view {
     height: 100%;
 }
 
+.no-js {
+    BODY {
+        height: auto;
+    }
+
+    #view {
+        height: auto;
+    }
+}
 
 .flex-wrapper {
     height: 100%;
@@ -301,8 +310,8 @@ HEADER {
     }
 }
 
-#no-messages {
-    margin-top: 6em;
+.app-message {
+    padding-top: 6em;
     text-align: center;
     color: white;
     font-size: 2em;

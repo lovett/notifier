@@ -1,10 +1,9 @@
 <ng-include src="'/templates/header.html'"></ng-include>
 
-<main id="no-messages" ng-show="queue.pristine === false && queue.messages.length === 0">
-    <p>There are no new messages.</p>
-</main>
+<main>
+    <p class="app-message" ng-show="queue.pristine === true">Checking for messages...</p>
+    <p class="app-message" ng-show="queue.pristine === false && queue.messages.length === 0">There are no new messages.</p>
 
-<main class="message-wrapper">
     <article class="message {{ message.badge }}" ng-class="{extended: message.extended}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false">
         <div class="options standard-options">
             <a ng-href="" ng-hide="connectionStatus !== 'connected'" ng-click="queue.clear(message.publicId)"><span>Clear</span></a>
