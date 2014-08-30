@@ -41,6 +41,22 @@ app.filter('reldate', function () {
     };
 });
 
+app.directive('notifierOfflineEvent', ['$window', '$rootScope', function ($window, $rootScope) {
+    'use strict';
+
+    return {
+        restrict: 'A',
+        link: function () {
+            var callback = function (event) {
+                $rootScope.$broadcast('connection:change', event.type);
+            };
+
+            $window.addEventListener('online', callback);
+            $window.addEventListener('offline', callback);
+        }
+    };
+}]);
+
 app.directive('notifierAppcacheReload', ['$window', '$log', function ($window, $log) {
     'use strict';
 

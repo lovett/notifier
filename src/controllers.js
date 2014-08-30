@@ -1,6 +1,6 @@
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('AppController', ['$scope', '$document', 'Queue', 'BrowserNotification', function ($scope, $document, Queue, BrowserNotification) {
+appControllers.controller('AppController', ['$scope', '$document', '$log', 'Queue', 'BrowserNotification', function ($scope, $document, $log, Queue, BrowserNotification) {
     'use strict';
 
     var offlineSymbol = '⚠ ';
@@ -19,14 +19,27 @@ appControllers.controller('AppController', ['$scope', '$document', 'Queue', 'Bro
     $scope.appMessage = 'Checking for messages...';
 
     $scope.$on('connection:change', function (e, state) {
+
+        if (state === 'offline') {
+            state = 'disconnected';
+        }
+
+        if (state === 'online') {
+            state = 'connected';
+        }
+
         $scope.connectionStatus = state;
         $scope.connectionChangedAt = new Date();
+
+        $log.info(state + ' at ' + $scope.connectionChangedAt);
+
         if (state === 'connected') {
             $scope.queue.fill();
             $scope.windowTitle = $scope.windowTitle.replace(offlineSymbol, '');
         } else {
             $scope.windowTitle = offlineSymbol + $scope.windowTitle;
         }
+        $scope.$apply();
     });
 
     $scope.$on('queue:change', function (e, size) {
@@ -54,13 +67,23 @@ appControllers.controller('MessageController', ['$scope', '$location', '$log', '
     }
 
     Faye.init($scope.websocketPort);
-
     Faye.subscribe();
 
     $scope.$on('connection:resubscribe', function (e, channel) {
         Faye.unsubscribe(User.getChannel());
         User.replaceChannel(channel);
         Faye.subscribe();
+    });
+
+    $scope.$on('connection:change', function (e, state) {
+        if (state === 'offline') {
+            Faye.disconnect();
+        }
+
+        if (state === 'online') {
+            Faye.init($scope.websocketPort);
+            Faye.subscribe();
+        }
     });
 
 }]);
