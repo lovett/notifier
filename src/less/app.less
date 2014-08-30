@@ -316,11 +316,15 @@ HEADER {
     text-align: center;
     color: white;
     font-size: 2em;
-    transition: .75s linear opacity;
-    opacity: 1;
     -webkit-font-smoothing: antialiased;
 }
 
-.app-message.ng-hide-remove {
+.fade-in {
+    -webkit-transition: 1s linear all;
+    transition: 1s linear all;
+    opacity: 1;
+}
+
+.fade-in.ng-enter {
     opacity: 0;
 }
