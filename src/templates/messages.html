@@ -18,10 +18,9 @@
 </header>
 
 <main>
-    <p class="app-message fade-in" ng-if="queue.pristine === true">Checking for messages...</p>
-    <p class="app-message fade-in" ng-if="queue.pristine === false && queue.messages.length === 0">There are no new messages.</p>
+    <p class="app-message fade-out" ng-if="appMessage">{{ appMessage }}</p>
 
-    <article class="message {{ message.badge }}" ng-class="{extended: message.extended}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false">
+    <article class="fade-in fade-out message {{ message.badge }}" ng-class="{extended: message.extended}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false">
         <div class="options standard-options">
             <a ng-href="" ng-hide="connectionStatus !== 'connected'" ng-click="queue.clear(message.publicId)"><span>Clear</span></a>
         </div>

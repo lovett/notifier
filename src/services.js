@@ -301,7 +301,6 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', 'User', 'BrowserNot
                     'X-Token': User.getToken()
                 }
             }).success(function(data) {
-
                 // Empty the queue, but do not inform the server.
                 // This avoids the need to check for dupliates following a reconnect.
                 self.messages = [];
@@ -318,6 +317,8 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', 'User', 'BrowserNot
 
                 }
                 self.pristine = false;
+                $rootScope.$broadcast('queue:change', self.messages.length);
+
             }).error(function() {
                 self.messages = [];
             });

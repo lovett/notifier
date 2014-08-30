@@ -16,6 +16,8 @@ appControllers.controller('AppController', ['$scope', '$document', 'Queue', 'Bro
         }
     });
 
+    $scope.appMessage = 'Checking for messages...';
+
     $scope.$on('connection:change', function (e, state) {
         $scope.connectionStatus = state;
         $scope.connectionChangedAt = new Date();
@@ -30,10 +32,13 @@ appControllers.controller('AppController', ['$scope', '$document', 'Queue', 'Bro
     $scope.$on('queue:change', function (e, size) {
         if (size === 0) {
             $scope.windowTitle = 'Notifier';
+            $scope.appMessage = 'No new messages.';
         } else if (size === 1) {
             $scope.windowTitle = '1 Message';
+            $scope.appMessage = undefined;
         } else {
             $scope.windowTitle = size + ' Messages';
+            $scope.appMessage = undefined;
         }
     });
 
