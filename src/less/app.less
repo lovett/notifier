@@ -24,6 +24,7 @@ HTML {
     @corner: top;
     height: 100%;
     background-color: @from;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,@from), color-stop(100%,@to));
     background: -webkit-linear-gradient(@corner, @from, @to);
     background: -moz-linear-gradient(@corner, @from, @to);
     background: -ms-linear-gradient(@corner, @from, @to);
@@ -35,7 +36,7 @@ BODY {
     height: 100%;
 }
 
-#view {
+.view {
     height: 100%;
 }
 
@@ -44,7 +45,7 @@ BODY {
         height: auto;
     }
 
-    #view {
+    .view {
         height: auto;
     }
 }
@@ -56,7 +57,11 @@ BODY {
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
+    -moz-box-pack: center;
+    -ms-box-pack: center;
     -webkit-box-pack: center;
+    -moz-box-align: center;
+    -ms-box-align: center;
     -webkit-box-align: center;
     -webkit-flex-align: center;
     -ms-flex-align: center;
@@ -106,11 +111,11 @@ HEADER {
         margin-right: 1em;
     }
 
-    .state.connected {
+    .connected {
         background-color: green;
     }
 
-    .state.disconnected {
+    .disconnected {
         background-color: #666;
         color: #ccc;
     }
@@ -122,13 +127,15 @@ HEADER {
         margin-left: 1.5em;
     }
 
-    .right A:hover, .right A.active {
+    .right A:hover, .right .active {
+        background-color: rgb(255, 255, 255);
         background-color: rgba(255, 255, 255, .3);
         color: black;
         text-decoration: none;
     }
 
-    #app-settings {
+    .app-settings {
+        background-color: rgb(255, 255, 255);
         background-color: rgba(255, 255, 255, .3);
         margin-top: 2.1em;
         padding: .5em;
@@ -139,9 +146,10 @@ HEADER {
         A {
             color: white;
         }
+
         LI {
             display: inline;
-            margin: 1.5em;
+            padding: 1.5em;
         }
     }
 }
@@ -151,6 +159,7 @@ HEADER {
 }
 
 .message {
+    background-color: rgb(255, 255, 255);
     background-color: rgba(255, 255, 255, .85);
     margin-top: .5em;
     overflow: hidden;
@@ -231,7 +240,7 @@ HEADER {
     text-align: center;
 
     P {
-        .reset;
+        padding: 0;
         margin: 1em 0;
     }
 
@@ -243,27 +252,26 @@ HEADER {
     }
 
     BUTTON {
-        font-size: 1em;
         padding: .5em 1em;
         border: 0;
         background-color: #2D8E5E;
         color: white;
         letter-spacing: 1px;
         text-transform: uppercase;
-        font-size: 11px;
+        font-size: .85em;
     }
 
     BUTTON:hover {
         background-color: lighten(@green, 5%);
     }
-
-    BUTTON.disabled {
-        background-color: darken(@green, 10%);
-    }
-
 }
 
-#login-form {
+.disabled {
+    background-color: darken(@green, 10%);
+}
+
+
+.login-form {
     .field {
         margin-bottom: 1.5em;
     }
@@ -295,7 +303,7 @@ HEADER {
         content: ": ";
     }
 
-    LABEL.checkbox:after {
+    .inline-label:after {
         content: none;
     }
 
@@ -305,9 +313,9 @@ HEADER {
         font-family: monospace;
         width: 15em;
         font-size: 1.3em;
-        -webkit-border-radius: 0px;
-        -moz-border-radius: 0px;
-        border-radius: 0px;
+        -webkit-border-radius: 0;
+        -moz-border-radius: 0;
+        border-radius: 0;
     }
 }
 
@@ -322,6 +330,8 @@ HEADER {
 }
 
 .fade-in.ng-enter, .fade-in.ng-leave {
+    -o-transition: all linear 0.25s;
+    -moz-transition: all linear 0.25s;
     -webkit-transition: all linear 0.25s;
     transition: all linear 0.25s;
 }
@@ -337,6 +347,8 @@ HEADER {
 }
 
 .fade-out.ng-enter, .fade-out.ng-leave {
+    -o-transition: all linear 0.25s;
+    -moz-transition: all linear 0.25s;
     -webkit-transition: all linear 0.25s;
     transition: all linear 0.25s;
 }

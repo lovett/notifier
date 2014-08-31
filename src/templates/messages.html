@@ -10,7 +10,7 @@
         <a ng-href="/logout">Log out</a>
     </div>
 
-    <ul id="app-settings" ng-show="settingsVisibility">
+    <ul class="app-settings" ng-show="settingsVisibility">
         <li ng-hide="browserNotification.state == 'unavailable'">
             Browser notifications are <a ng-click="browserNotification.enable()" ng-href="">{{ browserNotification.state}}</a>.
         </li>

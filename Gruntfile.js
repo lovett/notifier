@@ -1,3 +1,4 @@
+
 var touch = require('touch');
 var tokenFile = '.token';
 
@@ -80,7 +81,7 @@ module.exports = function(grunt) {
 
         githooks: {
             all: {
-                'pre-commit': 'jshint'
+                'pre-commit': 'lesslint jshint'
             }
         },
 
@@ -160,6 +161,15 @@ module.exports = function(grunt) {
                     'public/all.min.css': ['bower_components/normalize-css/normalize.css',
                                            'bower_components/angular/angular-csp.css',
                                            'src/less/*']
+                }
+            }
+        },
+
+        lesslint: {
+            src: ['src/less/*.less'],
+            options: {
+                csslint: {
+                    'adjoining-classes': false
                 }
             }
         },
