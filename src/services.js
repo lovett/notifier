@@ -254,6 +254,12 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', 'User', 'BrowserNot
                 ids = [ids];
             }
 
+            this.messages.forEach(function (message) {
+                if (ids.indexOf(message.publicId) > -1) {
+                    message.state = 'clearing';
+                }
+            });
+
             $http({
                 method: 'POST',
                 url: '/message/clear',
