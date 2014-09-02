@@ -1,4 +1,4 @@
-<header class="clearfix">
+<header class="clearfix not-selectable">
     <div class="left" >
         <span class="state {{connectionStatus}}">{{ connectionStatus }}</span>
         <span ng-show="connectionStatus == 'disconnected' || connectionStatus == 'offline'">Offline since {{ connectionChangedAt | date:'shortTime' }}</span>
@@ -21,7 +21,7 @@
     <p class="app-message fade-out" ng-if="appMessage">{{ appMessage }}</p>
 
     <article class="fade-in fade-out message {{ message.badge }}" ng-class="{extended: message.extended}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false">
-        <div class="options standard-options">
+        <div class="options standard-options not-selectable">
             <a ng-href="" ng-hide="connectionStatus !== 'connected'" ng-click="queue.clear(message.publicId)"><span>Clear</span></a>
         </div>
 
