@@ -16,8 +16,6 @@ appControllers.controller('AppController', ['$scope', '$document', '$log', 'Queu
         }
     });
 
-    $scope.appMessage = 'Checking for messages...';
-
     $scope.$on('connection:change', function (e, state) {
 
         if (state === 'offline') {
@@ -57,7 +55,7 @@ appControllers.controller('AppController', ['$scope', '$document', '$log', 'Queu
 
 }]);
 
-appControllers.controller('MessageController', ['$scope', '$location', '$log', 'User', 'Faye', function ($scope, $location, $log, User, Faye) {
+appControllers.controller('MessageController', ['$rootScope', '$scope', '$location', '$log', 'User', 'Faye', function ($rootScope, $scope, $location, $log, User, Faye) {
     'use strict';
 
     if (User.getToken() === false) {
@@ -65,6 +63,9 @@ appControllers.controller('MessageController', ['$scope', '$location', '$log', '
         $location.path('/login');
         return;
     }
+
+    $rootScope.appMessage = 'Checking for messages...';
+    
 
     Faye.init($scope.websocketPort);
     Faye.subscribe();
