@@ -26,6 +26,7 @@
     "mysql": "2.4.3",
     "nconf": "0.6.9",
     "passport": "0.2.0",
+    "passport-http": "0.2.2",
     "passport-local": "1.0.0",
     "request": "2.40.0",
     "response-time": "2.0.1",

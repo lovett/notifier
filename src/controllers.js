@@ -58,7 +58,7 @@ appControllers.controller('AppController', ['$scope', '$document', '$log', 'Queu
 appControllers.controller('MessageController', ['$rootScope', '$scope', '$location', '$log', 'User', 'Faye', function ($rootScope, $scope, $location, $log, User, Faye) {
     'use strict';
 
-    if (User.getToken() === false) {
+    if (User.getTokenKey() === false) {
         $log.info('Not logged in');
         $location.path('/login');
         return;
@@ -116,11 +116,14 @@ appControllers.controller('LoginController', ['$scope', '$location', 'User', fun
 
 }]);
 
-appControllers.controller('LogoutController', ['$scope', '$location', 'User', 'Faye', function ($scope, $location, User, Faye) {
+appControllers.controller('LogoutController', ['$scope', '$location', 'User', 'Faye', 'Queue', function ($scope, $location, User, Faye, Queue) {
     'use strict';
 
-    User.logOut();
-    Faye.disconnect();
+    if (User.getTokenKey()) {
+        User.logOut();
+        Faye.disconnect();
+        Queue.empty();
+    }
 
     $scope.visitLogin = function () {
         $location.path('/login');

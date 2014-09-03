@@ -8,6 +8,7 @@ var responseTime = require('response-time');
 var Sequelize = require('sequelize');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var BasicStrategy = require('passport-http').BasicStrategy;
 var crypto = require('crypto');
 var compression = require('compression');
 var util = require('util');
@@ -194,10 +195,25 @@ var User = sequelize.define('User', {
 });
 
 var Token = sequelize.define('Token', {
+    key: {
+        type: Sequelize.STRING(88),
+        allowNull: false,
+        validate: {
+            len: {
+                args: [1, 88],
+                msg: 'should be between 1 and 88 characters'
+            }
+        }
+    },
     value: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
-        allowNull: false
+        type: Sequelize.STRING(88),
+        allowNull: false,
+        validate: {
+            len: {
+                args: [1, 88],
+                msg: 'should be between 1 and 88 characters'
+            }
+        }
     },
     label: {
         type: Sequelize.STRING(100),
@@ -225,7 +241,20 @@ var Token = sequelize.define('Token', {
             }).success(function () {
                 callback();
             });
-        }
+        },
+        generateKeyAndValue: function (callback) {
+            var length = 128;
+            crypto.randomBytes(length, function(err, buf) {
+                if (err) {
+                    log.error({err: err}, 'error while generating random bytes');
+                    callback();
+                }
+
+                callback(buf.toString('base64', 0, length/2),
+                         buf.toString('base64', length/2));
+                
+            });
+        }            
     }
 });
 
@@ -375,7 +404,6 @@ var createDefaultUser = function (callback) {
  * --------------------------------------------------------------------
  */
 passport.use(new LocalStrategy(function (username, password, done) {
-
     // username is case insensitive
     // password is case sensitive
     username = username.toLowerCase();
@@ -397,6 +425,39 @@ passport.use(new LocalStrategy(function (username, password, done) {
     });
 }));
 
+
+passport.use(new BasicStrategy(function(key, value, next) {
+    var err;
+    Token.find({
+        include: [ User],
+        where: {
+            value: value
+        }
+    }).success(function (token) {
+        err = new Error('Invalid token');
+        err.status = 401;
+
+        if (!token) {
+            next(err);
+            return;
+        }
+
+        if (token.key !== key) {
+            next(err);
+            return;
+        }
+
+        token.save([]).success(function () {
+            next(null, token.user);
+        });
+
+    }).error(function () {
+        err = new Error('Application error');
+        err.status = 500;
+        next(err);
+        return;
+    });
+}));
 
 /**
  * Websocket setup
@@ -479,7 +540,7 @@ bayeux.addExtension({
     outgoing: function (message, callback) {
         // the localId is not sent to clients
         delete message.localId;
-        
+
         log.trace({message: message}, 'faye server outgoing message');
         return callback(message);
     },
@@ -667,48 +728,6 @@ app.param('count', function (req, res, next, value) {
  * Route helpers
  * --------------------------------------------------------------------
  */
-var requireAuth = function (req, res, next) {
-    var err = new Error('Invalid token');
-    err.status = 401;
-
-    var tokenValue = req.headers['x-token'];
-
-    if (!tokenValue) {
-        err = new Error('Unauthorized');
-        err.status = 401;
-        next(err);
-        return;
-    }
-
-    var pattern = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i;
-    if (pattern.test(tokenValue) === false) {
-        next(err);
-        return;
-    }
-
-    Token.find({
-        include: [ User],
-        where: { value: tokenValue }
-    }).success(function (token) {
-        if (!token) {
-            next(err);
-            return;
-        }
-
-        token.save([]).success(function () {
-            req.token = tokenValue;
-            req.user = token.user;
-            next();
-        });
-
-    }).error(function () {
-        err = new Error('Application error');
-        err.status = 500;
-        next(err);
-        return;
-    });
-};
-
 var publishMessage = function (user, message) {
     var channel = '/messages/' + user.getChannel();
     bayeuxClient.publish(channel, JSON.stringify(message));
@@ -725,7 +744,7 @@ app.get(/^\/(login|logout)$/, function (req, res) {
     res.sendFile(__dirname + '/public/index.html');
 });
 
-app.post('/deauth', requireAuth, function (req, res) {
+app.post('/deauth', passport.authenticate('basic', { session: false }), function (req, res) {
     Token.destroy({
         value: req.token
     }).success(function () {
@@ -749,21 +768,29 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
         persist: tokenPersist
     });
 
-    Token.prune(function () {
-        token.save().success(function (token) {
-            token.setUser(req.user).success(function () {
-                res.json({
-                    token: token.value,
-                    channel: req.user.getChannel()
+
+    Token.generateKeyAndValue(function (key, value) {
+        token.key = key;
+        token.value = value;
+
+        Token.prune(function () {
+            token.save().success(function (token) {
+                token.setUser(req.user).success(function () {
+                    res.json({
+                        key: token.key,
+                        value: token.value,
+                        channel: req.user.getChannel()
+                    });
                 });
+            }).error(function (error) {
+                res.json(400, error);
             });
-        }).error(function (error) {
-            res.json(400, error);
         });
     });
+
 });
 
-app.post('/message', requireAuth, function (req, res, next) {
+app.post('/message', passport.authenticate('basic', { session: false }), function (req, res, next) {
     var message;
 
     message = Message.build({
@@ -808,7 +835,7 @@ app.post('/message', requireAuth, function (req, res, next) {
     });
 });
 
-app.get('/archive/:count', requireAuth, function (req, res) {
+app.get('/archive/:count', passport.authenticate('basic', { session: false }), function (req, res) {
     var filters = {
         attributes: ['publicId', 'title', 'url', 'body', 'source', 'group', 'received'],
         limit: req.params.count,
@@ -837,7 +864,7 @@ app.get('/archive/:count', requireAuth, function (req, res) {
     });
 });
 
-app.post('/message/clear', requireAuth, function (req, res) {
+app.post('/message/clear', passport.authenticate('basic', { session: false }), function (req, res) {
 
     var update = function (id) {
         Message.update(
@@ -852,7 +879,7 @@ app.post('/message/clear', requireAuth, function (req, res) {
             res.status(500).end();
         });
     };
-    
+
     if (req.body.hasOwnProperty('publicId')) {
         update(req.body.publicId);
     } else if (req.body.hasOwnProperty('localId')) {
@@ -868,12 +895,12 @@ app.post('/message/clear', requireAuth, function (req, res) {
             } else {
                 update(message.publicId);
             }
-            
+
         });
     } else {
         res.status(400).end();
     }
-            
+
 });
 
 

@@ -53,8 +53,12 @@ describe('/auth', function () {
         it('returns token and channel', function (done) {
             request = request.send({'username': 'test', 'password': 'test'});
             request.expect('Content-Type', /json/).expect(function (res) {
-                if (!res.body.hasOwnProperty('token')) {
-                    throw new Error('No token');
+                if (!res.body.hasOwnProperty('key')) {
+                    throw new Error('No key');
+                }
+                
+                if (!res.body.hasOwnProperty('value')) {
+                    throw new Error('No value');
                 }
 
                 if (!res.body.hasOwnProperty('channel')) {

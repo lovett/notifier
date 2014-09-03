@@ -1,12 +1,13 @@
 describe('faye', function () {
-    var token, channel, message;
+    var tokenKey, tokenValue, channel, message;
 
     before(function (done) {
         server.sync(function () {
             agent.post('/auth')
                 .send({'username': 'test', 'password': 'test'})
                 .end(function (err, res) {
-                    token = res.body.token;
+                    tokenKey = res.body.key;
+                    tokenValue = res.body.value;
                     channel = res.body.channel;
                     done();
                 });
@@ -16,7 +17,7 @@ describe('faye', function () {
     beforeEach(function (done) {
         message = {
             ext: {
-                authToken: token
+                authToken: tokenValue
             },
             subscription: '/messages/' + channel
         };
@@ -94,7 +95,7 @@ describe('faye', function () {
                 // server), but we want to simulate a message sent
                 // without it so we'll overwrite the object
                 message.ext = {
-                    authToken: token
+                    authToken: tokenValue
                 };
                 return callback(message);
             },
@@ -113,7 +114,7 @@ describe('faye', function () {
         var client = server.bayeuxClient;
         client.addExtension({
             outgoing: function (message, callback) {
-                message.ext.authToken = token;
+                message.ext.authToken = tokenValue;
                 return callback(message);
             },
             incoming: function (message) {

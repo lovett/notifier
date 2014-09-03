@@ -1,14 +1,14 @@
 describe('/archive', function () {
-    var endpoint = '/archive/10';
-    var token;
-
+    var endpoint, tokenKey, tokenValue;
+    endpoint = '/archive/10';
 
     before(function (done) {
         server.sync(function () {
             agent.post('/auth')
                 .send({'username': 'test', 'password': 'test'})
                 .end(function (err, res) {
-                    token = res.body.token;
+                    tokenKey = res.body.key;
+                    tokenValue = res.body.value;
                     done();
                 });
         });
@@ -18,23 +18,28 @@ describe('/archive', function () {
 
         it('accepts valid authorization', function (done) {
             agent.get(endpoint)
-                .set('X-Token', token)
+                .auth(tokenKey, tokenValue)
                 .expect('Content-Type', /json/)
                 .expect(200).end(done);
         });
 
         it('rejects missing authorization', function (done) {
             agent.get(endpoint)
-                .expect('Content-Type', /json/)
                 .expect(401).end(done);
         });
 
-        it('rejects invalid authorization', function (done) {
+        it('rejects invalid auth tokenKey', function (done) {
             agent.get(endpoint)
-                .set('X-Token', 'test')
-                .expect('Content-Type', /json/)
+                .auth(tokenKey, 'wrong value')
                 .expect(401).end(done);
         });
+
+        it('rejects invalid auth user', function (done) {
+            agent.get(endpoint)
+                .auth('wrong user', tokenValue)
+                .expect(401).end(done);
+        });
+
 
         it('requires a numeric count', function (done) {
             agent.get('/archive/foo')
@@ -43,16 +48,16 @@ describe('/archive', function () {
         });
 
         it('rejects user token passed on querystring', function (done) {
-            agent.get('/archive/10/' + token).expect(404).end(done);
+            agent.get('/archive/10/' + tokenValue).expect(404).end(done);
         });
 
         it('does not expose message id', function (done) {
             agent.post('/message')
-                .set('X-Token', token)
+                .auth(tokenKey, tokenValue)
                 .send({ title: 'test'})
                 .end(function () {
                     agent.get(endpoint)
-                        .set('X-Token', token)
+                        .auth(tokenKey, tokenValue)
                         .expect(function (res) {
                             if (res.body[0].hasOwnProperty('id')) {
                                 throw new Error('Message contains id property');
@@ -63,11 +68,11 @@ describe('/archive', function () {
 
         it('does not expose message user id', function (done) {
             agent.post('/message')
-                .set('X-Token', token)
+                .auth(tokenKey, tokenValue)
                 .send({ title: 'test'})
                 .end(function () {
                     agent.get(endpoint)
-                        .set('X-Token', token)
+                        .auth(tokenKey, tokenValue)
                         .expect(function (res) {
                             if (res.body[0].hasOwnProperty('UserId')) {
                                 throw new Error('Message contains UserId property');
@@ -78,14 +83,14 @@ describe('/archive', function () {
 
         it('returns successfully if a numeric since value is provided', function (done) {
             agent.get(endpoint + '?since=' + (new Date()).getTime())
-                .set('X-Token', token)
+                .auth(tokenKey, tokenValue)
                 .expect('Content-Type', /json/)
                 .expect(200).end(done);
         });
 
         it('returns successfully if a non-numeric since value is provided', function (done) {
             agent.get(endpoint + '?since=' + (new Date()).getTime())
-                .set('X-Token', token)
+                .auth(tokenKey, tokenValue)
                 .expect('Content-Type', /json/)
                 .expect(200).end(done);
         });

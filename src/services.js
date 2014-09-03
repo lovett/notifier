@@ -1,16 +1,33 @@
 var appServices = angular.module('appServices', []);
 
-appServices.factory('User', ['$http', function ($http) {
+appServices.factory('User', ['$window', '$http', function ($window, $http) {
     'use strict';
 
     var persist = false;
 
     return {
-        getToken: function () {
-            if (localStorage.token) {
-                return localStorage.token;
-            } else if (sessionStorage.token) {
-                return sessionStorage.token;
+
+        getAuthHeader: function () {
+            var tokenKey = this.getTokenKey();
+            var tokenValue = this.getTokenValue();
+            return 'Basic ' + $window.btoa(tokenKey + ':' + tokenValue);
+        },
+
+        getTokenKey: function () {
+            if (localStorage.tokenKey) {
+                return localStorage.tokenKey;
+            } else if (sessionStorage.tokenKey) {
+                return sessionStorage.tokenKey;
+            } else {
+                return false;
+            }
+        },
+
+        getTokenValue: function () {
+            if (localStorage.tokenValue) {
+                return localStorage.tokenValue;
+            } else if (sessionStorage.tokenValue) {
+                return sessionStorage.tokenValue;
             } else {
                 return false;
             }
@@ -51,12 +68,14 @@ appServices.factory('User', ['$http', function ($http) {
                         data = {};
                     }
 
-                    if (data.hasOwnProperty('token')) {
+                    if (data.hasOwnProperty('value')) {
                         if (persist === true) {
-                            localStorage.token = data.token;
+                            localStorage.tokenKey = data.key;
+                            localStorage.tokenValue = data.value;
                             localStorage.channel = data.channel;
                         } else {
-                            sessionStorage.token = data.token;
+                            sessionStorage.tokenKey = data.key;
+                            sessionStorage.tokenValue = data.value;
                             sessionStorage.channel = data.channel;
                         }
                     }
@@ -65,17 +84,19 @@ appServices.factory('User', ['$http', function ($http) {
         },
 
         logOut: function () {
-            var token = this.getToken();
-            localStorage.removeItem('token');
+            var auth = this.getAuthHeader();
+            localStorage.removeItem('tokenKey');
+            localStorage.removeItem('tokenValue');
             localStorage.removeItem('channel');
-            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('tokenKey');
+            sessionStorage.removeItem('tokenValue');
             sessionStorage.removeItem('channel');
 
             $http({
                 method: 'POST',
                 url: '/deauth',
                 headers: {
-                    'X-Token': token
+                    'Authorization': auth
                 }
             });
         }
@@ -137,7 +158,7 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
                     if (!message.ext) {
                         message.ext = {};
                     }
-                    message.ext.authToken = User.getToken();
+                    message.ext.authToken = User.getTokenValue();
                     $rootScope.$apply();
 
                     return callback(message);
@@ -243,7 +264,7 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
     };
 }]);
 
-appServices.factory('Queue', ['$rootScope', '$http', '$log', 'User', 'BrowserNotification', function ($rootScope, $http, $log, User, BrowserNotification) {
+appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, User, BrowserNotification) {
     'use strict';
 
     return {
@@ -264,7 +285,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', 'User', 'BrowserNot
                 method: 'POST',
                 url: '/message/clear',
                 headers: {
-                    'X-Token': User.getToken()
+                    'Authorization': User.getAuthHeader()
                 },
                 data: {
                     publicId: ids
@@ -293,6 +314,11 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', 'User', 'BrowserNot
             $rootScope.$broadcast('queue:change', self.messages.length);
         },
 
+        empty: function () {
+            this.messages = [];
+            $rootScope.$broadcast('queue:change', this.messages.length);
+        },
+
         fill: function () {
             var self = this;
 
@@ -302,7 +328,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', 'User', 'BrowserNot
                 method: 'GET',
                 url: url,
                 headers: {
-                    'X-Token': User.getToken()
+                    'Authorization': User.getAuthHeader()
                 }
             }).success(function(data) {
                 // Empty the queue, but do not inform the server.

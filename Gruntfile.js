@@ -104,8 +104,9 @@ module.exports = function(grunt) {
                 options: {
                     url: 'http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/message',
                     method: 'POST',
-                    headers: {
-                        'x-token': '<%= token.token %>'
+                    auth: {
+                        user: '<%= token.key %>',
+                        pass: '<%= token.value %>'
                     },
                     form: {
                         title: 'Test message',
