@@ -51,7 +51,7 @@
     "grunt-mocha-istanbul": "2.0.0",
     "grunt-mocha-test": "0.11.0",
     "grunt-open": "0.2.3",
-    "grunt-shell": "1.0.1",
+    "grunt-shell": "1.1.1",
     "grunt-ver": "0.5.1",
     "load-grunt-tasks": "0.6.0",
     "mocha": "1.21.4",
