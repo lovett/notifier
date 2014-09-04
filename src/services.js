@@ -364,6 +364,11 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
                 message.badge = message.group.split('.').pop();
             }
 
+            if (message.group === 'phone' && message.body) {
+                // Format US phone numbers, dropping optional country code
+                message.body = message.body.replace(/(\+?1?)(\d\d\d)(\d\d\d)(\d\d\d\d)/g, '($2) $3-$4');
+            }
+
             this.messages.unshift(message);
 
             $rootScope.$broadcast('queue:change', this.messages.length);
