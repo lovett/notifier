@@ -808,7 +808,7 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
                     });
                 });
             }).error(function (error) {
-                res.json(400, error);
+                res.status(400).json(error);
             });
         });
     });
