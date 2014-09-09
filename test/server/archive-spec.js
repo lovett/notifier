@@ -1,16 +1,29 @@
 describe('/archive', function () {
-    var endpoint, tokenKey, tokenValue;
+    var endpoint, tokenKey, tokenValue, altTokenKey, altTokenValue;
     endpoint = '/archive/10';
 
     before(function (done) {
         server.sync(function () {
-            agent.post('/auth')
-                .send({'username': 'test', 'password': 'test'})
-                .end(function (err, res) {
-                    tokenKey = res.body.key;
-                    tokenValue = res.body.value;
-                    done();
-                });
+            server.createUser('test2', 'test2', function (err) {
+                if (err) {
+                    throw new Error(err);
+                }
+                
+                agent.post('/auth')
+                    .send({'username': 'test', 'password': 'test'})
+                    .end(function (err, res) {
+                        tokenKey = res.body.key;
+                        tokenValue = res.body.value;
+
+                        agent.post('/auth')
+                            .send({'username': 'test2', 'password': 'test2'})
+                            .end(function (err, res) {
+                                altTokenKey = res.body.key;
+                                altTokenValue = res.body.value;
+                                done();
+                            });
+                    });
+            });
         });
     });
 
@@ -93,6 +106,28 @@ describe('/archive', function () {
                 .auth(tokenKey, tokenValue)
                 .expect('Content-Type', /json/)
                 .expect(200).end(done);
+        });
+
+        it('only returns messages for the requesting user', function (done) {
+            var source = 'archive-check-user';
+            agent.post('/message')
+                .auth(altTokenKey, altTokenValue)
+                .send({'title': 'test', 'source': source})
+                .end(function (err) {
+                    if (err) {
+                        throw new Error(err);
+                    }
+
+                    agent.get(endpoint)
+                        .auth(tokenKey, tokenValue)
+                        .expect(function (res) {
+                            res.body.forEach(function (message) {
+                                if (message.source === source) {
+                                    throw new Error('Found message belonging to another user');
+                                }
+                            });
+                        }).end(done);
+                });
         });
 
     });

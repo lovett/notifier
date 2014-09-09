@@ -375,18 +375,12 @@ Message.belongsTo(User);
  * Database population
  * --------------------------------------------------------------------
  */
-var createDefaultUser = function (callback) {
-    if (!nconf.get('NOTIFIER_DEFAULT_USER')) {
-        return callback();
-    }
-
-    var userName = nconf.get('NOTIFIER_DEFAULT_USER').toLowerCase();
-
-    User.findOrCreate({ username: userName}).success(function (user, created) {
+var createUser = function (username, password, callback) {
+    User.findOrCreate({ username: username}).success(function (user, created) {
         if (created === false) {
             callback();
         } else {
-            user.hashPassword(nconf.get('NOTIFIER_DEFAULT_PASSWORD'), function () {
+            user.hashPassword(password, function () {
                 user.save().success(function () {
                     callback();
                 }).error(function (err) {
@@ -865,8 +859,8 @@ app.get('/archive/:count', passport.authenticate('basic', { session: false }), f
         attributes: ['publicId', 'title', 'url', 'body', 'source', 'group', 'received'],
         limit: req.params.count,
         order: 'received DESC',
-        UserId: req.user.id,
         where: {
+            UserId: req.user.id,
             unread: true
         }
     };
@@ -960,13 +954,19 @@ var sync = function (callback) {
             process.exit();
         }
 
-        createDefaultUser(function (err) {
-            if (err) {
-                log.fatal(err);
-                process.exit();
-            }
-            callback();
-        });
+        if (nconf.get('NOTIFIER_DEFAULT_USER')) {
+            var user, password;
+            user = nconf.get('NOTIFIER_DEFAULT_USER').toLowerCase();
+            password = nconf.get('NOTIFIER_DEFAULT_PASSWORD');
+            
+            createUser(user, password, function (err) {
+                if (err) {
+                    log.fatal(err);
+                    process.exit();
+                }
+                callback();
+            });
+        }
     });
 };
 
@@ -997,3 +997,4 @@ exports.sync = sync;
 exports.app = app;
 exports.bayeuxClient = bayeuxClient;
 exports.verifySubscription = verifySubscription;
+exports.createUser = createUser;
