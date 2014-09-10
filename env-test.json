@@ -5,7 +5,6 @@
     "NOTIFIER_DEV_HOST": "localhost",
     "NOTIFIER_LOG": "test.log",
     "NOTIFIER_LOG_LEVEL": "trace",
-    "NOTIFIER_SSL": 0,
     "NOTIFIER_SSL_KEY": "",
     "NOTIFIER_SSL_CERT": "",
     "NOTIFIER_HTTP_IP": "0.0.0.0",

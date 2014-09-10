@@ -973,13 +973,13 @@ var sync = function (callback) {
 if (!module.parent) {
     sync(function () {
         var server;
-        if (nconf.get('NOTIFIER_SSL') !== '1') {
-            server = app.listen(nconf.get('NOTIFIER_HTTP_PORT'), nconf.get('NOTIFIER_HTTP_IP'));
-        } else {
+        if (nconf.get('NOTIFIER_SSL_CERT')) {
             server = https.createServer({
                 key: fs.readFileSync(nconf.get('NOTIFIER_SSL_KEY')),
                 cert: fs.readFileSync(nconf.get('NOTIFIER_SSL_CERT'))
             }, app).listen(nconf.get('NOTIFIER_HTTP_PORT'), nconf.get('NOTIFIER_HTTP_IP'));
+        } else {            
+            server = app.listen(nconf.get('NOTIFIER_HTTP_PORT'), nconf.get('NOTIFIER_HTTP_IP'));
         }
 
         server.on('listening', function () {
