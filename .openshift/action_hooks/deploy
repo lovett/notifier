@@ -25,7 +25,7 @@ appEnv.NOTIFIER_HTTP_IP = process.env.OPENSHIFT_NODEJS_IP;
 appEnv.NOTIFIER_HTTP_PORT = process.env.OPENSHIFT_NODEJS_PORT;
 appEnv.NOTIFIER_WEBSOCKET_PORT = '8443';
 appEnv.NOTIFIER_FORCE_HTTPS = 'true';
-appEnv.NOTIFIER_DB: "openshift",
+appEnv.NOTIFIER_DB = 'openshift';
 
 // Login credentials are intentionally omitted. They will be populated
 // from server.js
