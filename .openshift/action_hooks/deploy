@@ -25,11 +25,18 @@ appEnv.NOTIFIER_HTTP_IP = process.env.OPENSHIFT_NODEJS_IP;
 appEnv.NOTIFIER_HTTP_PORT = process.env.OPENSHIFT_NODEJS_PORT;
 appEnv.NOTIFIER_WEBSOCKET_PORT = '8443';
 appEnv.NOTIFIER_FORCE_HTTPS = 'true';
-appEnv.NOTIFIER_DB_NAME = process.env.NOTIFIER_DB_NAME;
+appEnv.NOTIFIER_DB: "openshift",
+
+// Login credentials are intentionally omitted. They will be populated
+// from server.js
 appEnv.NOTIFIER_DB_CONFIG = {
-    "host": process.env.OPENSHIFT_MYSQL_DB_HOST,
-    "port": process.env.OPENSHIFT_MYSQL_DB_PORT,
-    "dialect": "mysql"
+    "openshift": {
+        "sequelize": {
+            "host": process.env.OPENSHIFT_MYSQL_DB_HOST,
+            "port": process.env.OPENSHIFT_MYSQL_DB_PORT,
+            "dialect": "mysql"
+        }
+    }
 }
 
 var appEnvString = JSON.stringify(appEnv, null, 2);

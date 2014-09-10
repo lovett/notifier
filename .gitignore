@@ -12,6 +12,6 @@ public
 *.log
 .token
 env*.json
-!env-sample-*.json
+!env-sample.json
 !env-test.json
 coverage

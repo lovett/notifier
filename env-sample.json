@@ -1,0 +1,38 @@
+{
+    "NOTIFIER_ENVIRONMENT": "dev",
+    "NOTIFIER_LIVERELOAD": 35729,
+    "NOTIFIER_DEV_HOST": "localhost",
+    "NOTIFIER_LOG": "notifier.log",
+    "NOTIFIER_LOG_LEVEL": "warn",
+    "NOTIFIER_SSL_KEY": "",
+    "NOTIFIER_SSL_CERT": "",
+    "NOTIFIER_HTTP_IP": "0.0.0.0",
+    "NOTIFIER_HTTP_PORT": 8080,
+    "NOTIFIER_WEBSOCKET_PORT": 8080,
+    "NOTIFIER_FORCE_HTTPS": "false",
+    "NOTIFIER_DEFAULT_USER": "",
+    "NOTIFIER_DEFAULT_PASSWORD": "",
+    "NOTIFIER_DB_BACKUP_DIR": ""
+    "NOTIFIER_DB": "sqlite",
+    "NOTIFIER_DB_CONFIG": {
+        "mysql": {
+            "sequelize": {
+                "host": "localhost",
+                "port": "3306",
+                "dialect": "mysql"
+            },
+            "username": "username_for_mysql_database",
+            "password": "password_for_mysql_database",
+            "dbname": "name_of_mysql_database"
+        },
+        "sqlite": {
+            "sequelize": {
+                "storage": "path_to_sqlite_database",
+                "dialect": "sqlite"
+            },
+            "username": "",
+            "password": "",
+            "dbname": "path_to_sqlite_database"
+        }
+    }
+}

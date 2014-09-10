@@ -83,17 +83,33 @@ try {
  * --------------------------------------------------------------------
  */
 
-var dbConfig = nconf.get('NOTIFIER_DB_CONFIG');
-dbConfig.logging = function (msg) {
+var dbKey = nconf.get('NOTIFIER_DB');
+var dbConfig = nconf.get('NOTIFIER_DB_CONFIG')[dbKey];
+dbConfig.sequelize.logging = function (msg) {
     log.info({
         sequelize: msg
     }, 'query');
 };
 
-var sequelize = new Sequelize(nconf.get('NOTIFIER_DB_NAME'),
-                              nconf.get('NOTIFIER_DB_USER'),
-                              nconf.get('NOTIFIER_DB_PASS'),
-                              dbConfig);
+
+// If database login credentials have not been provided in the env
+// file, get them from environment variables. 
+if (!dbConfig.hasOwnProperty('username')) {
+    dbConfig.username = nconf.get('NOTIFIER_DB_USER');
+}
+
+if (!dbConfig.hasOwnProperty('password')) {
+    dbConfig.password = nconf.get('NOTIFIER_DB_PASS');
+}
+
+if (!dbConfig.hasOwnProperty('dbname')) {
+    dbConfig.dbname = nconf.get('NOTIFIER_DB_NAME');
+}
+
+var sequelize = new Sequelize(dbConfig.dbname,
+                              dbConfig.username,
+                              dbConfig.password,
+                              dbConfig.sequelize);
 
 /**
  * HTML sanitizer configuration

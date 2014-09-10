@@ -13,9 +13,17 @@
     "NOTIFIER_FORCE_HTTPS": "true",
     "NOTIFIER_DEFAULT_USER": "test",
     "NOTIFIER_DEFAULT_PASSWORD": "test",
+    "NOTIFIER_DB": "sqlite",
     "NOTIFIER_DB_CONFIG": {
-        "storage": "./test.sqlite",
-        "dialect": "sqlite"
+        "sqlite": {
+            "sequelize": {
+                "storage": "./test.sqlite",
+                "dialect": "sqlite"
+            },
+            "username": "",
+            "password": "",
+            "dbname": "./test.sqlite"
+        }
     },
     "NOTIFIER_DB_BACKUP_DIR": ""
 }
