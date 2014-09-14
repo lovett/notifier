@@ -20,8 +20,8 @@
                 "storage": "./test.sqlite",
                 "dialect": "sqlite"
             },
-            "username": "",
-            "password": "",
+            "username": "test-username",
+            "password": "test-password",
             "dbname": "./test.sqlite"
         }
     },

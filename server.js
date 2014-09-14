@@ -20,23 +20,25 @@ var sanitizeHtml = require('sanitize-html');
  * Application configuration
  * --------------------------------------------------------------------
  *
- * Configuration settings are sourced from:
+ * Configuration settings are sourced from muliple
+ * locations. Command-line arugments are checked first. If not defined
+ * there, environment variables are considered. If no environment
+ * variable exists, the configuration file is checked. As a last
+ * resort, a limited set of default values are used.
  *
- * 1. command line arguments
- * 2. environment variables
- * 3. the file env-{NODE_ENV}.json
- * 4. the file env.json
- * 5. default values
+ * The * configuration file is env.json by default, but can be
+ * overriden to env-{ENVIRONMENT NAME}.json by setting the NODE_ENV
+ * environment variable.
+ *
  */
-
 nconf.argv();
 nconf.env();
 
 if (process.env.NODE_ENV) {
-    nconf.file('custom', { file: 'env-' + process.env.NODE_ENV + '.json' });
+    nconf.file('env-' + process.env.NODE_ENV + '.json');
+} else {
+    nconf.file('env.json');
 }
-
-nconf.file('env.json');
 
 nconf.defaults({
     'NOTIFIER_LOG': 'notifier.log',
@@ -79,32 +81,47 @@ try {
 
 
 /**
- * ORM configuration
+ * Database configuration
  * --------------------------------------------------------------------
+ *
+ * Multiple configurations can be defined by the NOTIFIER_DB_CONFIG
+ * object. The value of NOTIFIER_DB determines which configuration is
+ * used. It should be one of the keys of NOTIFIER_DB_CONFIG.
  */
+var getDbConfig = function () {
+    var key, config;
+    key = nconf.get('NOTIFIER_DB');
 
-var dbKey = nconf.get('NOTIFIER_DB');
-var dbConfig = nconf.get('NOTIFIER_DB_CONFIG')[dbKey];
-dbConfig.sequelize.logging = function (msg) {
-    log.info({
-        sequelize: msg
-    }, 'query');
+    if (nconf.get('NOTIFIER_DB_CONFIG') && nconf.get('NOTIFIER_DB_CONFIG').hasOwnProperty(key)) {
+        config = nconf.get('NOTIFIER_DB_CONFIG')[key];
+    } else {
+        config = {
+            sequelize: {}
+        };
+    }
+    
+    config.sequelize.logging = function (msg) {
+        log.info({
+            sequelize: msg
+        }, 'query');
+    };
+
+    if (nconf.get('NOTIFIER_DB_USER')) {
+        config.username = nconf.get('NOTIFIER_DB_USER');
+    }
+    
+    if (nconf.get('NOTIFIER_DB_PASS')) {
+        config.password = nconf.get('NOTIFIER_DB_PASS');
+    }
+    
+    if (nconf.get('NOTIFIER_DB_NAME')) {
+        config.dbname = nconf.get('NOTIFIER_DB_NAME');
+    }
+
+    return config;
 };
 
-
-// If database login credentials have not been provided in the env
-// file, get them from environment variables. 
-if (!dbConfig.hasOwnProperty('username')) {
-    dbConfig.username = nconf.get('NOTIFIER_DB_USER');
-}
-
-if (!dbConfig.hasOwnProperty('password')) {
-    dbConfig.password = nconf.get('NOTIFIER_DB_PASS');
-}
-
-if (!dbConfig.hasOwnProperty('dbname')) {
-    dbConfig.dbname = nconf.get('NOTIFIER_DB_NAME');
-}
+var dbConfig = getDbConfig();
 
 var sequelize = new Sequelize(dbConfig.dbname,
                               dbConfig.username,
@@ -1014,3 +1031,5 @@ exports.app = app;
 exports.bayeuxClient = bayeuxClient;
 exports.verifySubscription = verifySubscription;
 exports.createUser = createUser;
+exports.getDbConfig = getDbConfig;
+exports.nconf = nconf;
