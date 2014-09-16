@@ -130,6 +130,12 @@ module.exports = function(grunt) {
             }
         },
 
+        karma: {
+            unit: {
+                configFile: 'src/test/karma.conf.js'
+            }
+        },
+
         jshint: {
             node: {
                 options: {
@@ -277,7 +283,10 @@ module.exports = function(grunt) {
                     sourceMap: 'public/app.min.js.map'
                 },
                 files: {
-                    'public/app.min.js': ['public/app.js', 'public/controllers.js', 'public/services.js']
+                    'public/app.min.js': ['public/app.js',
+                                          'public/filters.js',
+                                          'public/controllers.js',
+                                          'public/services.js']
                 }
             },
             lib: {
