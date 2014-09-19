@@ -5,7 +5,7 @@
   "description": "A notification service for user-generated events",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server/notifier-server.js"
   },
   "repository": {
     "type": "git",

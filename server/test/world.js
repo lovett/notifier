@@ -1,7 +1,7 @@
 process.env.NODE_ENV = 'test';
 
 var fs = require('fs');
-var server = require('../../server');
+var server = require('../notifier-server');
 var supertest = require('supertest');
 var assert = require('chai').assert;
 

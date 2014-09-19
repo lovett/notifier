@@ -15,6 +15,7 @@ var util = require('util');
 var useragent = require('useragent');
 var nconf = require('nconf');
 var sanitizeHtml = require('sanitize-html');
+var path = require('path');
 
 /**
  * Application configuration
@@ -45,7 +46,8 @@ nconf.defaults({
     'NOTIFIER_LOG_LEVEL': 'warn',
     'NOTIFIER_PASSWORD_HASH_RANDBYTES': 64,
     'NOTIFIER_PASSWORD_HASH_KEYLENGTH': 64,
-    'NOTIFIER_PASSWORD_HASH_ITERATIONS': 20000
+    'NOTIFIER_PASSWORD_HASH_ITERATIONS': 20000,
+    'NOTIFIER_STATIC_DIR': path.resolve(__dirname + '/../public')
 });
 
 /**
@@ -757,7 +759,7 @@ app.use(passport.initialize());
 
 
 // Static fileserving
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(nconf.get('NOTIFIER_STATIC_DIR')));
 
 /**
  * Parameter validation
@@ -793,7 +795,7 @@ var publishMessage = function (user, message) {
 
 app.get(/^\/(login|logout)$/, function (req, res) {
     // For pushState compatibility, some URLs are treated as aliases of index.html
-    res.sendFile(__dirname + '/public/index.html');
+    res.sendFile(nconf.get('NOTIFIER_STATIC_DIR') + '/index.html');
 });
 
 app.post('/deauth', passport.authenticate('basic', { session: false }), function (req, res) {

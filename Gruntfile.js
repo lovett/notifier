@@ -44,6 +44,9 @@ module.exports = function(grunt) {
             },
             postBuild: {
                 src: ['public/version.json', 'public/favicon/*.png']
+            },
+            coverage: {
+                src: ['coverage']
             }
         },
 
@@ -141,7 +144,7 @@ module.exports = function(grunt) {
                 options: {
                     jshintrc: '.jshintrc-node'
                 },
-                src: ['server.js', 'Gruntfile.js', 'clients/*.js']
+                src: ['server/notifier-server.js', 'Gruntfile.js', 'clients/*.js']
             },
 
             mocha: {
@@ -186,25 +189,25 @@ module.exports = function(grunt) {
                 options: {
                     reporter: 'spec',
                     bail: true,
-                    require: 'test/server/world.js'
+                    require: 'server/test/world.js'
                 },
-                src: ['test/server/*-spec.js']
+                src: ['server/test/*-spec.js']
             }
         },
 
         'mocha_istanbul': {
             server: {
-                src: 'test/server',
+                src: 'server/test',
                 options: {
                     mask: '*-spec.js',
-                    require: ['test/server/world.js']
+                    require: ['server/test/world.js']
                 }
             }
         },
 
         open : {
             'coverage-server': {
-                path: 'coverage/lcov-report/notifier/server.js.html'
+                path: 'coverage/lcov-report/server/notifier-server.js.html'
             }
         },
 
@@ -257,7 +260,7 @@ module.exports = function(grunt) {
                 ].join(' && ')
             },
             'server': {
-                command: 'nodemon --watch server.js'
+                command: 'nodemon server/notifier-server.js'
             },
             'mysqlimport': {
                 command: [
@@ -315,7 +318,7 @@ module.exports = function(grunt) {
         if (env.NOTIFIER_DB_DRIVER === 'sqlite') {
             grunt.file.delete(env.NOTIFIER_SQLITE_PATH);
         }
-        touch('server.js');
+        touch('server/notifier-server.js');
     });
 
     grunt.registerTask('build', 'Build the application', function (buildType) {
@@ -342,7 +345,9 @@ module.exports = function(grunt) {
         grunt.task.run(tasks);
     });
 
-    grunt.registerTask('coverage', ['mocha_istanbul:server', 'open:coverage-server']);
+    grunt.registerTask('test', ['mochaTest']);
+    
+    grunt.registerTask('coverage', ['clean:coverage', 'mocha_istanbul:server', 'open:coverage-server']);
 
     grunt.registerTask('default', ['githooks', 'build:full', 'watch']);
 };
