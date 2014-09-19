@@ -16,13 +16,13 @@
     "tests"
   ],
   "dependencies": {
-    "angular": "1.2.24",
-    "angular-route": "1.2.24",
-    "angular-resource": "1.2.24",
-    "angular-sanitize": "1.2.24",
+    "angular": "1.2.25",
+    "angular-route": "1.2.25",
+    "angular-resource": "1.2.25",
+    "angular-sanitize": "1.2.25",
     "normalize-css": "3.0.1",
-    "angular-touch": "1.2.24",
-    "angular-animate": "1.2.24",
-    "angular-mocks": "~1.2.24"
+    "angular-touch": "1.2.25",
+    "angular-animate": "1.2.25",
+    "angular-mocks": "1.2.25"
   }
 }
