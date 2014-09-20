@@ -5,7 +5,7 @@
 TAGS
 node_modules
 bower_components
-public
+static
 .nodemonignore
 *.scpt
 *.sqlite

@@ -47,7 +47,7 @@ nconf.defaults({
     'NOTIFIER_PASSWORD_HASH_RANDBYTES': 64,
     'NOTIFIER_PASSWORD_HASH_KEYLENGTH': 64,
     'NOTIFIER_PASSWORD_HASH_ITERATIONS': 20000,
-    'NOTIFIER_STATIC_DIR': path.resolve(__dirname + '/../public')
+    'NOTIFIER_STATIC_DIR': path.resolve(__dirname + '/../static')
 });
 
 /**

@@ -12,16 +12,16 @@ module.exports = function(grunt) {
 
         appcache: {
             options: {
-                basePath: 'public'
+                basePath: 'static'
             },
             all: {
-                dest: 'public/notifier.appcache',
+                dest: 'static/notifier.appcache',
                 cache: {
                     patterns: [
-                        'public/*.min.js',
-                        'public/*.min.css',
-                        'public/templates/*.html',
-                        'public/favicon/*'
+                        'static/*.min.js',
+                        'static/*.min.css',
+                        'static/templates/*.html',
+                        'static/favicon/*'
                     ]
                 },
                 network: '*'
@@ -37,13 +37,13 @@ module.exports = function(grunt) {
 
         clean: {
             app: {
-                src: ['public/app*', 'public/all*']
+                src: ['static/app*', 'static/all*']
             },
             lib: {
-                src: ['public/lib*']
+                src: ['static/lib*']
             },
             postBuild: {
-                src: ['public/version.json', 'public/favicon/*.png']
+                src: ['static/version.json', 'static/favicon/*.png']
             },
             coverage: {
                 src: ['coverage']
@@ -57,7 +57,7 @@ module.exports = function(grunt) {
                         expand: true,
                         cwd: 'src/',
                         src: ['**'],
-                        dest: 'public/'
+                        dest: 'static/'
                     }
                 ]
             },
@@ -76,7 +76,7 @@ module.exports = function(grunt) {
                             'bower_components/angular-touch/angular-touch.js',
                             'bower_components/angular-animate/angular-animate.js',
                         ],
-                        dest: 'public/'
+                        dest: 'static/'
                     }
                 ]
             }
@@ -168,7 +168,7 @@ module.exports = function(grunt) {
                     cleancss: true
                 },
                 files: {
-                    'public/all.min.css': ['bower_components/normalize-css/normalize.css',
+                    'static/all.min.css': ['bower_components/normalize-css/normalize.css',
                                            'bower_components/angular/angular-csp.css',
                                            'src/less/*']
                 }
@@ -213,7 +213,7 @@ module.exports = function(grunt) {
 
         replace: {
             websocket: {
-                src: ['public/*.html'],
+                src: ['static/*.html'],
                 overwrite: true,
                 replacements: [{
                     from: '<meta name=\"websocket port\" content=\"\" />',
@@ -221,7 +221,7 @@ module.exports = function(grunt) {
                 }]
             },
             dev: {
-                src: ['public/index.html'],
+                src: ['static/index.html'],
                 overwrite: true,
                 replacements: [{
                     from: '<!-- livereload placeholder -->',
@@ -229,7 +229,7 @@ module.exports = function(grunt) {
                 }]
             },
             production: {
-                src: ['public/index.html'],
+                src: ['static/index.html'],
                 overwrite: true,
                 replacements: [{
                     from: '<!-- livereload placeholder -->',
@@ -241,22 +241,22 @@ module.exports = function(grunt) {
         shell: {
             'favicons-dev': {
                 command: [
-                    'rm -rf public/favicon',
-                    'mkdir public/favicon',
-                    'convert src/favicon/favicon-dev.svg -geometry 16x16 -transparent white public/favicon/favicon-16.png',
-                    'convert src/favicon/favicon-dev.svg -geometry 32x32 -transparent white public/favicon/favicon-32.png',
-                    'convert src/favicon/favicon-dev.svg -geometry 48x48 -transparent white public/favicon/favicon-48.png',
-                    'convert public/favicon/favicon-16.png public/favicon/favicon-32.png public/favicon/favicon-48.png public/favicon/favicon.ico'
+                    'rm -rf static/favicon',
+                    'mkdir static/favicon',
+                    'convert src/favicon/favicon-dev.svg -geometry 16x16 -transparent white static/favicon/favicon-16.png',
+                    'convert src/favicon/favicon-dev.svg -geometry 32x32 -transparent white static/favicon/favicon-32.png',
+                    'convert src/favicon/favicon-dev.svg -geometry 48x48 -transparent white static/favicon/favicon-48.png',
+                    'convert static/favicon/favicon-16.png static/favicon/favicon-32.png static/favicon/favicon-48.png static/favicon/favicon.ico'
                 ].join(' && ')
             },
             'favicons-production': {
                 command: [
-                    'rm -rf public/favicon',
-                    'mkdir public/favicon',
-                    'convert src/favicon/favicon.svg -geometry 16x16 -transparent white public/favicon/favicon-16.png',
-                    'convert src/favicon/favicon.svg -geometry 32x32 -transparent white public/favicon/favicon-32.png',
-                    'convert src/favicon/favicon.svg -geometry 48x48 -transparent white public/favicon/favicon-48.png',
-                    'convert public/favicon/favicon-16.png public/favicon/favicon-32.png public/favicon/favicon-48.png public/favicon/favicon.ico'
+                    'rm -rf static/favicon',
+                    'mkdir static/favicon',
+                    'convert src/favicon/favicon.svg -geometry 16x16 -transparent white static/favicon/favicon-16.png',
+                    'convert src/favicon/favicon.svg -geometry 32x32 -transparent white static/favicon/favicon-32.png',
+                    'convert src/favicon/favicon.svg -geometry 48x48 -transparent white static/favicon/favicon-48.png',
+                    'convert static/favicon/favicon-16.png static/favicon/favicon-32.png static/favicon/favicon-48.png static/favicon/favicon.ico'
                 ].join(' && ')
             },
             'server': {
@@ -283,28 +283,28 @@ module.exports = function(grunt) {
         uglify: {
             app: {
                 options: {
-                    sourceMap: 'public/app.min.js.map'
+                    sourceMap: 'static/app.min.js.map'
                 },
                 files: {
-                    'public/app.min.js': ['public/app.js',
-                                          'public/filters.js',
-                                          'public/controllers.js',
-                                          'public/services.js']
+                    'static/app.min.js': ['static/app.js',
+                                          'static/filters.js',
+                                          'static/controllers.js',
+                                          'static/services.js']
                 }
             },
             lib: {
                 options: {
-                    sourceMap: 'public/lib.min.js.map',
+                    sourceMap: 'static/lib.min.js.map',
                 },
                 files: {
-                    'public/lib.min.js': [
-                        'public/angular.js',
-                        'public/angular-route.js',
-                        'public/faye-browser.js',
-                        'public/angular-sanitize.js',
-                        'public/angular-resource.js',
-                        'public/angular-touch.js',
-                        'public/angular-animate.js'
+                    'static/lib.min.js': [
+                        'static/angular.js',
+                        'static/angular-route.js',
+                        'static/faye-browser.js',
+                        'static/angular-sanitize.js',
+                        'static/angular-resource.js',
+                        'static/angular-touch.js',
+                        'static/angular-animate.js'
                     ]
                 }
             }
