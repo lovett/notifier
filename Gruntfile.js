@@ -151,7 +151,7 @@ module.exports = function(grunt) {
                 options: {
                     jshintrc: '.jshintrc-node'
                 },
-                src: ['test/server/*-spec.js']
+                src: ['server/test/*-spec.js']
             },
 
             browser: {
