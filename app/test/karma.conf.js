@@ -11,10 +11,10 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'public/lib.min.js',
+            'static/lib.min.js',
             'bower_components/angular-mocks/angular-mocks.js',
-            'public/app.min.js',
-            'src/test/*spec.js'
+            'static/app.min.js',
+            'app/test/*spec.js'
         ],
 
 
@@ -30,7 +30,7 @@ module.exports = function(config) {
 
         
         preprocessors: {
-            'public/app.min.js': ['coverage']
+            'static/app.min.js': ['coverage']
         },
 
 

@@ -12,7 +12,7 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'src/*.js'
+            'app/*.js'
         ],
 
 
@@ -28,7 +28,7 @@ module.exports = function(config) {
             // source files, that you wanna generate coverage for
             // do not include tests or libraries
             // (these files will be instrumented by Istanbul)
-            'src/*.js': ['coverage']
+            'app/*.js': ['coverage']
         },
 
 

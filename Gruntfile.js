@@ -55,7 +55,7 @@ module.exports = function(grunt) {
                 files: [
                     {
                         expand: true,
-                        cwd: 'src/',
+                        cwd: 'app/',
                         src: ['**'],
                         dest: 'static/'
                     }
@@ -135,7 +135,7 @@ module.exports = function(grunt) {
 
         karma: {
             unit: {
-                configFile: 'src/test/karma.conf.js'
+                configFile: 'app/test/karma.conf.js'
             }
         },
 
@@ -158,7 +158,7 @@ module.exports = function(grunt) {
                 options: {
                     jshintrc: '.jshintrc-browser'
                 },
-                src: ['src/**.js']
+                src: ['app/**.js']
             }
         },
 
@@ -170,13 +170,13 @@ module.exports = function(grunt) {
                 files: {
                     'static/all.min.css': ['bower_components/normalize-css/normalize.css',
                                            'bower_components/angular/angular-csp.css',
-                                           'src/less/*']
+                                           'app/less/*']
                 }
             }
         },
 
         lesslint: {
-            src: ['src/less/*.less'],
+            src: ['app/less/*.less'],
             options: {
                 csslint: {
                     'adjoining-classes': false
@@ -243,9 +243,9 @@ module.exports = function(grunt) {
                 command: [
                     'rm -rf static/favicon',
                     'mkdir static/favicon',
-                    'convert src/favicon/favicon-dev.svg -geometry 16x16 -transparent white static/favicon/favicon-16.png',
-                    'convert src/favicon/favicon-dev.svg -geometry 32x32 -transparent white static/favicon/favicon-32.png',
-                    'convert src/favicon/favicon-dev.svg -geometry 48x48 -transparent white static/favicon/favicon-48.png',
+                    'convert app/favicon/favicon-dev.svg -geometry 16x16 -transparent white static/favicon/favicon-16.png',
+                    'convert app/favicon/favicon-dev.svg -geometry 32x32 -transparent white static/favicon/favicon-32.png',
+                    'convert app/favicon/favicon-dev.svg -geometry 48x48 -transparent white static/favicon/favicon-48.png',
                     'convert static/favicon/favicon-16.png static/favicon/favicon-32.png static/favicon/favicon-48.png static/favicon/favicon.ico'
                 ].join(' && ')
             },
@@ -253,9 +253,9 @@ module.exports = function(grunt) {
                 command: [
                     'rm -rf static/favicon',
                     'mkdir static/favicon',
-                    'convert src/favicon/favicon.svg -geometry 16x16 -transparent white static/favicon/favicon-16.png',
-                    'convert src/favicon/favicon.svg -geometry 32x32 -transparent white static/favicon/favicon-32.png',
-                    'convert src/favicon/favicon.svg -geometry 48x48 -transparent white static/favicon/favicon-48.png',
+                    'convert app/favicon/favicon.svg -geometry 16x16 -transparent white static/favicon/favicon-16.png',
+                    'convert app/favicon/favicon.svg -geometry 32x32 -transparent white static/favicon/favicon-32.png',
+                    'convert app/favicon/favicon.svg -geometry 48x48 -transparent white static/favicon/favicon-48.png',
                     'convert static/favicon/favicon-16.png static/favicon/favicon-32.png static/favicon/favicon-48.png static/favicon/favicon.ico'
                 ].join(' && ')
             },
@@ -275,7 +275,7 @@ module.exports = function(grunt) {
                 livereload: '<%= env.NOTIFIER_LIVERELOAD %>'
             },
             src: {
-                files: ['src/**', 'Gruntfile.js'],
+                files: ['app/**', 'Gruntfile.js'],
                 tasks: ['build']
             }
         },
