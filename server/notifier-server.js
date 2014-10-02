@@ -638,8 +638,8 @@ app.disable('x-powered-by');
 app.use(function (req, res, next) {
     var err;
 
-    // Disallow querystrings on template files
-    if (req.path.indexOf('templates') === -1) {
+    // Disallow querystrings on view templates
+    if (req.path.indexOf('views') === -1) {
         return next();
     }
 
@@ -792,10 +792,13 @@ var publishMessage = function (user, message) {
  * Routing
  * --------------------------------------------------------------------
  */
+app.get('/', function (req, res) {
+    res.sendFile(nconf.get('NOTIFIER_STATIC_DIR') + '/views/index.html');
+});
 
 app.get(/^\/(login|logout)$/, function (req, res) {
-    // For pushState compatibility, some URLs are treated as aliases of index.html
-    res.sendFile(nconf.get('NOTIFIER_STATIC_DIR') + '/index.html');
+    // For pushState compatibility, some URLs are treated as aliases of the index view
+    res.sendFile(nconf.get('NOTIFIER_STATIC_DIR') + '/views/index.html');
 });
 
 app.post('/deauth', passport.authenticate('basic', { session: false }), function (req, res) {

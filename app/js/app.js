@@ -1,46 +1,15 @@
 /* global angular */
 var app = angular.module('App', [
-    'ngRoute',
     'appControllers',
+    'appDirectives',
     'appFilters',
     'appServices',
     'ngSanitize',
     'ngResource',
+    'ngRoute',
     'ngTouch',
     'ngAnimate'
 ]);
-
-app.directive('notifierOfflineEvent', ['$window', '$rootScope', function ($window, $rootScope) {
-    'use strict';
-
-    return {
-        restrict: 'A',
-        link: function () {
-            var callback = function (event) {
-                $rootScope.$broadcast('connection:change', event.type);
-            };
-
-            $window.addEventListener('online', callback);
-            $window.addEventListener('offline', callback);
-        }
-    };
-}]);
-
-app.directive('notifierAppcacheReload', ['$window', '$log', function ($window, $log) {
-    'use strict';
-
-    return {
-        restrict: 'A',
-        link: function () {
-            if ($window.applicationCache) {
-                $window.applicationCache.addEventListener('updateready', function() {
-                    $log.info('An appcache update is ready, reloading');
-                    $window.location.reload();
-                });
-            }
-        }
-    };
-}]);
 
 app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($httpProvider, $routeProvider, $locationProvider) {
     'use strict';
@@ -49,17 +18,17 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($h
 
     $routeProvider.when('/login', {
         controller: 'LoginController',
-        templateUrl: '/templates/login.html'
+        templateUrl: '/views/login.html'
     });
 
     $routeProvider.when('/logout', {
         controller: 'LogoutController',
-        templateUrl: '/templates/logout.html',
+        templateUrl: '/views/logout.html',
     });
 
     $routeProvider.when('/', {
         controller: 'MessageController',
-        templateUrl: '/templates/messages.html'
+        templateUrl: '/views/messages.html'
     });
 
     $routeProvider.otherwise('/', {

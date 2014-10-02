@@ -7,13 +7,13 @@ describe('templates', function () {
         });
         
         it('accepts requests without querystring', function (done) {
-            agent.get('/templates/login.html')
+            agent.get('/views/login.html')
                 .expect(200)
                 .end(done);
         });
 
         it('rejects requests with querystring', function (done) {
-            agent.get('/templates/login.html?foo=bar')
+            agent.get('/views/login.html?foo=bar')
                 .expect(400)
                 .end(done);
         });
@@ -28,7 +28,7 @@ describe('templates', function () {
         });
         
         it('is refused', function (done) {
-            agent.post('/templates/login.html')
+            agent.post('/views/login.html')
                 .expect(405)
                 .end(done);
         });

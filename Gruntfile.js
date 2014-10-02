@@ -20,7 +20,7 @@ module.exports = function(grunt) {
                     patterns: [
                         'static/*.min.js',
                         'static/*.min.css',
-                        'static/templates/*.html',
+                        'static/views/*.html',
                         'static/favicon/*'
                     ]
                 },
@@ -158,7 +158,7 @@ module.exports = function(grunt) {
                 options: {
                     jshintrc: '.jshintrc-browser'
                 },
-                src: ['app/**.js']
+                src: ['app/js/*.js']
             }
         },
 
@@ -221,7 +221,7 @@ module.exports = function(grunt) {
                 }]
             },
             dev: {
-                src: ['static/index.html'],
+                src: ['static/views/index.html'],
                 overwrite: true,
                 replacements: [{
                     from: '<!-- livereload placeholder -->',
@@ -229,7 +229,7 @@ module.exports = function(grunt) {
                 }]
             },
             production: {
-                src: ['static/index.html'],
+                src: ['static/views/index.html'],
                 overwrite: true,
                 replacements: [{
                     from: '<!-- livereload placeholder -->',
@@ -274,7 +274,7 @@ module.exports = function(grunt) {
             options: {
                 livereload: '<%= env.NOTIFIER_LIVERELOAD %>'
             },
-            src: {
+            app: {
                 files: ['app/**', 'Gruntfile.js'],
                 tasks: ['build']
             }
@@ -286,10 +286,11 @@ module.exports = function(grunt) {
                     sourceMap: 'static/app.min.js.map'
                 },
                 files: {
-                    'static/app.min.js': ['static/app.js',
-                                          'static/filters.js',
-                                          'static/controllers.js',
-                                          'static/services.js']
+                    'static/app.min.js': ['static/js/app.js',
+                                          'static/js/controllers.js',
+                                          'static/js/directives.js',
+                                          'static/js/filters.js',
+                                          'static/js/services.js']
                 }
             },
             lib: {
