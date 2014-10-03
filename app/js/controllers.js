@@ -1,6 +1,6 @@
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('AppController', ['$scope', '$document', '$log', 'Queue', 'BrowserNotification', function ($scope, $document, $log, Queue, BrowserNotification) {
+appControllers.controller('AppController', ['$window', '$scope', '$document', '$log', 'Queue', 'BrowserNotification', function ($window, $scope, $document, $log, Queue, BrowserNotification) {
     'use strict';
 
     var offlineSymbol = '⚠ ';
@@ -15,6 +15,13 @@ appControllers.controller('AppController', ['$scope', '$document', '$log', 'Queu
             $scope.websocketPort = tag.content;
         }
     });
+
+    $scope.fullReload = function () {
+        $log.info('Reloading the page');
+        $window.location.reload();
+    };
+
+    $scope.$on('fullreload', $scope.fullReload);
 
     $scope.$on('connection:change', function (e, state) {
 

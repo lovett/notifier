@@ -16,18 +16,21 @@ appDirectives.directive('notifierOfflineEvent', ['$window', '$rootScope', functi
     };
 }]);
 
-appDirectives.directive('notifierAppcacheReload', ['$window', '$log', function ($window, $log) {
+appDirectives.directive('notifierAppcacheReload', ['$window', '$rootScope', '$log', function ($window, $rootScope, $log) {
     'use strict';
 
     return {
         restrict: 'A',
-        link: function () {
-            if ($window.applicationCache) {
-                $window.applicationCache.addEventListener('updateready', function() {
-                    $log.info('An appcache update is ready, reloading');
-                    $window.location.reload();
-                });
+        link: function (scope, element) {
+            if (!$window.hasOwnProperty('applicationCache')) {
+                element.addClass('appcache-nope');
+                return;
             }
+            
+            $window.applicationCache.addEventListener('updateready', function() {
+                $log.info('An appcache update is ready, reloading');
+                $rootScope.$broadcast('fullreload');
+            });
         }
     };
 }]);
