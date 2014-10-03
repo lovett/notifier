@@ -8,7 +8,7 @@ describe('appFilters', function () {
 
         var reldate;
 
-        beforeEach(inject(function ($filter) {
+        beforeEach(angular.mock.inject(function ($filter) {
             reldate = $filter('reldate');
         }));
         

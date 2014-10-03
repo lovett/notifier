@@ -44,9 +44,6 @@ module.exports = function(grunt) {
             },
             postBuild: {
                 src: ['static/version.json', 'static/favicon/*.png']
-            },
-            coverage: {
-                src: ['coverage']
             }
         },
 
@@ -200,14 +197,18 @@ module.exports = function(grunt) {
                 src: 'server/test',
                 options: {
                     mask: '*-spec.js',
-                    require: ['server/test/world.js']
+                    require: ['server/test/world.js'],
+                    coverageFolder: 'coverage/server'
                 }
             }
         },
 
         open : {
-            'coverage-server': {
-                path: 'coverage/lcov-report/server/notifier-server.js.html'
+            'coverageServer': {
+                path: 'coverage/server/lcov-report/index.html'
+            },
+            'coverageAppUnit': {
+                path: 'coverage/firefox-unit/lcov-report/index.html'
             }
         },
 
@@ -346,8 +347,32 @@ module.exports = function(grunt) {
         grunt.task.run(tasks);
     });
 
-    grunt.registerTask('test', ['mochaTest']);
+    grunt.registerTask('test', function(suite, type, viewCoverageReport) {
+        var tasks;
+
+        if (!suite) {
+            grunt.fail.fatal('Test suite not specified (app, server)');
+        }
+        
+        if (suite === 'server') {
+            tasks = ['mocha_istanbul:server'];
+
+            if (viewCoverageReport) {
+                tasks.push('open:coverageServer');
+            }
+        }
+
+        if (suite === 'app') {
+            tasks = ['karma:unit'];
+
+            if (viewCoverageReport) {
+                tasks.push('open:coverageAppUnit');
+            }
+        }
     
+        grunt.task.run(tasks);
+    });
+
     grunt.registerTask('coverage', ['clean:coverage', 'mocha_istanbul:server', 'open:coverage-server']);
 
     grunt.registerTask('default', ['githooks', 'build:full', 'watch']);

@@ -13,7 +13,7 @@ module.exports = function(config) {
         files: [
             'static/lib.min.js',
             'bower_components/angular-mocks/angular-mocks.js',
-            'static/app.min.js',
+            'static/js/*.js',
             'app/test/*spec.js'
         ],
 
@@ -26,17 +26,20 @@ module.exports = function(config) {
 
         // test results reporter to use
         // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
-        reporters: ['progress'],
+        reporters: ['progress', 'coverage'],
 
         
         preprocessors: {
-            'static/app.min.js': ['coverage']
+            'static/js/*.js': 'coverage'
         },
 
 
         coverageReporter: {
-            type : 'html',
-            dir : 'coverage/'
+            type: 'lcov',
+            dir: 'coverage/',
+            subdir: function (browser) {
+                return browser.toLowerCase().split(/[ /-]/)[0] + '-unit';
+            }
         },
         
 
@@ -69,7 +72,7 @@ module.exports = function(config) {
 
 
         // If browser does not capture in given timeout [ms], kill it
-        captureTimeout: 60000,
+        captureTimeout: 10000,
 
 
         // Continuous Integration mode
