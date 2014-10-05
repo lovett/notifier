@@ -111,14 +111,16 @@ appControllers.controller('LoginController', ['$scope', '$location', 'User', fun
 
         var promise = User.logIn(form);
 
-        promise.success(function () {
+        var successCallback = function () {
             $location.path('/');
-        });
-
-        promise.error(function () {
+        };
+        
+        var errorCallback = function () {
             $scope.message = 'Please try again';
             $scope.progress = null;
-        });
+        };
+
+        promise.then(successCallback, errorCallback);
     };
 
 }]);

@@ -4,6 +4,59 @@ describe('appControllers', function () {
         angular.mock.module('App');
     });
 
+    describe('LoginController', function () {
+        var controller, scope, loginStub, loginPromise;
+
+        beforeEach(angular.mock.inject(function ($q, $controller, $rootScope, $location, User) {
+            scope = $rootScope.$new();
+            loginPromise = $q.defer();
+            loginStub = sinon.stub(User, 'logIn').returns(loginPromise.promise);
+            pathStub = sinon.stub($location, 'path');
+            controller = $controller('LoginController', {
+                $scope: scope,
+                $location: $location,
+                User: User
+            });
+        }));
+
+        it('defines submit handler', function () {
+            assert.isDefined(scope.submitLogin);
+        });
+
+        describe('submit handler', function () {
+            it('sets error message', function () {
+                var form = {};
+                form.$invalid = true;
+                scope.submitLogin(form);
+                assert.isString(scope.message);
+            });
+
+            it('sets progress message', function () {
+                var form = {};
+                scope.submitLogin(form);
+                assert.isNull(scope.message);
+                assert.isString(scope.progress);
+            });
+
+            it('redirects on successful login', function () {
+                loginPromise.resolve();
+                scope.submitLogin({});
+                scope.$digest();
+                assert.isTrue(pathStub.called);
+                assert.isNull(scope.message);
+            });
+
+            it('sets error message on failed login', function () {
+                loginPromise.reject();
+                scope.submitLogin({});
+                scope.$digest();
+                assert.isFalse(pathStub.called);
+                assert.isString(scope.message);
+                assert.isNull(scope.progress);
+            });
+        });
+    });
+
     describe('LogoutController', function () {
         var controller, scope, tokenKeyStub, logoutStub, disconnectStub, emptyStub, pathStub;
         
