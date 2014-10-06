@@ -4,6 +4,112 @@ describe('appControllers', function () {
         angular.mock.module('App');
     });
 
+    describe('MessageController', function () {
+        var controller, scope, rootScope, tokenKeyStub, pathStub, fayeInitStub, fayeSubscribeStub, userReplaceChannelStub, fayeUnsubscribeStub, fayeDisconnectStub;
+
+        describe('when accessed with a login', function () {
+            beforeEach(angular.mock.inject(function($controller, $rootScope, $location, $log, User, Faye) {
+                scope = $rootScope.$new();
+                scope.websocketPort = 99999;
+                rootScope = $rootScope;
+                tokenKeyStub = sinon.stub(User, 'getTokenKey').returns(true);
+                pathStub = sinon.stub($location, 'path');
+                fayeInitStub = sinon.stub(Faye, 'init');
+                fayeSubscribeStub = sinon.stub(Faye, 'subscribe');
+                fayeUnsubscribeStub = sinon.stub(Faye, 'unsubscribe');
+                userReplaceChannelStub = sinon.stub(User, 'replaceChannel');
+                fayeDisconnectStub = sinon.stub(Faye, 'disconnect');
+                
+                controller = $controller('MessageController', {
+                    $scope: scope,
+                    $rootScope: $rootScope,
+                    $location: $location,
+                    $log: $log,
+                    User: User,
+                    Faye: Faye
+                });
+            }));
+
+            it('does not redirect to login', function () {
+                assert.isFalse(pathStub.called);
+            });
+
+            it('sets application message', function () {
+                assert.isString(rootScope.appMessage);
+            });
+
+            it('opens Faye connection and subscribes', function () {
+                assert.isTrue(fayeInitStub.calledWith(scope.websocketPort));
+                assert.isTrue(fayeInitStub.calledOnce);
+                assert.isTrue(fayeSubscribeStub.calledOnce);
+            });
+
+            it('listens for connection resubscribe events', function () {
+                var channel = 'test';
+                scope.$broadcast('connection:resubscribe', channel);
+                assert.isTrue(fayeUnsubscribeStub.calledOnce);
+                assert.isTrue(userReplaceChannelStub.calledWith(channel));
+                assert.isTrue(userReplaceChannelStub.calledOnce);
+            });
+
+            it('listens for offline connection change event', function () {
+                scope.$broadcast('connection:change', 'offline');
+                assert.isTrue(fayeDisconnectStub.calledOnce);
+            });
+
+            it('listens for online connection change event', function () {
+                var port = 9999
+                scope.websocketPort = port
+                scope.$broadcast('connection:change', 'online');
+                assert.isTrue(fayeInitStub.calledWith(port));
+                assert.isTrue(fayeInitStub.calledTwice);
+                assert.isTrue(fayeSubscribeStub.calledTwice);
+            });
+
+            
+            
+        });
+        
+        describe('when accessed without a login', function () {
+            beforeEach(angular.mock.inject(function($controller, $rootScope, $location, $log, User, Faye) {
+                scope = $rootScope.$new();
+                rootScope = $rootScope;
+                tokenKeyStub = sinon.stub(User, 'getTokenKey').returns(false);
+                pathStub = sinon.stub($location, 'path');
+                controller = $controller('MessageController', {
+                    $scope: scope,
+                    $rootScope: $rootScope,
+                    $location: $location,
+                    $log: $log,
+                    User: User,
+                    Faye: Faye
+                });
+            }));
+            
+            it('redirects to login', function () {
+                assert.isTrue(pathStub.called);                    
+            });
+
+            it('does not set an application message', function () {
+                assert.isUndefined(rootScope.appMessage);
+            });
+
+            it('does not listen for connection resubscribe events', function () {
+                var spy = sinon.spy(scope, '$broadcast');
+                var event = new Event('connection:resubscribe');
+                window.dispatchEvent(event);
+                assert(spy.notCalled);
+            });
+
+            it('does not listen for connection change events', function () {
+                var spy = sinon.spy(scope, '$broadcast');
+                var event = new Event('connection:change');
+                window.dispatchEvent(event);
+                assert(spy.notCalled);
+            });
+        });
+    });
+
     describe('LoginController', function () {
         var controller, scope, loginStub, loginPromise;
 
