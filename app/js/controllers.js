@@ -3,12 +3,8 @@ var appControllers = angular.module('appControllers', []);
 appControllers.controller('AppController', ['$window', '$scope', '$document', '$log', 'Queue', 'BrowserNotification', function ($window, $scope, $document, $log, Queue, BrowserNotification) {
     'use strict';
 
-    var offlineSymbol = '⚠ ';
-
     $scope.queue = Queue;
     $scope.browserNotification = BrowserNotification;
-
-    $scope.windowTitle = 'Notifier';
 
     angular.forEach($document.find('META'), function (tag) {
         if (tag.name === 'websocket port') {
@@ -40,22 +36,14 @@ appControllers.controller('AppController', ['$window', '$scope', '$document', '$
 
         if (state === 'connected') {
             $scope.queue.fill();
-            $scope.windowTitle = $scope.windowTitle.replace(offlineSymbol, '');
-        } else {
-            $scope.windowTitle = offlineSymbol + $scope.windowTitle;
         }
         $scope.$apply();
     });
 
     $scope.$on('queue:change', function (e, size) {
         if (size === 0) {
-            $scope.windowTitle = 'Notifier';
             $scope.appMessage = 'No new messages.';
-        } else if (size === 1) {
-            $scope.windowTitle = '1 Message';
-            $scope.appMessage = undefined;
         } else {
-            $scope.windowTitle = size + ' Messages';
             $scope.appMessage = undefined;
         }
     });
