@@ -36,7 +36,7 @@ appDirectives.directive('notifierAppcacheReload', ['$window', '$rootScope', '$lo
 }]);
 
 
-appDirectives.directive('notifierTitle', [function () {
+appDirectives.directive('notifierTitle', function () {
     'use strict';
     return {
         restrict: 'A',
@@ -59,6 +59,36 @@ appDirectives.directive('notifierTitle', [function () {
                 if (state !== 'connected') {
                     element.html(attrs.offlineSymbol + ' ' + title);
                 }
+            });
+        }
+    };
+});
+
+
+appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', function ($log, $filter) {
+    'use strict';
+    return {
+        restrict: 'E',
+        template: '<span></span><span></span>',
+        link: function (scope, element) {
+            var children = element.children();
+            var badge = angular.element(children[0]);
+            var label = angular.element(children[1]);
+
+            scope.$on('connection:change', function (e, state) {
+                var now = $filter('date')(new Date(), 'shortTime');
+                $log.info(state + ' at ' + now);
+                
+                if (state === 'offline' || state === 'disconnected') {
+                    badge.text('disconnected');
+                    label.text('Offline since ' + now);
+                    badge.attr('class', 'state disconnected');
+                } else {
+                    badge.text('connected');
+                    label.text('');
+                    badge.attr('class', 'state connected');
+                }
+                
             });
         }
     };

@@ -20,21 +20,7 @@ appControllers.controller('AppController', ['$window', '$scope', '$document', '$
     $scope.$on('fullreload', $scope.fullReload);
 
     $scope.$on('connection:change', function (e, state) {
-
-        if (state === 'offline') {
-            state = 'disconnected';
-        }
-
-        if (state === 'online') {
-            state = 'connected';
-        }
-
-        $scope.connectionStatus = state;
-        $scope.connectionChangedAt = new Date();
-
-        $log.info(state + ' at ' + $scope.connectionChangedAt);
-
-        if (state === 'connected') {
+        if (state === 'connected' || state === 'online') {
             $scope.queue.fill();
         }
         $scope.$apply();

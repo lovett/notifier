@@ -114,4 +114,45 @@ describe('appFilters', function () {
         });
         
     });
+
+    describe('notifierConnectionStatus', function () {
+        var scope, element;
+
+        beforeEach(angular.mock.inject(function ($compile, $rootScope, $log, $filter) {
+            scope = $rootScope;
+            filter = $filter;
+            element = angular.element('<notifier-connection-status></div>');
+            $compile(element)(scope);
+            scope.$apply();
+        }));
+
+        it('renders blank by default', function () {
+            assert.equal(element.html(), '<span></span><span></span>');
+        });
+
+        it('displays connected badge without label when connected', function () {
+            scope.$emit('connection:change', 'connected');
+            assert.equal(element.html(), '<span class="state connected">connected</span><span></span>');
+        });
+
+        it('displays connected badge without label when online', function () {
+            scope.$emit('connection:change', 'online');
+            assert.equal(element.html(), '<span class="state connected">connected</span><span></span>');
+        });
+
+        it('displays disconnected badge with label when offline', function () {
+            var now = filter('date')(new Date(), 'shortTime');
+            scope.$emit('connection:change', 'offline');
+            assert.include(element.html(), '<span class="state disconnected">disconnected</span><span>Offline since');
+            assert.include(element.html(), now);
+        });
+
+        it('displays disconnected badge with label when disconnected', function () {
+            var now = filter('date')(new Date(), 'shortTime');
+            scope.$emit('connection:change', 'disconnected');
+            assert.include(element.html(), '<span class="state disconnected">disconnected</span><span>Offline since');
+            assert.include(element.html(), now);
+        });
+
+    });
 });

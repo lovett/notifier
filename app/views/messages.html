@@ -1,7 +1,6 @@
 <header class="clearfix not-selectable">
-    <div class="left" >
-        <span class="state {{connectionStatus}}">{{ connectionStatus }}</span>
-        <span ng-show="connectionStatus == 'disconnected' || connectionStatus == 'offline'">Offline since {{ connectionChangedAt | date:'shortTime' }}</span>
+    <div class="left">
+        <notifier-connection-status></notifier-connection-status>
     </div>
 
     <div class="right">
