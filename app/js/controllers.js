@@ -62,11 +62,10 @@ appControllers.controller('AppController', ['$window', '$scope', '$document', '$
 
 }]);
 
-appControllers.controller('MessageController', ['$rootScope', '$scope', '$location', '$log', 'User', 'Faye', function ($rootScope, $scope, $location, $log, User, Faye) {
+appControllers.controller('MessageController', ['$rootScope', '$scope', '$location', 'User', 'Faye', function ($rootScope, $scope, $location, User, Faye) {
     'use strict';
 
     if (User.getTokenKey() === false) {
-        $log.info('Not logged in');
         $location.path('/login');
         return;
     }
