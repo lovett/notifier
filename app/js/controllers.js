@@ -1,16 +1,10 @@
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('AppController', ['$window', '$scope', '$document', '$log', 'Queue', 'BrowserNotification', function ($window, $scope, $document, $log, Queue, BrowserNotification) {
+appControllers.controller('AppController', ['$window', '$scope', '$log', 'Queue', 'BrowserNotification', function ($window, $scope, $log, Queue, BrowserNotification) {
     'use strict';
 
     $scope.queue = Queue;
     $scope.browserNotification = BrowserNotification;
-
-    angular.forEach($document.find('META'), function (tag) {
-        if (tag.name === 'websocket port') {
-            $scope.websocketPort = tag.content;
-        }
-    });
 
     $scope.fullReload = function () {
         $log.info('Reloading the page');
@@ -45,7 +39,6 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
     }
 
     $rootScope.appMessage = 'Checking for messages...';
-    
 
     Faye.init($scope.websocketPort);
     Faye.subscribe();

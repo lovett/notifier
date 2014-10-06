@@ -10,7 +10,6 @@ describe('appControllers', function () {
         describe('when accessed with a login', function () {
             beforeEach(angular.mock.inject(function($controller, $rootScope, $location, $log, User, Faye) {
                 scope = $rootScope.$new();
-                scope.websocketPort = 99999;
                 rootScope = $rootScope;
                 tokenKeyStub = sinon.stub(User, 'getTokenKey').returns(true);
                 pathStub = sinon.stub($location, 'path');
@@ -39,7 +38,6 @@ describe('appControllers', function () {
             });
 
             it('opens Faye connection and subscribes', function () {
-                assert.isTrue(fayeInitStub.calledWith(scope.websocketPort));
                 assert.isTrue(fayeInitStub.calledOnce);
                 assert.isTrue(fayeSubscribeStub.calledOnce);
             });
@@ -58,16 +56,10 @@ describe('appControllers', function () {
             });
 
             it('listens for online connection change event', function () {
-                var port = 9999
-                scope.websocketPort = port
                 scope.$broadcast('connection:change', 'online');
-                assert.isTrue(fayeInitStub.calledWith(port));
                 assert.isTrue(fayeInitStub.calledTwice);
                 assert.isTrue(fayeSubscribeStub.calledTwice);
             });
-
-            
-            
         });
         
         describe('when accessed without a login', function () {

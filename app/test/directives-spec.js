@@ -153,6 +153,29 @@ describe('appFilters', function () {
             assert.include(element.html(), '<span class="state disconnected">disconnected</span><span>Offline since');
             assert.include(element.html(), now);
         });
-
     });
+
+    describe('notifierSetScope', function () {
+        var scope, element;
+
+        beforeEach(angular.mock.inject(function ($compile, $rootScope) {
+            scope = $rootScope;
+            element = angular.element('<meta content="123" notifier-set-scope="test"></meta>');
+            $compile(element)(scope);
+            scope.$apply();
+        }));
+
+        it('populates the scope with the value of the content attribute', function () {
+            assert.equal(scope.test, '123');
+        });
+        
+        it('only works on meta tags', angular.mock.inject(function ($compile, $rootScope) {
+            scope = $rootScope;
+            element = angular.element('<div content="456" notifier-set-scope="foo"></div>');
+            $compile(element)(scope);
+            scope.$apply();
+            assert.isUndefined(scope.foo);
+        }));
+    });
+    
 });

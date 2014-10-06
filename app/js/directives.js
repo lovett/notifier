@@ -93,3 +93,17 @@ appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', function
         }
     };
 }]);
+
+
+appDirectives.directive('notifierSetScope', function () {
+    'use strict';
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            if (element[0].nodeName.toLowerCase() !== 'meta') {
+                return;
+            }
+            scope[attrs.notifierSetScope] = attrs.content;
+        }
+    };
+});
