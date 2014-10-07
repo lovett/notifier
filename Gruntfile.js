@@ -261,7 +261,7 @@ module.exports = function(grunt) {
                 ].join(' && ')
             },
             'server': {
-                command: 'nodemon server/notifier-server.js'
+                command: 'nodemon --watch server server/notifier-server.js'
             },
             'mysqlimport': {
                 command: [
@@ -353,7 +353,7 @@ module.exports = function(grunt) {
         if (!suite) {
             grunt.fail.fatal('Test suite not specified (app, server)');
         }
-        
+
         if (suite === 'server') {
             tasks = ['mocha_istanbul:server'];
 
@@ -369,7 +369,7 @@ module.exports = function(grunt) {
                 tasks.push('open:coverageAppUnit');
             }
         }
-    
+
         grunt.task.run(tasks);
     });
 
