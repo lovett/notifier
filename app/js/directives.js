@@ -26,10 +26,14 @@ appDirectives.directive('notifierAppcacheReload', ['$window', '$rootScope', '$lo
                 element.addClass('appcache-nope');
                 return;
             }
-            
+
+            scope.fullReload = function () {
+                $window.location.reload();
+            };
+
             $window.applicationCache.addEventListener('updateready', function() {
-                $log.info('An appcache update is ready, reloading');
-                $rootScope.$broadcast('fullreload');
+                $log.info('An appcache update is ready, requesting full reload');
+                scope.fullReload();
             });
         }
     };
@@ -78,7 +82,7 @@ appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', function
             scope.$on('connection:change', function (e, state) {
                 var now = $filter('date')(new Date(), 'shortTime');
                 $log.info(state + ' at ' + now);
-                
+
                 if (state === 'offline' || state === 'disconnected') {
                     badge.text('disconnected');
                     label.text('Offline since ' + now);
@@ -88,7 +92,7 @@ appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', function
                     label.text('');
                     badge.attr('class', 'state connected');
                 }
-                
+
             });
         }
     };
@@ -107,3 +111,56 @@ appDirectives.directive('notifierSetScope', function () {
         }
     };
 });
+
+appDirectives.directive('notifierMessageOptions', ['Queue', function (Queue) {
+    'use strict';
+
+    return {
+        restrict: 'A',
+        template: '<a ng-href="" ng-click="clear()" ng-hide="hidden"><span>Clear</span></a>',
+        scope: {
+            'publicId': '@'
+        },
+        link: function (scope) {
+            scope.hidden = false;
+            scope.$on('connection:change', function (e, state) {
+                scope.hidden = (state === 'offline' || state === 'disconnected');
+            });
+
+            scope.clear = function () {
+                Queue.clear(scope.publicId);
+            };
+        }
+    };
+}]);
+
+appDirectives.directive('notifierTopnav', ['Queue', 'BrowserNotification', function (Queue, BrowserNotification) {
+    'use strict';
+
+    return {
+        restrict: 'E',
+        templateUrl: '/views/topnav.html',
+        link: function (scope) {
+            scope.hideClearAll = false;
+
+            scope.hideSettings = (BrowserNotification.state === 'unavailable');
+            scope.settingsVisible = false;
+
+            scope.clearAll = function () {
+                Queue.purge();
+            };
+
+            scope.settings = function () {
+                scope.settingsVisible = !scope.settingsVisible;
+            };
+
+            scope.$on('connection:change', function (e, state) {
+                scope.hideClearAll = (state === 'offline' || state === 'disconnected');
+            });
+
+            scope.$on('queue:change', function (e, size) {
+                scope.hideClearAll = (size === 0);
+            });
+        }
+    };
+}]);

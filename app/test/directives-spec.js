@@ -31,7 +31,7 @@ describe('appFilters', function () {
             assert.equal(spy.args[0][0], 'connection:change');
             assert.equal(spy.args[0][1], event.type);
         });
-        
+
     });
 
     describe('notifierAppcacheReload', function () {
@@ -45,11 +45,10 @@ describe('appFilters', function () {
         }));
 
         it('triggers a full page reload when the appcache is stale', function () {
-            var spy = sinon.spy(scope, '$broadcast');
+            var stub = sinon.stub(scope, 'fullReload');
             var event = new Event('updateready');
             window.applicationCache.dispatchEvent(event);
-            assert(spy.calledOnce);
-            assert(spy.args[0][0], 'fullreload');
+            assert(stub.calledOnce);
         });
 
         it('does nothing if applicationcache is not supported', angular.mock.inject(function ($window, $compile, $rootScope) {
@@ -67,7 +66,7 @@ describe('appFilters', function () {
 
         title = 'Test';
         symbol = '~';
-        
+
         beforeEach(angular.mock.inject(function ($compile, $rootScope) {
             scope = $rootScope;
             element = angular.element('<div notifier-title offline-symbol="' + symbol + '">' + title + '</div>');
@@ -94,7 +93,7 @@ describe('appFilters', function () {
         it('displays offline symbol when disconnected', function () {
             scope.$emit('connection:change', 'connected');
             assert.equal(element.html(), title);
-            
+
             scope.$emit('connection:change', 'disconnected');
             assert.equal(element.html(), symbol + ' ' + title);
         });
@@ -105,14 +104,14 @@ describe('appFilters', function () {
             assert.equal(element.html(), symbol + ' foo');
             element.html(title);
         });
-        
+
         it('does not display offline symbol multiple times', function () {
             scope.$emit('connection:change', 'disconnected');
             scope.$emit('connection:change', 'disconnected');
             scope.$emit('connection:change', 'disconnected');
             assert.equal(element.html(), symbol + ' ' + title);
         });
-        
+
     });
 
     describe('notifierConnectionStatus', function () {
@@ -168,7 +167,7 @@ describe('appFilters', function () {
         it('populates the scope with the value of the content attribute', function () {
             assert.equal(scope.test, '123');
         });
-        
+
         it('only works on meta tags', angular.mock.inject(function ($compile, $rootScope) {
             scope = $rootScope;
             element = angular.element('<div content="456" notifier-set-scope="foo"></div>');
@@ -177,5 +176,5 @@ describe('appFilters', function () {
             assert.isUndefined(scope.foo);
         }));
     });
-    
+
 });

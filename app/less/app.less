@@ -106,7 +106,7 @@ HEADER {
     color: white;
     font-size: .75em;
     letter-spacing: 1px;
-    padding: .75em;
+    padding: 0 .75em .75em .75em;
     white-space: nowrap;
 
     .state {
@@ -117,6 +117,8 @@ HEADER {
         border-radius: 1em;
         padding: .5em 1em;
         margin-right: 1em;
+        margin-top: .75em;
+        display: inline-block;
     }
 
     .connected {
@@ -128,14 +130,19 @@ HEADER {
         color: #ccc;
     }
 
-    .right A {
-        padding: .75em;
+    NAV {
+        text-align: right;
+    }
+
+    NAV A {
         color: white;
         text-transform: uppercase;
         margin-left: 1.5em;
+        display: inline-block;
+        padding: .75em;
     }
 
-    .right A:hover, .right .active {
+    NAV A:hover, NAV .active {
         background-color: rgb(255, 255, 255);
         background-color: rgba(255, 255, 255, .3);
         color: black;
@@ -145,7 +152,7 @@ HEADER {
     .app-settings {
         background-color: rgb(255, 255, 255);
         background-color: rgba(255, 255, 255, .3);
-        margin-top: 2em;
+        margin-top: 0;
         padding: .5em;
         margin-right: -.75em;
         margin-left: -.75em;
@@ -158,8 +165,8 @@ HEADER {
         }
 
         LI {
-            display: inline;
-            padding: 1.5em;
+            display: inline-block;
+            padding: .75em;
         }
     }
 }

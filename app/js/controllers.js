@@ -1,36 +1,6 @@
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('AppController', ['$window', '$scope', '$log', 'Queue', 'BrowserNotification', function ($window, $scope, $log, Queue, BrowserNotification) {
-    'use strict';
-
-    $scope.queue = Queue;
-    $scope.browserNotification = BrowserNotification;
-
-    $scope.fullReload = function () {
-        $log.info('Reloading the page');
-        $window.location.reload();
-    };
-
-    $scope.$on('fullreload', $scope.fullReload);
-
-    $scope.$on('connection:change', function (e, state) {
-        if (state === 'connected' || state === 'online') {
-            $scope.queue.fill();
-        }
-        $scope.$apply();
-    });
-
-    $scope.$on('queue:change', function (e, size) {
-        if (size === 0) {
-            $scope.appMessage = 'No new messages.';
-        } else {
-            $scope.appMessage = undefined;
-        }
-    });
-
-}]);
-
-appControllers.controller('MessageController', ['$rootScope', '$scope', '$location', 'User', 'Faye', function ($rootScope, $scope, $location, User, Faye) {
+appControllers.controller('MessageController', ['$rootScope', '$scope', '$location', 'User', 'Faye', 'Queue', function ($rootScope, $scope, $location, User, Faye, Queue) {
     'use strict';
 
     if (User.getTokenKey() === false) {
@@ -39,6 +9,14 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
     }
 
     $rootScope.appMessage = 'Checking for messages...';
+    $scope.$on('queue:change', function (e, size) {
+        if (size === 0) {
+            $scope.appMessage = 'No new messages.';
+        } else {
+            $scope.appMessage = undefined;
+        }
+    });
+
 
     Faye.init($scope.websocketPort);
     Faye.subscribe();
@@ -49,6 +27,8 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
         Faye.subscribe();
     });
 
+    $scope.queue = Queue;
+
     $scope.$on('connection:change', function (e, state) {
         if (state === 'offline') {
             Faye.disconnect();
@@ -58,7 +38,13 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
             Faye.init($scope.websocketPort);
             Faye.subscribe();
         }
+
+        if (state === 'connected' || state === 'online') {
+            $scope.queue.fill();
+        }
+
     });
+
 
 }]);
 
@@ -80,7 +66,7 @@ appControllers.controller('LoginController', ['$scope', '$location', 'User', fun
         var successCallback = function () {
             $location.path('/');
         };
-        
+
         var errorCallback = function () {
             $scope.message = 'Please try again';
             $scope.progress = null;

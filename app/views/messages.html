@@ -3,26 +3,14 @@
         <notifier-connection-status></notifier-connection-status>
     </div>
 
-    <div class="right">
-        <a ng-click="queue.purge()" ng-hide="queue.messages.length === 0 || connectionStatus !== 'connected'" ng-href="">Clear All</a>
-        <a ng-click="settingsVisibility = (!settingsVisibility)" ng-class="{ active: settingsVisibility }" ng-hide="browserNotification.state == 'unavailable'">Settings</a>
-        <a ng-href="/logout">Log out</a>
-    </div>
-
-    <ul class="app-settings" ng-show="settingsVisibility">
-        <li ng-hide="browserNotification.state == 'unavailable'">
-            Browser notifications are <a ng-click="browserNotification.enable()" ng-href="">{{ browserNotification.state}}</a>.
-        </li>
-    </ul>
+    <notifier-topnav></notifier-topnav>
 </header>
 
 <main>
     <p class="app-message fade-out" ng-if="appMessage">{{ appMessage }}</p>
 
     <article class="message {{ message.badge }}" ng-class="{extended: message.extended, hidden: message.state === 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false">
-        <div class="options standard-options not-selectable">
-            <a ng-href="" ng-hide="connectionStatus !== 'connected'" ng-click="queue.clear(message.publicId)"><span>Clear</span></a>
-        </div>
+        <div class="options standard-options not-selectable" notifier-message-options public-id="{{message.publicId}}"></div>
 
         <div class="badge"></div>
 
