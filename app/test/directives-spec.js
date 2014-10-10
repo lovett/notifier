@@ -1,4 +1,4 @@
-describe('appFilters', function () {
+describe('appDirectives', function () {
 
     beforeEach(function () {
         angular.mock.module('App');
@@ -176,5 +176,50 @@ describe('appFilters', function () {
             assert.isUndefined(scope.foo);
         }));
     });
+
+    describe('notifierMessageOptions', function () {
+        var scope, isolateScope, element, clearStub;
+
+        beforeEach(angular.mock.inject(function ($compile, $rootScope, Queue) {
+            scope = $rootScope;
+            element = angular.element('<div notifier-message-options public-id="1"></div>');
+            $compile(element)(scope);
+            scope.$apply();
+            isolateScope = element.isolateScope();
+            clearStub = sinon.stub(Queue, 'clear');
+        }));
+
+        it('renders visible by default', function () {
+            assert.isUndefined(scope.hidden);
+            assert.isFalse(isolateScope.hidden);
+        });
+
+        it('receives public id via attribute', function () {
+            assert.equal(isolateScope.publicId, '1');
+        });
+
+        it('adds a clear link to container', function () {
+            var children = element.children();
+            assert.equal(children[0].tagName, 'A');
+            assert.equal(children[0].text, 'Clear');
+        });
+
+        it('renders hidden when offline', function () {
+            scope.$broadcast('connection:change', 'offline')
+            assert.isTrue(isolateScope.hidden);
+        });
+
+        it('renders hidden when disconnected', function () {
+            scope.$broadcast('connection:change', 'disconnected')
+            assert.isTrue(isolateScope.hidden);
+        });
+
+        it('removes a message from the queue when clear link is clicked', function () {
+            isolateScope.clear();
+            assert.isTrue(clearStub.calledWith('1'));
+        });
+        
+    });
+    
 
 });
