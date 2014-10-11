@@ -37,6 +37,18 @@ describe('appControllers', function () {
                 assert.isString(rootScope.appMessage);
             });
 
+            it('updates application message when queue is empty', function () {
+                var channel = 'test';
+                scope.$broadcast('queue:change', 0);
+                assert.equal(scope.appMessage, 'No new messages.');
+            });
+
+            it('clears application message when queue is populated', function () {
+                var channel = 'test';
+                scope.$broadcast('queue:change', 1);
+                assert.isUndefined(scope.appMessage);
+            });
+
             it('opens Faye connection and subscribes', function () {
                 assert.isTrue(fayeInitStub.calledOnce);
                 assert.isTrue(fayeSubscribeStub.calledOnce);
@@ -60,6 +72,7 @@ describe('appControllers', function () {
                 assert.isTrue(fayeInitStub.calledTwice);
                 assert.isTrue(fayeSubscribeStub.calledTwice);
             });
+            
         });
         
         describe('when accessed without a login', function () {
