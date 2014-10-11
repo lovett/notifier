@@ -14,7 +14,8 @@ module.exports = function(config) {
             'static/lib.min.js',
             'bower_components/angular-mocks/angular-mocks.js',
             'static/js/*.js',
-            'app/test/*spec.js'
+            'app/test/*spec.js',
+            'app/views/*.html'
         ],
 
 
@@ -30,10 +31,15 @@ module.exports = function(config) {
 
         
         preprocessors: {
-            'static/js/*.js': 'coverage'
+            'static/js/*.js': 'coverage',
+            'app/views/*.html': 'ng-html2js'
         },
 
-
+        ngHtml2JsPreprocessor: {
+            moduleName: 'templates',
+            stripPrefix: 'app'
+        },
+        
         coverageReporter: {
             type: 'lcov',
             dir: 'coverage/',

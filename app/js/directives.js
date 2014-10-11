@@ -140,6 +140,7 @@ appDirectives.directive('notifierTopnav', ['Queue', 'BrowserNotification', funct
     return {
         restrict: 'E',
         templateUrl: '/views/topnav.html',
+        scope: {},
         link: function (scope) {
             scope.hideClearAll = false;
 
