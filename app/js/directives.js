@@ -144,8 +144,12 @@ appDirectives.directive('notifierTopnav', ['Queue', 'BrowserNotification', funct
         link: function (scope) {
             scope.hideClearAll = false;
 
+            scope.state = BrowserNotification.state;
+
             scope.hideSettings = (BrowserNotification.state === 'unavailable');
             scope.settingsVisible = false;
+
+            scope.enable = BrowserNotification.enable;
 
             scope.clearAll = function () {
                 Queue.purge();
