@@ -14,13 +14,13 @@
   "author": "Bill Lovett",
   "homepage": "https://github.com/lovett/notifier",
   "dependencies": {
-    "body-parser": "1.9.1",
-    "bunyan": "1.2.0",
+    "body-parser": "1.9.2",
+    "bunyan": "1.2.1",
     "chai": "1.9.2",
     "commander": "2.5.0",
     "compression": "1.2.0",
     "exec-sync": "0.1.6",
-    "express": "4.10.0",
+    "express": "4.10.1",
     "faye": "1.0.3",
     "grunt-text-replace": "0.3.12",
     "mysql": "2.5.2",
@@ -28,13 +28,13 @@
     "passport": "0.2.1",
     "passport-http": "0.2.2",
     "passport-local": "1.0.0",
-    "request": "2.46.0",
+    "request": "2.47.0",
     "response-time": "2.2.0",
     "sanitize-html": "1.4.3",
     "sequelize": "1.7.10",
     "sqlite3": "3.0.2",
     "supertest": "0.14.0",
-    "useragent": "2.1.0"
+    "useragent": "2.1.1"
   },
   "devDependencies": {
     "grunt": "0.4.5",
@@ -65,7 +65,7 @@
     "karma-sinon": "1.0.3",
     "load-grunt-tasks": "1.0.0",
     "mocha": "2.0.1",
-    "sinon": "1.10.3",
+    "sinon": "1.11.1",
     "touch": "0.0.3"
   }
 }
