@@ -35,7 +35,10 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($h
         redirectTo: '/'
     });
 
-    $locationProvider.html5Mode(true);
+    $locationProvider.html5Mode({
+        enabled: true,
+        requireBase: false
+    });
 }]);
 
 app.config(['$provide', function ($provide) {
