@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "description": "A notification service for user-generated events",
-  "main": "server.js",
+  "main": "server/notifier-server.js",
   "scripts": {
     "start": "node server/notifier-server.js"
   },
