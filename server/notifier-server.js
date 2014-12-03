@@ -278,7 +278,7 @@ var Token = sequelize.define('Token', {
             });
         },
         generateKeyAndValue: function (callback) {
-            var length = 128;
+            var length = 64;
             crypto.randomBytes(length, function(err, buf) {
                 if (err) {
                     log.error({err: err}, 'error while generating random bytes');
