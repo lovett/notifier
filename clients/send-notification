@@ -1,0 +1,58 @@
+#!/bin/sh
+
+#
+# A curl wrapper script for sending messages to notifier via the
+# command line.
+#
+
+help() {
+    cat <<EOF
+Usage: ${0##*/} -s SERVER  -t TITLE -g GROUP -b BODY -u URL
+
+Send a message to notifier via curl populated with the given title,
+group, body, and url fields.
+
+Curl will look for a username and password in your .netrc file.
+
+EOF
+}
+
+server=""
+title=""
+group=""
+body=""
+url=""
+
+OPTIND=1
+while getopts "hs:t:g:b:u:" opt; do
+    case "$opt" in
+        s)
+            server="$OPTARG"
+            ;;
+        t)
+            title="$OPTARG"
+            ;;
+        g)
+            group="$OPTARG"
+            ;;
+        b)
+            body="$OPTARG"
+            ;;
+        u)
+            url="$OPTARG"
+            ;;
+        *)
+            help
+            exit 0
+            ;;
+        
+    esac
+done
+shift "$((OPTIND-1))"
+
+if [[ -z $server ]]; then
+    help
+    exit 1
+fi
+
+curl -s -n -d "title=$title" -d "group=$group" -d "body=$body" -d "url=$url" "$server/message"
