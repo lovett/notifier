@@ -38,7 +38,7 @@ nconf.env();
 if (process.env.NODE_ENV) {
     nconf.file('env-' + process.env.NODE_ENV + '.json');
 } else {
-    nconf.file('env.json');
+    nconf.file(path.resolve(__dirname + '/../env.json'));
 }
 
 nconf.defaults({
