@@ -112,7 +112,7 @@ module.exports = function(grunt) {
                         title: 'Test message',
                         body: 'Testing testing. This message was sent via Grunt on ' + new Date(),
                         group: 'test',
-                        url: 'http://example.com'
+                        url: 'https://ravage.lovett.me'
                     }
                 }
             },
