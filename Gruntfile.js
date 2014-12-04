@@ -43,7 +43,7 @@ module.exports = function(grunt) {
                 src: ['static/lib*']
             },
             postBuild: {
-                src: ['static/version.json', 'static/favicon/*.png']
+                src: ['static/version.json']
             }
         },
 
@@ -247,7 +247,11 @@ module.exports = function(grunt) {
                     'convert app/favicon/favicon-dev.svg -geometry 16x16 -transparent white static/favicon/favicon-16.png',
                     'convert app/favicon/favicon-dev.svg -geometry 32x32 -transparent white static/favicon/favicon-32.png',
                     'convert app/favicon/favicon-dev.svg -geometry 48x48 -transparent white static/favicon/favicon-48.png',
-                    'convert static/favicon/favicon-16.png static/favicon/favicon-32.png static/favicon/favicon-48.png static/favicon/favicon.ico'
+                    'convert static/favicon/favicon-16.png static/favicon/favicon-32.png static/favicon/favicon-48.png static/favicon/favicon.ico',
+                    'convert app/favicon/favicon-dev.svg -geometry 152x152 static/favicon/favicon-152.png',
+                    'convert app/favicon/favicon-dev.svg -geometry 120x120 static/favicon/favicon-120.png',
+                    'convert app/favicon/favicon-dev.svg -geometry 180x180 static/favicon/favicon-180.png',
+                    'convert app/favicon/favicon-dev.svg -geometry 144x144 static/favicon/favicon-144.png',
                 ].join(' && ')
             },
             'favicons-production': {
@@ -257,7 +261,11 @@ module.exports = function(grunt) {
                     'convert app/favicon/favicon.svg -geometry 16x16 -transparent white static/favicon/favicon-16.png',
                     'convert app/favicon/favicon.svg -geometry 32x32 -transparent white static/favicon/favicon-32.png',
                     'convert app/favicon/favicon.svg -geometry 48x48 -transparent white static/favicon/favicon-48.png',
-                    'convert static/favicon/favicon-16.png static/favicon/favicon-32.png static/favicon/favicon-48.png static/favicon/favicon.ico'
+                    'convert static/favicon/favicon-16.png static/favicon/favicon-32.png static/favicon/favicon-48.png static/favicon/favicon.ico',
+                    'convert app/favicon/favicon.svg -geometry 152x152 static/favicon/favicon-152.png',
+                    'convert app/favicon/favicon.svg -geometry 120x120 static/favicon/favicon-120.png',
+                    'convert app/favicon/favicon.svg -geometry 180x180 static/favicon/favicon-180.png',
+                    'convert app/favicon/favicon.svg -geometry 144x144 static/favicon/favicon-144.png',
                 ].join(' && ')
             },
             'server': {
