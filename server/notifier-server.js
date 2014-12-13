@@ -697,6 +697,13 @@ app.use(function (req, res, next) {
 
     res.setHeader('Content-Security-Policy', headerValue.join('; '));
 
+    // Flash cross domain policy file - see
+    // http://www.adobe.com/devnet-docs/acrobatetk/tools/AppSec/CrossDomain_PolicyFile_Specification.pdf
+    // --------------------------------------------------------------------
+    if (req.path === '/crossdomain.xml') {
+        res.set('Content-Type', 'text/x-cross-domain-policy');
+    }
+
     next();
 });
 
