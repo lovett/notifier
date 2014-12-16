@@ -142,7 +142,8 @@ appDirectives.directive('notifierTopnav', ['Queue', 'BrowserNotification', funct
         templateUrl: '/views/topnav.html',
         scope: {},
         link: function (scope) {
-            scope.hideClearAll = false;
+            scope.queueSize = 0;
+            scope.hideClearAll = true;
 
             scope.state = BrowserNotification.state;
 
@@ -160,10 +161,11 @@ appDirectives.directive('notifierTopnav', ['Queue', 'BrowserNotification', funct
             };
 
             scope.$on('connection:change', function (e, state) {
-                scope.hideClearAll = (state === 'offline' || state === 'disconnected');
+                scope.hideClearAll = scope.queueSize === 0 || state === 'offline' || state === 'disconnected';
             });
 
             scope.$on('queue:change', function (e, size) {
+                scope.queueSize = size;
                 scope.hideClearAll = (size === 0);
             });
         }
