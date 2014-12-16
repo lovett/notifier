@@ -17,10 +17,10 @@
     "body-parser": "1.10.0",
     "bunyan": "1.2.3",
     "chai": "1.10.0",
-    "commander": "2.5.0",
-    "compression": "1.2.1",
+    "commander": "2.5.1",
+    "compression": "1.2.2",
     "exec-sync": "0.1.6",
-    "express": "4.10.4",
+    "express": "4.10.6",
     "faye": "1.0.3",
     "grunt-text-replace": "0.4.0",
     "mysql": "2.5.3",
@@ -28,7 +28,7 @@
     "passport": "0.2.1",
     "passport-http": "0.2.2",
     "passport-local": "1.0.0",
-    "request": "2.49.0",
+    "request": "2.51.0",
     "response-time": "2.2.0",
     "sanitize-html": "1.4.3",
     "sequelize": "1.7.10",
@@ -65,7 +65,7 @@
     "karma-sinon": "1.0.4",
     "load-grunt-tasks": "1.0.0",
     "mocha": "2.0.1",
-    "sinon": "1.12.1",
+    "sinon": "1.12.2",
     "touch": "0.0.3"
   }
 }
