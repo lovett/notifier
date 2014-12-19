@@ -236,8 +236,8 @@ describe('appDirectives', function () {
             browserNotification = BrowserNotification;
         }));
 
-        it('sets clear all link visible by default', function () {
-            assert.isFalse(isolateScope.hideClearAll);
+        it('hides clear all link by default', function () {
+            assert.isTrue(isolateScope.hideClearAll);
         });
 
         it('hides settings link if browser notifications are not supported', function () {
@@ -281,7 +281,8 @@ describe('appDirectives', function () {
             assert.isTrue(isolateScope.hideClearAll);
         });
 
-        it('shows clear all link when not offline or disconnected', function () {
+        it('shows clear all link when not offline or disconnected and queue is not empty', function () {
+            scope.$broadcast('queue:change', 1)
             scope.$broadcast('connection:change', 'foo')
             assert.isFalse(isolateScope.hideClearAll);
         });
