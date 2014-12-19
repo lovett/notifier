@@ -1,5 +1,5 @@
 /* global angular */
-var app = angular.module('App', [
+var app = angular.module('appModule', [
     'appControllers',
     'appDirectives',
     'appFilters',

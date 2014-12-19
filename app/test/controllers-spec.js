@@ -1,7 +1,7 @@
 describe('appControllers', function () {
 
     beforeEach(function () {
-        angular.mock.module('App');
+        angular.mock.module('appModule');
     });
 
     describe('MessageController', function () {
@@ -18,7 +18,7 @@ describe('appControllers', function () {
                 fayeUnsubscribeStub = sinon.stub(Faye, 'unsubscribe');
                 userReplaceChannelStub = sinon.stub(User, 'replaceChannel');
                 fayeDisconnectStub = sinon.stub(Faye, 'disconnect');
-                
+
                 controller = $controller('MessageController', {
                     $scope: scope,
                     $rootScope: $rootScope,
@@ -72,9 +72,9 @@ describe('appControllers', function () {
                 assert.isTrue(fayeInitStub.calledTwice);
                 assert.isTrue(fayeSubscribeStub.calledTwice);
             });
-            
+
         });
-        
+
         describe('when accessed without a login', function () {
             beforeEach(angular.mock.inject(function($controller, $rootScope, $location, $log, User, Faye) {
                 scope = $rootScope.$new();
@@ -90,9 +90,9 @@ describe('appControllers', function () {
                     Faye: Faye
                 });
             }));
-            
+
             it('redirects to login', function () {
-                assert.isTrue(pathStub.called);                    
+                assert.isTrue(pathStub.called);
             });
 
             it('does not set an application message', function () {
@@ -170,9 +170,9 @@ describe('appControllers', function () {
 
     describe('LogoutController', function () {
         var controller, scope, tokenKeyStub, logoutStub, disconnectStub, emptyStub, pathStub;
-        
+
         describe('when accessed as a logged out user', function () {
-            
+
             beforeEach(angular.mock.inject(function ($controller, $rootScope, $location, User, Faye, Queue) {
                 scope = $rootScope.$new();
                 tokenKeyStub = sinon.stub(User, 'getTokenKey').returns(false);

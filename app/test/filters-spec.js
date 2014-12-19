@@ -1,7 +1,7 @@
 describe('appFilters', function () {
 
     beforeEach(function () {
-        angular.mock.module('App');
+        angular.mock.module('appModule');
     });
 
     describe('reldate', function () {
@@ -11,7 +11,7 @@ describe('appFilters', function () {
         beforeEach(angular.mock.inject(function ($filter) {
             reldate = $filter('reldate');
         }));
-        
+
         it('should exist', function () {
             assert.isNotNull(reldate);
         });
@@ -34,7 +34,7 @@ describe('appFilters', function () {
             var result = reldate(input);
             assert.equal(result, 'today');
         });
-        
+
         it('accepts a string unix timestamp as input', function () {
             var input = new Date().getTime().toString();
             var result = reldate(input);
@@ -47,17 +47,17 @@ describe('appFilters', function () {
             midnight.setHours(0, 0, 0, 0);
 
             // 11:59:59 PM of previous day
-            input = midnight.getTime() - 1000 
+            input = midnight.getTime() - 1000
             result = reldate(input);
             assert.equal(result, 'yesterday');
 
             // 11:00:00 PM of previous day
-            input = midnight.getTime() - 60 * 60 * 1000; 
+            input = midnight.getTime() - 60 * 60 * 1000;
             result = reldate(input);
             assert.equal(result, 'yesterday');
 
             // 11:59:59 PM of day before yesterday
-            input = midnight.getTime() - 24 * 60 * 60 * 1000 - 1000; 
+            input = midnight.getTime() - 24 * 60 * 60 * 1000 - 1000;
             result = reldate(input);
             assert.equal(result, input);
         });
@@ -68,7 +68,7 @@ describe('appFilters', function () {
             midnight.setHours(0, 0, 0, 0);
 
             // 12:00:01 AM tomorrow
-            input = midnight.getTime() + 24 * 60 * 60 * 1000 + 1000 
+            input = midnight.getTime() + 24 * 60 * 60 * 1000 + 1000
             result = reldate(input);
             assert.equal(result, 'tomorrow');
 

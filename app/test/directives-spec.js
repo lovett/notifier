@@ -1,7 +1,7 @@
 describe('appDirectives', function () {
 
     beforeEach(function () {
-        angular.mock.module('App');
+        angular.mock.module('appModule');
         angular.mock.module('templates');
     });
 
@@ -219,9 +219,9 @@ describe('appDirectives', function () {
             isolateScope.clear();
             assert.isTrue(clearStub.calledWith('1'));
         });
-        
+
     });
-    
+
     describe('notifierTopnav', function () {
         var scope, isolateScope, element, purgeStub;
 
@@ -295,6 +295,6 @@ describe('appDirectives', function () {
             scope.$broadcast('queue:change', 1)
             assert.isFalse(isolateScope.hideClearAll);
         });
-        
+
     });
 });
