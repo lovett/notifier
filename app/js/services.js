@@ -225,7 +225,7 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
 
         return new Notification(message.title, {
             'body': message.body || '',
-            'tag' : +new Date(),
+            'tag' : message.publicId,
             'icon': '/favicon/favicon-48.png'
         });
 
@@ -309,7 +309,14 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
             }
 
             self.messages = self.messages.filter(function (message) {
-                return ids.indexOf(message.publicId) === -1;
+                if (ids.indexOf(message.publicId) === -1) {
+                    return true;
+                }
+
+                if (message.hasOwnProperty('browserNotification')) {
+                    message.browserNotification.close();
+                }
+                return false;
             });
 
             $rootScope.$broadcast('queue:change', self.messages.length);
@@ -375,7 +382,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
             $rootScope.$broadcast('queue:change', this.messages.length);
 
             if (message.group !== 'internal') {
-                BrowserNotification.send(message);
+                message.browserNotification = BrowserNotification.send(message);
             }
         },
     };

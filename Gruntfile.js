@@ -112,7 +112,21 @@ module.exports = function(grunt) {
                         title: 'Test message',
                         body: 'Testing testing. This message was sent via Grunt on ' + new Date(),
                         group: 'test',
-                        url: 'https://ravage.lovett.me'
+                        url: 'https://ravage.lovett.me',
+                        localId: 'test'
+                    }
+                }
+            },
+            retract: {
+                options: {
+                    url: 'http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/message/clear',
+                    method: 'POST',
+                    auth: {
+                        user: '<%= token.key %>',
+                        pass: '<%= token.value %>'
+                    },
+                    form: {
+                        localId: 'test'
                     }
                 }
             },
