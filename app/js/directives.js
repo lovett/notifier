@@ -164,6 +164,10 @@ appDirectives.directive('notifierTopnav', ['Queue', 'BrowserNotification', funct
                 scope.hideClearAll = scope.queueSize === 0 || state === 'offline' || state === 'disconnected';
             });
 
+            scope.$on('settings:browserNotifications', function (e, state) {
+                scope.state = state;
+            });
+
             scope.$on('queue:change', function (e, size) {
                 scope.queueSize = size;
                 scope.hideClearAll = (size === 0);

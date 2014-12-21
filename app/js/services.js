@@ -218,7 +218,10 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
 appServices.service('BrowserNotification', ['$window', '$rootScope', function ($window, $rootScope) {
     'use strict';
 
-    this.send = function (message, ignoreFocus) {
+    var self = {};
+
+    
+    self.send = function (message, ignoreFocus) {
         if ($window.document.hasFocus() && ignoreFocus !== true) {
             return;
         }
@@ -232,16 +235,14 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
     };
 
     if (!$window.Notification) {
-        this.state = 'unavailable';
+        self.state = 'unavailable';
     } else if ($window.Notification.permission === 'granted') {
-        this.state = 'active';
+        self.state = 'active';
     } else {
-        this.state = 'inactive';
+        self.state = 'inactive';
     }
 
-    this.enable = function () {
-        var self = this;
-
+    self.enable = function () {
         if (self.state === 'active') {
             $window.alert('Notifications are active. They can be turned off from the browser\'s Notification settings.');
             return;
@@ -259,10 +260,13 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
                     title: 'Browser notifications enabled'
                 }, true);
                 self.state = 'active';
+                $rootScope.$broadcast('settings:browserNotifications', self.state);
                 $rootScope.$apply();
             }
         });
     };
+
+    return self;
 }]);
 
 appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, User, BrowserNotification) {
