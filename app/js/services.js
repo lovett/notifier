@@ -313,7 +313,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
                     return true;
                 }
 
-                if (message.hasOwnProperty('browserNotification')) {
+                if (message.browserNotification) {
                     message.browserNotification.close();
                 }
                 return false;
