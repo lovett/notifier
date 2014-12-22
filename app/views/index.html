@@ -1,5 +1,5 @@
 <!doctype html>
-<html manifest="/notifier.appcache" ng-app="appModule" class="no-js" lang="en" ng-csp notifier-appcache-reload notifier-offline-event>
+<html manifest="/notifier.appcache" ng-app="appModule" lang="en" ng-csp notifier-appcache-reload notifier-offline-event>
     <head>
         <title notifier-title offline-symbol="⚠ ">Notifier</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
@@ -12,12 +12,10 @@
         <link rel="apple-touch-icon" sizes="152x152" href="/favicon/favicon-152.png"/>
         <link rel="apple-touch-icon" sizes="120x120" href="/favicon/favicon-120.png"/>
         <link rel="apple-touch-icon" sizes="180x180" href="/favicon/favicon-180.png"/>
-
-        <script type="text/javascript">document.getElementsByTagName('HTML')[0].removeAttribute('class')</script>
     </head>
     <body>
         <div class="view" ng-view>
-            <p class="app-message">Checking for messages...</p>
+            <p class="app-message"></p>
             <noscript>
                 <p class="app-message">JavaScript is not enabled. This application cannot run.<br/>😦</p>
             </noscript>

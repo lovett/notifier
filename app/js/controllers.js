@@ -8,7 +8,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
         return;
     }
 
-    $rootScope.appMessage = 'Checking for messages...';
+    $rootScope.appMessage = 'Connecting...';
     $scope.$on('queue:change', function (e, size) {
         if (size === 0) {
             $scope.appMessage = 'No new messages.';
