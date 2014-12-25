@@ -10,9 +10,9 @@
     "NOTIFIER_HTTP_PORT": 8080,
     "NOTIFIER_WEBSOCKET_PORT": 8080,
     "NOTIFIER_FORCE_HTTPS": "false",
-    "NOTIFIER_DEFAULT_USER": "",
-    "NOTIFIER_DEFAULT_PASSWORD": "",
-    "NOTIFIER_DB_BACKUP_DIR": ""
+    "NOTIFIER_DEFAULT_USER": "notifier",
+    "NOTIFIER_DEFAULT_PASSWORD": "notifier",
+    "NOTIFIER_DB_BACKUP_DIR": "",
     "NOTIFIER_DB": "sqlite",
     "NOTIFIER_DB_CONFIG": {
         "mysql": {
@@ -27,12 +27,12 @@
         },
         "sqlite": {
             "sequelize": {
-                "storage": "path_to_sqlite_database",
+                "storage": "notifier.sqlite",
                 "dialect": "sqlite"
             },
             "username": "",
             "password": "",
-            "dbname": "path_to_sqlite_database"
+            "dbname": "notifier.sqlite"
         }
     }
 }
