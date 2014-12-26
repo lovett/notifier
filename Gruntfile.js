@@ -28,6 +28,15 @@ module.exports = function(grunt) {
             }
         },
 
+        autoprefixer: {
+            app: {
+                expand: true,
+                flatten: true,
+                src: 'static/all.min.css',
+                dest: 'static/'
+            }
+        },
+
         token: (function () {
             try {
                 return grunt.file.readJSON(tokenFile);
@@ -190,6 +199,8 @@ module.exports = function(grunt) {
             src: ['app/less/*.less'],
             options: {
                 csslint: {
+                    'known-properties': false,
+                    'gradients': false,
                     'adjoining-classes': false
                 }
             }
@@ -356,7 +367,7 @@ module.exports = function(grunt) {
             tasks = tasks.concat(['clean:app', 'copy:app', 'uglify:app']);
         }
 
-        tasks = tasks.concat(['less', 'replace:websocket']);
+        tasks = tasks.concat(['less', 'autoprefixer', 'replace:websocket']);
 
         if (environment === 'dev') {
             tasks = tasks.concat(['shell:favicons-dev', 'replace:dev']);

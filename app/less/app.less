@@ -2,10 +2,6 @@
 
 .not-selectable {
     -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
     user-select: none;
 }
 
@@ -15,8 +11,6 @@
 }
 
 .rounded {
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
     border-radius: 8px;
 }
 
@@ -33,10 +27,7 @@ HTML {
     height: 100%;
     background-color: @from;
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,@from), color-stop(100%,@to));
-    background: -webkit-linear-gradient(@corner, @from, @to);
-    background: -moz-linear-gradient(@corner, @from, @to);
-    background: -ms-linear-gradient(@corner, @from, @to);
-    background: -o-linear-gradient(@corner, @from, @to);
+    background: linear-gradient(@corner, @from, @to);
 }
 
 BODY {
@@ -53,19 +44,11 @@ BODY {
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
-    display: -webkit-flex;
     display: flex;
-    -moz-box-pack: center;
-    -ms-box-pack: center;
-    -webkit-box-pack: center;
-    -moz-box-align: center;
-    -ms-box-align: center;
-    -webkit-box-align: center;
-    -webkit-flex-align: center;
-    -ms-flex-align: center;
-    -webkit-align-items: center;
+    box-pack: center;
+    box-align: center;
+    flex-align: center;
     align-items: center;
-    -webkit-justify-content: center;
     justify-content: center;
 }
 
@@ -102,8 +85,6 @@ HEADER {
     .state {
         font-size: .75em;
         text-transform: uppercase;
-        -webkit-border-radius: 1em;
-        -moz-border-radius: 1em;
         border-radius: 1em;
         padding: .5em 1em;
         margin-right: 1em;
@@ -321,8 +302,6 @@ HEADER {
         font-family: monospace;
         width: 15em;
         font-size: 1.3em;
-        -webkit-border-radius: 0;
-        -moz-border-radius: 0;
         border-radius: 0;
     }
 }
@@ -337,9 +316,6 @@ HEADER {
 }
 
 .fade-in.ng-enter, .fade-in.ng-leave {
-    -o-transition: all linear 0.25s;
-    -moz-transition: all linear 0.25s;
-    -webkit-transition: all linear 0.25s;
     transition: all linear 0.25s;
 }
 
@@ -354,9 +330,6 @@ HEADER {
 }
 
 .fade-out.ng-enter, .fade-out.ng-leave {
-    -o-transition: all linear 0.25s;
-    -moz-transition: all linear 0.25s;
-    -webkit-transition: all linear 0.25s;
     transition: all linear 0.25s;
 }
 

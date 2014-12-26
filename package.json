@@ -22,6 +22,7 @@
     "exec-sync": "0.1.6",
     "express": "4.10.6",
     "faye": "1.0.3",
+    "grunt-autoprefixer": "^2.0.0",
     "grunt-text-replace": "0.4.0",
     "mysql": "2.5.4",
     "nconf": "0.7.1",
