@@ -220,7 +220,7 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
 
     var self = {};
 
-    
+
     self.send = function (message, ignoreFocus) {
         if ($window.document.hasFocus() && ignoreFocus !== true) {
             return;
@@ -343,12 +343,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
                     'Authorization': User.getAuthHeader()
                 }
             }).success(function(data) {
-                // Empty the queue, but do not inform the server.
-                // This avoids the need to check for dupliates following a reconnect.
-                self.messages = [];
-
                 if (data instanceof Array) {
-
                     // messages will be ordered newest first, but if they are added to the queue
                     // sequentially they will end up oldest first
                     data.reverse();
@@ -358,14 +353,22 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
                     });
 
                 }
-                $rootScope.$broadcast('queue:change', self.messages.length);
-
             }).error(function() {
-                self.messages = [];
             });
         },
 
         add: function (message) {
+            var exists;
+
+            // don't add a message that has already been added
+            exists = this.messages.some(function(m) {
+                return m.publicId === message.publicId;
+            });
+
+            if (exists === true) {
+                return;
+            }
+
             message.received = new Date(message.received || new Date());
 
             if (message.body) {
