@@ -15,17 +15,13 @@ invoke Node.js as "node", you're set. If your installation provides
 "nodejs" but not "node" (as is the case with Node.js packages on
 Debian for example), symlink `/usr/bin/node` to `/usr/bin/nodejs`.
 
-Next, you'll need 4 NPM packages installed globally:
+Next, you'll need 3 NPM packages installed globally:
 
-`npm install -g grunt-cli bunyan nodemon bower`
+`npm install -g grunt-cli bunyan nodemon`
 
 Then install the remaining NPM packages locally:
 
 `npm install`
-
-Next, install the bower packages:
-
-`bower install`
 
 The notifier server is configured via a JSON file. A default file is
 provided as `env-sample.json`. Copy this file to `env.json`:

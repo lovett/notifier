@@ -74,13 +74,13 @@ module.exports = function(grunt) {
                         expand: true,
                         flatten: true,
                         src: [
-                            'bower_components/angular/angular.js',
-                            'bower_components/angular-route/angular-route.js',
+                            'node_modules/angular/angular.js',
+                            'node_modules/angular-route/angular-route.js',
                             'node_modules/faye/browser/faye-browser.js',
-                            'bower_components/angular-sanitize/angular-sanitize.js',
-                            'bower_components/angular-resource/angular-resource.js',
-                            'bower_components/angular-touch/angular-touch.js',
-                            'bower_components/angular-animate/angular-animate.js',
+                            'node_modules/angular-sanitize/angular-sanitize.js',
+                            'node_modules/angular-resource/angular-resource.js',
+                            'node_modules/angular-touch/angular-touch.js',
+                            'node_modules/angular-animate/angular-animate.js',
                         ],
                         dest: 'static/'
                     }
@@ -188,8 +188,8 @@ module.exports = function(grunt) {
                     cleancss: true
                 },
                 files: {
-                    'static/all.min.css': ['bower_components/normalize-css/normalize.css',
-                                           'bower_components/angular/angular-csp.css',
+                    'static/all.min.css': ['node_modules/normalize.css/normalize.css',
+                                           'node_modules/angular/angular-csp.css',
                                            'app/less/*']
                 }
             }

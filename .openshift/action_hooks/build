@@ -22,14 +22,7 @@ fi
 
 npm install
 
-# Bower wants to write to $HOME/config, but that's not writeable
-# Temporarily change the value of $HOME
-BOWER_TMP_HOME="$HOME/.node_modules/bower"
-mkdir -p "$BOWER_TMP_HOME"
-
 ORIGINAL_HOME="$HOME"
-HOME="$BOWER_TMP_HOME"
-bower install
 HOME="$ORIGINAL_HOME"
 
 DURATION=$(($(date +'%s') - START))

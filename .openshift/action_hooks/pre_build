@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #
-# Install an alternative version of node and npm and global versions
-# of grunt and bower.
+# Install an alternative version of node and npm and global version
+# of grunt.
 #
 # This is the earliest hook, which run after the application is
 # stopped but before the build hook.
@@ -45,10 +45,6 @@ fi
 # Install grunt-cli globally
 npm install -g grunt-cli
 ln -sf "${OPENSHIFT_DEPENDENCIES_DIR}nodejs/node_modules/lib/node_modules/grunt-cli/bin/grunt" "${HOME}.node_modules/.bin/"
-
-# Install bower globally
-npm install -g bower
-ln -sf "${OPENSHIFT_DEPENDENCIES_DIR}nodejs/node_modules/lib/node_modules/bower/bin/bower" "${HOME}.node_modules/.bin/"
 
 DURATION=$(($(date +'%s') - START))
 
