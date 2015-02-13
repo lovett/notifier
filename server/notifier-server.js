@@ -269,11 +269,13 @@ var Token = sequelize.define('Token', {
     classMethods: {
         prune: function (callback) {
             Token.destroy({
-                persist: false,
-                updatedAt: {
-                    lt: new Date(new Date().getTime() - (60 * 60 * 24 * 1000))
+                where: {
+                    persist: false,
+                    updatedAt: {
+                        lt: new Date(new Date().getTime() - (60 * 60 * 24 * 1000))
+                    }
                 }
-            }).success(function () {
+            }).then(function () {
                 callback();
             });
         },
@@ -411,19 +413,19 @@ Message.belongsTo(User);
  * --------------------------------------------------------------------
  */
 var createUser = function (username, password, callback) {
-    User.findOrCreate({ username: username}).success(function (user, created) {
+    User.findOrCreate({ where: {username: username}}).spread(function (user, created) {
         if (created === false) {
             callback();
         } else {
             user.hashPassword(password, function () {
-                user.save().success(function () {
+                user.save().then(function () {
                     callback();
-                }).error(function (err) {
+                }, function (err) {
                     callback(err);
                 });
             });
         }
-    }).error(function (err) {
+    }, function (err) {
         callback(err);
     });
 };
@@ -437,7 +439,8 @@ passport.use(new LocalStrategy(function (username, password, done) {
     // password is case sensitive
     username = username.toLowerCase();
 
-    User.find({ where: { username: username } }).success(function (user) {
+    User.find({ where: { username: username } }).then(function (user) {
+
         if (!user) {
             return done(null, false);
         }
@@ -449,7 +452,7 @@ passport.use(new LocalStrategy(function (username, password, done) {
                 return done(null, false);
             }
         });
-    }).error(function (error) {
+    }, function (error) {
         return done(error);
     });
 }));
@@ -462,7 +465,7 @@ passport.use(new BasicStrategy(function(key, value, next) {
         where: {
             value: value
         }
-    }).success(function (token) {
+    }).then(function (token) {
         err = new Error('Invalid token');
         err.status = 401;
 
@@ -476,11 +479,11 @@ passport.use(new BasicStrategy(function(key, value, next) {
             return;
         }
 
-        token.save([]).success(function () {
-            next(null, token.user);
+        token.save().then(function () {
+            next(null, token.User);
         });
 
-    }).error(function () {
+    }, function () {
         err = new Error('Application error');
         err.status = 500;
         next(err);
@@ -516,8 +519,8 @@ var verifySubscription = function (message, callback) {
         where: {
             value: message.ext.authToken
         }
-    }).success(function (token) {
-        if (!token || !token.user) {
+    }).then(function (token) {
+        if (!token || !token.User) {
             log.warn({message: message}, 'invalid credentials');
             message.error = '401::Invalid Credentials';
             callback(message);
@@ -535,20 +538,20 @@ var verifySubscription = function (message, callback) {
             return;
         }
 
-        if (channelSegments[1] !== token.user.getChannel()) {
+        if (channelSegments[1] !== token.User.getChannel()) {
             log.info({channel: message.subscription}, 'stale channel');
-            message.error = '301::' + token.user.getChannel();
+            message.error = '301::' + token.User.getChannel();
             callback(message);
             return;
         }
 
         // Looks good
         log.info('subscription looks good');
-        token.save([]).success(function () {
+        token.save().then(function () {
             callback(message);
         });
 
-    }).error(function () {
+    }, function () {
         log.error({message: message}, 'token lookup failed');
         message.error = '500::Unable to verify credentials at this time';
         callback(message);
@@ -811,9 +814,9 @@ app.get(/^\/(login|logout)$/, function (req, res) {
 app.post('/deauth', passport.authenticate('basic', { session: false }), function (req, res) {
     Token.destroy({
         value: req.token
-    }).success(function () {
+    }).then(function () {
         res.status(200).end();
-    }).error(function () {
+    }, function () {
         res.status(500).end();
     });
 });
@@ -838,15 +841,15 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
         token.value = value;
 
         Token.prune(function () {
-            token.save().success(function (token) {
-                token.setUser(req.user).success(function () {
+            token.save().then(function (token) {
+                token.setUser(req.user).then(function () {
                     res.json({
                         key: token.key,
                         value: token.value,
                         channel: req.user.getChannel()
                     });
                 });
-            }).error(function (error) {
+            }, function (error) {
                 res.status(400).json(error);
             });
         });
@@ -878,19 +881,19 @@ app.post('/message', passport.authenticate('basic', { session: false }), functio
         return;
     }
 
-    message.save().success(function () {
-        message.setUser(req.user).success(function () {
+    message.save().then(function () {
+        message.setUser(req.user).then(function () {
             publishMessage(req.user, message);
             res.status(204).end();
-        }).error(function (error) {
+        }, function (error) {
             var err = new Error(error);
             err.status = 400;
             next(err);
         });
-    }).error(function (error) {
+    }, function (error) {
         var message = '';
-        Object.keys(error).forEach(function (key) {
-            message += key + ' ' + error[key].join('\\n') + ';';
+        error.errors.forEach(function (err) {
+            message += err.message + ';';
         });
 
         var err = new Error(message);
@@ -919,7 +922,7 @@ app.get('/archive/:count', passport.authenticate('basic', { session: false }), f
         }
     }
 
-    Message.findAll(filters).success(function (messages) {
+    Message.findAll(filters).then(function (messages) {
         messages = messages.map(function (message) {
             delete message.values.id;
             return message;
@@ -933,13 +936,13 @@ app.post('/message/clear', passport.authenticate('basic', { session: false }), f
     var update = function (id) {
         Message.update(
             {unread: false},
-            {publicId: id}
-        ).success(function () {
+            {where: {publicId: id}}
+        ).then(function () {
             publishMessage(req.user, {
                 'retracted': id
             });
             res.status(204).end();
-        }).error(function () {
+        }, function () {
             res.status(500).end();
         });
     };
@@ -953,7 +956,7 @@ app.post('/message/clear', passport.authenticate('basic', { session: false }), f
                 unread: true
             },
             limit: 1
-        }).success(function (message) {
+        }).then(function (message) {
             if (!message) {
                 res.status(400).end();
             } else {
