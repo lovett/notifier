@@ -145,12 +145,18 @@ appDirectives.directive('notifierTopnav', ['Queue', 'BrowserNotification', funct
             scope.queueSize = 0;
             scope.hideClearAll = true;
 
-            scope.state = BrowserNotification.state;
+            scope.state = {
+                bn: BrowserNotification.state
+            };
 
-            scope.hideSettings = (BrowserNotification.state === 'unavailable');
+            //scope.hideSettings = (BrowserNotification.state === 'unavailable');
             scope.settingsVisible = false;
 
-            scope.enable = BrowserNotification.enable;
+            scope.enable = function (service) {
+                if (service === 'bn') {
+                    BrowserNotification.enable();
+                }
+            };
 
             scope.clearAll = function () {
                 Queue.purge();
@@ -165,7 +171,7 @@ appDirectives.directive('notifierTopnav', ['Queue', 'BrowserNotification', funct
             });
 
             scope.$on('settings:browserNotifications', function (e, state) {
-                scope.state = state;
+                scope.state.bn = state;
             });
 
             scope.$on('queue:change', function (e, size) {

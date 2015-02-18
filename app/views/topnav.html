@@ -5,5 +5,5 @@
 </nav>
 
 <ul class="app-settings" ng-show="settingsVisible">
-    <li>Browser notifications are <a ng-click="enable()" ng-href="">{{state}}</a>.</li>
+    <li><a ng-click="enable('bn')" ng-href=""> {{state.bn|symbolize}} Browser notifications</a></li>
 </ul>
