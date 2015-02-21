@@ -134,7 +134,7 @@ appDirectives.directive('notifierMessageOptions', ['Queue', function (Queue) {
     };
 }]);
 
-appDirectives.directive('notifierTopnav', ['Queue', 'BrowserNotification', function (Queue, BrowserNotification) {
+appDirectives.directive('notifierTopnav', ['Queue', 'BrowserNotification', 'User', '$window', function (Queue, BrowserNotification, User, $window) {
     'use strict';
 
     return {
@@ -156,6 +156,12 @@ appDirectives.directive('notifierTopnav', ['Queue', 'BrowserNotification', funct
                 if (service === 'bn') {
                     BrowserNotification.enable();
                 }
+            };
+
+            scope.authorize = function (service) {
+                User.authorize(service, function (url) {
+                    $window.location.href = url;
+                });
             };
 
             scope.clearAll = function () {

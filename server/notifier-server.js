@@ -12,16 +12,18 @@ var BasicStrategy = require('passport-http').BasicStrategy;
 var crypto = require('crypto');
 var compression = require('compression');
 var util = require('util');
+var url = require('url');
 var useragent = require('useragent');
 var nconf = require('nconf');
 var sanitizeHtml = require('sanitize-html');
 var path = require('path');
+var needle = require('needle');
 
 /**
  * Application configuration
  * --------------------------------------------------------------------
  *
- * Configuration settings are sourced from muliple
+ * Configuration settings are sourced from multiple
  * locations. Command-line arugments are checked first. If not defined
  * there, environment variables are considered. If no environment
  * variable exists, the configuration file is checked. As a last
@@ -86,9 +88,9 @@ try {
  * Database configuration
  * --------------------------------------------------------------------
  *
- * Multiple configurations can be defined by the NOTIFIER_DB_CONFIG
- * object. The value of NOTIFIER_DB determines which configuration is
- * used. It should be one of the keys of NOTIFIER_DB_CONFIG.
+ * NOTIFIER_DB_CONFIG can define multiple databases. The active
+ * database is determined by the value of NOTIFIER_DB. It should
+ * should correspond to one of the keys of NOTIFIER_DB_CONFIG.
  */
 var getDbConfig = function () {
     var key, config;
@@ -164,70 +166,6 @@ var sanitizeTolerant = function (context, field, value) {
  * ORM model definition
  * --------------------------------------------------------------------
  */
-var User = sequelize.define('User', {
-    username: {
-        type: Sequelize.STRING(20),
-        unique: true,
-        allowNull: false,
-        validate: {
-            len: {
-                args: [1, 20],
-                msg: 'should be between 1 and 20 characters'
-            }
-        }
-    },
-    passwordHash: {
-        type: Sequelize.STRING(258),
-        allowNull: true,
-        validate: {
-            len: {
-                args: [1, 258],
-                msg: 'should be between 1 and 258 characters'
-            }
-        }
-    }
-}, {
-    instanceMethods: {
-        getChannel: function () {
-            var hmac = crypto.createHmac('sha256', APPSECRET);
-            hmac.setEncoding('hex');
-            hmac.write(this.id.toString());
-            hmac.end();
-            return hmac.read();
-        },
-
-        hashPassword: function (password, callback) {
-            var self = this;
-            var randBytes = nconf.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
-            var keyLength = nconf.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
-            var iterations = nconf.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
-
-            crypto.randomBytes(randBytes, function(err, buf) {
-                var salt;
-                if (err) {
-                    log.error({err: err}, 'error while generating random bytes');
-                }
-
-                salt = buf.toString('hex');
-
-                crypto.pbkdf2(password, salt, iterations, keyLength, function (err, key) {
-                    self.setDataValue('passwordHash', util.format('%s::%s', salt, key.toString('hex')));
-                    callback();
-                });
-            });
-        },
-
-        checkPassword: function (password, callback) {
-            var segments = this.getDataValue('passwordHash').split('::');
-            var keyLength = nconf.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
-            var iterations = nconf.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
-
-            crypto.pbkdf2(password, segments[0], iterations, keyLength, function (err, key) {
-                callback(key.toString('hex') === segments[1]);
-            });
-        }
-    }
-});
 
 var Token = sequelize.define('Token', {
     key: {
@@ -279,6 +217,7 @@ var Token = sequelize.define('Token', {
                 callback();
             });
         },
+
         generateKeyAndValue: function (callback) {
             var length = 64;
             crypto.randomBytes(length, function(err, buf) {
@@ -291,9 +230,97 @@ var Token = sequelize.define('Token', {
                          buf.toString('base64', length/2));
                 
             });
-        }            
+        }         
     }
 });
+
+var User = sequelize.define('User', {
+    username: {
+        type: Sequelize.STRING(20),
+        unique: true,
+        allowNull: false,
+        validate: {
+            len: {
+                args: [1, 20],
+                msg: 'should be between 1 and 20 characters'
+            }
+        }
+    },
+    passwordHash: {
+        type: Sequelize.STRING(258),
+        allowNull: true,
+        validate: {
+            len: {
+                args: [1, 258],
+                msg: 'should be between 1 and 258 characters'
+            }
+        }
+    }
+}, {
+    instanceMethods: {
+        getThirdPartyTokens: function (callback) {
+            var self = this;
+            Token.findAll({
+                where: {
+                    'UserId': self.id,
+                    'key': 'pushbullet'
+                },
+                attributes: ['key', 'value', 'label']
+            }).then(function (tokens) {
+                self.extraKeys = {};
+                
+                tokens.forEach(function (token) {
+                    self.extraKeys[token.values.key] = {
+                        'value': token.values.value,
+                        'label': token.values.label
+                    };
+                });
+                callback();
+            });
+            
+        },
+        
+        getChannel: function () {
+            var hmac = crypto.createHmac('sha256', APPSECRET);
+            hmac.setEncoding('hex');
+            hmac.write(this.id.toString());
+            hmac.end();
+            return hmac.read();
+        },
+
+        hashPassword: function (password, callback) {
+            var self = this;
+            var randBytes = nconf.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
+            var keyLength = nconf.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
+            var iterations = nconf.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
+
+            crypto.randomBytes(randBytes, function(err, buf) {
+                var salt;
+                if (err) {
+                    log.error({err: err}, 'error while generating random bytes');
+                }
+
+                salt = buf.toString('hex');
+
+                crypto.pbkdf2(password, salt, iterations, keyLength, function (err, key) {
+                    self.setDataValue('passwordHash', util.format('%s::%s', salt, key.toString('hex')));
+                    callback();
+                });
+            });
+        },
+
+        checkPassword: function (password, callback) {
+            var segments = this.getDataValue('passwordHash').split('::');
+            var keyLength = nconf.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
+            var iterations = nconf.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
+
+            crypto.pbkdf2(password, segments[0], iterations, keyLength, function (err, key) {
+                callback(key.toString('hex') === segments[1]);
+            });
+        },
+    }
+});
+
 
 var Message = sequelize.define('Message', {
     publicId: {
@@ -307,6 +334,10 @@ var Message = sequelize.define('Message', {
         set: function (value) {
             return sanitizeStrict(this, 'localId', value);
         }
+    },
+    pushbulletId: {
+        type: Sequelize.STRING(255),
+        allowNull: true
     },
     title: {
         type: Sequelize.STRING(255),
@@ -466,6 +497,7 @@ passport.use(new BasicStrategy(function(key, value, next) {
             value: value
         }
     }).then(function (token) {
+        
         err = new Error('Invalid token');
         err.status = 401;
 
@@ -480,7 +512,9 @@ passport.use(new BasicStrategy(function(key, value, next) {
         }
 
         token.save().then(function () {
-            next(null, token.User);
+            token.User.getThirdPartyTokens(function () {
+                next(null, token.User);
+            });
         });
 
     }, function () {
@@ -795,6 +829,34 @@ app.param('count', function (req, res, next, value) {
 var publishMessage = function (user, message) {
     var channel = '/messages/' + user.getChannel();
     bayeuxClient.publish(channel, JSON.stringify(message));
+
+    if (user.extraKeys.hasOwnProperty('pushbullet')) {
+        if (message.hasOwnProperty('retracted')) {
+            Message.find({
+                where: {'publicId': message.retracted},
+                attributes: ['pushbulletId']
+            }).then(function (message) {
+                needle.delete('https://api.pushbullet.com/v2/pushes/' + message.values.pushbulletId, null, {
+                    'username': user.extraKeys.pushbullet.value,
+                    'password': ''
+                });
+            });
+        } else {
+            needle.post('https://api.pushbullet.com/v2/pushes', {
+                'title': message.values.title,
+                'body': message.values.body,
+                'type': 'note'
+            }, {
+                'username': user.extraKeys.pushbullet.value,
+                'password': ''
+            }, function (err, res) {
+                Message.update(
+                    {pushbulletId: res.body.iden},
+                    {where: {id: message.values.id}}
+                );
+            });
+        }
+    }
 };
 
 
@@ -818,6 +880,94 @@ app.post('/deauth', passport.authenticate('basic', { session: false }), function
         res.status(200).end();
     }, function () {
         res.status(500).end();
+    });
+});
+
+app.get('/authorize/pushbullet/start', passport.authenticate('basic', {session: false}), function (req, res) {
+
+    function sendUrl (tokenValue) {
+        var redirectUri = url.format({
+            protocol: req.query.protocol,
+            host: req.query.host,
+            pathname: '/authorize/pushbullet/finish',
+            query: {
+                token: tokenValue
+            }
+        });
+
+        res.json({
+            url: url.format({
+                protocol: 'https',
+                slashes: true,
+                host: 'www.pushbullet.com',
+                pathname: '/authorize',
+                query: {
+                    'client_id': nconf.get('NOTIFIER_PUSHBULLET_CLIENT_ID'),
+                    'response_type': 'code',
+                    'redirect_uri': redirectUri
+                }
+            })
+        });
+    }
+
+    var token = Token.build({
+        key: 'pushbullet'
+    });
+
+    Token.generateKeyAndValue(function (key, value) {
+        token.value = value;
+        token.save().then(function (token) {
+            token.setUser(req.user).then(function () {
+                sendUrl(token.values.value);
+            });
+        }, function (error) {
+            res.status(400).json(error);
+        });
+    });
+
+});
+
+app.get('/authorize/pushbullet/finish', function (req, res) {
+    var tokenUrl = url.format({
+        protocol: 'https',
+        slashes: true,
+        host: 'api.pushbullet.com',
+        pathname: '/oauth2/token'
+    });
+
+    Token.find({
+        include: [ User],
+        where: {
+            value: req.query.token
+        }
+    }).then(function (token) {
+        needle.post(tokenUrl, {
+            'grant_type': 'authorization_code',
+            'client_id': nconf.get('NOTIFIER_PUSHBULLET_CLIENT_ID'),
+            'client_secret': nconf.get('NOTIFIER_PUSHBULLET_CLIENT_SECRET'),
+            'code': req.query.code       
+        }, function (err, resp, body) {
+            Token.destroy({
+                where: {
+                    key: 'pushbullet',
+                    UserId: token.User.id,
+                    id: {
+                        $ne: token.values.id
+                    }
+                }
+            }).then(function () {
+                /*jshint camelcase: false */
+                token.updateAttributes({
+                    label: body.token_type,
+                    value: body.access_token,
+                    persist: true
+                }).then(function () {
+                    res.redirect('/');
+                });
+            });
+        });
+    }, function () {
+        res.send(400).end();
     });
 });
 

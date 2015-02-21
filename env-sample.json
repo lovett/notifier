@@ -13,6 +13,8 @@
     "NOTIFIER_DEFAULT_USER": "notifier",
     "NOTIFIER_DEFAULT_PASSWORD": "notifier",
     "NOTIFIER_DB_BACKUP_DIR": "",
+    "NOTIFIER_PUSHBULLET_CLIENT_ID": "",
+    "NOTIFIER_PUSHBULLET_CLIENT_SECRET": "",
     "NOTIFIER_DB": "sqlite",
     "NOTIFIER_DB_CONFIG": {
         "mysql": {

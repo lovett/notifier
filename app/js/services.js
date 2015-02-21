@@ -51,6 +51,25 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
             }
         },
 
+        authorize: function (service, callback) {
+            var auth = this.getAuthHeader();
+            
+            $http({
+                method: 'GET',
+                params: {
+                    'protocol': $window.location.protocol,
+                    'host': $window.location.host
+                },
+                url: '/authorize/' + service + '/start',
+                headers: {
+                    'Authorization': auth
+                }
+            }).success(function (data) {
+                callback(data.url);
+            }).error(function () {
+            });
+        },
+
         logIn: function (form) {
             persist = form.remember;
 
