@@ -36,7 +36,9 @@ BODY {
 }
 
 .view {
-    height: 100%;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
 }
 
 .flex-wrapper {
@@ -76,19 +78,18 @@ A:hover {
 }
 
 HEADER {
+    padding-top: 1em;
+    padding-bottom: 1.5em;
     color: white;
     font-size: .75em;
     letter-spacing: 1px;
-    padding: 0 .75em .75em .75em;
     white-space: nowrap;
 
     .state {
-        font-size: .75em;
         text-transform: uppercase;
         border-radius: 1em;
         padding: .5em 1em;
-        margin-right: 1em;
-        margin-top: .75em;
+        margin: 1em 0 0 1em;
         display: inline-block;
     }
 
@@ -108,9 +109,8 @@ HEADER {
     NAV A {
         color: white;
         text-transform: uppercase;
-        margin-left: 1.5em;
         display: inline-block;
-        padding: .75em;
+        padding: 1em;
     }
 
     NAV A:hover, NAV .active {
@@ -120,14 +120,36 @@ HEADER {
         text-decoration: none;
     }
 
+}
+
+MAIN {
+    flex: 1;
+}
+
+FOOTER {
+    font-size: .85em;
+
+    NAV {
+        background-color: @green;
+        display: inline-block;
+        width: 100%;
+
+        A {
+            color: white;
+            display: inline-block;
+            line-height: 1;
+            padding: 1em;
+        }
+
+        A:last-of-type {
+            position: absolute;
+            right: 0;
+        }
+    }
+
     .app-settings {
-        background-color: rgb(255, 255, 255);
-        background-color: rgba(255, 255, 255, .3);
-        margin-top: 0;
-        padding: .5em;
-        margin-right: -.75em;
-        margin-left: -.75em;
-        text-align: center;
+        .reset;
+        background-color: lighten(@green, 5%);
         clear: both;
         color: black;
 
@@ -136,8 +158,9 @@ HEADER {
         }
 
         LI {
+            margin: 0;
             display: inline-block;
-            padding: .75em;
+            padding: 1em;
         }
     }
 }
@@ -149,7 +172,7 @@ HEADER {
 .message {
     background-color: rgb(255, 255, 255);
     background-color: rgba(255, 255, 255, .85);
-    margin-top: .5em;
+    margin-bottom: .5em;
     overflow: hidden;
     position: relative;
     padding: 1em 6em 1em 1em;
@@ -186,7 +209,7 @@ HEADER {
     }
 
     H1 {
-        font-size: 1.25em;
+        font-size: 1.1em;
         font-weight: bold;
         .box-reset;
     }
@@ -197,7 +220,7 @@ HEADER {
     }
 
     TIME {
-        font-size: .8em;
+        font-size: .7em;
         display: block;
         margin-bottom: 1em;
     }

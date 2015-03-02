@@ -1,0 +1,9 @@
+<ul class="app-settings" ng-show="settingsVisible">
+    <li ng-hide="state.bn == 'unavailable'"><a ng-click="enable('bn')" ng-href="">{{state.bn|symbolize}} Browser notifications</a></li>
+    <li><a ng-click="authorize('pushbullet')" ng-href="">Pushbullet</a></li>
+</ul>
+
+<nav>
+    <a ng-href="" ng-click="settings()" ng-hide="hideSettings" ng-class="{active: settingsVisible}">Settings</a>
+    <a ng-href="/logout">Log out</a>
+</nav>

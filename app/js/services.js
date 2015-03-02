@@ -53,7 +53,7 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
 
         authorize: function (service, callback) {
             var auth = this.getAuthHeader();
-            
+
             $http({
                 method: 'GET',
                 params: {
@@ -370,7 +370,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
                         $rootScope.$broadcast('queue:change', self.messages.length);
                         return;
                     }
-                    
+
                     // messages will be ordered newest first, but if they are added to the queue
                     // sequentially they will end up oldest first
                     data.reverse();

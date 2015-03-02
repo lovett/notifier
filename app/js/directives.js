@@ -134,7 +134,7 @@ appDirectives.directive('notifierMessageOptions', ['Queue', function (Queue) {
     };
 }]);
 
-appDirectives.directive('notifierTopnav', ['Queue', 'BrowserNotification', 'User', '$window', function (Queue, BrowserNotification, User, $window) {
+appDirectives.directive('notifierTopnav', ['Queue', function (Queue) {
     'use strict';
 
     return {
@@ -145,11 +145,34 @@ appDirectives.directive('notifierTopnav', ['Queue', 'BrowserNotification', 'User
             scope.queueSize = 0;
             scope.hideClearAll = true;
 
+            scope.clearAll = function () {
+                Queue.purge();
+            };
+
+            scope.$on('connection:change', function (e, state) {
+                scope.hideClearAll = scope.queueSize === 0 || state === 'offline' || state === 'disconnected';
+            });
+
+            scope.$on('queue:change', function (e, size) {
+                scope.queueSize = size;
+                scope.hideClearAll = (size === 0);
+            });
+        }
+    };
+}]);
+
+appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'User', '$window', function (BrowserNotification, User, $window) {
+    'use strict';
+
+    return {
+        restrict: 'A',
+        templateUrl: '/views/bottomnav.html',
+        scope: {},
+        link: function (scope) {
             scope.state = {
                 bn: BrowserNotification.state
             };
 
-            //scope.hideSettings = (BrowserNotification.state === 'unavailable');
             scope.settingsVisible = false;
 
             scope.enable = function (service) {
@@ -164,25 +187,12 @@ appDirectives.directive('notifierTopnav', ['Queue', 'BrowserNotification', 'User
                 });
             };
 
-            scope.clearAll = function () {
-                Queue.purge();
-            };
-
             scope.settings = function () {
                 scope.settingsVisible = !scope.settingsVisible;
             };
 
-            scope.$on('connection:change', function (e, state) {
-                scope.hideClearAll = scope.queueSize === 0 || state === 'offline' || state === 'disconnected';
-            });
-
             scope.$on('settings:browserNotifications', function (e, state) {
                 scope.state.bn = state;
-            });
-
-            scope.$on('queue:change', function (e, size) {
-                scope.queueSize = size;
-                scope.hideClearAll = (size === 0);
             });
         }
     };
