@@ -103,7 +103,7 @@ var getDbConfig = function () {
             sequelize: {}
         };
     }
-    
+
     config.sequelize.logging = function (msg) {
         log.info({
             sequelize: msg
@@ -113,11 +113,11 @@ var getDbConfig = function () {
     if (nconf.get('NOTIFIER_DB_USER')) {
         config.username = nconf.get('NOTIFIER_DB_USER');
     }
-    
+
     if (nconf.get('NOTIFIER_DB_PASS')) {
         config.password = nconf.get('NOTIFIER_DB_PASS');
     }
-    
+
     if (nconf.get('NOTIFIER_DB_NAME')) {
         config.dbname = nconf.get('NOTIFIER_DB_NAME');
     }
@@ -228,9 +228,9 @@ var Token = sequelize.define('Token', {
 
                 callback(buf.toString('base64', 0, length/2),
                          buf.toString('base64', length/2));
-                
+
             });
-        }         
+        }
     }
 });
 
@@ -268,7 +268,7 @@ var User = sequelize.define('User', {
                 attributes: ['key', 'value', 'label']
             }).then(function (tokens) {
                 self.extraKeys = {};
-                
+
                 tokens.forEach(function (token) {
                     self.extraKeys[token.values.key] = {
                         'value': token.values.value,
@@ -277,9 +277,9 @@ var User = sequelize.define('User', {
                 });
                 callback();
             });
-            
+
         },
-        
+
         getChannel: function () {
             var hmac = crypto.createHmac('sha256', APPSECRET);
             hmac.setEncoding('hex');
@@ -497,7 +497,7 @@ passport.use(new BasicStrategy(function(key, value, next) {
             value: value
         }
     }).then(function (token) {
-        
+
         err = new Error('Invalid token');
         err.status = 401;
 
@@ -945,12 +945,12 @@ app.get('/authorize/pushbullet/finish', function (req, res) {
             'grant_type': 'authorization_code',
             'client_id': nconf.get('NOTIFIER_PUSHBULLET_CLIENT_ID'),
             'client_secret': nconf.get('NOTIFIER_PUSHBULLET_CLIENT_SECRET'),
-            'code': req.query.code       
+            'code': req.query.code
         }, function (err, resp, body) {
             Token.destroy({
                 where: {
                     key: 'pushbullet',
-                    UserId: token.User.id,
+                    UserId: token.User.values.id,
                     id: {
                         $ne: token.values.id
                     }
@@ -1156,7 +1156,7 @@ var sync = function (callback) {
             var user, password;
             user = nconf.get('NOTIFIER_DEFAULT_USER').toLowerCase();
             password = nconf.get('NOTIFIER_DEFAULT_PASSWORD');
-            
+
             createUser(user, password, function (err) {
                 if (err) {
                     log.fatal(err);
@@ -1176,7 +1176,7 @@ if (!module.parent) {
                 key: fs.readFileSync(nconf.get('NOTIFIER_SSL_KEY')),
                 cert: fs.readFileSync(nconf.get('NOTIFIER_SSL_CERT'))
             }, app).listen(nconf.get('NOTIFIER_HTTP_PORT'), nconf.get('NOTIFIER_HTTP_IP'));
-        } else {            
+        } else {
             server = app.listen(nconf.get('NOTIFIER_HTTP_PORT'), nconf.get('NOTIFIER_HTTP_IP'));
         }
 
