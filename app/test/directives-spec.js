@@ -222,45 +222,21 @@ describe('appDirectives', function () {
 
     });
 
-    describe('notifierTopnav', function () {
-        var scope, isolateScope, element, purgeStub;
+    describe('notifierBottomnav', function () {
+        var scope, isolateScope, element;
 
-        beforeEach(angular.mock.inject(function ($compile, $rootScope, Queue, BrowserNotification) {
+        beforeEach(angular.mock.inject(function ($compile, $rootScope, BrowserNotification) {
             BrowserNotification.state = 'unavailable';
             scope = $rootScope;
-            element = angular.element('<notifier-topnav></notifier-topnav>');
+            element = angular.element('<footer notifier-bottomnav></footer>');
             $compile(element)(scope);
             scope.$apply();
             isolateScope = element.isolateScope();
-            purgeStub = sinon.stub(Queue, 'purge');
             browserNotification = BrowserNotification;
-        }));
-
-        it('hides clear all link by default', function () {
-            assert.isTrue(isolateScope.hideClearAll);
-        });
-
-        it('hides settings link if browser notifications are not supported', function () {
-            assert.isTrue(isolateScope.hideSettings);
-        });
-
-        it('shows settings link if browser notifications are supported', angular.mock.inject(function ($compile, $rootScope, Queue, BrowserNotification) {
-            BrowserNotification.state = 'available';
-            scope = $rootScope;
-            element = angular.element('<notifier-topnav></notifier-topnav>');
-            $compile(element)(scope);
-            scope.$apply();
-            isolateScope = element.isolateScope();
-            assert.isFalse(isolateScope.hideSettings);
         }));
 
         it('hides settings pane by default', function () {
             assert.isFalse(isolateScope.settingsVisible);
-        });
-
-        it('purges the queue when the clear all link is clicked', function () {
-            isolateScope.clearAll();
-            assert.isTrue(purgeStub.called);
         });
 
         it('toggles the visibility of the settings pane', function () {
@@ -269,6 +245,28 @@ describe('appDirectives', function () {
             assert.isFalse(isolateScope.settingsVisible);
             isolateScope.settings();
             assert.isTrue(isolateScope.settingsVisible);
+        });
+    });
+
+    describe('notifierTopnav', function () {
+        var scope, isolateScope, element, purgeStub;
+
+        beforeEach(angular.mock.inject(function ($compile, $rootScope, Queue) {
+            scope = $rootScope;
+            element = angular.element('<notifier-topnav></notifier-topnav>');
+            $compile(element)(scope);
+            scope.$apply();
+            isolateScope = element.isolateScope();
+            purgeStub = sinon.stub(Queue, 'purge');
+        }));
+
+        it('hides clear all link by default', function () {
+            assert.isTrue(isolateScope.hideClearAll);
+        });
+
+        it('purges the queue when the clear all link is clicked', function () {
+            isolateScope.clearAll();
+            assert.isTrue(purgeStub.called);
         });
 
         it('hides clear all link when disconnected', function () {
