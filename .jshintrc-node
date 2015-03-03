@@ -9,7 +9,8 @@
         "supertest": false,
         "server": true,
         "agent": true,
-        "assert": false
+        "assert": false,
+        "chance": false
     },
     "bitwise": true,
     "camelcase": true,

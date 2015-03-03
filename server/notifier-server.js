@@ -412,17 +412,6 @@ var Message = sequelize.define('Message', {
         defaultValue: true
     }
 }, {
-    instanceMethods: {
-        isEmpty: function () {
-            var fieldsWithDefaultValues = ['publicId', 'id', 'received', 'group'];
-            var fieldsWithCustomValues = Object.keys(this.values).filter(function (key) {
-                return (fieldsWithDefaultValues.indexOf(key) === -1) ;
-            });
-
-            return fieldsWithCustomValues.length === 0;
-        }
-    },
-
     timestamps: true,
     updatedAt: false,
     createdAt: 'received'
@@ -1010,6 +999,13 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
 app.post('/message', passport.authenticate('basic', { session: false }), function (req, res, next) {
     var message;
 
+    if (Object.keys(req.body).length === 0) {
+        var err = new Error('Message is blank');
+        err.status = 400;
+        next(err);
+        return;
+    }
+
     message = Message.build({
         received: new Date()
     });
@@ -1024,23 +1020,13 @@ app.post('/message', passport.authenticate('basic', { session: false }), functio
         }
     });
 
-    if (message.isEmpty()) {
-        var err = new Error('Message is blank');
-        err.status = 400;
-        next(err);
-        return;
-    }
-
     message.save().then(function () {
         message.setUser(req.user).then(function () {
             publishMessage(req.user, message);
             res.status(204).end();
-        }, function (error) {
-            var err = new Error(error);
-            err.status = 400;
-            next(err);
         });
-    }, function (error) {
+    }).catch(function (error) {
+        console.log(error);
         var message = '';
         error.errors.forEach(function (err) {
             message += err.message + ';';
@@ -1087,12 +1073,17 @@ app.post('/message/clear', passport.authenticate('basic', { session: false }), f
         Message.update(
             {unread: false},
             {where: {publicId: id}}
-        ).then(function () {
+        ).then(function (affectedRows) {
+            if (affectedRows[0] === 0) {
+                res.status(400).end();
+                return;
+            }
+
             publishMessage(req.user, {
                 'retracted': id
             });
             res.status(204).end();
-        }, function () {
+        }).catch(function () {
             res.status(500).end();
         });
     };

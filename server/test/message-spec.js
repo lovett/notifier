@@ -22,12 +22,6 @@ describe('/message', function () {
     });
 
     describe('POST', function () {
-        var request;
-
-        beforeEach(function () {
-            request = agent.post(endpoint);
-        });
-
         it('accepts valid authorization', function (done) {
             agent.post(endpoint)
                 .auth(tokenKey, tokenValue)
@@ -86,5 +80,6 @@ describe('/message', function () {
                       })
                 .expect(204).end(done);
         });
+
     });
 });
