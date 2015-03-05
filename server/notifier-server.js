@@ -210,7 +210,7 @@ var Token = sequelize.define('Token', {
                 where: {
                     persist: false,
                     updatedAt: {
-                        lt: new Date(new Date().getTime() - (60 * 60 * 24 * 1000))
+                        lt: new Date(new Date().getTime() - (60 * 60 * 24 * 7 * 1000))
                     }
                 }
             }).then(function () {
