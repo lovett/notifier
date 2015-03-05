@@ -258,26 +258,19 @@ var User = sequelize.define('User', {
     }
 }, {
     instanceMethods: {
-        getThirdPartyTokens: function (callback) {
-            var self = this;
+        getServiceTokens: function (callback) {
             Token.findAll({
                 where: {
-                    'UserId': self.id,
-                    'key': 'pushbullet'
+                    'UserId': this.id,
+                    'label': 'service'
                 },
-                attributes: ['key', 'value', 'label']
+                attributes: ['key', 'value']
             }).then(function (tokens) {
-                self.extraKeys = {};
-
-                tokens.forEach(function (token) {
-                    self.extraKeys[token.values.key] = {
-                        'value': token.values.value,
-                        'label': token.values.label
-                    };
+                tokens = tokens.map(function (token) {
+                    return token.values;
                 });
-                callback();
+                callback(tokens);
             });
-
         },
 
         getChannel: function () {
@@ -501,9 +494,7 @@ passport.use(new BasicStrategy(function(key, value, next) {
         }
 
         token.save().then(function () {
-            token.User.getThirdPartyTokens(function () {
-                next(null, token.User);
-            });
+            next(null, token.User);
         });
 
     }, function () {
@@ -872,6 +863,16 @@ app.post('/deauth', passport.authenticate('basic', { session: false }), function
     });
 });
 
+app.get('/services', passport.authenticate('basic', { session: false}), function (req, res) {
+    req.user.getServiceTokens(function (tokens) {
+        tokens = tokens.map(function (token) {
+            return token.key;
+        });
+
+        res.json(tokens);
+    });
+});
+
 app.get('/authorize/pushbullet/start', passport.authenticate('basic', {session: false}), function (req, res) {
 
     function sendUrl (tokenValue) {
@@ -900,7 +901,8 @@ app.get('/authorize/pushbullet/start', passport.authenticate('basic', {session: 
     }
 
     var token = Token.build({
-        key: 'pushbullet'
+        key: 'pushbullet',
+        label: 'service'
     });
 
     Token.generateKeyAndValue(function (key, value) {
@@ -930,6 +932,23 @@ app.get('/authorize/pushbullet/finish', function (req, res) {
             value: req.query.token
         }
     }).then(function (token) {
+        if (!req.User) {
+            res.redirect('/');
+            return;
+        }
+
+        if (!req.query.code) {
+            Token.destroy({
+                where: {
+                    key: 'pushbullet',
+                    UserId: token.User.values.id
+                }
+            }).then(function () {
+                res.redirect('/');
+            });
+            return;
+        }
+
         needle.post(tokenUrl, {
             'grant_type': 'authorization_code',
             'client_id': nconf.get('NOTIFIER_PUSHBULLET_CLIENT_ID'),
@@ -947,7 +966,6 @@ app.get('/authorize/pushbullet/finish', function (req, res) {
             }).then(function () {
                 /*jshint camelcase: false */
                 token.updateAttributes({
-                    label: body.token_type,
                     value: body.access_token,
                     persist: true
                 }).then(function () {
@@ -1124,8 +1142,10 @@ app.post('/message/clear', passport.authenticate('basic', { session: false }), f
  * it at all will make express treat this as regular middleware.
  */
 app.use(function(err, req, res, next) {
-    if (err) {
-        res.status(err.status).send({message: err.message});
+    if (err && err.status && err.message) {
+        res.status(err).send({message: err.message});
+    } else if (err) {
+        res.status(500).send({message: err});
     } else {
         next();
     }

@@ -51,6 +51,20 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
             }
         },
 
+        getServices: function (callback) {
+            var auth = this.getAuthHeader();
+            $http({
+                method: 'GET',
+                url: '/services',
+                headers: {'Authorization': auth}
+            }).success(function (data) {
+                callback(data);
+            }).error(function () {
+                callback([]);
+            });
+
+        },
+
         authorize: function (service, callback) {
             var auth = this.getAuthHeader();
 
@@ -66,7 +80,6 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                 }
             }).success(function (data) {
                 callback(data.url);
-            }).error(function () {
             });
         },
 
