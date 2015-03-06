@@ -1,4 +1,3 @@
-
 var touch = require('touch');
 var tokenFile = '.token';
 
@@ -120,12 +119,13 @@ module.exports = function(grunt) {
                     form: {
                         title: 'Test message',
                         body: 'Testing testing. This message was sent via Grunt on ' + new Date(),
-                        group: 'test',
-                        url: 'https://ravage.lovett.me',
+                        group: grunt.option('group') || 'test',
+                        url: grunt.option('url') || 'http://example.com',
                         localId: 'test'
                     }
                 }
             },
+
             retract: {
                 options: {
                     url: 'http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/message/clear',
