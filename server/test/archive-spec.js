@@ -8,7 +8,7 @@ describe('/archive', function () {
                 if (err) {
                     throw new Error(err);
                 }
-                
+
                 agent.post('/auth')
                     .send({'username': 'test', 'password': 'test'})
                     .end(function (err, res) {

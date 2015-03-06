@@ -83,6 +83,22 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
             });
         },
 
+        deauthorize: function (service, callback) {
+            var auth = this.getAuthHeader();
+            $http({
+                method: 'POST',
+                data: {
+                    'service': service
+                },
+                url: '/revoke',
+                headers: {
+                    'Authorization': auth
+                }
+            }).success(function () {
+                callback();
+            });
+        },
+
         logIn: function (form) {
             persist = form.remember;
 

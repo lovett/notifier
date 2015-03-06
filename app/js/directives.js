@@ -181,10 +181,16 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'User', '$w
                 }
             };
 
-            scope.authorize = function (service) {
-                User.authorize(service, function (url) {
-                    $window.location.href = url;
-                });
+            scope.toggle = function (service) {
+                if (scope.state[service] === 'active') {
+                    User.deauthorize(service, function () {
+                        delete scope.state[service];
+                    });
+                } else {
+                    User.authorize(service, function (url) {
+                        $window.location.href = url;
+                    });
+                }
             };
 
             scope.settings = function () {

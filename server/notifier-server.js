@@ -219,15 +219,23 @@ var Token = sequelize.define('Token', {
         },
 
         generateKeyAndValue: function (callback) {
-            var length = 64;
-            crypto.randomBytes(length, function(err, buf) {
+            var numBytes = 64;
+            crypto.randomBytes(numBytes, function(err, buf) {
+                var i, result, bag;
+
                 if (err) {
                     log.error({err: err}, 'error while generating random bytes');
                     callback();
                 }
 
-                callback(buf.toString('base64', 0, length/2),
-                         buf.toString('base64', length/2));
+                bag = 'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789';
+
+                result = '';
+                for (i=0; i < numBytes; i = i + 1) {
+                    result += bag[buf[i] % bag.length];
+                }
+                callback(result.substring(0, numBytes/2),
+                         result.substring(numBytes/2));
 
             });
         }
@@ -258,18 +266,36 @@ var User = sequelize.define('User', {
     }
 }, {
     instanceMethods: {
-        getServiceTokens: function (callback) {
-            Token.findAll({
+        purgeServiceToken: function (service, callback) {
+            if (!service) {
+                callback(0);
+            }
+
+            Token.destroy({
                 where: {
                     'UserId': this.id,
+                    'label': 'service',
+                    'key': service
+                }
+            }).then(function (affectedRows) {
+                callback(affectedRows);
+            });
+        },
+        getServiceTokens: function (callback) {
+            var user = this;
+            user.serviceTokens = {};
+
+            Token.findAll({
+                where: {
+                    'UserId': user.id,
                     'label': 'service'
                 },
                 attributes: ['key', 'value']
             }).then(function (tokens) {
-                tokens = tokens.map(function (token) {
-                    return token.values;
+                tokens.forEach(function (token) {
+                    user.serviceTokens[token.key] = token.value;
                 });
-                callback(tokens);
+                callback();
             });
         },
 
@@ -479,7 +505,6 @@ passport.use(new BasicStrategy(function(key, value, next) {
             value: value
         }
     }).then(function (token) {
-
         err = new Error('Invalid token');
         err.status = 401;
 
@@ -497,7 +522,7 @@ passport.use(new BasicStrategy(function(key, value, next) {
             next(null, token.User);
         });
 
-    }, function () {
+    }).catch(function () {
         err = new Error('Application error');
         err.status = 500;
         next(err);
@@ -810,14 +835,18 @@ var publishMessage = function (user, message) {
     var channel = '/messages/' + user.getChannel();
     bayeuxClient.publish(channel, JSON.stringify(message));
 
-    if (user.extraKeys.hasOwnProperty('pushbullet')) {
+    user.getServiceTokens(function () {
+        if (!user.serviceTokens.hasOwnProperty('pushbullet')) {
+            return;
+        }
+
         if (message.hasOwnProperty('retracted')) {
             Message.find({
                 where: {'publicId': message.retracted},
                 attributes: ['pushbulletId']
             }).then(function (message) {
                 needle.delete('https://api.pushbullet.com/v2/pushes/' + message.values.pushbulletId, null, {
-                    'username': user.extraKeys.pushbullet.value,
+                    'username': user.serviceTokens.pushbullet,
                     'password': ''
                 });
             });
@@ -827,16 +856,21 @@ var publishMessage = function (user, message) {
                 'body': message.values.body,
                 'type': 'note'
             }, {
-                'username': user.extraKeys.pushbullet.value,
+                'username': user.serviceTokens.pushbullet,
                 'password': ''
             }, function (err, res) {
+                if (res.body.error) {
+                    log.error({err: res.body.error}, 'pushbullet error');
+                    return;
+                }
+
                 Message.update(
                     {pushbulletId: res.body.iden},
                     {where: {id: message.values.id}}
                 );
             });
         }
-    }
+    });
 };
 
 
@@ -864,12 +898,19 @@ app.post('/deauth', passport.authenticate('basic', { session: false }), function
 });
 
 app.get('/services', passport.authenticate('basic', { session: false}), function (req, res) {
-    req.user.getServiceTokens(function (tokens) {
-        tokens = tokens.map(function (token) {
-            return token.key;
-        });
-
+    req.user.getServiceTokens(function () {
+        var tokens = Object.keys(req.user.serviceTokens);
         res.json(tokens);
+    });
+});
+
+app.post('/revoke', passport.authenticate('basic', {session: false}), function (req, res) {
+    req.user.purgeServiceToken(req.body.service, function (numDeletions) {
+        if (numDeletions === 0) {
+            res.send(500).end();
+        } else {
+            res.send(200).end();
+        }
     });
 });
 
@@ -932,7 +973,8 @@ app.get('/authorize/pushbullet/finish', function (req, res) {
             value: req.query.token
         }
     }).then(function (token) {
-        if (!req.User) {
+        if (!token.User) {
+            log.error({}, 'user not found during pushbullet auth callback');
             res.redirect('/');
             return;
         }
@@ -1044,7 +1086,6 @@ app.post('/message', passport.authenticate('basic', { session: false }), functio
             res.status(204).end();
         });
     }).catch(function (error) {
-        console.log(error);
         var message = '';
         error.errors.forEach(function (err) {
             message += err.message + ';';
@@ -1143,7 +1184,7 @@ app.post('/message/clear', passport.authenticate('basic', { session: false }), f
  */
 app.use(function(err, req, res, next) {
     if (err && err.status && err.message) {
-        res.status(err).send({message: err.message});
+        res.status(err.status).send({message: err.message});
     } else if (err) {
         res.status(500).send({message: err});
     } else {
