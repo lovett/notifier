@@ -170,7 +170,6 @@ FOOTER {
 
 .message {
     background-color: rgb(255, 255, 255);
-    background-color: rgba(255, 255, 255, .85);
     margin-bottom: .5em;
     overflow: hidden;
     position: relative;
@@ -199,6 +198,12 @@ FOOTER {
                 vertical-align: middle;
             }
 
+            .icon {
+                width: 3em;
+                height: 3em;
+                fill: white;
+            }
+
         }
 
         A:hover {
@@ -211,6 +216,14 @@ FOOTER {
         font-size: 1.1em;
         font-weight: bold;
         .box-reset;
+
+        .icon {
+            width: 1em;
+            height: 1em;
+            display: inline-block;
+            margin-bottom: -0.15em;
+            fill: @green;
+        }
     }
 
     P {
