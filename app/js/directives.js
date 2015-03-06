@@ -196,11 +196,11 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'User', '$w
             };
 
             scope.settings = function () {
+                scope.settingsVisible = !scope.settingsVisible;
                 User.getServices(function (services) {
                     services.forEach(function (service) {
                         scope.state[service] = 'active';
                     });
-                    scope.settingsVisible = !scope.settingsVisible;
                 });
             };
 
