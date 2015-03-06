@@ -891,9 +891,9 @@ app.post('/deauth', passport.authenticate('basic', { session: false }), function
     Token.destroy({
         value: req.token
     }).then(function () {
-        res.status(200).end();
+        res.sendStatus(200);
     }, function () {
-        res.status(500).end();
+        res.sendStatus(500);
     });
 });
 
@@ -907,9 +907,9 @@ app.get('/services', passport.authenticate('basic', { session: false}), function
 app.post('/revoke', passport.authenticate('basic', {session: false}), function (req, res) {
     req.user.purgeServiceToken(req.body.service, function (numDeletions) {
         if (numDeletions === 0) {
-            res.send(500).end();
+            res.sendStatus(500);
         } else {
-            res.send(200).end();
+            res.sendStatus(200);
         }
     });
 });
@@ -1016,7 +1016,7 @@ app.get('/authorize/pushbullet/finish', function (req, res) {
             });
         });
     }, function () {
-        res.send(400).end();
+        res.sendStatus(400);
     });
 });
 
@@ -1083,7 +1083,7 @@ app.post('/message', passport.authenticate('basic', { session: false }), functio
     message.save().then(function () {
         message.setUser(req.user).then(function () {
             publishMessage(req.user, message);
-            res.status(204).end();
+            res.sendStatus(204);
         });
     }).catch(function (error) {
         var message = '';
@@ -1134,16 +1134,16 @@ app.post('/message/clear', passport.authenticate('basic', { session: false }), f
             {where: {publicId: id}}
         ).then(function (affectedRows) {
             if (affectedRows[0] === 0) {
-                res.status(400).end();
+                res.sendStatus(400);
                 return;
             }
 
             publishMessage(req.user, {
                 'retracted': id
             });
-            res.status(204).end();
+            res.sendStatus(204);
         }).catch(function () {
-            res.status(500).end();
+            res.sendStatus(500);
         });
     };
 
@@ -1158,14 +1158,14 @@ app.post('/message/clear', passport.authenticate('basic', { session: false }), f
             limit: 1
         }).then(function (message) {
             if (!message) {
-                res.status(400).end();
+                res.sendStatus(400);
             } else {
                 update(message.publicId);
             }
 
         });
     } else {
-        res.status(400).end();
+        res.sendStatus(400);
     }
 
 });
