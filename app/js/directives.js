@@ -62,6 +62,8 @@ appDirectives.directive('notifierTitle', function () {
                 var title = element.html().replace(symbolPattern, '');
                 if (state !== 'connected') {
                     element.html(attrs.offlineSymbol + ' ' + title);
+                } else {
+                    element.html(title);
                 }
             });
         }

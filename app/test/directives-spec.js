@@ -113,6 +113,13 @@ describe('appDirectives', function () {
             assert.equal(element.html(), symbol + ' ' + title);
         });
 
+        it('removed offline symbol after reconnect', function () {
+            scope.$emit('connection:change', 'disconnected');
+            scope.$emit('connection:change', 'connected');
+            assert.equal(element.html(), title);
+        });
+
+
     });
 
     describe('notifierConnectionStatus', function () {
