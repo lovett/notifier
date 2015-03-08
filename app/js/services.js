@@ -14,40 +14,40 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
         },
 
         getTokenKey: function () {
-            if (localStorage.tokenKey) {
-                return localStorage.tokenKey;
-            } else if (sessionStorage.tokenKey) {
+            if (sessionStorage.tokenKey) {
                 return sessionStorage.tokenKey;
+            } else if (localStorage.tokenKey) {
+                return localStorage.tokenKey;
             } else {
                 return false;
             }
         },
 
         getTokenValue: function () {
-            if (localStorage.tokenValue) {
-                return localStorage.tokenValue;
-            } else if (sessionStorage.tokenValue) {
+            if (sessionStorage.tokenValue) {
                 return sessionStorage.tokenValue;
+            } else if (localStorage.tokenValue) {
+                return localStorage.tokenValue;
             } else {
                 return false;
             }
         },
 
         getChannel: function () {
-            if (localStorage.channel) {
-                return '/messages/' + localStorage.channel;
-            } else if (sessionStorage.channel) {
+            if (sessionStorage.channel) {
                 return '/messages/' + sessionStorage.channel;
+            } else if (localStorage.channel) {
+                return '/messages/' + localStorage.channel;
             } else {
                 return false;
             }
         },
 
         replaceChannel: function (value) {
-            if (localStorage.channel) {
-                localStorage.channel = value;
-            } else if (sessionStorage.channel) {
+            if (sessionStorage.channel) {
                 sessionStorage.channel = value;
+            } else if (localStorage.channel) {
+                localStorage.channel = value;
             }
         },
 
@@ -121,10 +121,16 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                             localStorage.tokenKey = data.key;
                             localStorage.tokenValue = data.value;
                             localStorage.channel = data.channel;
+                            sessionStorage.removeItem('tokenKey');
+                            sessionStorage.removeItem('tokenValue');
+                            sessionStorage.removeItem('channel');
                         } else {
                             sessionStorage.tokenKey = data.key;
                             sessionStorage.tokenValue = data.value;
                             sessionStorage.channel = data.channel;
+                            localStorage.removeItem('tokenKey');
+                            localStorage.removeItem('tokenValue');
+                            localStorage.removeItem('channel');
                         }
                     }
                 }
