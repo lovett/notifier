@@ -301,6 +301,15 @@ module.exports = function(grunt) {
                     'BACKUP_FILE=$(find "<%= env.NOTIFIER_DB_BACKUP_DIR %>" -type f -name *.gz | tail -n 1)',
                     'gunzip -c "$BACKUP_FILE"  | mysql <%= env.NOTIFIER_DB_NAME %>'
                 ].join(' && ')
+            },
+            'migration': {
+                command: function (undo) {
+                    var action = 'db:migrate';
+                    if (undo) {
+                        action += ':undo';
+                    }
+                    return './node_modules/.bin/sequelize ' + action + ' --env default --config migration-config.json --migrations-path server/migrations';
+                }
             }
         },
 
@@ -404,6 +413,36 @@ module.exports = function(grunt) {
         }
 
         grunt.task.run(tasks);
+    });
+
+    grunt.registerTask('migrate', function (undo) {
+        var env = grunt.file.readJSON('env.json');
+        var configPath = 'migration-config.json';
+        var dbEnv = env.NOTIFIER_DB_CONFIG[env.NOTIFIER_DB];
+
+        var migrationConfig = {
+            'default': {
+                'username': dbEnv.username,
+                'password': dbEnv.password,
+                'database': dbEnv.dbname,
+                'dialect': dbEnv.sequelize.dialect,
+                'host': dbEnv.sequelize.host
+            }
+        };
+
+        if (dbEnv.sequelize.hasOwnProperty('storage')) {
+            migrationConfig.default.storage = dbEnv.sequelize.storage;
+        }
+
+        grunt.file.write(configPath, JSON.stringify(migrationConfig));
+
+        var shellTask = 'shell:migration' ;
+
+        if (undo === 'undo') {
+            shellTask += ':undo';
+        }
+
+        grunt.task.run(shellTask);
     });
 
     grunt.registerTask('coverage', ['clean:coverage', 'mocha_istanbul:server', 'open:coverage-server']);

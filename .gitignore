@@ -15,3 +15,5 @@ env*.json
 !env-sample.json
 !env-test.json
 coverage
+*.bak
+migration-config.json
