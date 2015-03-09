@@ -2,8 +2,12 @@
 
 module.exports = {
     up: function(migration, DataTypes, done) {
-        migration.addColumn('Messages', 'pushbulletId', DataTypes.STRING);
-        done();
+        migration.describeTable('Messages').then(function (attributes) {
+            if (!attributes.hasOwnProperty('pushbulletId')) {
+                migration.addColumn('Messages', 'pushbulletId', DataTypes.STRING);
+            }
+            done();
+        });
     },
 
     down: function(migration, DataTypes, done) {
