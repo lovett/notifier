@@ -51,6 +51,10 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
 appControllers.controller('LoginController', ['$scope', '$location', 'User', function ($scope, $location, User) {
     'use strict';
 
+    if (User.getTokenKey()) {
+        User.logOut();
+    }
+
     $scope.submitLogin = function (form) {
 
         if (form.$invalid) {

@@ -518,6 +518,11 @@ passport.use(new BasicStrategy(function(key, value, next) {
             return;
         }
 
+        token.User.token = {
+            key: key,
+            value: value
+        };
+
         token.save().then(function () {
             next(null, token.User);
         });
@@ -888,11 +893,14 @@ app.get(/^\/(login|logout)$/, function (req, res) {
 });
 
 app.post('/deauth', passport.authenticate('basic', { session: false }), function (req, res) {
+
     Token.destroy({
-        value: req.token
+        where: {
+            value: req.user.token.value
+        }
     }).then(function () {
         res.sendStatus(200);
-    }, function () {
+    }).catch(function () {
         res.sendStatus(500);
     });
 });

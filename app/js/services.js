@@ -162,7 +162,7 @@ appServices.factory('HttpInterceptor', ['$q', '$location', function ($q, $locati
     return {
         'responseError': function (response) {
             if (response.status === 401) {
-                $location.path('/logout');
+                $location.path('/login');
                 return $q.reject(response);
             }
         }
