@@ -31,7 +31,7 @@ cd $OPENSHIFT_REPO_DIR
 grunt build:full
 grunt migrate
 
-rm env-sample-*.json
+rm env-sample.json
 rm env-test.json
 rm -rf test
 rm -f migration-config.json

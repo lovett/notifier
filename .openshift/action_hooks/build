@@ -20,7 +20,8 @@ if [[ -f "package.json.bak" ]]; then
     mv package.json.bak package.json
 fi
 
-npm install
+npm install --production
+npm prune
 
 ORIGINAL_HOME="$HOME"
 HOME="$ORIGINAL_HOME"
