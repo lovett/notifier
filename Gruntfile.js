@@ -420,6 +420,18 @@ module.exports = function(grunt) {
         var configPath = 'migration-config.json';
         var dbEnv = env.NOTIFIER_DB_CONFIG[env.NOTIFIER_DB];
 
+        if (process.env.NOTIFIER_DB_USER) {
+            dbEnv.username = process.env.NOTIFIER_DB_USER;
+        }
+
+        if (process.env.NOTIFIER_DB_PASS) {
+            dbEnv.password = process.env.NOTIFIER_DB_PASS;
+        }
+
+        if (process.env.NOTIFIER_DB_NAME) {
+            dbEnv.dbname = process.env.NOTIFIER_DB_NAME;
+        }
+
         var migrationConfig = {
             'default': {
                 'username': dbEnv.username,
