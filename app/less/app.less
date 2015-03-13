@@ -178,7 +178,7 @@ FOOTER {
     margin-bottom: .5em;
     overflow: hidden;
     position: relative;
-    padding: 1em 6em 1em 1em;
+    padding: 1em 6em;
 
     .options {
         position: absolute;
@@ -222,12 +222,16 @@ FOOTER {
         font-weight: bold;
         .box-reset;
 
+        A {
+            color: black;
+        }
+
         .icon {
             width: 1em;
             height: 1em;
             display: inline-block;
             margin-bottom: -0.15em;
-            fill: @green;
+            fill: black;
         }
     }
 
@@ -253,12 +257,13 @@ FOOTER {
     top: 0;
     left: 0;
     height: 100%;
-    width: 5em;
+    width: 6em;
     float: left;
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 60%;
-    display: none;
+    display: block;
+    background-image: data-uri('../svg/megaphone.svg');
 }
 
 .onebox {
