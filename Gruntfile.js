@@ -121,7 +121,8 @@ module.exports = function(grunt) {
                         body: 'Testing testing. This message was sent via Grunt on ' + new Date(),
                         group: grunt.option('group') || 'test',
                         url: grunt.option('url') || 'http://example.com',
-                        localId: 'test'
+                        localId: 'test',
+                        pushbulletId: 0
                     }
                 }
             },

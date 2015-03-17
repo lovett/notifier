@@ -841,11 +841,18 @@ var publishMessage = function (user, message) {
             return;
         }
 
+        if (message.pushbulletId === '0') {
+            return;
+        }
+
         if (message.hasOwnProperty('retracted')) {
             Message.find({
                 where: {'publicId': message.retracted},
                 attributes: ['pushbulletId']
             }).then(function (message) {
+                if (message.pushbulletId === '0') {
+                    return;
+                }
                 needle.delete('https://api.pushbullet.com/v2/pushes/' + message.values.pushbulletId, null, {
                     'username': user.serviceTokens.pushbullet,
                     'password': ''
