@@ -474,10 +474,6 @@ var createUser = function (username, password, callback) {
  * --------------------------------------------------------------------
  */
 passport.use(new LocalStrategy(function (username, password, done) {
-    // username is case insensitive
-    // password is case sensitive
-    username = username.toLowerCase();
-
     User.find({ where: { username: username } }).then(function (user) {
 
         if (!user) {
