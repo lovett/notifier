@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var request = require('request');
+var needle = require('needle');
 var util = require('util');
 var path = require('path');
 var fs = require('fs');
@@ -20,21 +20,18 @@ var clientSecret = process.env.ONEDRIVE_CLIENT_SECRET;
 var now = new Date();
 
 // Refresh auth tokens
-request.post({
-    url: 'https://login.live.com/oauth20_token.srf',
-    form: {
-        client_id: clientId,
-        redirect_uri: redirectUri,
-        client_secret: clientSecret,
-        refresh_token: credentials.refresh_token,
-        grant_type: 'refresh_token'
-    }
-}, function (error, response, body) {
+needle.post('https://login.live.com/oauth20_token.srf', {
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    client_secret: clientSecret,
+    refresh_token: credentials.refresh_token,
+    grant_type: 'refresh_token'
+}, function (error, response) {
     if (!error && response.statusCode == 200) {
-        fs.writeFileSync(credentialsFile, body);
+        fs.writeFileSync(credentialsFile, response.body);
     }
 
-    credentials = JSON.parse(body);
+    credentials = JSON.parse(response.body);
 
     fetchRootFolder();
 });
@@ -44,18 +41,15 @@ function apiUrl(path) {
 }
 
 function fetchRootFolder() {
-    request.get({
-        url: apiUrl('/me/skydrive/search'),
-        qs: {
-            q: process.env.ONEDRIVE_BACKUP_DIR,
-            limit: 1,
-            access_token: credentials.access_token
-        }
-    }, function (error, response, body) {
+    needle.get(apiUrl('/me/skydrive/search'),  {
+        q: process.env.ONEDRIVE_BACKUP_DIR,
+        limit: 1,
+        access_token: credentials.access_token
+    }, function (error, response) {
         if (error) {
             console.log(error);
         } else {
-            var result = JSON.parse(body);
+            var result = JSON.parse(response.body);
             var destinationFolderId = result.data[0].id;
 
             findStaleFiles(destinationFolderId);
@@ -67,15 +61,13 @@ function fetchRootFolder() {
 
 function uploadFile(folderId, file) {
     var fileName = path.basename(file);
-    fs.createReadStream(file).pipe(request.put({
-        url: apiUrl('/' + folderId + '/files/' + fileName),
+    fs.createReadStream(file).pipe(needle.put(apiUrl('/' + folderId + '/files/' + fileName), {
+        access_token: credentials.access_token
+    }, {
         headers: {
             'Content-type': ''
-        },
-        qs: {
-            access_token: credentials.access_token
         }
-    }, function (error, response, body) {
+    }, function (error, response) {
         if (error) {
             console.log(error);
         }
@@ -83,18 +75,15 @@ function uploadFile(folderId, file) {
 }
 
 function findStaleFiles(destinationFolderId) {
-    request.get({
-        url: apiUrl('/' + destinationFolderId + '/files'),
-        qs: {
-            access_token: credentials.access_token
-        }
-    }, function (error, response, body) {
+    needle.get(apiUrl('/' + destinationFolderId + '/files'), {
+        access_token: credentials.access_token
+    }, function (error, response) {
         var result;
         
         if (error) {
             console.log(error);
         } else {
-            result = JSON.parse(body);
+            result = JSON.parse(response.body);
             
             result.data.forEach(function (file) {
 
@@ -114,12 +103,9 @@ function findStaleFiles(destinationFolderId) {
 }
 
 function deleteFile(fileId) {
-    request.del({
-        url: apiUrl('/' + fileId),
-        qs: {
-            access_token: credentials.access_token
-        }
-    }, function (error, response, body) {
+    needle.delete(apiUrl('/' + fileId), {
+        access_token: credentials.access_token
+    }, function (error, response) {
         if (error) {
             console.log(error);
         }
