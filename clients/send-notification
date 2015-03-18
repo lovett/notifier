@@ -25,7 +25,7 @@ url=""
 pushbullet_id=""
 
 OPTIND=1
-while getopts "hs:t:g:b:u:" opt; do
+while getopts "hp:s:t:g:b:u:" opt; do
     case "$opt" in
         s)
             server="$OPTARG"
