@@ -23,7 +23,12 @@ app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($h
 
     $routeProvider.when('/logout', {
         controller: 'LogoutController',
-        templateUrl: '/views/logout.html',
+        templateUrl: '/views/logout.html'
+    });
+
+    $routeProvider.when('/onedrive', {
+        controller: 'OnedriveController',
+        template: ''
     });
 
     $routeProvider.when('/', {

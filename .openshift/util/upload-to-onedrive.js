@@ -31,7 +31,7 @@ needle.post('https://login.live.com/oauth20_token.srf', {
         fs.writeFileSync(credentialsFile, response.body);
     }
 
-    credentials = JSON.parse(response.body);
+    credentials = response.body;
 
     fetchRootFolder();
 });

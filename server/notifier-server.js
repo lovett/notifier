@@ -179,14 +179,8 @@ var Token = sequelize.define('Token', {
         }
     },
     value: {
-        type: Sequelize.STRING(88),
+        type: Sequelize.TEXT,
         allowNull: false,
-        validate: {
-            len: {
-                args: [1, 88],
-                msg: 'should be between 1 and 88 characters'
-            }
-        }
     },
     label: {
         type: Sequelize.STRING(100),
@@ -890,7 +884,7 @@ app.get('/', function (req, res) {
     res.sendFile(nconf.get('NOTIFIER_STATIC_DIR') + '/views/index.html');
 });
 
-app.get(/^\/(login|logout)$/, function (req, res) {
+app.get(/^\/(login|logout|onedrive)$/, function (req, res) {
     // For pushState compatibility, some URLs are treated as aliases of the index view
     res.sendFile(nconf.get('NOTIFIER_STATIC_DIR') + '/views/index.html');
 });
@@ -924,6 +918,97 @@ app.post('/revoke', passport.authenticate('basic', {session: false}), function (
         }
     });
 });
+
+app.get('/authorize/onedrive/start', passport.authenticate('basic', {session: false}), function (req, res) {
+    var endpoint = url.parse('https://login.live.com/oauth20_authorize.srf');
+
+    // this endpoint can only be accessed by the default user
+    if (req.user.values.username !== nconf.get('NOTIFIER_DEFAULT_USER')) {
+        res.sendStatus(400);
+        return;
+    }
+            
+    endpoint.query = {
+        'client_id': nconf.get('ONEDRIVE_CLIENT_ID'),
+        'scope': 'wl.offline_access onedrive.readwrite',
+        'response_type': 'code',
+        'redirect_uri': nconf.get('ONEDRIVE_REDIRECT_URI')
+    };
+
+    res.json({
+        url: url.format(endpoint)
+    });
+});
+
+app.get('/authorize/onedrive/finish', function (req, res) {
+    if (!req.query.code) {
+        res.sendStatus(400);
+        return;
+    }
+
+    needle.post('https://login.live.com/oauth20_token.srf', {
+        'client_id': nconf.get('ONEDRIVE_CLIENT_ID'),
+        'redirect_uri': nconf.get('ONEDRIVE_REDIRECT_URI'),
+        'client_secret': nconf.get('ONEDRIVE_CLIENT_SECRET'),
+        'code': req.query.code,
+        'grant_type': 'authorization_code'
+    }, function (err, resp) {
+        if (err) {
+            res.send(500);
+            return;
+        }
+
+        if (resp.body.error) {
+            res.sendStatus(400);
+            return;
+        }
+
+        console.log(resp.body);
+        
+        Token.destroy({
+            where: {
+                'key': {
+                    $like: 'onedrive:%'
+                }
+            }
+        }).then(function () {
+            /*jshint camelcase: false */
+            Token.bulkCreate([
+                {
+                    key: 'onedrive:user_id',
+                    label: 'service',
+                    value: resp.body.user_id
+                },
+                {
+                    key: 'onedrive:scope',
+                    label: 'service',
+                    value: resp.body.scope
+                },
+                {
+                    key: 'onedrive:access_token',
+                    label: 'service',
+                    value: resp.body.access_token,
+                    persist: true
+                },
+                {
+                    key: 'onedrive:authentication_token',
+                    label: 'service',
+                    value: resp.body.authentication_token,
+                    persist: true
+                },
+                {
+                    key: 'onedrive:refresh_token',
+                    label: 'service',
+                    value: resp.body.refresh_token,
+                    persist: true
+                }
+            ]).then(function () {
+                res.redirect('/');
+            });
+        });
+    });
+});
+
 
 app.get('/authorize/pushbullet/start', passport.authenticate('basic', {session: false}), function (req, res) {
 

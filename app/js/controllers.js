@@ -95,3 +95,17 @@ appControllers.controller('LogoutController', ['$scope', '$location', 'User', 'F
     };
 
 }]);
+
+
+appControllers.controller('OnedriveController', ['$scope', '$window', '$location', 'User', function ($scope, $window, $location, User) {
+    'use strict';
+
+    if (User.getTokenKey() === false) {
+        $location.path('/login');
+        return;
+    }
+
+    User.authorize('onedrive', function (url) {
+        $window.location.href = url;
+    });
+}]);
