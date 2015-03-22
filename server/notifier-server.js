@@ -932,7 +932,7 @@ app.get('/authorize/onedrive/start', passport.authenticate('basic', {session: fa
         'client_id': nconf.get('ONEDRIVE_CLIENT_ID'),
         'scope': 'wl.offline_access onedrive.readwrite',
         'response_type': 'code',
-        'redirect_uri': '/authorize/onedrive/finish'
+        'redirect_uri': nconf.get('ONEDRIVE_REDIRECT')
     };
 
     res.json({

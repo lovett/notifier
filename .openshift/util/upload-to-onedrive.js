@@ -70,7 +70,7 @@ fs.readFile(nconf.get('ONEDRIVE_AUTH_FILE'), 'utf8', function (err, data) {
 function refreshAuthToken(callback) {
     needle.post('https://login.live.com/oauth20_token.srf', {
         client_id: nconf.get('ONEDRIVE_CLIENT_ID'),
-        redirect_uri: '/authorize/onedrive/finish',
+        redirect_uri: nconf.get('ONEDRIVE_REDIRECT'),
         client_secret: nconf.get('ONEDRIVE_CLIENT_SECRET'),
         refresh_token: nconf.get('ONEDRIVE_REFRESH_TOKEN'),
         grant_type: 'refresh_token'
