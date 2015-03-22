@@ -27,6 +27,8 @@ appEnv.NOTIFIER_WEBSOCKET_PORT = '8443';
 appEnv.NOTIFIER_FORCE_HTTPS = 'true';
 appEnv.NOTIFIER_DB = 'openshift';
 
+appEnv.ONEDRIVE_AUTH_FILE = process.env.OPENSHIFT_DATA_DIR + 'onedrive.json';
+
 // Login credentials are intentionally omitted. They will be populated
 // from server.js
 appEnv.NOTIFIER_DB_CONFIG = {

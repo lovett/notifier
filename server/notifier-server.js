@@ -927,12 +927,12 @@ app.get('/authorize/onedrive/start', passport.authenticate('basic', {session: fa
         res.sendStatus(400);
         return;
     }
-            
+
     endpoint.query = {
         'client_id': nconf.get('ONEDRIVE_CLIENT_ID'),
         'scope': 'wl.offline_access onedrive.readwrite',
         'response_type': 'code',
-        'redirect_uri': nconf.get('ONEDRIVE_REDIRECT_URI')
+        'redirect_uri': '/authorize/onedrive/finish'
     };
 
     res.json({
@@ -963,49 +963,15 @@ app.get('/authorize/onedrive/finish', function (req, res) {
             return;
         }
 
-        console.log(resp.body);
-        
-        Token.destroy({
-            where: {
-                'key': {
-                    $like: 'onedrive:%'
-                }
-            }
-        }).then(function () {
-            /*jshint camelcase: false */
-            Token.bulkCreate([
-                {
-                    key: 'onedrive:user_id',
-                    label: 'service',
-                    value: resp.body.user_id
-                },
-                {
-                    key: 'onedrive:scope',
-                    label: 'service',
-                    value: resp.body.scope
-                },
-                {
-                    key: 'onedrive:access_token',
-                    label: 'service',
-                    value: resp.body.access_token,
-                    persist: true
-                },
-                {
-                    key: 'onedrive:authentication_token',
-                    label: 'service',
-                    value: resp.body.authentication_token,
-                    persist: true
-                },
-                {
-                    key: 'onedrive:refresh_token',
-                    label: 'service',
-                    value: resp.body.refresh_token,
-                    persist: true
-                }
-            ]).then(function () {
+        fs.writeFile(nconf.get('ONEDRIVE_AUTH_FILE'), JSON.stringify(resp.body), function (err) {
+            if (err) {
+                console.log(err);
+                res.sendStatus(500);
+            } else {
                 res.redirect('/');
-            });
+            }
         });
+
     });
 });
 
