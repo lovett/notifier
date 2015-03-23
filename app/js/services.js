@@ -276,12 +276,21 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
 
 
     self.send = function (message, ignoreFocus) {
+        var messageBody;
+        
         if ($window.document.hasFocus() && ignoreFocus !== true) {
             return;
         }
 
+        // Truncating the message body avoids unwanted whitespace in Chrome
+        messageBody = message.body || '';
+
+        if (messageBody.length > 75) {
+            messageBody = messageBody.substring(0, 75) + '…';
+        }
+
         return new Notification(message.title, {
-            'body': message.body || '',
+            'body': messageBody,
             'tag' : message.publicId,
             'icon': '/favicon/favicon-48.png'
         });
