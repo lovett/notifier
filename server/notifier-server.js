@@ -945,10 +945,9 @@ app.get('/authorize/onedrive/finish', function (req, res) {
         res.sendStatus(400);
         return;
     }
-
     needle.post('https://login.live.com/oauth20_token.srf', {
         'client_id': nconf.get('ONEDRIVE_CLIENT_ID'),
-        'redirect_uri': nconf.get('ONEDRIVE_REDIRECT_URI'),
+        'redirect_uri': nconf.get('ONEDRIVE_REDIRECT'),
         'client_secret': nconf.get('ONEDRIVE_CLIENT_SECRET'),
         'code': req.query.code,
         'grant_type': 'authorization_code'
@@ -959,7 +958,7 @@ app.get('/authorize/onedrive/finish', function (req, res) {
         }
 
         if (resp.body.error) {
-            res.sendStatus(400);
+            res.status(400).json(resp.body);
             return;
         }
 
