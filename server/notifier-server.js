@@ -138,7 +138,10 @@ var sequelize = new Sequelize(dbConfig.dbname,
  */
 var sanitizeStrictConfig = {
     allowedTags: [],
-    allowedAttributes: {}
+    allowedAttributes: {},
+    textFilter: function (text) {
+        return text.replace(/&quot;/g, '"');
+    },
 };
 
 var sanitizeStrict = function (context, field, value) {
@@ -151,6 +154,9 @@ var sanitizeTolerantConfig = {
     allowedTags: [ 'b', 'i', 'em', 'strong', 'a', 'p' ],
     allowedAttributes: {
         'a': [ 'href' ]
+    },
+    textFilter: function (text) {
+        return text.replace(/&quot;/g, '"');
     },
     allowedSchemes: [ 'http', 'https', 'mailto' ]
 };
