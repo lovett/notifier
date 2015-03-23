@@ -31,6 +31,10 @@ if (process.env.NODE_ENV) {
     nconf.file(path.resolve(__dirname + '/../../env.json'));
 }
 
+nconf.defaults({
+    'ONEDRIVE_RETAIN_DAYS': 3
+});
+
 /**
  * OAuth tokens
  * --------------------------------------------------------------------
@@ -55,7 +59,7 @@ fs.readFile(nconf.get('ONEDRIVE_AUTH_FILE'), 'utf8', function (err, data) {
 
     refreshAuthToken(function () {
         uploadFile();
-        deleteStaleFiles(3);
+        deleteStaleFiles(nconf.get('ONEDRIVE_RETAIN_DAYS'));
     });
 });
 
