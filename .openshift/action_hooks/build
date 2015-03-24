@@ -21,7 +21,7 @@ if [[ -f "package.json.bak" ]]; then
 fi
 
 npm install --production
-npm prune
+npm prune --production
 
 ORIGINAL_HOME="$HOME"
 HOME="$ORIGINAL_HOME"
