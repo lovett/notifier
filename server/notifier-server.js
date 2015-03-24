@@ -1028,7 +1028,7 @@ app.get('/authorize/pushbullet/start', passport.authenticate('basic', {session: 
                 host: 'www.pushbullet.com',
                 pathname: '/authorize',
                 query: {
-                    'client_id': nconf.get('NOTIFIER_PUSHBULLET_CLIENT_ID'),
+                    'client_id': nconf.get('PUSHBULLET_CLIENT_ID'),
                     'response_type': 'code',
                     'redirect_uri': redirectUri
                 }
@@ -1088,8 +1088,8 @@ app.get('/authorize/pushbullet/finish', function (req, res) {
 
         needle.post(tokenUrl, {
             'grant_type': 'authorization_code',
-            'client_id': nconf.get('NOTIFIER_PUSHBULLET_CLIENT_ID'),
-            'client_secret': nconf.get('NOTIFIER_PUSHBULLET_CLIENT_SECRET'),
+            'client_id': nconf.get('PUSHBULLET_CLIENT_ID'),
+            'client_secret': nconf.get('PUSHBULLET_CLIENT_SECRET'),
             'code': req.query.code
         }, function (err, resp, body) {
             Token.destroy({
