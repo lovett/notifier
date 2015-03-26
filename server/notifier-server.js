@@ -720,15 +720,18 @@ app.use(function (req, res, next) {
     var connectSrc = 'connect-src \'self\'';
     var scriptSrc = 'script-src \'self\'';
 
+    var httpProtocol = (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'https':'http';
+    var websocketProtocol = (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'wss':'ws';
 
     if (nconf.get('NOTIFIER_WEBSOCKET_PORT')) {
-        connectSrc += util.format(' %s://%s:%s', (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'wss':'ws', hostname, nconf.get('NOTIFIER_WEBSOCKET_PORT'));
-        scriptSrc  += util.format(' %s://%s:%s', (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'https':'http', hostname, nconf.get('NOTIFIER_WEBSOCKET_PORT'));
+        connectSrc += util.format(' %s://%s:%s', websocketProtocol, hostname, nconf.get('NOTIFIER_WEBSOCKET_PORT'));
+        scriptSrc  += util.format(' %s://%s:%s', httpProtocol, hostname, nconf.get('NOTIFIER_WEBSOCKET_PORT'));
     }
 
-    if (nconf.get('NOTIFIER_LIVERELOAD')) {
-        connectSrc += util.format(' %s://%s:%s', (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'wss':'ws', nconf.get('NOTIFIER_DEV_HOST'), nconf.get('NOTIFIER_LIVERELOAD'));
-        scriptSrc += util.format(' \'unsafe-inline\' http://%s:%s', nconf.get('NOTIFIER_DEV_HOST'), nconf.get('NOTIFIER_LIVERELOAD'));
+    if (nconf.get('NOTIFIER_LIVERELOAD_HOST') && nconf.get('NOTIFIER_LIVERELOAD_PORT')) {
+        var liveReloadHostPort = util.format('%s:%s', nconf.get('NOTIFIER_LIVERELOAD_HOST'), nconf.get('NOTIFIER_LIVERELOAD_PORT'));
+        connectSrc += util.format(' %s://%s', websocketProtocol, liveReloadHostPort);
+        scriptSrc += util.format(' %s://%s', httpProtocol, liveReloadHostPort);
     }
 
     var headerValue = [];
