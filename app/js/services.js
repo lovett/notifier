@@ -406,7 +406,28 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
                     'Authorization': User.getAuthHeader()
                 }
             }).success(function(data) {
+                var currentIds, staleIds;
+                staleIds = [];
                 if (data instanceof Array) {
+
+                    // We've just received the current list of
+                    // uncleared messages, but we might be holding
+                    // other messages that were cleared by another
+                    // client while we were offline. They should be
+                    // dropped.
+                    currentIds = data.map(function (message) {
+                        return message.publidId;
+                    });
+
+                    self.messages.forEach(function (message) {
+                        if (currentIds.indexOf(message.publicId) === -1) {
+                            staleIds.push(message.publicId);
+                        }
+                    });
+
+                    if (staleIds.length > 0) {
+                        self.drop(staleIds);
+                    }
 
                     if (data.length === 0) {
                         // This gets the app message to change from "Connecting" to
@@ -424,8 +445,6 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
                     });
 
                 }
-
-            }).error(function() {
             });
         },
 
