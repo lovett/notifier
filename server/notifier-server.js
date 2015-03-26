@@ -856,15 +856,15 @@ var publishMessage = function (user, message) {
                 if (message.pushbulletId === '0') {
                     return;
                 }
-                needle.delete('https://api.pushbullet.com/v2/pushes/' + message.values.pushbulletId, null, {
+                needle.delete('https://api.pushbullet.com/v2/pushes/' + message.pushbulletId, null, {
                     'username': user.serviceTokens.pushbullet,
                     'password': ''
                 });
             });
         } else {
             needle.post('https://api.pushbullet.com/v2/pushes', {
-                'title': message.values.title,
-                'body': message.values.body,
+                'title': message.title,
+                'body': message.body,
                 'type': 'note'
             }, {
                 'username': user.serviceTokens.pushbullet,
@@ -877,7 +877,7 @@ var publishMessage = function (user, message) {
 
                 Message.update(
                     {pushbulletId: res.body.iden},
-                    {where: {id: message.values.id}}
+                    {where: {id: message.id}}
                 );
             });
         }
@@ -932,7 +932,7 @@ app.get('/authorize/onedrive/start', passport.authenticate('basic', {session: fa
     var endpoint = url.parse('https://login.live.com/oauth20_authorize.srf');
 
     // this endpoint can only be accessed by the default user
-    if (req.user.values.username !== nconf.get('NOTIFIER_DEFAULT_USER')) {
+    if (req.user.username !== nconf.get('NOTIFIER_DEFAULT_USER')) {
         res.sendStatus(400);
         return;
     }
@@ -1020,7 +1020,7 @@ app.get('/authorize/pushbullet/start', passport.authenticate('basic', {session: 
         token.value = value;
         token.save().then(function (token) {
             token.setUser(req.user).then(function () {
-                sendUrl(token.values.value);
+                sendUrl(token.value);
             });
         }, function (error) {
             res.status(400).json(error);
@@ -1053,7 +1053,7 @@ app.get('/authorize/pushbullet/finish', function (req, res) {
             Token.destroy({
                 where: {
                     key: 'pushbullet',
-                    UserId: token.User.values.id
+                    UserId: token.User.id
                 }
             }).then(function () {
                 res.redirect('/');
@@ -1070,9 +1070,9 @@ app.get('/authorize/pushbullet/finish', function (req, res) {
             Token.destroy({
                 where: {
                     key: 'pushbullet',
-                    UserId: token.User.values.id,
+                    UserId: token.User.id,
                     id: {
-                        $ne: token.values.id
+                        $ne: token.id
                     }
                 }
             }).then(function () {
@@ -1189,7 +1189,7 @@ app.get('/archive/:count', passport.authenticate('basic', { session: false }), f
 
     Message.findAll(filters).then(function (messages) {
         messages = messages.map(function (message) {
-            delete message.values.id;
+            delete message.id;
             return message;
         });
         res.send(messages);
