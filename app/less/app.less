@@ -26,12 +26,11 @@
 
 HTML {
     @from: @green;
-    @to: lighten(@from, 30%);
-    @corner: top;
+    @to: lighten(@from, 20%);
     min-height: 100%;
     background-color: @from;
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,@from), color-stop(100%,@to));
-    background: linear-gradient(@corner, @from, @to);
+    background: linear-gradient(180deg, @from, @to);
 }
 
 BODY {
