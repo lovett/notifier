@@ -64,10 +64,7 @@ var log = bunyan.createLogger({
             level: nconf.get('NOTIFIER_LOG_LEVEL')
         }
     ],
-    serializers: {
-        req: bunyan.stdSerializers.req,
-        res: bunyan.stdSerializers.res
-    }
+    serializers: bunyan.stdSerializers
 });
 
 /**
@@ -585,8 +582,6 @@ var verifySubscription = function (message, callback) {
             return;
         }
 
-        // Looks good
-        log.info('subscription looks good');
         token.save().then(function () {
             callback(message);
         });
@@ -782,7 +777,7 @@ app.use(function(req, res, next) {
     res.locals.requestId = +new Date();
 
     log.info({
-        requestId: req._requestId,
+        requestId: res.locals.requestId,
         req: req
     }, 'start');
 
