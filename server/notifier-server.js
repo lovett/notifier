@@ -516,9 +516,7 @@ passport.use(new BasicStrategy(function(key, value, next) {
             value: value
         };
 
-        token.save().then(function () {
-            next(null, token.User);
-        });
+        next(null, token.User);        
 
     }).catch(function () {
         err = new Error('Application error');
@@ -556,6 +554,8 @@ var verifySubscription = function (message, callback) {
             value: message.ext.authToken
         }
     }).then(function (token) {
+        var tokenAge;
+        
         if (!token || !token.User) {
             log.warn({message: message}, 'invalid credentials');
             message.error = '401::Invalid Credentials';
@@ -581,9 +581,15 @@ var verifySubscription = function (message, callback) {
             return;
         }
 
-        token.save().then(function () {
+        // Advance the token updatedAt value if older than 1 hour
+        tokenAge = new Date() - new Date(token.updatedAt);
+        if (tokenAge > (60 * 60 * 1000)) {
+            token.save().then(function () {
+                callback(message);
+            });
+        } else {
             callback(message);
-        });
+        }
 
     }, function () {
         log.error({message: message}, 'token lookup failed');
@@ -967,7 +973,6 @@ app.get('/authorize/onedrive/finish', function (req, res) {
 
         fs.writeFile(nconf.get('ONEDRIVE_AUTH_FILE'), JSON.stringify(resp.body), function (err) {
             if (err) {
-                console.log(err);
                 res.sendStatus(500);
             } else {
                 res.redirect('/');
