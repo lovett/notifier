@@ -266,32 +266,20 @@ module.exports = function(grunt) {
         },
 
         shell: {
-            'favicons-dev': {
+            'favicon': {
                 command: [
-                    'rm -rf static/favicon',
-                    'mkdir static/favicon',
-                    'convert app/favicon/favicon-dev.svg -geometry 16x16 -transparent white static/favicon/favicon-16.png',
-                    'convert app/favicon/favicon-dev.svg -geometry 32x32 -transparent white static/favicon/favicon-32.png',
-                    'convert app/favicon/favicon-dev.svg -geometry 48x48 -transparent white static/favicon/favicon-48.png',
-                    'convert static/favicon/favicon-16.png static/favicon/favicon-32.png static/favicon/favicon-48.png static/favicon/favicon.ico',
-                    'convert app/favicon/favicon-dev.svg -geometry 152x152 static/favicon/favicon-152.png',
-                    'convert app/favicon/favicon-dev.svg -geometry 120x120 static/favicon/favicon-120.png',
-                    'convert app/favicon/favicon-dev.svg -geometry 180x180 static/favicon/favicon-180.png',
-                    'convert app/favicon/favicon-dev.svg -geometry 144x144 static/favicon/favicon-144.png',
-                ].join(' && ')
-            },
-            'favicons-production': {
-                command: [
-                    'rm -rf static/favicon',
-                    'mkdir static/favicon',
-                    'convert app/favicon/favicon.svg -geometry 16x16 -transparent white static/favicon/favicon-16.png',
-                    'convert app/favicon/favicon.svg -geometry 32x32 -transparent white static/favicon/favicon-32.png',
-                    'convert app/favicon/favicon.svg -geometry 48x48 -transparent white static/favicon/favicon-48.png',
-                    'convert static/favicon/favicon-16.png static/favicon/favicon-32.png static/favicon/favicon-48.png static/favicon/favicon.ico',
-                    'convert app/favicon/favicon.svg -geometry 152x152 static/favicon/favicon-152.png',
-                    'convert app/favicon/favicon.svg -geometry 120x120 static/favicon/favicon-120.png',
-                    'convert app/favicon/favicon.svg -geometry 180x180 static/favicon/favicon-180.png',
-                    'convert app/favicon/favicon.svg -geometry 144x144 static/favicon/favicon-144.png',
+                    'cd app/favicon',
+                    'convert favicon.png -geometry 152x152 -transparent white favicon-152.png',
+                    'convert favicon.png -geometry 144x144 -transparent white favicon-144.png',
+                    'convert favicon.png -geometry 120x120 -transparent white favicon-120.png',
+                    'convert favicon.png -geometry 76x76 -transparent white favicon-76.png',
+                    'convert favicon.png -geometry 48x48 -transparent white temp-48.png',
+                    'convert favicon.png -geometry 32x32 -transparent white temp-32.png',
+                    'convert favicon.png -geometry 16x16 -transparent white temp-16.png',
+                    'optipng -quiet -o 3 favicon-*.png',
+                    'advdef -q -z -4 -i 5 favicon-*.png',
+                    'convert temp-16.png temp-32.png temp-48.png favicon.ico',
+                    'rm temp-*.png'
                 ].join(' && ')
             },
             'server': {
@@ -375,7 +363,7 @@ module.exports = function(grunt) {
         var tasks = [];
 
         if (buildType === 'full') {
-            tasks = tasks.concat(['clean', 'copy', 'uglify']);
+            tasks = tasks.concat(['clean', 'copy', 'uglify', 'shell:favicon']);
         } else {
             tasks = tasks.concat(['clean:app', 'copy:app', 'uglify:app']);
         }
@@ -383,9 +371,9 @@ module.exports = function(grunt) {
         tasks = tasks.concat(['less', 'autoprefixer', 'replace:websocket']);
 
         if (environment === 'dev') {
-            tasks = tasks.concat(['shell:favicons-dev', 'replace:dev']);
+            tasks = tasks.concat('replace:dev');
         } else {
-            tasks = tasks.concat(['shell:favicons-production', 'replace:production']);
+            tasks = tasks.concat('replace:production');
         }
 
         tasks = tasks.concat(['clean:postBuild', 'appcache']);

@@ -17,3 +17,5 @@ env*.json
 coverage
 *.bak
 migration-config.json
+app/favicon/favicon-*
+app/favicon/favicon.ico
