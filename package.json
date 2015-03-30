@@ -42,6 +42,7 @@
     "passport": "0.2.1",
     "passport-http": "0.2.2",
     "passport-local": "1.0.0",
+    "permessage-deflate": "^0.1.2",
     "response-time": "2.3.0",
     "sanitize-html": "1.6.1",
     "sequelize": "2.0.5",

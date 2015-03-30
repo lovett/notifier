@@ -2,6 +2,7 @@ var bunyan = require('bunyan');
 var https = require('https');
 var fs = require('fs');
 var faye = require('faye');
+var deflate = require('permessage-deflate');
 var express = require('express');
 var bodyParser = require('body-parser');
 var responseTime = require('response-time');
@@ -533,6 +534,8 @@ passport.use(new BasicStrategy(function(key, value, next) {
 var bayeux = new faye.NodeAdapter({
     mount: '/messages'
 });
+
+bayeux.addWebsocketExtension(deflate);
 
 /**
  * Websocket helpers
