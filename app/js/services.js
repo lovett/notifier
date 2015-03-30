@@ -175,6 +175,13 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
 
     return {
         init: function (port) {
+
+            if (client) {
+                client.disconnect();
+                client = undefined;
+                $log.info('Destroyed Faye client');
+            }
+
             port = parseInt(port, 10) || 0;
             if (port === 0) {
                 port = $location.port();
@@ -183,10 +190,7 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
             $log.info('Websocket port is ' + port);
 
             var url = $location.protocol() + '://' + $location.host() + ':' + port + '/messages';
-            client = new Faye.Client(url, {
-                timeout: 45,
-                retry: 5
-            });
+            client = new Faye.Client(url);
 
             client.addExtension({
                 incoming: function (message, callback) {
@@ -256,14 +260,6 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
 
         unsubscribe: function (channel) {
             client.unsubscribe(channel);
-        },
-
-        disconnect: function () {
-            if (angular.isDefined(client)) {
-                client.unsubscribe();
-                client.disconnect();
-                $log.info('Disconnected client');
-            }
         }
 
     };

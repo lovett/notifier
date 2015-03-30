@@ -30,10 +30,6 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
     $scope.queue = Queue;
 
     $scope.$on('connection:change', function (e, state) {
-        if (state === 'offline') {
-            Faye.disconnect();
-        }
-
         if (state === 'online') {
             Faye.init($scope.websocketPort);
             Faye.subscribe();

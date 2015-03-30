@@ -533,8 +533,7 @@ passport.use(new BasicStrategy(function(key, value, next) {
  * --------------------------------------------------------------------
  */
 var bayeux = new faye.NodeAdapter({
-    mount: '/messages',
-    timeout: 120
+    mount: '/messages'
 });
 
 /**
