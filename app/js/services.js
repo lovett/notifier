@@ -393,7 +393,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
         fill: function () {
             var self = this;
 
-            var url = '/archive/10';
+            var url = '/archive/25';
 
             $http({
                 method: 'GET',
