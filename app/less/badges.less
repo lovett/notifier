@@ -1,3 +1,11 @@
+.badgeGroup(@backgroundColor; @svgPath) {
+    background-color: @backgroundColor;
+
+    .badge {
+        background-image: data-uri(@svgPath);
+    }
+}
+
 .dark-bg {
     color: white;
 
@@ -7,96 +15,50 @@
     }
 }
 
-
 .message.email {
     .dark-bg;
-
-    background-color: rgb(56,101,120);
-
-    .badge {
-        background-image: data-uri('../svg/mail.svg');
-    }
+    .badgeGroup(rgb(56,101,120), '../svg/mail.svg');
 }
 
 .message.openshift {
-    .badge {
-        background-color: transparent;
-        background-image: data-uri('../svg/openshift.svg');
-        background-size: 100%;
-    }
+    .badgeGroup(white, '../svg/openshift.svg');
 }
 
 .message.phone {
-    background-color: rgb(253, 255, 196);
-
-    .badge {
-        background-image: data-uri('../svg/phone-outline.svg');
-    }
+    .badgeGroup(rgb(253, 255, 196), '../svg/phone-outline.svg');
 }
 
 .message.web {
     .dark-bg;
-
-    background-color: rgb(95,67,64);
-
-    .badge {
-        background-image: data-uri('../svg/globe-outline.svg');
-    }
+    .badgeGroup(rgb(95,67,64), '../svg/globe-outline.svg');
 }
 
 .message.reminder {
-    background-color: #e5e5e5;
-
-    .badge {
-        background-image: data-uri('../svg/pin-outline.svg');
-    }
+    .badgeGroup(#e5e5e5, '../svg/pin-outline.svg');
 }
 
 .message.calendar {
-    background-color: Cornsilk;
-
-    .badge {
-        background-image: data-uri('../svg/calendar-outline.svg');
-    }
+    .badgeGroup(Cornsilk, '../svg/calendar-outline.svg');
 }
 
 .message.sysdown {
     .dark-bg;
-    background-color: #ef4747;
-
-    .badge {
-        background-image: data-uri('../svg/weather-stormy.svg');
-    }
+    .badgeGroup(#ef4747, '../svg/weather-stormy.svg');
 }
 
 .message.sysup {
-    background-color: rgb(135, 227, 243);
-    .badge {
-        background-image: data-uri('../svg/thumbs-ok.svg');
-    }
+    .badgeGroup(rgb(135, 227, 243), '../svg/thumbs-ok.svg');
 }
 
 .message.git {
-    background-color: #D1F4F8;
-
-    .badge {
-        background-image: data-uri('../svg/social-github.svg');
-    }
+    .badgeGroup(#d1f4f8, '../svg/social-github.svg');
 }
 
 .message.debian {
-    .badge {
-        background-color: transparent;
-        background-image: data-uri('../svg/debian.svg');
-    }
+    .badgeGroup(white, '../svg/debian.svg');
 }
 
 .message.azure {
     .dark-bg;
-
-    background-color: #16aaea;
-
-    .badge {
-        background-image: data-uri('../svg/azure-web.svg');
-    }
+    .badgeGroup(#16aaea, '../svg/azure-web.svg');
 }
