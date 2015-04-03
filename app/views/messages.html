@@ -1,5 +1,5 @@
     <main>
-    <header class="clearfix not-selectable">
+    <header class="page-header clearfix not-selectable">
         <div class="left">
             <notifier-connection-status></notifier-connection-status>
         </div>
@@ -14,17 +14,19 @@
 
         <div class="badge"></div>
 
-        <h1 ng-show="message.title">
-            <a ng-if="message.url" ng-href="{{::message.url}}" rel="noreferrer" target="_blank">
-                {{::message.title}}
-                <svg class="icon icon-external-link"><use xlink:href="#icon-external-link"></use></svg>
-            </a>
-            <span ng-if="!message.url">{{::message.title}}</span>
-        </h1>
-        <time datetime="{{::message.received | date:'yyyy-MM-ddTHH:mmZ'}}">
-            {{::message.received | date:'h:mm a'}}
-            {{::message.received | reldate | date: 'EEEE MMMM d'}}
-        </time>
+        <header>
+            <h1 ng-show="message.title">
+                <a ng-if="message.url" ng-href="{{::message.url}}" rel="noreferrer" target="_blank">
+                    {{::message.title}}
+                    <svg class="icon icon-external-link"><use xlink:href="#icon-external-link"></use></svg>
+                </a>
+                <span ng-if="!message.url">{{::message.title}}</span>
+            </h1>
+            <time datetime="{{::message.received | date:'yyyy-MM-ddTHH:mmZ'}}">
+                {{::message.received | date:'h:mm a'}}
+                {{::message.received | reldate | date: 'EEEE MMMM d'}}
+            </time>
+        </header>
         <p ng-show="message.body" ng-bind-html="message.body"></p>
     </article>
 </main>

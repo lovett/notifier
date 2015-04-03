@@ -1,8 +1,24 @@
-@media only screen and (min-width: 320px) and (max-device-width : 568px) and (orientation: landscape) {
-    HEADER NAV {
+@media only screen and (min-width: 320px) and (max-device-width : 568px) {
+    .page-header NAV {
         text-align: right;
     }
 
+    .badge {
+        width: 3em;
+        background-position: center 1em;
+        margin-left: .5em;
+    }
+
+    .message {
+        padding-left: 1em;
+
+        HEADER {
+            padding-left: 2.5em;
+        }
+    }
+}
+
+@media only screen and (min-width: 320px) and (max-device-width : 568px) and (orientation: landscape) {
     .app-message {
         top: 1em;
     }
@@ -37,10 +53,6 @@
 }
 
 @media only screen and (min-width: 320px) and (max-device-width : 568px)  and (orientation: portrait) {
-    HEADER NAV {
-        text-align: right;
-    }
-
     .app-message {
         top: 4em;
     }
