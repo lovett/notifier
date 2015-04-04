@@ -10,7 +10,6 @@
     <p class="app-message fade-out" ng-if="appMessage">{{ appMessage }}</p>
 
     <article class="message {{::message.badge}}" ng-class="{extended: message.extended, hidden: message.state === 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false">
-        <div class="options standard-options not-selectable" notifier-message-options public-id="{{::message.publicId}}"></div>
 
         <div class="badge"></div>
 
@@ -28,6 +27,9 @@
             </time>
         </header>
         <p ng-show="message.body" ng-bind-html="message.body"></p>
+
+        <div class="options standard-options not-selectable" notifier-message-options public-id="{{::message.publicId}}"></div>
+
     </article>
 </main>
 
