@@ -517,7 +517,7 @@ passport.use(new BasicStrategy(function(key, value, next) {
             value: value
         };
 
-        next(null, token.User);        
+        next(null, token.User);
 
     }).catch(function () {
         err = new Error('Application error');
@@ -558,7 +558,7 @@ var verifySubscription = function (message, callback) {
         }
     }).then(function (token) {
         var tokenAge;
-        
+
         if (!token || !token.User) {
             log.warn({message: message}, 'invalid credentials');
             message.error = '401::Invalid Credentials';
@@ -739,7 +739,7 @@ app.use(function (req, res, next) {
 
     var headerValue = [];
     headerValue.push('default-src \'self\'');
-    headerValue.push('style-src \'self\'');
+    headerValue.push('style-src \'self\' \'unsafe-inline\'');
     headerValue.push('img-src \'self\' data:');
     headerValue.push(connectSrc);
     headerValue.push(scriptSrc);
