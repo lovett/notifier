@@ -273,7 +273,7 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
 
     self.send = function (message, ignoreFocus) {
         var messageBody;
-        
+
         if ($window.document.hasFocus() && ignoreFocus !== true) {
             return;
         }
@@ -330,6 +330,8 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
 
 appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, User, BrowserNotification) {
     'use strict';
+
+    var unfilled = true;
 
     return {
         messages: [],
@@ -391,9 +393,9 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
         },
 
         fill: function () {
-            var self = this;
-
-            var url = '/archive/25';
+            var self, url;
+            self = this;
+            url = '/archive/25';
 
             $http({
                 method: 'GET',
@@ -402,7 +404,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
                     'Authorization': User.getAuthHeader()
                 }
             }).success(function(data) {
-                var currentIds, staleIds;
+                var currentIds, staleIds, attitude;
                 staleIds = [];
                 if (data instanceof Array) {
 
@@ -412,7 +414,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
                     // client while we were offline. They should be
                     // dropped.
                     currentIds = data.map(function (message) {
-                        return message.publidId;
+                        return message.publicId;
                     });
 
                     self.messages.forEach(function (message) {
@@ -436,15 +438,22 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
                     // sequentially they will end up oldest first
                     data.reverse();
 
+                    if (unfilled) {
+                        attitude = 'silent';
+                    } else {
+                        attitude = 'normal';
+                    }
+
                     data.forEach(function (message) {
-                        self.add(message);
+                        self.add(message, attitude);
                     });
 
+                    unfilled = false;
                 }
             });
         },
 
-        add: function (message) {
+        add: function (message, attitude) {
             var exists;
 
             // don't add a message that has already been added
@@ -475,7 +484,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
 
             $rootScope.$broadcast('queue:change', this.messages.length);
 
-            if (message.group !== 'internal') {
+            if (attitude !== 'silent') {
                 message.browserNotification = BrowserNotification.send(message);
             }
         },
