@@ -163,7 +163,7 @@ appDirectives.directive('notifierTopnav', ['Queue', function (Queue) {
     };
 }]);
 
-appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'User', '$window', function (BrowserNotification, User, $window) {
+appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'User', '$window', '$document', function (BrowserNotification, User, $window, $document) {
     'use strict';
 
     return {
@@ -201,11 +201,12 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'User', '$w
                 if (scope.settingsVisible === false) {
                     return;
                 }
-                
+
                 User.getServices(function (services) {
                     services.forEach(function (service) {
                         scope.state[service] = 'active';
                     });
+                    $window.scrollTo(0, $document[0].body.clientHeight);
                 });
             };
 
