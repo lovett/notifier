@@ -30,8 +30,8 @@
     "grunt-autoprefixer": "3.0.0",
     "grunt-contrib-clean": "0.6.0",
     "grunt-contrib-copy": "0.8.0",
-    "grunt-contrib-less": "1.0.0",
-    "grunt-contrib-uglify": "0.8.1",
+    "grunt-contrib-less": "1.0.1",
+    "grunt-contrib-uglify": "0.9.1",
     "grunt-shell": "1.1.2",
     "grunt-text-replace": "0.4.0",
     "load-grunt-tasks": "3.1.0",
@@ -73,7 +73,7 @@
     "karma-ng-html2js-preprocessor": "0.1.2",
     "karma-safari-launcher": "0.1.1",
     "karma-sinon": "1.0.4",
-    "mocha": "2.2.1",
+    "mocha": "2.2.4",
     "sinon": "1.14.1",
     "supertest": "0.15.0"
   }
