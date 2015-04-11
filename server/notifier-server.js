@@ -1106,21 +1106,35 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
         persist: tokenPersist
     });
 
+    var sendResponse = function (token) {
+        token.setUser(req.user).then(function () {
+
+            res.format({
+                'text/plain': function () {
+                    var csv = util.format('%s,%s,%s',
+                                          token.key, token.value, req.user.getChannel());
+                    res.send(csv);
+                },
+                'application/json': function () {
+                    res.json({
+                        key: token.key,
+                        value: token.value,
+                        channel: req.user.getChannel()
+                    });
+                },
+                'default': function () {
+                    res.status(406).send('Not Acceptable');
+                }
+            });
+        });
+    };
 
     Token.generateKeyAndValue(function (key, value) {
         token.key = key;
         token.value = value;
 
         Token.prune(function () {
-            token.save().then(function (token) {
-                token.setUser(req.user).then(function () {
-                    res.json({
-                        key: token.key,
-                        value: token.value,
-                        channel: req.user.getChannel()
-                    });
-                });
-            }, function (error) {
+            token.save().then(sendResponse, function (error) {
                 res.status(400).json(error);
             });
         });
