@@ -843,6 +843,8 @@ var publishMessage = function (user, message) {
     bayeuxClient.publish(channel, JSON.stringify(message));
 
     user.getServiceTokens(function () {
+        var pushbulletParams;
+        
         if (!user.serviceTokens.hasOwnProperty('pushbullet')) {
             return;
         }
@@ -865,11 +867,23 @@ var publishMessage = function (user, message) {
                 });
             });
         } else {
-            needle.post('https://api.pushbullet.com/v2/pushes', {
-                'title': message.title,
-                'body': message.body,
-                'type': 'note'
-            }, {
+
+            if (message.url) {
+                pushbulletParams = {
+                    'type': 'link',
+                    'title': message.title,
+                    'body': message.body,
+                    'url': message.url
+                };
+            } else {
+                pushbulletParams = {
+                    'type': 'note',
+                    'title': message.title,
+                    'body': message.body
+                };
+            }
+
+            needle.post('https://api.pushbullet.com/v2/pushes', pushbulletParams, {
                 'username': user.serviceTokens.pushbullet,
                 'password': ''
             }, function (err, res) {
