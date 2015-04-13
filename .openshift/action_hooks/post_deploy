@@ -29,7 +29,9 @@ START=$(date +'%s')
 cd $OPENSHIFT_REPO_DIR
 
 grunt build:full
-grunt migrate
+
+# Disable sequelize migration due to error about js-v8flags during deployment
+#grunt migrate
 
 rm env-sample.json
 rm env-test.json
