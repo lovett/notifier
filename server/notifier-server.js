@@ -822,13 +822,22 @@ app.use(express.static(nconf.get('NOTIFIER_STATIC_DIR')));
  * --------------------------------------------------------------------
  */
 app.param('count', function (req, res, next, value) {
-
+    var count;
+    
     if (/\D/.test(value) === true) {
         var err = new Error('Invalid count');
         err.status = 400;
         next(err);
     } else {
-        req.params.count = parseInt(value, 10);
+        count = parseInt(value, 10);
+
+        if (count > 100) {
+            count = 100;
+        } else if (count === 0) {
+            count = 1;
+        }
+        
+        req.params.count = count;
         next();
     }
 });
