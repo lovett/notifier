@@ -97,6 +97,9 @@ module.exports = function(grunt) {
             authtoken: {
                 options: {
                     url: 'http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/auth',
+                    headers: {
+                        'Accept': 'application/json'
+                    },
                     method: 'POST',
                     form: {
                         username: '<%= env.NOTIFIER_DEFAULT_USER %>',
