@@ -366,7 +366,7 @@ module.exports = function(grunt) {
         var tasks = [];
 
         if (buildType === 'full') {
-            tasks = tasks.concat(['clean', 'copy', 'uglify', 'shell:favicon']);
+            tasks = tasks.concat(['clean', 'copy', 'uglify']);
         } else {
             tasks = tasks.concat(['clean:app', 'copy:app', 'uglify:app']);
         }
