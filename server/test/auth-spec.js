@@ -51,7 +51,7 @@ describe('/auth', function () {
         });
 
         it('returns token and channel', function (done) {
-            request = request.send({'username': 'test', 'password': 'test'});
+            request = request.send({'username': 'test', 'password': 'test'}).set('Accept', 'application/json');
             request.expect('Content-Type', /json/).expect(function (res) {
                 if (!res.body.hasOwnProperty('key')) {
                     throw new Error('No key');

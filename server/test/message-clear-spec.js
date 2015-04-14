@@ -6,6 +6,7 @@ describe('/message/clear', function () {
     before(function (done) {
         server.sync(function () {
             agent.post('/auth')
+                .set('Accept', 'application/json')
                 .send({'username': 'test', 'password': 'test'})
                 .end(function (err, res) {
                     tokenKey = res.body.key;

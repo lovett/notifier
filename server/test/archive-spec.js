@@ -10,12 +10,14 @@ describe('/archive', function () {
                 }
 
                 agent.post('/auth')
+                    .set('Accept', 'application/json')
                     .send({'username': 'test', 'password': 'test'})
                     .end(function (err, res) {
                         tokenKey = res.body.key;
                         tokenValue = res.body.value;
 
                         agent.post('/auth')
+                            .set('Accept', 'application/json')
                             .send({'username': 'test2', 'password': 'test2'})
                             .end(function (err, res) {
                                 altTokenKey = res.body.key;
