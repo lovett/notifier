@@ -37,7 +37,8 @@ if [[ ! -z "$NODE_VERSION" ]]; then
 fi
 
 # Move package.json out of the way to block the Openshift post-receive hook
-# See https://github.com/ramr/nodejs-custom-version-openshift/blob/b99acf40eff4bb67f9bd8d1464fefd9e0a9ec930/.openshift/action_hooks/pre_build
+# See https://github.com/ramr/nodejs-custom-version-openshift
+
 if [[ -f "${OPENSHIFT_REPO_DIR}package.json" ]]; then
     mv  "${OPENSHIFT_REPO_DIR}package.json" "${OPENSHIFT_REPO_DIR}package.json.bak"
 fi
