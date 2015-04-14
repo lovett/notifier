@@ -23,9 +23,6 @@ fi
 npm install --production
 npm prune --production
 
-ORIGINAL_HOME="$HOME"
-HOME="$ORIGINAL_HOME"
-
 DURATION=$(($(date +'%s') - START))
 
 echo "Finished build hook in $DURATION seconds"
