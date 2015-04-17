@@ -337,7 +337,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
         messages: [],
 
         clear: function (ids) {
-            if (!ids instanceof Array) {
+            if (!(ids instanceof Array)) {
                 ids = [ids];
             }
 
@@ -369,7 +369,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
 
         drop: function (ids) {
             var self = this;
-            if (!ids instanceof Array) {
+            if (!(ids instanceof Array)) {
                 ids = [ids];
             }
 
