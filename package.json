@@ -46,7 +46,7 @@
     "response-time": "2.3.0",
     "sanitize-html": "1.6.1",
     "sequelize": "2.0.6",
-    "sequelize-cli": "1.6.0",
+    "sequelize-cli": "1.7.0",
     "sqlite3": "3.0.5",
     "touch": "0.0.3",
     "useragent": "2.1.5"
