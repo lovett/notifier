@@ -2,20 +2,20 @@
 <html manifest="/notifier.appcache" ng-app="appModule" lang="en" ng-csp notifier-appcache-reload notifier-offline-event>
     <head>
         <title notifier-title offline-symbol="⚠ ">Notifier</title>
+
+        <link rel="shortcut icon" href="/favicon/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="76x76" href="/favicon/favicon-76.png"/>
+        <link rel="apple-touch-icon" sizes="120x120" href="/favicon/app-icon-120.png"/>
+        <link rel="apple-touch-icon" sizes="144x144" href="/favicon/app-icon-120.png"/>
+        <link rel="apple-touch-icon" sizes="152x152" href="/favicon/app-icon-152.png"/>
+        <link rel="apple-touch-icon" sizes="180x180" href="/favicon/app-icon-180.png"/>
+        <meta name="msapplication-TileColor" content="#2D8E5E" />
+        <meta name="msapplication-TileImage" content="/favicon/app-icon-144.png" />
         <meta name="description" content="A notification service"/>
         <meta name="robots" content="noindex, nofollow, noarchive"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
         <meta name="websocket port" content="" notifier-set-scope="websocketPort" />
-        <link rel="shortcut icon" href="/favicon/favicon.ico" />
         <link rel="stylesheet" href="/all.min.css" />
-
-        <meta name="msapplication-TileColor" content="#ffffff" />
-        <meta name="msapplication-TileImage" content="/favicon/favicon-144.png" />
-        <link rel="apple-touch-icon" sizes="76x76" href="/favicon/favicon-76.png"/>
-        <link rel="apple-touch-icon" sizes="120x120" href="/favicon/favicon-120.png"/>
-        <link rel="apple-touch-icon" sizes="152x152" href="/favicon/favicon-152.png"/>
-        <link rel="apple-touch-icon" sizes="180x180" href="/favicon/favicon-180.png"/>
-        <link rel="icon" href="/favicon/favicon-228.png" />
     </head>
     <body>
         <div class="view" ng-view>

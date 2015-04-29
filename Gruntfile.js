@@ -272,17 +272,16 @@ module.exports = function(grunt) {
             'favicon': {
                 command: [
                     'cd app/favicon',
-                    'convert favicon.png -geometry 228x228 -transparent white favicon-228.png',
-                    'convert favicon.png -geometry 180x180 -transparent white favicon-180.png',
-                    'convert favicon.png -geometry 152x152 -transparent white favicon-152.png',
-                    'convert favicon.png -geometry 144x144 -transparent white favicon-144.png',
-                    'convert favicon.png -geometry 120x120 -transparent white favicon-120.png',
-                    'convert favicon.png -geometry 76x76 -transparent white favicon-76.png',
+                    'convert app-icon.png -geometry 180x180 app-icon-180.png',
+                    'convert app-icon.png -geometry 152x152 app-icon-152.png',
+                    'convert app-icon.png -geometry 144x144 app-icon-144.png',
+                    'convert app-icon.png -geometry 120x120 app-icon-120.png',
+                    'convert app-icon.png -geometry 76x76 app-icon-76.png',
                     'convert favicon.png -geometry 48x48 -transparent white temp-48.png',
                     'convert favicon.png -geometry 32x32 -transparent white temp-32.png',
                     'convert favicon.png -geometry 16x16 -transparent white temp-16.png',
-                    'optipng -quiet -o 3 favicon-*.png',
-                    'advdef -q -z -4 -i 5 favicon-*.png',
+                    'optipng -quiet -o 3 app-icon-*.png',
+                    'advdef -q -z -4 -i 5 app-icon-*.png',
                     'convert temp-16.png temp-32.png temp-48.png favicon.ico',
                     'rm temp-*.png'
                 ].join(' && ')
