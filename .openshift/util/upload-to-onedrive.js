@@ -158,7 +158,7 @@ function deleteStaleFiles(maxAgeInDays) {
                 return;
             }
 
-            deletionEndpoint = API_ROOT + '/drive/items/' + id;
+            deletionEndpoint = API_ROOT + '/drive/items/' + item.id;
 
             needle.delete(endpoint, null, getDefaultOptions(), function (err, resp) {
                 if (err) {
