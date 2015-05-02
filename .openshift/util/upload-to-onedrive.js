@@ -160,7 +160,7 @@ function deleteStaleFiles(maxAgeInDays) {
 
             deletionEndpoint = API_ROOT + '/drive/items/' + item.id;
 
-            needle.delete(endpoint, null, getDefaultOptions(), function (err, resp) {
+            needle.delete(deletionEndpoint, null, getDefaultOptions(), function (err, resp) {
                 if (err) {
                     console.log(err);
                     process.exit(1);
