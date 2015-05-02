@@ -823,7 +823,7 @@ app.use(express.static(nconf.get('NOTIFIER_STATIC_DIR')));
  */
 app.param('count', function (req, res, next, value) {
     var count;
-    
+
     if (/\D/.test(value) === true) {
         var err = new Error('Invalid count');
         err.status = 400;
@@ -836,7 +836,7 @@ app.param('count', function (req, res, next, value) {
         } else if (count === 0) {
             count = 1;
         }
-        
+
         req.params.count = count;
         next();
     }
@@ -853,7 +853,7 @@ var publishMessage = function (user, message) {
 
     user.getServiceTokens(function () {
         var pushbulletParams;
-        
+
         if (!user.serviceTokens.hasOwnProperty('pushbullet')) {
             return;
         }
@@ -1307,12 +1307,7 @@ app.use(function(err, req, res, next) {
  * --------------------------------------------------------------------
  */
 var sync = function (callback) {
-    sequelize.sync().complete(function (err) {
-        if (err) {
-            log.fatal(err);
-            process.exit();
-        }
-
+    sequelize.sync().then(function () {
         if (nconf.get('NOTIFIER_DEFAULT_USER')) {
             var user, password;
             user = nconf.get('NOTIFIER_DEFAULT_USER').toLowerCase();
@@ -1326,8 +1321,12 @@ var sync = function (callback) {
                 callback();
             });
         }
+    }).catch(function (err) {
+        log.fatal(err);
+        process.exit();
     });
 };
+
 
 if (!module.parent) {
     sync(function () {
