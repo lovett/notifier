@@ -45,9 +45,9 @@
     "permessage-deflate": "0.1.3",
     "response-time": "2.3.0",
     "sanitize-html": "1.6.1",
-    "sequelize": "2.1.0",
+    "sequelize": "2.1.3",
     "sequelize-cli": "1.7.0",
-    "sqlite3": "3.0.5",
+    "sqlite3": "3.0.8",
     "touch": "0.0.3",
     "useragent": "2.1.6"
   },
