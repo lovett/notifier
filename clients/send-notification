@@ -36,14 +36,17 @@ EOF
 
 authorize() {
     echo "Setting up access credentials."
-    
+
     read -p "Enter the full URL of your notifier server: " NOTIFIER_URL
 
     NOTIFIER_HOST_AND_PORT=${NOTIFIER_URL##*\/\/}
     NOTIFIER_HOST=${NOTIFIER_HOST_AND_PORT%%:*}
 
     read -p "Username: " NOTIFIER_USERNAME
-    read -s -p "Password: " NOTIFIER_PASSWORD
+
+    stty -echo
+    read -p "Password: " NOTIFIER_PASSWORD
+    stty echo
 
     echo ""
     echo ""
@@ -55,14 +58,14 @@ authorize() {
                     -d "label=${0##*/}" \
                     -d "persist=1" \
                     $NOTIFIER_URL/auth)
-    
+
     RESPONSE_CODE=${RESPONSE##*,}
 
     if [ "$RESPONSE_CODE" != "200" ]; then
         echo "Could not log in. Server returned $RESPONSE_CODE" >&2
         exit;
     fi
-    
+
     RESPONSE_USER=$(echo "$RESPONSE" | cut -d "," -f 1)
     RESPONSE_PASS=$(echo "$RESPONSE" | cut -d "," -f 2)
 
@@ -71,12 +74,12 @@ authorize() {
 }
 
 OPTIND=1
-SERVER="$NOTIFIER_SERVER"
 TITLE=""
 GROUP=""
 BODY=""
 URL=""
 PUSHBULLET_ID=""
+SERVER=${NOTIFIER_SERVER:-}
 
 while getopts "ahp:s:t:g:b:u:" opt; do
     case "$opt" in
@@ -112,9 +115,10 @@ shift "$((OPTIND-1))"
 
 if [ -z "$SERVER" ]; then
     echo "ERROR: No server specified." >&2
-    echo "Run with -a flag to set up authentication credentials" >&2
+    echo "Run with -a to set up authentication credentials" >&2
+    echo "Run with -h for usage details" >&2
     exit 2
-fi    
+fi
 
 curl -n -s \
      -d "title=$TITLE" \
@@ -123,3 +127,5 @@ curl -n -s \
      -d "url=$URL"  \
      -d "pushbulletId=$PUSHBULLET_ID" \
      "$SERVER/message"
+
+echo ""
