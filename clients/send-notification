@@ -120,7 +120,7 @@ if [ -z "$SERVER" ]; then
     exit 2
 fi
 
-curl -n -s \
+curl -n -f -s \
      -d "title=$TITLE" \
      -d "group=$GROUP" \
      -d "body=$BODY" \
@@ -128,4 +128,3 @@ curl -n -s \
      -d "pushbulletId=$PUSHBULLET_ID" \
      "$SERVER/message"
 
-echo ""
