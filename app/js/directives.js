@@ -46,6 +46,19 @@ appDirectives.directive('notifierTitle', function () {
     };
 });
 
+appDirectives.directive('notifierConnectionIcon', [function () {
+    'use strict';
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            scope.$on('connection:change', function (e, state) {
+                if (state === 'connected') {
+                    element.removeClass('hidden').addClass('fadeout');
+                }
+            });
+        }
+    };
+}]);
 
 appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', function ($log, $filter) {
     'use strict';
