@@ -6,7 +6,7 @@ be web browsers or other scripts written in any language.
 
 The notifer server is a Node.js application. It handles incoming
 messages, manages websocket connections, and serves the browser
-UI. The browser UI uses AngularJS. 
+UI.
 
 ## Installation
 
@@ -24,23 +24,30 @@ Then install the remaining NPM packages locally:
 `npm install`
 
 The notifier server is configured via a JSON file. A default file is
-provided as `env-sample.json`. Copy this file to `env.json`:
-
-`cp env-sample.json env.json`
-
-Now use Grunt to build the browser UI:
+provided as `env-sample.json`. Copy this file to `env.json` and
+customize as appropriate. Now use Grunt to build the browser UI:
 
 `grunt`
 
-Start the server:
+Now start the server:
 
 `grunt shell:server`
 
-Send yourself a test message via grunt:
+Authenticate with the server and send yourself a test message via grunt:
 
 `grunt http:authtoken; grunt http:onemessage`
 
 Finally, view the application in a web browser. By default, it will be
 running on localhost:8080. The default username and password are both
 "notifier".
+
+## Attribution
+
+The icons used in the browser UI are taken from the
+[Typicons](http://typicons.com) library.
+
+The server and browser clients use [Faye](http://faye.jcoglan.com) for
+publish-subscribe over websockets.
+
+The browser UI uses [AngularJS](https://angularjs.org). 
 
