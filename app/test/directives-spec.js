@@ -226,19 +226,6 @@ describe('appDirectives', function () {
             isolateScope.settings();
             assert.isTrue(isolateScope.settingsVisible);
         });
-    });
-
-    describe('notifierTopnav', function () {
-        var scope, isolateScope, element, purgeStub;
-
-        beforeEach(angular.mock.inject(function ($compile, $rootScope, Queue) {
-            scope = $rootScope;
-            element = angular.element('<notifier-topnav></notifier-topnav>');
-            $compile(element)(scope);
-            scope.$apply();
-            isolateScope = element.isolateScope();
-            purgeStub = sinon.stub(Queue, 'purge');
-        }));
 
         it('hides clear all link by default', function () {
             assert.isTrue(isolateScope.hideClearAll);
@@ -274,6 +261,5 @@ describe('appDirectives', function () {
             scope.$broadcast('queue:change', 1)
             assert.isFalse(isolateScope.hideClearAll);
         });
-
     });
 });

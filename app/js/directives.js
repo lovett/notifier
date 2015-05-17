@@ -64,7 +64,7 @@ appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', function
     'use strict';
     return {
         restrict: 'E',
-        template: '<span></span><span></span>',
+        template: '<span></span>',
         link: function (scope, element) {
             var children = element.children();
             var badge = angular.element(children[0]);
@@ -125,15 +125,16 @@ appDirectives.directive('notifierMessageOptions', ['Queue', function (Queue) {
     };
 }]);
 
-appDirectives.directive('notifierTopnav', ['Queue', function (Queue) {
+appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'Queue', 'User', '$window', '$document', function (BrowserNotification, Queue, User, $window, $document) {
     'use strict';
 
     return {
-        restrict: 'E',
-        templateUrl: '/views/topnav.html',
+        restrict: 'A',
+        templateUrl: '/views/bottomnav.html',
         scope: {},
         link: function (scope) {
             scope.queueSize = 0;
+
             scope.hideClearAll = true;
 
             scope.clearAll = function () {
@@ -148,18 +149,7 @@ appDirectives.directive('notifierTopnav', ['Queue', function (Queue) {
                 scope.queueSize = size;
                 scope.hideClearAll = (size === 0);
             });
-        }
-    };
-}]);
 
-appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'User', '$window', '$document', function (BrowserNotification, User, $window, $document) {
-    'use strict';
-
-    return {
-        restrict: 'A',
-        templateUrl: '/views/bottomnav.html',
-        scope: {},
-        link: function (scope) {
             scope.state = {
                 bn: BrowserNotification.state
             };
