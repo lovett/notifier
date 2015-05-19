@@ -28,9 +28,9 @@ appDirectives.directive('notifierTitle', function () {
                 if (size === 0) {
                     element.html(defaultTitle);
                 } else if (size === 1) {
-                    element.html('1 Message');
+                    element.html('1 message');
                 } else {
-                    element.html(size + ' Messages');
+                    element.html(size + ' messages');
                 }
             });
 
@@ -67,23 +67,27 @@ appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', function
         template: '<span></span>',
         link: function (scope, element) {
             var children = element.children();
-            var badge = angular.element(children[0]);
-            var label = angular.element(children[1]);
+            var label = angular.element(children[0]);
 
             scope.$on('connection:change', function (e, state) {
                 var now = $filter('date')(new Date(), 'shortTime');
                 $log.info(state + ' at ' + now);
 
                 if (state === 'offline' || state === 'disconnected') {
-                    badge.text('disconnected');
                     label.text('Offline since ' + now);
-                    badge.attr('class', 'state disconnected');
+                    label.attr('class', 'state disconnected');
                 } else {
-                    badge.text('connected');
                     label.text('');
-                    badge.attr('class', 'state connected');
+                    label.attr('class', 'state connected');
                 }
+            });
 
+            scope.$on('queue:change', function (e, size) {
+                if (size > 3) {
+                    label.text(size + ' messages');
+                } else {
+                    label.text('');
+                }
             });
         }
     };
