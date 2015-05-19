@@ -454,7 +454,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
         },
 
         add: function (message, attitude) {
-            var exists;
+            var exists, age;
 
             // don't add a message that has already been added
             exists = this.messages.some(function(m) {
@@ -484,7 +484,10 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
 
             $rootScope.$broadcast('queue:change', this.messages.length);
 
-            if (attitude !== 'silent') {
+
+            age = (new Date() - new Date(message.received)) / 1000;
+
+            if (attitude !== 'silent' && age < 120) {
                 message.browserNotification = BrowserNotification.send(message);
             }
         },
