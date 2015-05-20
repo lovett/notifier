@@ -20,7 +20,9 @@ module.exports = function(grunt) {
                         'static/*.min.js',
                         'static/*.min.css',
                         'static/views/*.html',
-                        'static/favicon/*'
+                        'static/favicon/app-icon*.png',
+                        'static/favicon/favicon.ico',
+                        'static/favicon/favicon.png',
                     ]
                 },
                 network: '*'
@@ -44,11 +46,11 @@ module.exports = function(grunt) {
         }()),
 
         clean: {
+            full: {
+                src: ['static']
+            },
             app: {
                 src: ['static/app*', 'static/all*']
-            },
-            lib: {
-                src: ['static/lib*']
             },
             postBuild: {
                 src: ['static/version.json']
@@ -61,7 +63,7 @@ module.exports = function(grunt) {
                     {
                         expand: true,
                         cwd: 'app/',
-                        src: ['**'],
+                        src: ['**', '!**/*.psd'],
                         dest: 'static/'
                     }
                 ]
@@ -367,7 +369,7 @@ module.exports = function(grunt) {
         var tasks = [];
 
         if (buildType === 'full') {
-            tasks = tasks.concat(['clean', 'copy', 'uglify']);
+            tasks = tasks.concat(['clean:full', 'copy', 'uglify']);
         } else {
             tasks = tasks.concat(['clean:app', 'copy:app', 'uglify:app']);
         }
