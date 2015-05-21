@@ -815,7 +815,12 @@ app.use(passport.initialize());
 
 
 // Static fileserving
-app.use(express.static(nconf.get('NOTIFIER_STATIC_DIR')));
+app.use(express.static(nconf.get('NOTIFIER_STATIC_DIR'), {
+    setHeaders: function (res) {
+        res.set('Cache-Control', 'no-cache, private');
+    },
+    etag: false
+}));
 
 /**
  * Parameter validation
