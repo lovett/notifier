@@ -14,10 +14,6 @@
     padding: 0;
 }
 
-.rounded {
-    border-radius: 8px;
-}
-
 .hide-text {
     text-indent: 100%;
     white-space: nowrap;
@@ -242,7 +238,7 @@ FOOTER {
     fill: white;
 }
 
-.fadeout {
+.hidden {
     opacity: 0;
 }
 
@@ -259,10 +255,6 @@ FOOTER {
 }
 
 .onebox {
-    background-color: white;
-    min-width: 25em;
-    .rounded;
-    padding: 1em;
     text-align: center;
 
     P {
@@ -275,12 +267,13 @@ FOOTER {
         line-height: 1;
         font-size: 2em;
         margin-bottom: 1em;
+        color: white;
     }
 
     BUTTON {
         padding: .5em 1em;
         border: 0;
-        background-color: #2D8E5E;
+        background-color: darken(@green, 20%);
         color: white;
         letter-spacing: 1px;
         text-transform: uppercase;
@@ -288,7 +281,7 @@ FOOTER {
     }
 
     BUTTON:hover {
-        background-color: lighten(@green, 5%);
+        background-color: darken(@green, 10%);
     }
 }
 

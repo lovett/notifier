@@ -43,8 +43,10 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
 
 }]);
 
-appControllers.controller('LoginController', ['$scope', '$location', 'User', function ($scope, $location, User) {
+appControllers.controller('LoginController', ['$rootScope', '$scope', '$location', 'User', function ($rootScope, $scope, $location, User) {
     'use strict';
+
+    $rootScope.$broadcast('connection:change', 'inactive');
 
     if (User.getTokenKey()) {
         User.logOut();
@@ -76,8 +78,10 @@ appControllers.controller('LoginController', ['$scope', '$location', 'User', fun
 
 }]);
 
-appControllers.controller('LogoutController', ['$scope', '$location', 'User', 'Queue', 'Faye', function ($scope, $location, User, Queue, Faye) {
+appControllers.controller('LogoutController', ['$rootScope', '$scope', '$location', 'User', 'Queue', 'Faye', function ($rootScope, $scope, $location, User, Queue, Faye) {
     'use strict';
+
+    $rootScope.$broadcast('connection:change', 'inactive');
 
     if (User.getTokenKey()) {
         Faye.disconnect();

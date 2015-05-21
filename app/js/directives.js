@@ -36,7 +36,7 @@ appDirectives.directive('notifierTitle', function () {
 
             scope.$on('connection:change', function (e, state) {
                 var title = element.html().replace(symbolPattern, '');
-                if (state !== 'connected') {
+                if (state === 'disconnected') {
                     element.html(attrs.offlineSymbol + ' ' + title);
                 } else {
                     element.html(title);
@@ -51,10 +51,8 @@ appDirectives.directive('notifierConnectionIcon', [function () {
     return {
         restrict: 'A',
         link: function (scope, element) {
-            scope.$on('connection:change', function (e, state) {
-                if (state === 'connected') {
-                    element.removeClass('hidden').addClass('fadeout');
-                }
+            scope.$on('connection:change', function () {
+                element.addClass('hidden');
             });
         }
     };
