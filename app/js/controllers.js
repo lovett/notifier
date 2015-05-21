@@ -76,12 +76,12 @@ appControllers.controller('LoginController', ['$scope', '$location', 'User', fun
 
 }]);
 
-appControllers.controller('LogoutController', ['$scope', '$location', 'User', 'Faye', 'Queue', function ($scope, $location, User, Faye, Queue) {
+appControllers.controller('LogoutController', ['$scope', '$location', 'User', 'Queue', 'Faye', function ($scope, $location, User, Queue, Faye) {
     'use strict';
 
     if (User.getTokenKey()) {
-        User.logOut();
         Faye.disconnect();
+        User.logOut();
         Queue.empty();
     }
 

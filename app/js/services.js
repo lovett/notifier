@@ -260,6 +260,12 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
 
         unsubscribe: function (channel) {
             client.unsubscribe(channel);
+        },
+
+        disconnect: function () {
+            if (client) {
+                client.disconnect();
+            }
         }
 
     };
