@@ -110,7 +110,7 @@ appDirectives.directive('notifierMessageOptions', ['Queue', function (Queue) {
 
     return {
         restrict: 'A',
-        template: '<a ng-href="#" ng-click="clear()" ng-hide="hidden"><span><svg class="icon icon-close"><use xlink:href="#icon-close"></use></svg></span></a>',
+        template: '<a ng-href="#" ng-click="clear()" ng-hide="hidden"><span><svg role="img" aria-label="Close icon" class="icon icon-close"><use xlink:href="#icon-close"></use></svg></span></a>',
         scope: {
             'publicId': '@'
         },

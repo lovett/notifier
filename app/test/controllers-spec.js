@@ -17,7 +17,6 @@ describe('appControllers', function () {
                 fayeSubscribeStub = sinon.stub(Faye, 'subscribe');
                 fayeUnsubscribeStub = sinon.stub(Faye, 'unsubscribe');
                 userReplaceChannelStub = sinon.stub(User, 'replaceChannel');
-                fayeDisconnectStub = sinon.stub(Faye, 'disconnect');
 
                 controller = $controller('MessageController', {
                     $scope: scope,
@@ -31,10 +30,6 @@ describe('appControllers', function () {
 
             it('does not redirect to login', function () {
                 assert.isFalse(pathStub.called);
-            });
-
-            it('sets application message', function () {
-                assert.isString(rootScope.appMessage);
             });
 
             it('updates application message when queue is empty', function () {
@@ -60,11 +55,6 @@ describe('appControllers', function () {
                 assert.isTrue(fayeUnsubscribeStub.calledOnce);
                 assert.isTrue(userReplaceChannelStub.calledWith(channel));
                 assert.isTrue(userReplaceChannelStub.calledOnce);
-            });
-
-            it('listens for offline connection change event', function () {
-                scope.$broadcast('connection:change', 'offline');
-                assert.isTrue(fayeDisconnectStub.calledOnce);
             });
 
             it('listens for online connection change event', function () {

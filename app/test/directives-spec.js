@@ -59,9 +59,9 @@ describe('appDirectives', function () {
 
         it('displays queue size when there are unread messages', function () {
             scope.$emit('queue:change', 1);
-            assert.equal(element.html(), '1 Message');
+            assert.equal(element.html(), '1 message');
             scope.$emit('queue:change', 2);
-            assert.equal(element.html(), '2 Messages');
+            assert.equal(element.html(), '2 messages');
         });
 
         it('displays offline symbol when disconnected', function () {
@@ -107,30 +107,30 @@ describe('appDirectives', function () {
         }));
 
         it('renders blank by default', function () {
-            assert.equal(element.html(), '<span></span><span></span>');
+            assert.equal(element.html(), '<span></span>');
         });
 
-        it('displays connected badge without label when connected', function () {
+        it('clears app message when connected', function () {
             scope.$emit('connection:change', 'connected');
-            assert.equal(element.html(), '<span class="state connected">connected</span><span></span>');
+            assert.equal(element.html(), '<span class="state connected"></span>');
         });
 
-        it('displays connected badge without label when online', function () {
+        it('clears app message when online', function () {
             scope.$emit('connection:change', 'online');
-            assert.equal(element.html(), '<span class="state connected">connected</span><span></span>');
+            assert.equal(element.html(), '<span class="state connected"></span>');
         });
 
-        it('displays disconnected badge with label when offline', function () {
+        it('displays disconnected message when offline', function () {
             var now = filter('date')(new Date(), 'shortTime');
             scope.$emit('connection:change', 'offline');
-            assert.include(element.html(), '<span class="state disconnected">disconnected</span><span>Offline since');
+            assert.include(element.html(), 'Offline since');
             assert.include(element.html(), now);
         });
 
-        it('displays disconnected badge with label when disconnected', function () {
+        it('displays disconnected message when disconnected', function () {
             var now = filter('date')(new Date(), 'shortTime');
             scope.$emit('connection:change', 'disconnected');
-            assert.include(element.html(), '<span class="state disconnected">disconnected</span><span>Offline since');
+            assert.include(element.html(), 'Offline since');
             assert.include(element.html(), now);
         });
     });
@@ -179,10 +179,11 @@ describe('appDirectives', function () {
             assert.equal(isolateScope.publicId, '1');
         });
 
-        it('adds a clear link to container', function () {
-            var children = element.children();
-            assert.equal(children[0].tagName, 'A');
-            assert.equal(children[0].text, 'Clear');
+        it('adds a clear icon to container', function () {
+            var children, icon;
+            icon = element.find('SPAN').children()[0];
+            assert.equal(icon.nodeName, 'svg');
+            assert.equal(icon.getAttribute('class'), 'icon icon-close');
         });
 
         it('renders hidden when offline', function () {
@@ -203,9 +204,9 @@ describe('appDirectives', function () {
     });
 
     describe('notifierBottomnav', function () {
-        var scope, isolateScope, element;
+        var scope, isolateScope, element, purgeStub;
 
-        beforeEach(angular.mock.inject(function ($compile, $rootScope, BrowserNotification) {
+        beforeEach(angular.mock.inject(function ($compile, $rootScope, Queue, BrowserNotification) {
             BrowserNotification.state = 'unavailable';
             scope = $rootScope;
             element = angular.element('<footer notifier-bottomnav></footer>');
@@ -213,6 +214,7 @@ describe('appDirectives', function () {
             scope.$apply();
             isolateScope = element.isolateScope();
             browserNotification = BrowserNotification;
+            purgeStub = sinon.stub(Queue, 'purge');
         }));
 
         it('hides settings pane by default', function () {
