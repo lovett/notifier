@@ -35,6 +35,33 @@ describe('appDirectives', function () {
 
     });
 
+    describe('notifierAppcacheReload', function () {
+        var window, scope, element;
+        beforeEach(angular.mock.inject(function ($window, $compile, $rootScope) {
+            window = $window;
+            scope = $rootScope;
+            element = angular.element('<div notifier-appcache-reload></div>');
+            $compile(element)(scope);
+            scope.$apply();
+        }));
+
+        it('triggers a full page reload when the appcache is stale', function () {
+            var stub = sinon.stub(scope, 'fullReload');
+            var event = new Event('updateready');
+            window.applicationCache.dispatchEvent(event);
+            assert(stub.calledOnce);
+        });
+
+        it('does nothing if applicationcache is not supported', angular.mock.inject(function ($window, $compile, $rootScope) {
+            delete $window.applicationCache;
+            scope = $rootScope;
+            element = angular.element('<div notifier-appcache-reload></div>');
+            $compile(element)(scope);
+            scope.$apply();
+            assert(element.hasClass('appcache-nope'));
+        }));
+    });
+
     describe('notifierTitle', function () {
         var scope, element, title, symbol;
 
