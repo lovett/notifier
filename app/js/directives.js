@@ -1,5 +1,20 @@
 var appDirectives = angular.module('appDirectives', []);
 
+appDirectives.directive('notifierShortcuts', ['Queue', function (Queue) {
+	'use strict';
+
+	return {
+		restrict: 'A',
+		link: function (scope, element) {
+			element.bind('keypress', function (e) {
+				if (e.charCode === 88) { // X
+					Queue.purge();
+				}
+			});
+		}
+	};
+}]);
+
 appDirectives.directive('notifierOfflineEvent', ['$window', '$rootScope', function ($window, $rootScope) {
     'use strict';
 
