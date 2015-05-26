@@ -1,5 +1,23 @@
 var appDirectives = angular.module('appDirectives', []);
 
+
+appDirectives.directive('notifierFocus', [function () {
+    'use strict';
+
+    return {
+        scope: {
+            notifierFocus: '=notifierFocus'
+        },
+        link: function (scope, element) {
+            scope.$watch('notifierFocus', function (isFocused) {
+                if (isFocused === true) {
+                    element[0].focus();
+                }
+            });
+        }
+    };
+}]);
+
 appDirectives.directive('notifierShortcuts', ['Queue', function (Queue) {
 	'use strict';
 
@@ -7,9 +25,17 @@ appDirectives.directive('notifierShortcuts', ['Queue', function (Queue) {
 		restrict: 'A',
 		link: function (scope, element) {
 			element.bind('keypress', function (e) {
-				if (e.charCode === 88) { // X
+                var charCode = e.which || e.keyCode;
+
+				if (charCode === 88) { // X
 					Queue.purge();
-				}
+				} else if (charCode === 106) { // j
+                    Queue.focusNext();
+                } else if (charCode === 107) { // k
+                    Queue.focusPrevious();
+                } else if (charCode === 120) { // x
+                    Queue.clearFocused();
+                }
 			});
 		}
 	};

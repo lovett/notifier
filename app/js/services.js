@@ -342,6 +342,63 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
     return {
         messages: [],
 
+        focusNone: function () {
+            this.messages = this.messages.map(function (message) {
+                message.focused = false;
+                return message;
+            });
+        },
+
+        focusFirst: function () {
+            this.focusNone();
+            this.messages[0].focused = true;
+        },
+
+        focusOne: function (step) {
+            var focusedIndex = 0;
+            this.messages.some(function (message, index) {
+                if (message.focused) {
+                    focusedIndex = index + step;
+                }
+            });
+
+            if (!this.messages[focusedIndex]) {
+                if (step > 0) {
+                    focusedIndex -= this.messages.length - 1;
+                } else {
+                    focusedIndex = 0;
+                }
+            }
+
+            this.focusNone();
+            this.messages[focusedIndex].focused = true;
+            $rootScope.$apply();
+        },
+
+        focusNext: function () {
+            this.focusOne(1);
+        },
+
+        focusPrevious: function () {
+            this.focusOne(-1);
+        },
+
+        clearFocused: function () {
+            var focusedIndex = -1;
+            this.messages.some(function (message, index) {
+                if (message.focused) {
+                    focusedIndex = index;
+                }
+            });
+
+            if (focusedIndex === -1) {
+                return;
+            }
+
+            this.clear(this.messages[focusedIndex].publicId);
+            this.focusNext();
+        },
+
         clear: function (ids) {
             if (!(ids instanceof Array)) {
                 ids = [ids];
