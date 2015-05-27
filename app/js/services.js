@@ -342,6 +342,19 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
     return {
         messages: [],
 
+        visitLink: function () {
+            var focusedIndex;
+            this.messages.some(function (message, index) {
+                if (message.focused) {
+                    focusedIndex = index;
+                }
+            });
+
+            if (focusedIndex !== undefined && this.messages[focusedIndex].url) {
+                $window.open(this.messages[focusedIndex].url, '_blank');
+            }
+        },
+
         focusNone: function () {
             this.messages = this.messages.map(function (message) {
                 message.focused = false;

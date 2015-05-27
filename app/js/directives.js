@@ -18,24 +18,100 @@ appDirectives.directive('notifierFocus', [function () {
     };
 }]);
 
-appDirectives.directive('notifierShortcuts', ['Queue', function (Queue) {
+appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', '$document', function (Queue, $rootScope, $window, $document) {
 	'use strict';
 
+    var shortcutMap = {
+        67: {
+            key: 'C',
+            label: '⇧  c',
+            description: 'Clear all messages',
+            action: function () {
+                Queue.purge();
+            }
+        },
+        83: {
+            key: 'S',
+            label: '⇧  s',
+            description: 'Toggle settings',
+            action: function () {
+                $rootScope.$broadcast('settings:toggle');
+            }
+        },
+        76: {
+            key: 'L',
+            label: '⇧  l',
+            description: 'Log out',
+            action: function () {
+                $rootScope.$broadcast('settings:logout');
+            }
+        },
+        106: {
+            key: 'j',
+            description: 'Move to next message',
+            action: function () {
+                Queue.focusNext();
+            }
+        },
+        107: {
+            key: 'k',
+            description: 'Move to previous message',
+            action: function () {
+                Queue.focusPrevious();
+            }
+        },
+        120: {
+            key: 'x',
+            description: 'Clear active message',
+            action: function () {
+                Queue.clearFocused();
+            }
+        },
+        111: {
+            key: 'o',
+            description: 'Visit the link of the active message',
+            action: function () {
+                Queue.visitLink();
+            }
+        },
+        63: {
+            key: '?',
+            description: 'Toggle the shortcut list',
+            action: function () {
+                $rootScope.$broadcast('shortcuts:summary');
+            }
+        },
+        27: {
+            key: 'esc',
+            description: 'Hide the shortcut list',
+            action: function () {
+                $rootScope.$broadcast('shortcuts:summary', false);
+            }
+        }
+    };
+
 	return {
-		restrict: 'A',
-		link: function (scope, element) {
-			element.bind('keypress', function (e) {
+        templateUrl: '/views/shortcuts-summary.html',
+		link: function (scope) {
+            scope.visible = false;
+            scope.$on('shortcuts:summary', function (e, state) {
+                if (state !== undefined) {
+                    scope.visible = state;
+                } else {
+                    scope.visible = !scope.visible;
+                }
+                scope.$apply();
+            });
+
+            scope.shortcuts = shortcutMap;
+
+			angular.element($document[0]).bind('keypress', function (e) {
                 var charCode = e.which || e.keyCode;
 
-				if (charCode === 88) { // X
-					Queue.purge();
-				} else if (charCode === 106) { // j
-                    Queue.focusNext();
-                } else if (charCode === 107) { // k
-                    Queue.focusPrevious();
-                } else if (charCode === 120) { // x
-                    Queue.clearFocused();
+                if (!shortcutMap.hasOwnProperty(charCode)) {
+                    return;
                 }
+                shortcutMap[charCode].action();
 			});
 		}
 	};
@@ -217,11 +293,25 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'Queue', 'U
                 scope.hideClearAll = (size === 0);
             });
 
+            scope.$on('settings:toggle', function () {
+                scope.settings(!scope.settingsVisible);
+                scope.$apply();
+            });
+
+            scope.$on('settings:logout', function () {
+                $window.location = '/logout';
+            });
+
+            scope.$on('settings:browserNotifications', function (e, state) {
+                scope.state.bn = state;
+            });
+
             scope.state = {
                 bn: BrowserNotification.state
             };
 
             scope.settingsVisible = false;
+
 
             scope.enable = function (service) {
                 if (service === 'bn') {
@@ -241,8 +331,12 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'Queue', 'U
                 }
             };
 
-            scope.settings = function () {
-                scope.settingsVisible = !scope.settingsVisible;
+            scope.settings = function (state) {
+                if (state !== undefined) {
+                    scope.settingsVisible = state;
+                } else {
+                    scope.settingsVisible = !scope.settingsVisible;
+                }
 
                 if (scope.settingsVisible === false) {
                     return;
@@ -256,9 +350,9 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'Queue', 'U
                 });
             };
 
-            scope.$on('settings:browserNotifications', function (e, state) {
-                scope.state.bn = state;
-            });
+            scope.logOut = function () {
+                scope.$broadcast('settings:logout');
+            };
         }
     };
 }]);
