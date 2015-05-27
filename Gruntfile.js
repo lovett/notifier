@@ -3,8 +3,6 @@ var tokenFile = '.token';
 
 module.exports = function(grunt) {
 
-    require('load-grunt-tasks')(grunt);
-
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         env: grunt.file.readJSON('env.json'),
@@ -458,4 +456,22 @@ module.exports = function(grunt) {
     grunt.registerTask('coverage', ['clean:coverage', 'mocha_istanbul:server', 'open:coverage-server']);
 
     grunt.registerTask('default', ['githooks', 'build:full', 'watch']);
+
+    grunt.loadNpmTasks('grunt-appcache');
+    grunt.loadNpmTasks('grunt-autoprefixer');
+    grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-githooks');
+    grunt.loadNpmTasks('grunt-http');
+    grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-lesslint');
+    grunt.loadNpmTasks('grunt-mocha-istanbul');
+    grunt.loadNpmTasks('grunt-mocha-test');
+    grunt.loadNpmTasks('grunt-open');
+    grunt.loadNpmTasks('grunt-shell');
+    grunt.loadNpmTasks('grunt-text-replace');
 };
