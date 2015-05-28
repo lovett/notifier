@@ -5,12 +5,12 @@
 
     <p class="app-message fade-out" ng-if="appMessage">{{ appMessage }}</p>
 
-    <article tabindex="0" class="message {{::message.badge}}" ng-class="{extended: message.extended, hidden: message.state === 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false" ng-focus="message.focused = true" ng-blur="message.focused = false" notifier-focus="message.focused">
+    <article class="message {{::message.badge}}" ng-class="{focused: message.focused, extended: message.extended, hidden: message.state === 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false" ng-focus="message.focused = true" ng-blur="message.focused = false" notifier-focus="message.focused">
 
         <div class="badge"></div>
 
         <header>
-            <h1 ng-show="message.title"> {{ message.focused }}
+            <h1 ng-show="message.title">
                 <a ng-if="message.url" ng-href="{{::message.url}}" rel="noreferrer" target="_blank">
                     {{::message.title}}
                     <svg class="icon icon-external-link"><use xlink:href="#icon-external-link"></use></svg>
