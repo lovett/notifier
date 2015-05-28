@@ -199,7 +199,7 @@ appDirectives.directive('notifierConnectionIcon', [function () {
     };
 }]);
 
-appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', function ($log, $filter) {
+appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', 'Queue', function ($log, $filter, Queue) {
     'use strict';
     return {
         restrict: 'E',
@@ -221,9 +221,25 @@ appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', function
                 }
             });
 
-            scope.$on('queue:change', function (e, size) {
-                if (size > 3) {
-                    label.text(size + ' messages');
+            scope.$on('queue:change', function () {
+                var tallys, summary;
+
+                tallys = Queue.messages.reduce(function (accumulator, message) {
+                    if (!accumulator.hasOwnProperty(message.group)) {
+                        accumulator[message.group] = 1;
+                    } else {
+                        accumulator[message.group] += 1;
+                    }
+                    return accumulator;
+                }, {});
+
+                summary = [];
+                Object.keys(tallys).forEach(function (group) {
+                    summary.push(tallys[group] + ' ' + group);
+                });
+
+                if (summary.length > 0) {
+                    label.text(summary.join(', '));
                 } else {
                     label.text('');
                 }
