@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #
-# Install an alternative version of node and npm and global version
-# of grunt.
+# Install a custom version of node and npm. Then install application
+# dependencies.
 #
-# This is the earliest hook, which run after the application is
-# stopped but before the build hook.
+# This hook runs after the application has been stopped.
+# See http://docs.openshift.org/origin-m4/oo_cartridge_developers_guide.html#openshift-builds
 #
 # Note that OpenShift environment variables have a trailing slash.
 #
@@ -14,38 +14,37 @@ echo "Starting pre_build hook"
 
 START=$(date +'%s')
 ARCH="linux-x64"
-NODE_VERSION=$NOTIFIER_NODE_VERSION;
+WANTED_NODE_VERSION=$NOTIFIER_NODE_VERSION;
+INSTALLED_NODE_VERSION=$(node --version)
+ARCHIVE="node-${NODE_VERSION}-${ARCH}.tar.gz"
+DOWNLOAD_URL="http://nodejs.org/dist/$NODE_VERSION/$ARCHIVE"
+DESTINATION="${OPENSHIFT_DATA_DIR}${ARCHIVE}"
+NODE_DIR=${ARCHIVE%.tar.gz}
 
-# Download node and symlink it into the path
-if [[ ! -z "$NODE_VERSION" ]]; then
-
-    ARCHIVE="node-${NODE_VERSION}-${ARCH}.tar.gz"
-    DOWNLOAD_URL="http://nodejs.org/dist/$NODE_VERSION/$ARCHIVE"
-    DESTINATION="${OPENSHIFT_DATA_DIR}${ARCHIVE}"
-    NODE_DIR=${ARCHIVE%.tar.gz}
-
-    if [[ ! -f "$DESTINATION" ]]; then
-        echo "Downloading $DOWNLOAD_URL"
-        curl -s -L -o "$DESTINATION" "$DOWNLOAD_URL"
-        tar -x -z -C "$OPENSHIFT_DATA_DIR" -f "$DESTINATION"
+if [[ "$WANTED_NODE_VERSION" != "$INSTALLED_NODE_VERSION" ]]; then
+    echo "Downloading $DOWNLOAD_URL"
+    curl -s -L -o "$DESTINATION" "$DOWNLOAD_URL"
+    tar -x -z -C "$OPENSHIFT_DATA_DIR" -f "$DESTINATION"
         
-        mkdir -p "${HOME}/.node_modules/.bin"
+    mkdir -p "${HOME}/.node_modules/.bin"
         
-        ln -sf "${OPENSHIFT_DATA_DIR}${NODE_DIR}/bin/node" "${HOME}/.node_modules/.bin/"
-        ln -sf "${OPENSHIFT_DATA_DIR}${NODE_DIR}/bin/npm" "${HOME}/.node_modules/.bin/"
-    fi
+    ln -sf "${OPENSHIFT_DATA_DIR}${NODE_DIR}/bin/node" "${HOME}/.node_modules/.bin/"
+    ln -sf "${OPENSHIFT_DATA_DIR}${NODE_DIR}/bin/npm" "${HOME}/.node_modules/.bin/"
 fi
 
-# Move package.json out of the way to block the Openshift post-receive hook
-# See https://github.com/ramr/nodejs-custom-version-openshift
+# Install application dependencies
+cd $OPENSHIFT_REPO_DIR
+$HOME/.node_modules/.bin/npm install --production
+$HOME/.node_modules/.bin/npm prune --production
 
-if [[ -f "${OPENSHIFT_REPO_DIR}package.json" ]]; then
-    mv  "${OPENSHIFT_REPO_DIR}package.json" "${OPENSHIFT_REPO_DIR}package.json.bak"
+# Temporarily moving package.json prevents the default
+# Openshift build hook from running, which runs
+# npm install using the system version of nodejs.
+#
+# The deploy hook will put package.json back in place.
+if [[ -f "package.json" ]]; then
+    mv  "package.json" "package.json.bak"
 fi
-
-# Install grunt-cli globally
-npm install -g grunt-cli
-ln -sf "${OPENSHIFT_DEPENDENCIES_DIR}nodejs/node_modules/lib/node_modules/grunt-cli/bin/grunt" "${HOME}.node_modules/.bin/"
 
 DURATION=$(($(date +'%s') - START))
 

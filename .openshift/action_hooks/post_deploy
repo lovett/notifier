@@ -28,7 +28,7 @@ START=$(date +'%s')
 
 cd $OPENSHIFT_REPO_DIR
 
-grunt build:full
+npm run-script build
 
 # Disable sequelize migration due to error about js-v8flags during deployment
 #grunt migrate

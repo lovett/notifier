@@ -4,9 +4,9 @@
  * Populate the file env.json with modified values derived from
  * OpenShift environment variables
  *
- * This hook runs after pre_build and build, and occurs right before
- * the application is started. Anything needed to get the application
- * to start should be done here.
+ * This hook runs after the build hook and before the application has
+ * started. Anything needed to get the application to start should be
+ * done here.
  *
  * Note that OpenShift environment variables have a trailing slash.
  */
@@ -51,3 +51,10 @@ fs.writeFile(process.env.OPENSHIFT_REPO_DIR + 'env.json', appEnvString, function
     console.log('env.json: ' + appEnvString);
     console.log('Finished deploy hook in ' + (new Date().getTime() - start.getTime()) + ' seconds');
 });
+
+fs.rename(process.env.OPENSHIFT_REPO_DIR + 'package.json.bak', process.env.OPENSHIFT_REPO_DIR + 'package.json', function (err) {
+    if (err) {
+        console.log(err);
+    }
+});
+
