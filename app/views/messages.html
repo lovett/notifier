@@ -1,5 +1,5 @@
 <main>
-    <header class="page-header not-selectable">
+    <header class="page-header">
         <notifier-connection-status></notifier-connection-status>
     </header>
 
@@ -24,7 +24,7 @@
         </header>
         <p ng-show="message.body" ng-bind-html="message.body"></p>
 
-        <div class="options standard-options not-selectable" notifier-message-options public-id="{{::message.publicId}}"></div>
+        <div class="options standard-options" notifier-message-options public-id="{{::message.publicId}}"></div>
 
     </article>
 </main>

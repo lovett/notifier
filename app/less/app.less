@@ -1,28 +1,8 @@
-@green: #2D8E5E;
-
-.not-selectable {
-    -webkit-touch-callout: none;
-    user-select: none;
-}
-
-.svg-defs {
-    display: none;
-}
-
-.reset {
-    margin: 0;
-    padding: 0;
-}
-
-.hide-text {
-    text-indent: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-}
+@palettePrimary: #2D8E5E;
 
 HTML {
-    @from: @green;
-    @to: lighten(@from, 20%);
+    @from: @palettePrimary;
+    @to: lighten(@palettePrimary, 20%);
     min-height: 100%;
     background-color: @from;
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,@from), color-stop(100%,@to));
@@ -32,6 +12,29 @@ HTML {
 BODY {
     font-family: 'Geneva', Arial, sans-serif;
     min-height: 100%;
+}
+
+A {
+    color: @palettePrimary;
+    text-decoration: none;
+}
+
+A:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+MAIN {
+    flex: 1;
+}
+
+.svg-defs {
+    display: none;
+}
+
+.reset {
+    margin: 0;
+    padding: 0;
 }
 
 .view {
@@ -53,15 +56,6 @@ BODY {
     justify-content: center;
 }
 
-A {
-    color: @green;
-    text-decoration: none;
-}
-
-A:hover {
-    text-decoration: underline;
-    cursor: pointer;
-}
 
 .box-reset {
     margin: 0;
@@ -100,15 +94,11 @@ A:hover {
     }
 }
 
-MAIN {
-    flex: 1;
-}
-
 FOOTER {
     font-size: .85em;
 
     NAV {
-        background-color: @green;
+        background-color: @palettePrimary;
         display: inline-block;
         width: 100%;
 
@@ -127,7 +117,7 @@ FOOTER {
 
     .app-settings {
         .reset;
-        background-color: lighten(@green, 5%);
+        background-color: lighten(@palettePrimary, 5%);
         clear: both;
         color: black;
 
@@ -278,7 +268,7 @@ FOOTER {
     BUTTON {
         padding: .5em 1em;
         border: 0;
-        background-color: darken(@green, 20%);
+        background-color: darken(@palettePrimary, 20%);
         color: white;
         letter-spacing: 1px;
         text-transform: uppercase;
@@ -286,12 +276,12 @@ FOOTER {
     }
 
     BUTTON:hover {
-        background-color: darken(@green, 10%);
+        background-color: darken(@palettePrimary, 10%);
     }
 }
 
 .disabled {
-    background-color: darken(@green, 10%);
+    background-color: darken(@palettePrimary, 10%);
 }
 
 
@@ -384,7 +374,7 @@ FOOTER {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: darken(@green, 15%);
+    background-color: darken(@palettePrimary, 15%);
     color: white;
 
     TD {
