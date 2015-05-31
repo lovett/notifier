@@ -83,8 +83,9 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
         },
         27: {
             key: 'esc',
-            description: 'Hide the shortcut list',
+            description: 'Hide the shortcut list; unfocus all messages',
             action: function () {
+                Queue.focusNone();
                 $rootScope.$broadcast('shortcuts:summary', false);
             }
         }
