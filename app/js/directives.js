@@ -158,36 +158,6 @@ appDirectives.directive('notifierAppcacheReload', ['$window', '$rootScope', '$lo
 }]);
 
 
-appDirectives.directive('notifierTitle', function () {
-    'use strict';
-    return {
-        restrict: 'A',
-        link: function (scope, element, attrs) {
-            var symbolPattern = new RegExp('^(' + attrs.offlineSymbol + ' )?');
-            var defaultTitle = element.html();
-
-            scope.$on('queue:change', function (e, size) {
-                if (size === 0) {
-                    element.html(defaultTitle);
-                } else if (size === 1) {
-                    element.html('1 message');
-                } else {
-                    element.html(size + ' messages');
-                }
-            });
-
-            scope.$on('connection:change', function (e, state) {
-                var title = element.html().replace(symbolPattern, '');
-                if (state === 'disconnected') {
-                    element.html(attrs.offlineSymbol + ' ' + title);
-                } else {
-                    element.html(title);
-                }
-            });
-        }
-    };
-});
-
 appDirectives.directive('notifierConnectionIcon', [function () {
     'use strict';
     return {

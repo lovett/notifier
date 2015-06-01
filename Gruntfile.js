@@ -256,6 +256,9 @@ module.exports = function(grunt) {
                 replacements: [{
                     from: '<!-- livereload placeholder -->',
                     to: '<script src=\'//<%= env.NOTIFIER_LIVERELOAD_HOST %>:<%= env.NOTIFIER_LIVERELOAD_PORT %>/livereload.js\'></script>'
+                }, {
+                    from: '<!-- environment name placeholder -->',
+                    to: '<%= env.NOTIFIER_ENVIRONMENT %>'
                 }]
             },
             production: {
@@ -263,6 +266,9 @@ module.exports = function(grunt) {
                 overwrite: true,
                 replacements: [{
                     from: '<!-- livereload placeholder -->',
+                    to: ''
+                }, {
+                    from: '!<-- environment name placeholder -->',
                     to: ''
                 }]
             }

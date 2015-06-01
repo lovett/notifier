@@ -62,66 +62,6 @@ describe('appDirectives', function () {
         }));
     });
 
-    describe('notifierTitle', function () {
-        var scope, element, title, symbol;
-
-        title = 'Test';
-        symbol = '~';
-
-        beforeEach(angular.mock.inject(function ($compile, $rootScope) {
-            scope = $rootScope;
-            element = angular.element('<div notifier-title offline-symbol="' + symbol + '">' + title + '</div>');
-            $compile(element)(scope);
-            scope.$apply();
-        }));
-
-        it('sets a default title', function () {
-            assert.equal(element.html(), 'Test');
-        });
-
-        it('displays default title when queue is empty', function () {
-            scope.$emit('queue:change', 0);
-            assert.equal(element.html(), title);
-        });
-
-        it('displays queue size when there are unread messages', function () {
-            scope.$emit('queue:change', 1);
-            assert.equal(element.html(), '1 message');
-            scope.$emit('queue:change', 2);
-            assert.equal(element.html(), '2 messages');
-        });
-
-        it('displays offline symbol when disconnected', function () {
-            scope.$emit('connection:change', 'connected');
-            assert.equal(element.html(), title);
-
-            scope.$emit('connection:change', 'disconnected');
-            assert.equal(element.html(), symbol + ' ' + title);
-        });
-
-        it('preserves existing title when displaying offline symbol', function () {
-            element.html('foo');
-            scope.$emit('connection:change', 'disconnected');
-            assert.equal(element.html(), symbol + ' foo');
-            element.html(title);
-        });
-
-        it('does not display offline symbol multiple times', function () {
-            scope.$emit('connection:change', 'disconnected');
-            scope.$emit('connection:change', 'disconnected');
-            scope.$emit('connection:change', 'disconnected');
-            assert.equal(element.html(), symbol + ' ' + title);
-        });
-
-        it('removed offline symbol after reconnect', function () {
-            scope.$emit('connection:change', 'disconnected');
-            scope.$emit('connection:change', 'connected');
-            assert.equal(element.html(), title);
-        });
-
-
-    });
-
     describe('notifierConnectionStatus', function () {
         var scope, element;
 
