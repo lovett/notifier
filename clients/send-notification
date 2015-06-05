@@ -120,11 +120,11 @@ if [ -z "$SERVER" ]; then
     exit 2
 fi
 
-curl -n -f -s \
+curl --netrc --fail --silent --show-error \
      -d "title=$TITLE" \
      -d "group=$GROUP" \
      -d "body=$BODY" \
      -d "url=$URL"  \
      -d "pushbulletId=$PUSHBULLET_ID" \
-     "$SERVER/message"
+     "$SERVER/message" 2>&1 | logger -t "send-notification"
 
