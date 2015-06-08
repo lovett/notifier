@@ -268,7 +268,7 @@ module.exports = function(grunt) {
                     from: '<!-- livereload placeholder -->',
                     to: ''
                 }, {
-                    from: '!<-- environment name placeholder -->',
+                    from: '<!-- environment name placeholder -->',
                     to: ''
                 }]
             }
