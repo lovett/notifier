@@ -46,35 +46,35 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
                 $rootScope.$broadcast('settings:logout');
             }
         },
-        106: {
+        74: {
             key: 'j',
             description: 'Move to next message',
             action: function () {
                 Queue.focusNext();
             }
         },
-        107: {
+        75: {
             key: 'k',
             description: 'Move to previous message',
             action: function () {
                 Queue.focusPrevious();
             }
         },
-        120: {
+        88: {
             key: 'x',
             description: 'Clear active message',
             action: function () {
                 Queue.clearFocused();
             }
         },
-        111: {
+        79: {
             key: 'o',
             description: 'Visit the link of the active message',
             action: function () {
                 Queue.visitLink();
             }
         },
-        63: {
+        191: {
             key: '?',
             description: 'Toggle the shortcut list',
             action: function () {
@@ -106,9 +106,8 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
 
             scope.shortcuts = shortcutMap;
 
-			angular.element($document[0]).bind('keypress', function (e) {
+			angular.element($document[0]).bind('keyup', function (e) {
                 var charCode = e.which || e.keyCode;
-
                 if (!shortcutMap.hasOwnProperty(charCode)) {
                     return;
                 }
