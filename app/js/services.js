@@ -368,7 +368,12 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
         },
 
         focusOne: function (step) {
-            var focusedIndex = 0;
+            var focusedIndex;
+
+            if (this.messages.length < 1) {
+                return;
+            }
+
             this.messages.some(function (message, index) {
                 if (message.focused) {
                     focusedIndex = index + step;
@@ -376,8 +381,8 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
             });
 
             if (!this.messages[focusedIndex]) {
-                if (step > 0) {
-                    focusedIndex -= this.messages.length - 1;
+                if (step < 0) {
+                    focusedIndex = this.messages.length - 1;
                 } else {
                     focusedIndex = 0;
                 }
