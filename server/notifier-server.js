@@ -103,7 +103,7 @@ var getDbConfig = function () {
     }
 
     config.sequelize.logging = function (msg) {
-        log.info({
+        log.debug({
             sequelize: msg
         }, 'query');
     };
