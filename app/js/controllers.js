@@ -16,7 +16,8 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
         }
     });
 
-
+    $scope.queue = Queue;
+    $scope.queue.fill();
     Faye.init($scope.websocketPort);
     Faye.subscribe();
 
@@ -25,8 +26,6 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
         User.replaceChannel(channel);
         Faye.subscribe();
     });
-
-    $scope.queue = Queue;
 
     $scope.$on('connection:change', function (e, state) {
         if (state === 'online') {

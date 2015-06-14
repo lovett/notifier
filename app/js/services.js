@@ -473,8 +473,18 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
             $rootScope.$broadcast('queue:change', this.messages.length);
         },
 
+        filledOn: undefined,
+        
         fill: function () {
-            var self, url;
+            var now, self, url;
+            now = new Date().getTime();
+
+            // prevent aggressive refilling
+            if (this.filledOn && now - this.filledOn < 1000) {
+                $log.debug('Ignoring too-soon refill request');
+            }
+            this.filledOn = now;
+            
             self = this;
             url = '/archive/25';
 
@@ -529,7 +539,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
                         self.add(message, attitude);
                     });
 
-                    unfilled = false;
+                    unfilled = false;                    
                 }
             });
         },
