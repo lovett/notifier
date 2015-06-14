@@ -328,7 +328,7 @@ module.exports = function(grunt) {
         uglify: {
             app: {
                 options: {
-                    sourceMap: 'static/app.min.js.map'
+                    sourceMap: true
                 },
                 files: {
                     'static/app.min.js': ['static/js/app.js',
@@ -340,7 +340,7 @@ module.exports = function(grunt) {
             },
             lib: {
                 options: {
-                    sourceMap: 'static/lib.min.js.map',
+                    sourceMap: true
                 },
                 files: {
                     'static/lib.min.js': [
@@ -383,6 +383,8 @@ module.exports = function(grunt) {
         if (environment === 'dev') {
             tasks = tasks.concat('replace:dev');
         } else {
+            grunt.config.set('uglify.app.options.sourceMap', false);
+            grunt.config.set('uglify.lib.options.sourceMap', false);
             tasks = tasks.concat('replace:production');
         }
 
