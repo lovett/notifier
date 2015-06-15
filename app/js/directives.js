@@ -204,8 +204,9 @@ appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', 'Queue',
                 }, {});
 
                 summary = [];
-                Object.keys(tallys).forEach(function (group) {
-                    summary.push('<span class="tally">' + group + ': ' + tallys[group] + '</span>');
+                Object.keys(tallys).sort().forEach(function (group) {
+                    var displayName = (group === 'default') ? 'other' : group;
+                    summary.push('<span class="tally">' + displayName + ': ' + tallys[group] + '</span>');
                 });
 
                 if (summary.length > 0) {
