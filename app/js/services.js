@@ -517,14 +517,7 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
                     if (staleIds.length > 0) {
                         self.drop(staleIds);
                     }
-
-                    if (data.length === 0) {
-                        // This gets the app message to change from "Connecting" to
-                        // "No new messages"
-                        $rootScope.$broadcast('queue:change', self.messages.length);
-                        return;
-                    }
-
+                    
                     // messages will be ordered newest first, but if they are added to the queue
                     // sequentially they will end up oldest first
                     data.reverse();
@@ -539,7 +532,9 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
                         self.add(message, attitude);
                     });
 
-                    unfilled = false;                    
+                    unfilled = false;
+
+                    $rootScope.$broadcast('queue:change', self.messages.length);
                 }
             });
         },
