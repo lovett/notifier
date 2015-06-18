@@ -8,6 +8,20 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
         return;
     }
 
+
+    // When the shortcut summary is show, hide the message list so
+    // that the height of the body stays true to the visible content.
+    $scope.messageListVisible = true;
+    $scope.$on('shortcuts:toggle', function () {
+        $scope.messageListVisible = !$scope.messageListVisible;
+        $scope.$apply();
+    });
+
+    $scope.$on('shortcuts:hide', function () {
+        $scope.messageListVisible = true;
+        $scope.$apply();
+    });
+
     $scope.$on('queue:change', function (e, size) {
         if (size === 0) {
             $scope.appMessage = 'No new messages.';

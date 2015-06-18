@@ -78,7 +78,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
             key: '?',
             description: 'Toggle the shortcut list',
             action: function () {
-                $rootScope.$broadcast('shortcuts:summary');
+                $rootScope.$broadcast('shortcuts:toggle');
             }
         },
         27: {
@@ -86,7 +86,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
             description: 'Hide the shortcut list; unfocus all messages',
             action: function () {
                 Queue.focusNone();
-                $rootScope.$broadcast('shortcuts:summary', false);
+                $rootScope.$broadcast('shortcuts:hide');
             }
         }
     };
@@ -94,13 +94,14 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
 	return {
         templateUrl: '/views/shortcuts-summary.html',
 		link: function (scope) {
-            scope.visible = false;
-            scope.$on('shortcuts:summary', function (e, state) {
-                if (state !== undefined) {
-                    scope.visible = state;
-                } else {
-                    scope.visible = !scope.visible;
-                }
+            scope.summaryVisible = false;
+            scope.$on('shortcuts:toggle', function () {
+                scope.summaryVisible = !scope.summaryVisible;
+                scope.$apply();
+            });
+
+            scope.$on('shortcuts:hide', function () {
+                scope.summaryVisible = false;
                 scope.$apply();
             });
 

@@ -373,8 +373,28 @@ FOOTER {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: darken(@palettePrimary, 15%);
-    color: white;
+
+    .background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: darken(@palettePrimary, 15%);
+    }
+
+    .foreground {
+        position: absolute;
+        color: white;
+        top: 0;
+        left: 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    TABLE {
+        margin: auto;
+    }
 
     TD {
         text-align: left;
