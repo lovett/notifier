@@ -67,6 +67,16 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
                 Queue.clearFocused();
             }
         },
+        90: {
+            key: 'Z',
+            label: '⇧  + z',
+            description: 'Undo',
+            action: function () {
+                if (Queue.canUnclear()) {
+                    Queue.unclear();
+                }
+            }
+        },
         79: {
             key: 'o',
             description: 'Visit the link of the active message',
@@ -105,13 +115,16 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
                 scope.$apply();
             });
 
+
             scope.shortcuts = shortcutMap;
 
 			angular.element($document[0]).bind('keyup', function (e) {
                 var charCode = e.which || e.keyCode;
+
                 if (!shortcutMap.hasOwnProperty(charCode)) {
                     return;
                 }
+
                 shortcutMap[charCode].action();
 			});
 		}
@@ -267,9 +280,14 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'Queue', 'U
             scope.queueSize = 0;
 
             scope.hideClearAll = true;
+            scope.hideUndo = true;
 
             scope.clearAll = function () {
                 Queue.purge();
+            };
+
+            scope.undo = function () {
+                Queue.unclear();
             };
 
             scope.$on('connection:change', function (e, state) {
@@ -279,6 +297,7 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'Queue', 'U
             scope.$on('queue:change', function (e, size) {
                 scope.queueSize = size;
                 scope.hideClearAll = (size === 0);
+                scope.hideUndo = (Queue.canUnclear() === false);
             });
 
             scope.$on('settings:toggle', function () {

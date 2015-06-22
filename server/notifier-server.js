@@ -1240,6 +1240,29 @@ app.get('/archive/:count', passport.authenticate('basic', { session: false }), f
     });
 });
 
+app.post('/message/unclear', passport.authenticate('basic', { session: false}), function (req, res) {
+    var update = function (id) {
+        Message.update(
+            {unread: true},
+            {where: {publicId: id}}
+        ).then(function (affectedRows) {
+            if (affectedRows[0] === 0) {
+                res.sendStatus(400);
+                return;
+            }
+            res.sendStatus(204);
+        }).catch(function () {
+            res.sendStatus(500);
+        });
+    };
+
+    if (req.body.hasOwnProperty('publicId')) {
+        update(req.body.publicId);
+    } else {
+        res.sendStatus(400);
+    }
+});
+
 app.post('/message/clear', passport.authenticate('basic', { session: false }), function (req, res) {
 
     var update = function (id) {

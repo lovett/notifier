@@ -337,7 +337,10 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
 appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, User, BrowserNotification) {
     'use strict';
 
-    var unfilled = true;
+    var unfilled, removedIds;
+
+    unfilled = true;
+    removedIds = [];
 
     return {
         messages: [],
@@ -437,6 +440,31 @@ appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 
                 data: {
                     publicId: ids
                 }
+            }).success(function () {
+                removedIds.push(ids);
+            });
+        },
+
+        canUnclear: function () {
+            return removedIds.length > 0;
+        },
+        
+        unclear: function () {
+            var self, ids;
+            self = this;
+            ids = removedIds.pop();
+            
+            $http({
+                method: 'POST',
+                url: '/message/unclear',
+                headers: {
+                    'Authorization': User.getAuthHeader()
+                },
+                data: {
+                    publicId: ids
+                }
+            }).success(function () {
+                self.fill();
             });
         },
 
