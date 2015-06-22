@@ -174,7 +174,7 @@ appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', 'Queue',
     'use strict';
     return {
         restrict: 'E',
-        template: '<span></span>',
+        template: '<span class="status"></span>',
         link: function (scope, element) {
             var children = element.children();
             var label = angular.element(children[0]);
@@ -185,10 +185,10 @@ appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', 'Queue',
 
                 if (state === 'offline' || state === 'disconnected') {
                     label.text('Offline since ' + now);
-                    label.attr('class', 'state disconnected');
+                    label.addClass('disconnected');
                 } else {
                     label.text('');
-                    label.attr('class', 'state connected');
+                    label.removeClass('disconnected');
                 }
             });
 
