@@ -181,10 +181,10 @@ appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', 'Queue',
 
             scope.$on('connection:change', function (e, state) {
                 var now = $filter('date')(new Date(), 'shortTime');
-                $log.info(state + ' at ' + now);
+                $log.info(state + ' as of ' + now);
 
                 if (state === 'offline' || state === 'disconnected') {
-                    label.text('Offline since ' + now);
+                    label.text('Offline');
                     label.addClass('disconnected');
                 } else {
                     label.text('');
