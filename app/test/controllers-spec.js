@@ -163,12 +163,12 @@ describe('appControllers', function () {
 
         describe('when accessed as a logged out user', function () {
 
-            beforeEach(angular.mock.inject(function ($controller, $rootScope, $location, User, Faye, Queue) {
+            beforeEach(angular.mock.inject(function ($controller, $rootScope, $location, User, Faye, MessageList) {
                 scope = $rootScope.$new();
                 tokenKeyStub = sinon.stub(User, 'getTokenKey').returns(false);
                 logoutStub = sinon.stub(User, 'logOut');
                 disconnectStub = sinon.stub(Faye, 'disconnect');
-                emptyStub = sinon.stub(Queue, 'empty');
+                emptyStub = sinon.stub(MessageList, 'empty');
                 pathStub = sinon.stub($location, 'path');
 
                 controller = $controller('LogoutController', {
@@ -176,7 +176,7 @@ describe('appControllers', function () {
                     $location: $location,
                     User: User,
                     Faye: Faye,
-                    Queue: Queue
+                    MessageList: MessageList
                 });
             }));
 
@@ -192,12 +192,12 @@ describe('appControllers', function () {
         });
 
         describe('when access as a logged in user', function () {
-            beforeEach(angular.mock.inject(function ($controller, $rootScope, $location, User, Faye, Queue) {
+            beforeEach(angular.mock.inject(function ($controller, $rootScope, $location, User, Faye, MessageList) {
                 scope = $rootScope.$new();
                 tokenKeyStub = sinon.stub(User, 'getTokenKey').returns(true);
                 logoutStub = sinon.stub(User, 'logOut');
                 disconnectStub = sinon.stub(Faye, 'disconnect');
-                emptyStub = sinon.stub(Queue, 'empty');
+                emptyStub = sinon.stub(MessageList, 'empty');
                 pathStub = sinon.stub($location, 'path');
 
                 controller = $controller('LogoutController', {
@@ -205,7 +205,7 @@ describe('appControllers', function () {
                     $location: $location,
                     User: User,
                     Faye: Faye,
-                    Queue: Queue
+                    MessageList: MessageList
                 });
             }));
 

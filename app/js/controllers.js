@@ -1,6 +1,6 @@
 var appControllers = angular.module('appControllers', []);
 
-appControllers.controller('MessageController', ['$rootScope', '$scope', '$location', 'User', 'Faye', 'Queue', function ($rootScope, $scope, $location, User, Faye, Queue) {
+appControllers.controller('MessageController', ['$rootScope', '$scope', '$location', 'User', 'Faye', 'MessageList', function ($rootScope, $scope, $location, User, Faye, MessageList) {
     'use strict';
 
     if (User.getTokenKey() === false) {
@@ -30,7 +30,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
         }
     });
 
-    $scope.queue = Queue;
+    $scope.queue = MessageList;
     $scope.queue.fill();
     Faye.init($scope.websocketPort);
     Faye.subscribe();
@@ -91,7 +91,7 @@ appControllers.controller('LoginController', ['$rootScope', '$scope', '$location
 
 }]);
 
-appControllers.controller('LogoutController', ['$rootScope', '$scope', '$location', 'User', 'Queue', 'Faye', function ($rootScope, $scope, $location, User, Queue, Faye) {
+appControllers.controller('LogoutController', ['$rootScope', '$scope', '$location', 'User', 'MessageList', 'Faye', function ($rootScope, $scope, $location, User, MessageList, Faye) {
     'use strict';
 
     $rootScope.$broadcast('connection:change', 'inactive');
@@ -99,7 +99,7 @@ appControllers.controller('LogoutController', ['$rootScope', '$scope', '$locatio
     if (User.getTokenKey()) {
         Faye.disconnect();
         User.logOut();
-        Queue.empty();
+        MessageList.empty();
     }
 
     $scope.visitLogin = function () {

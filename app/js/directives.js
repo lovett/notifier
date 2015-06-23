@@ -18,7 +18,7 @@ appDirectives.directive('notifierFocus', [function () {
     };
 }]);
 
-appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', '$document', function (Queue, $rootScope, $window, $document) {
+appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$window', '$document', function (MessageList, $rootScope, $window, $document) {
 	'use strict';
 
     var shortcutMap = {
@@ -28,8 +28,8 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
             shiftKey: true,
             description: 'Clear all messages',
             action: function () {
-                if (Queue.messages.length > 0) {
-                    Queue.purge();
+                if (MessageList.messages.length > 0) {
+                    MessageList.purge();
                 }
             }
         },
@@ -56,7 +56,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
             shiftKey: false,
             description: 'Move to next message',
             action: function () {
-                Queue.focusNext();
+                MessageList.focusNext();
             }
         },
         75: {
@@ -64,7 +64,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
             shiftKey: false,
             description: 'Move to previous message',
             action: function () {
-                Queue.focusPrevious();
+                MessageList.focusPrevious();
             }
         },
         88: {
@@ -72,7 +72,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
             shiftKey: false,
             description: 'Clear active message',
             action: function () {
-                Queue.clearFocused();
+                MessageList.clearFocused();
             }
         },
         90: {
@@ -81,8 +81,8 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
             shiftKey: true,
             description: 'Undo',
             action: function () {
-                if (Queue.canUnclear()) {
-                    Queue.unclear();
+                if (MessageList.canUnclear()) {
+                    MessageList.unclear();
                 }
             }
         },
@@ -91,7 +91,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
             shiftKey: false,
             description: 'Visit the link of the active message',
             action: function () {
-                Queue.visitLink();
+                MessageList.visitLink();
             }
         },
         191: {
@@ -106,7 +106,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
             key: 'esc',
             description: 'Hide the shortcut list; unfocus all messages',
             action: function () {
-                Queue.focusNone();
+                MessageList.focusNone();
                 $rootScope.$broadcast('shortcuts:hide');
             }
         }
@@ -198,7 +198,7 @@ appDirectives.directive('notifierConnectionIcon', [function () {
     };
 }]);
 
-appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', 'Queue', function ($log, $filter, Queue) {
+appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', 'MessageList', function ($log, $filter, MessageList) {
     'use strict';
     return {
         restrict: 'E',
@@ -223,7 +223,7 @@ appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', 'Queue',
             scope.$on('queue:change', function () {
                 var tallys, summary;
 
-                tallys = Queue.messages.reduce(function (accumulator, message) {
+                tallys = MessageList.messages.reduce(function (accumulator, message) {
                     if (!accumulator.hasOwnProperty(message.group)) {
                         accumulator[message.group] = 1;
                     } else {
@@ -262,7 +262,7 @@ appDirectives.directive('notifierSetScope', function () {
     };
 });
 
-appDirectives.directive('notifierMessageOptions', ['Queue', function (Queue) {
+appDirectives.directive('notifierMessageOptions', ['MessageList', function (MessageList) {
     'use strict';
 
     return {
@@ -278,13 +278,13 @@ appDirectives.directive('notifierMessageOptions', ['Queue', function (Queue) {
             });
 
             scope.clear = function () {
-                Queue.clear(scope.publicId);
+                MessageList.clear(scope.publicId);
             };
         }
     };
 }]);
 
-appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'Queue', 'User', '$window', '$document', function (BrowserNotification, Queue, User, $window, $document) {
+appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'MessageList', 'User', '$window', '$document', function (BrowserNotification, MessageList, User, $window, $document) {
     'use strict';
 
     return {
@@ -298,11 +298,11 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'Queue', 'U
             scope.hideUndo = true;
 
             scope.clearAll = function () {
-                Queue.purge();
+                MessageList.purge();
             };
 
             scope.undo = function () {
-                Queue.unclear();
+                MessageList.unclear();
             };
 
             scope.$on('connection:change', function (e, state) {
@@ -312,7 +312,7 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'Queue', 'U
             scope.$on('queue:change', function (e, size) {
                 scope.queueSize = size;
                 scope.hideClearAll = (size === 0);
-                scope.hideUndo = (Queue.canUnclear() === false);
+                scope.hideUndo = (MessageList.canUnclear() === false);
             });
 
             scope.$on('settings:toggle', function () {

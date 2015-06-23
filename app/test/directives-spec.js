@@ -126,13 +126,13 @@ describe('appDirectives', function () {
     describe('notifierMessageOptions', function () {
         var scope, isolateScope, element, clearStub;
 
-        beforeEach(angular.mock.inject(function ($compile, $rootScope, Queue) {
+        beforeEach(angular.mock.inject(function ($compile, $rootScope, MessageList) {
             scope = $rootScope;
             element = angular.element('<div notifier-message-options public-id="1"></div>');
             $compile(element)(scope);
             scope.$apply();
             isolateScope = element.isolateScope();
-            clearStub = sinon.stub(Queue, 'clear');
+            clearStub = sinon.stub(MessageList, 'clear');
         }));
 
         it('renders visible by default', function () {
@@ -171,7 +171,7 @@ describe('appDirectives', function () {
     describe('notifierBottomnav', function () {
         var scope, isolateScope, element, purgeStub;
 
-        beforeEach(angular.mock.inject(function ($compile, $rootScope, Queue, BrowserNotification) {
+        beforeEach(angular.mock.inject(function ($compile, $rootScope, MessageList, BrowserNotification) {
             BrowserNotification.state = 'unavailable';
             scope = $rootScope;
             element = angular.element('<footer notifier-bottomnav></footer>');
@@ -179,7 +179,7 @@ describe('appDirectives', function () {
             scope.$apply();
             isolateScope = element.isolateScope();
             browserNotification = BrowserNotification;
-            purgeStub = sinon.stub(Queue, 'purge');
+            purgeStub = sinon.stub(MessageList, 'purge');
         }));
 
         it('hides settings pane by default', function () {

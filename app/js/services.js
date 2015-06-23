@@ -169,7 +169,7 @@ appServices.factory('HttpInterceptor', ['$q', '$location', function ($q, $locati
     };
 }]);
 
-appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue', function ($location, $rootScope, $log, User, Queue) {
+appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'MessageList', function ($location, $rootScope, $log, User, MessageList) {
     'use strict';
     var client, subscription;
 
@@ -249,9 +249,9 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Queue',
                 }
 
                 if (message.hasOwnProperty('retracted')) {
-                    Queue.drop(message.retracted);
+                    MessageList.drop(message.retracted);
                 } else {
-                    Queue.add(message);
+                    MessageList.add(message);
                 }
 
                 $rootScope.$apply();
@@ -334,7 +334,7 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
     return self;
 }]);
 
-appServices.factory('Queue', ['$rootScope', '$http', '$log', '$window', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, User, BrowserNotification) {
+appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, User, BrowserNotification) {
     'use strict';
 
     var unfilled, removedIds;
