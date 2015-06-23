@@ -74,31 +74,29 @@ describe('appDirectives', function () {
         }));
 
         it('renders blank by default', function () {
-            assert.equal(element.html(), '<span></span>');
+            assert.equal(element.html(), '<span class="status"></span>');
         });
 
-        it('clears app message when connected', function () {
+        it('returns to default state following a reconnect', function () {
+            scope.$emit('connection:change', 'offline');
             scope.$emit('connection:change', 'connected');
-            assert.equal(element.html(), '<span class="state connected"></span>');
+            assert.equal(element.html(), '<span class="status"></span>');
         });
 
-        it('clears app message when online', function () {
+        it('returns to default state after coming back online', function () {
+            scope.$emit('connection:change', 'offline');
             scope.$emit('connection:change', 'online');
-            assert.equal(element.html(), '<span class="state connected"></span>');
+            assert.equal(element.html(), '<span class="status"></span>');
         });
 
         it('displays disconnected message when offline', function () {
-            var now = filter('date')(new Date(), 'shortTime');
             scope.$emit('connection:change', 'offline');
-            assert.include(element.html(), 'Offline since');
-            assert.include(element.html(), now);
+            assert.include(element.html(), 'Offline');
         });
 
         it('displays disconnected message when disconnected', function () {
-            var now = filter('date')(new Date(), 'shortTime');
             scope.$emit('connection:change', 'disconnected');
-            assert.include(element.html(), 'Offline since');
-            assert.include(element.html(), now);
+            assert.include(element.html(), 'Offline');
         });
     });
 
