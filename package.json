@@ -48,6 +48,7 @@
     "sanitize-html": "1.7.0",
     "sequelize": "3.2.0",
     "sequelize-cli": "1.7.0",
+    "serve-favicon": "^2.3.0",
     "sqlite3": "3.0.8",
     "touch": "0.0.3",
     "useragent": "2.1.7"

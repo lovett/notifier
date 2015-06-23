@@ -1,6 +1,7 @@
 var bunyan = require('bunyan');
 var https = require('https');
 var fs = require('fs');
+var favicon = require('serve-favicon');
 var faye = require('faye');
 var deflate = require('permessage-deflate');
 var express = require('express');
@@ -675,10 +676,15 @@ var app = express();
 app.disable('x-powered-by');
 
 
+
+
 /**
  * Express middleware
  * --------------------------------------------------------------------
  */
+
+// Handle requests for the default favicon
+app.use(favicon(nconf.get('NOTIFIER_STATIC_DIR') + '/favicon/favicon.ico'));
 
 // Static file request prechecking
 app.use(function (req, res, next) {
