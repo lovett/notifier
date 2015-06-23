@@ -25,6 +25,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
         67: {
             key: 'C',
             label: '⇧  c',
+            shiftKey: true,
             description: 'Clear all messages',
             action: function () {
                 Queue.purge();
@@ -33,6 +34,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
         83: {
             key: 'S',
             label: '⇧  s',
+            shiftKey: true,
             description: 'Toggle settings',
             action: function () {
                 $rootScope.$broadcast('settings:toggle');
@@ -41,6 +43,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
         76: {
             key: 'L',
             label: '⇧  l',
+            shiftKey: true,
             description: 'Log out',
             action: function () {
                 $rootScope.$broadcast('settings:logout');
@@ -48,6 +51,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
         },
         74: {
             key: 'j',
+            shiftKey: false,
             description: 'Move to next message',
             action: function () {
                 Queue.focusNext();
@@ -55,6 +59,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
         },
         75: {
             key: 'k',
+            shiftKey: false,
             description: 'Move to previous message',
             action: function () {
                 Queue.focusPrevious();
@@ -62,6 +67,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
         },
         88: {
             key: 'x',
+            shiftKey: false,
             description: 'Clear active message',
             action: function () {
                 Queue.clearFocused();
@@ -69,7 +75,8 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
         },
         90: {
             key: 'Z',
-            label: '⇧  + z',
+            label: '⇧  z',
+            shiftKey: true,
             description: 'Undo',
             action: function () {
                 if (Queue.canUnclear()) {
@@ -79,6 +86,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
         },
         79: {
             key: 'o',
+            shiftKey: false,
             description: 'Visit the link of the active message',
             action: function () {
                 Queue.visitLink();
@@ -86,6 +94,7 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
         },
         191: {
             key: '?',
+            shiftKey: true,
             description: 'Toggle the shortcut list',
             action: function () {
                 $rootScope.$broadcast('shortcuts:toggle');
@@ -122,6 +131,10 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
                 var charCode = e.which || e.keyCode;
 
                 if (!shortcutMap.hasOwnProperty(charCode)) {
+                    return;
+                }
+
+                if (shortcutMap[charCode].shiftKey && !e.shiftKey) {
                     return;
                 }
 
