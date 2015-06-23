@@ -28,7 +28,9 @@ appDirectives.directive('notifierShortcuts', ['Queue', '$rootScope', '$window', 
             shiftKey: true,
             description: 'Clear all messages',
             action: function () {
-                Queue.purge();
+                if (Queue.messages.length > 0) {
+                    Queue.purge();
+                }
             }
         },
         83: {
