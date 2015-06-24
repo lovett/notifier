@@ -121,7 +121,7 @@ module.exports = function(grunt) {
                     },
                     form: {
                         title: 'Test message',
-                        body: 'Testing "testing". This message was sent via Grunt on ' + new Date(),
+                        body: new Date().getTime(),
                         group: grunt.option('group') || 'test',
                         url: grunt.option('url') || 'http://example.com',
                         localId: 'test',
