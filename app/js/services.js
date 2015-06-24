@@ -337,9 +337,8 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
 appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, User, BrowserNotification) {
     'use strict';
 
-    var unfilled, removedIds;
+    var removedIds;
 
-    unfilled = true;
     removedIds = [];
 
     return {
@@ -501,18 +500,17 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'U
             $rootScope.$broadcast('queue:change', this.messages.length);
         },
 
-        filledOn: undefined,
-        
         fill: function () {
             var now, self, url;
-            now = new Date().getTime();
+            now = new Date();
 
             // prevent aggressive refilling
-            if (this.filledOn && now - this.filledOn < 1000) {
+            if (this.lastFilled && now.getTime() - this.lastFilled.getTime() < 1000) {
                 $log.debug('Ignoring too-soon refill request');
             }
-            this.filledOn = now;
-            
+
+            this.lastFilled = now;
+
             self = this;
             url = '/archive/25';
 
@@ -550,7 +548,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'U
                     // sequentially they will end up oldest first
                     data.reverse();
 
-                    if (unfilled) {
+                    if (!self.lastFilled) {
                         attitude = 'silent';
                     } else {
                         attitude = 'normal';
@@ -559,8 +557,6 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'U
                     data.forEach(function (message) {
                         self.add(message, attitude);
                     });
-
-                    unfilled = false;
 
                     $rootScope.$broadcast('queue:change', self.messages.length);
                 }
