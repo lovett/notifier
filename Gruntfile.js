@@ -292,9 +292,6 @@ module.exports = function(grunt) {
                     'rm temp-*.png'
                 ].join(' && ')
             },
-            'server': {
-                command: 'nodemon --watch server server/notifier-server.js'
-            },
             'mysqlimport': {
                 command: [
                     'BACKUP_FILE=$(find "<%= env.NOTIFIER_DB_BACKUP_DIR %>" -type f -name *.gz | tail -n 1)',

@@ -6,6 +6,7 @@
   "main": "server/notifier-server.js",
   "scripts": {
     "start": "node server/notifier-server.js",
+    "devserver": "nodemon --watch server server/notifier-server.js",
     "build": "grunt build:full"
   },
   "repository": {
