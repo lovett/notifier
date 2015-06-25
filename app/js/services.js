@@ -509,8 +509,6 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'U
                 $log.debug('Ignoring too-soon refill request');
             }
 
-            this.lastFilled = now;
-
             self = this;
             url = '/archive/25';
 
@@ -559,6 +557,9 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'U
                     });
 
                     $rootScope.$broadcast('queue:change', self.messages.length);
+
+                    self.lastFilled = now;
+                    
                 }
             });
         },
