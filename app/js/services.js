@@ -463,7 +463,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'U
                     publicId: ids
                 }
             }).success(function () {
-                self.fill();
+                self.fetch();
             });
         },
 
@@ -500,13 +500,13 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'U
             $rootScope.$broadcast('queue:change', this.messages.length);
         },
 
-        fill: function () {
+        fetch: function () {
             var now, self, url;
             now = new Date();
 
-            // prevent aggressive refilling
-            if (this.lastFilled && now.getTime() - this.lastFilled.getTime() < 1000) {
-                $log.debug('Ignoring too-soon refill request');
+            // prevent aggressive refetching
+            if (this.lastFetched && now.getTime() - this.lastFetched.getTime() < 1000) {
+                $log.debug('Ignoring too-soon refetch request');
             }
 
             self = this;
@@ -546,7 +546,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'U
                     // sequentially they will end up oldest first
                     data.reverse();
 
-                    if (!self.lastFilled) {
+                    if (!self.lastFetched) {
                         attitude = 'silent';
                     } else {
                         attitude = 'normal';
@@ -558,7 +558,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'U
 
                     $rootScope.$broadcast('queue:change', self.messages.length);
 
-                    self.lastFilled = now;
+                    self.lastFetched = now;
                     
                 }
             });

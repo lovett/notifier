@@ -31,7 +31,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
     });
 
     $scope.queue = MessageList;
-    $scope.queue.fill();
+    $scope.queue.fetch();
     Faye.init($scope.websocketPort);
     Faye.subscribe();
 
@@ -48,7 +48,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
         }
 
         if (state === 'connected' || state === 'online') {
-            $scope.queue.fill();
+            $scope.queue.fetch();
         }
 
     });
