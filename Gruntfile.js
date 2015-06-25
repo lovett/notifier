@@ -4,7 +4,7 @@ module.exports = function(grunt) {
 
     var tokenFile = '.token',
         env = grunt.file.readJSON('env.json');
-    
+
     grunt.initConfig({
         env: env,
 
@@ -105,6 +105,7 @@ module.exports = function(grunt) {
                     form: {
                         username: '<%= env.NOTIFIER_DEFAULT_USER %>',
                         password: '<%= env.NOTIFIER_DEFAULT_PASSWORD %>',
+                        persist: 1,
                         label: 'grunt',
                     },
                     callback: function (error, response, body) {
