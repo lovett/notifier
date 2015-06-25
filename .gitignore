@@ -5,6 +5,7 @@
 TAGS
 node_modules
 bower_components
+production_logs
 static
 .nodemonignore
 *.scpt
