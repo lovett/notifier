@@ -4,8 +4,9 @@
 # Install a custom version of node and npm. Then install application
 # dependencies.
 #
-# This hook runs after the application has been stopped.
-# See http://docs.openshift.org/origin-m4/oo_cartridge_developers_guide.html#openshift-builds
+# This is the first hook of the OpenShift build lifecycle, and runs
+# while the application is stopped.
+# https://developers.openshift.com/en/managing-action-hooks.html
 #
 # Note that OpenShift environment variables have a trailing slash.
 #

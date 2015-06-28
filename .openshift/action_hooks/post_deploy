@@ -6,8 +6,9 @@
 # Also attempt to create the MySQL database if it does not exist
 #
 # This is the last hook. The node server is already running at this
-# point.
+# point. See https://developers.openshift.com/en/managing-action-hooks.html
 #
+
 # Note that OpenShift environment variables have a trailing slash.
 #
 

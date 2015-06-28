@@ -6,7 +6,7 @@
  *
  * This hook runs after the build hook and before the application has
  * started. Anything needed to get the application to start should be
- * done here.
+ * done here. See https://developers.openshift.com/en/managing-action-hooks.html
  *
  * Note that OpenShift environment variables have a trailing slash.
  */
