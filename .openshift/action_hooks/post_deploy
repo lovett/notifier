@@ -1,14 +1,11 @@
 #!/bin/bash
 
 #
-# Build the web UI and clean up unnecessary files.
-#
-# Also attempt to create the MySQL database if it does not exist
+# Create the application database if it does not exist
 #
 # This is the last hook. The node server is already running at this
 # point. See https://developers.openshift.com/en/managing-action-hooks.html
 #
-
 # Note that OpenShift environment variables have a trailing slash.
 #
 
@@ -28,8 +25,6 @@ fi
 START=$(date +'%s')
 
 cd $OPENSHIFT_REPO_DIR
-
-npm run-script build
 
 # Disable sequelize migration due to error about js-v8flags during deployment
 #grunt migrate

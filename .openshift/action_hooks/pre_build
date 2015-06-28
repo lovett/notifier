@@ -42,7 +42,7 @@ $HOME/.node_modules/.bin/npm prune --production
 # Openshift build hook from running, which runs
 # npm install using the system version of nodejs.
 #
-# The deploy hook will put package.json back in place.
+# The build hook will put package.json back in place.
 if [[ -f "package.json" ]]; then
     mv  "package.json" "package.json.bak"
 fi

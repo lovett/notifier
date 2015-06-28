@@ -4,18 +4,18 @@
  * Populate the file env.json with modified values derived from
  * OpenShift environment variables
  *
- * This hook runs after the build hook and before the application has
- * started. Anything needed to get the application to start should be
- * done here. See https://developers.openshift.com/en/managing-action-hooks.html
+ * This hook runs after pre_build while the application is stopped.
+ * See https://developers.openshift.com/en/managing-action-hooks.html
  *
  * Note that OpenShift environment variables have a trailing slash.
  */
 
 var fs = require('fs');
+var childProcess = require('child_process');
 
 var start = new Date();
 
-console.log('Starting deploy hook');
+console.log('Starting build hook');
 
 var appEnv = {};
 
@@ -48,12 +48,22 @@ fs.writeFile(process.env.OPENSHIFT_REPO_DIR + 'env.json', appEnvString, function
         console.log(err);
     }
 
-    console.log('env.json: ' + appEnvString);
-    console.log('Finished deploy hook in ' + (new Date().getTime() - start.getTime()) + ' seconds');
+    fs.rename(process.env.OPENSHIFT_REPO_DIR + 'package.json.bak', process.env.OPENSHIFT_REPO_DIR + 'package.json', function (err) {
+        if (err) {
+            console.log(err);
+            process.exit(1);
+        }
+        
+        var buildStdOutBuffer = childProcess.execSync('npm run-script build', {
+            cwd: process.env.OPENSHIFT_REPO_DIR
+        });
+
+        console.log(buildStdOutBuffer.toString('utf-8'));
+
+        var duration = new Date().getTime() - start.getTime();
+        duration /= 1000;
+        
+        console.log('Finished build hook in ' + Math.ceil(duration) + ' seconds');
+    });
 });
 
-fs.rename(process.env.OPENSHIFT_REPO_DIR + 'package.json.bak', process.env.OPENSHIFT_REPO_DIR + 'package.json', function (err) {
-    if (err) {
-        console.log(err);
-    }
-});
