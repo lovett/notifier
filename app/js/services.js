@@ -3,8 +3,6 @@ var appServices = angular.module('appServices', []);
 appServices.factory('User', ['$window', '$http', function ($window, $http) {
     'use strict';
 
-    var persist = false;
-
     return {
 
         getAuthHeader: function () {
@@ -100,8 +98,6 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
         },
 
         logIn: function (form) {
-            persist = form.remember;
-
             return $http({
                 method: 'POST',
                 url: '/auth',
@@ -117,7 +113,7 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                     }
 
                     if (data.hasOwnProperty('value')) {
-                        if (persist === true) {
+                        if (form.remember) {
                             localStorage.tokenKey = data.key;
                             localStorage.tokenValue = data.value;
                             localStorage.channel = data.channel;
@@ -447,12 +443,12 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'U
         canUnclear: function () {
             return removedIds.length > 0;
         },
-        
+
         unclear: function () {
             var self, ids;
             self = this;
             ids = removedIds.pop();
-            
+
             $http({
                 method: 'POST',
                 url: '/message/unclear',
@@ -541,7 +537,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'U
                     if (staleIds.length > 0) {
                         self.drop(staleIds);
                     }
-                    
+
                     // messages will be ordered newest first, but if they are added to the queue
                     // sequentially they will end up oldest first
                     data.reverse();
@@ -559,7 +555,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'U
                     $rootScope.$broadcast('queue:change', self.messages.length);
 
                     self.lastFetched = now;
-                    
+
                 }
             });
         },
