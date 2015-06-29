@@ -198,26 +198,23 @@ appDirectives.directive('notifierConnectionIcon', [function () {
     };
 }]);
 
-appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', 'MessageList', function ($log, $filter, MessageList) {
+appDirectives.directive('notifierStatusBar', ['$log', '$filter', 'MessageList', function ($log, $filter, MessageList) {
     'use strict';
     return {
         restrict: 'E',
-        template: '<span class="status"></span>',
-        link: function (scope, element) {
-            var children = element.children();
-            var label = angular.element(children[0]);
-
+        template: '<div ng-class="{\'status-bar\': true, \'disconnected\': disconnected}">{{ message }}</div>',
+        link: function (scope) {
             scope.$on('connection:change', function (e, state) {
                 var now = $filter('date')(new Date(), 'shortTime');
                 $log.info(state + ' as of ' + now);
 
+				scope.message = state;
+
                 if (state === 'offline' || state === 'disconnected') {
-                    label.text('Offline');
-                    label.addClass('disconnected');
+					scope.disconnected = true;
                 } else {
-                    label.text('');
-                    label.removeClass('disconnected');
-                }
+					scope.disconnected = false;
+				}
             });
 
             scope.$on('queue:change', function () {
@@ -233,16 +230,16 @@ appDirectives.directive('notifierConnectionStatus', ['$log', '$filter', 'Message
                 }, {});
 
                 summary = [];
-                Object.keys(tallys).sort().forEach(function (group) {
-                    var displayName = (group === 'default') ? 'other' : group;
-                    summary.push('<span class="tally">' + displayName + ': ' + tallys[group] + '</span>');
+                Object.keys(tallys).forEach(function (group) {
+                    var displayName = (group === 'default') ? 'ungrouped' : group;
+                    summary.push(tallys[group] + ' ' + displayName);
                 });
 
-                if (summary.length > 0) {
-                    label.html(summary.join(' '));
-                } else {
-                    label.html('');
-                }
+				if (summary.length > 1) {
+					scope.message = summary.sort().join(', ');
+				} else {
+					scope.message = '';
+				}
             });
         }
     };

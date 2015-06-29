@@ -70,24 +70,19 @@ MAIN {
     float: right;
 }
 
-.page-header {
-    color: white;
+.status-bar {
+    text-transform: uppercase;
+    color: #fff;
     font-size: .6em;
     letter-spacing: 1px;
     white-space: nowrap;
+    line-height: 3;
+	height: 3em;
+    text-align: center;
+}
 
-    .status {
-        text-transform: uppercase;
-        padding: .5em;
-        display: block;
-        text-align: right;
-    }
-
-    .disconnected {
-        text-align: center;
-        background-color: Crimson;
-        color: #fff;
-    }
+.status-bar.disconnected {
+    background-color: Crimson;
 }
 
 FOOTER {
@@ -419,8 +414,4 @@ FOOTER {
         text-align: center;
         padding: .75em 1.25em;
     }
-}
-
-.tally {
-    padding-left: .75em;
 }
