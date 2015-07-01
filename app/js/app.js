@@ -11,10 +11,8 @@ var app = angular.module('appModule', [
     'ngAnimate'
 ]);
 
-app.config(['$httpProvider', '$routeProvider', '$locationProvider', function ($httpProvider, $routeProvider, $locationProvider) {
+app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
     'use strict';
-
-    $httpProvider.interceptors.push('HttpInterceptor');
 
     $routeProvider.when('/login', {
         controller: 'LoginController',

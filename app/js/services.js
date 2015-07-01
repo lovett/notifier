@@ -153,18 +153,6 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
     };
 }]);
 
-appServices.factory('HttpInterceptor', ['$q', '$location', function ($q, $location) {
-    'use strict';
-    return {
-        'responseError': function (response) {
-            if (response.status === 401) {
-                $location.path('/login');
-                return $q.reject(response);
-            }
-        }
-    };
-}]);
-
 appServices.factory('Faye', ['$location', '$rootScope', '$log', '$filter', 'User', 'MessageList', function ($location, $rootScope, $log, $filter, User, MessageList) {
     'use strict';
     var client, subscription;
@@ -332,7 +320,7 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
     return self;
 }]);
 
-appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, User, BrowserNotification) {
+appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$location', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, $location, User, BrowserNotification) {
     'use strict';
 
     var removedIds;
@@ -559,6 +547,11 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'U
 
                     self.lastFetched = now;
 
+                }
+            }).error(function (data, status) {
+                self.lastFetched = now;
+                if (status === 401) {
+                    $location.path('/login');
                 }
             });
         },
