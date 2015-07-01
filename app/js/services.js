@@ -503,6 +503,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', 'U
             // prevent aggressive refetching
             if (this.lastFetched && now.getTime() - this.lastFetched.getTime() < 1000) {
                 $log.debug('Ignoring too-soon refetch request');
+                return;
             }
 
             self = this;

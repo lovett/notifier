@@ -208,9 +208,8 @@ appDirectives.directive('notifierStatusBar', ['$log', '$filter', 'MessageList', 
                 var now = $filter('date')(new Date(), 'shortTime');
                 $log.info(state + ' as of ' + now);
 
-				scope.message = state;
-
                 if (state === 'offline' || state === 'disconnected') {
+				    scope.message = state;
 					scope.disconnected = true;
                 } else {
 					scope.disconnected = false;
