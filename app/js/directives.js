@@ -198,16 +198,13 @@ appDirectives.directive('notifierConnectionIcon', [function () {
     };
 }]);
 
-appDirectives.directive('notifierStatusBar', ['$log', '$filter', 'MessageList', function ($log, $filter, MessageList) {
+appDirectives.directive('notifierStatusBar', ['$log', 'MessageList', function ($log, MessageList) {
     'use strict';
     return {
         restrict: 'E',
         template: '<div ng-class="{\'status-bar\': true, \'disconnected\': disconnected}">{{ message }}</div>',
         link: function (scope) {
             scope.$on('connection:change', function (e, state) {
-                var now = $filter('date')(new Date(), 'shortTime');
-                $log.info(state + ' as of ' + now);
-
                 if (state === 'offline' || state === 'disconnected') {
 				    scope.message = state;
 					scope.disconnected = true;

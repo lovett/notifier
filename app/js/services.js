@@ -165,7 +165,7 @@ appServices.factory('HttpInterceptor', ['$q', '$location', function ($q, $locati
     };
 }]);
 
-appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'MessageList', function ($location, $rootScope, $log, User, MessageList) {
+appServices.factory('Faye', ['$location', '$rootScope', '$log', '$filter', 'User', 'MessageList', function ($location, $rootScope, $log, $filter, User, MessageList) {
     'use strict';
     var client, subscription;
 
@@ -220,13 +220,15 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', 'User', 'Message
             });
 
             client.on('transport:down', function () {
-                $log.warn('Faye transport is down');
+                var now = $filter('date')(new Date(), 'mediumTime');
+                $log.warn('Faye transport down at ' + now);
                 $rootScope.$broadcast('connection:change', 'disconnected');
                 $rootScope.$apply();
             });
 
             client.on('transport:up', function () {
-                $log.info('Faye transport is up');
+                var now = $filter('date')(new Date(), 'mediumTime');
+                $log.info('Faye transport up at ' + now);
                 $rootScope.$broadcast('connection:change', 'connected');
                 $rootScope.$apply();
             });
