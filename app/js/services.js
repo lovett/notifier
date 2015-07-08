@@ -12,40 +12,44 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
         },
 
         getTokenKey: function () {
-            if (sessionStorage.tokenKey) {
-                return sessionStorage.tokenKey;
-            } else if (localStorage.tokenKey) {
-                return localStorage.tokenKey;
-            } else {
-                return false;
+            var value = sessionStorage.getItem('tokenKey');
+            
+            if (!value) {
+                value = localStorage.getItem('tokenKey');
             }
+
+            return value || false;
         },
 
         getTokenValue: function () {
-            if (sessionStorage.tokenValue) {
-                return sessionStorage.tokenValue;
-            } else if (localStorage.tokenValue) {
-                return localStorage.tokenValue;
-            } else {
-                return false;
+            var value = sessionStorage.getItem('tokenValue');
+
+            if (!value) {
+                value = localStorage.getItem('tokenValue');
             }
+
+            return value || false;
         },
 
         getChannel: function () {
-            if (sessionStorage.channel) {
-                return '/messages/' + sessionStorage.channel;
-            } else if (localStorage.channel) {
-                return '/messages/' + localStorage.channel;
+            var value = sessionStorage.getItem('channel');
+
+            if (!value) {
+                value = localStorage.getItem('channel');
+            }
+
+            if (value) {
+                return '/messages/' + value;
             } else {
                 return false;
             }
         },
 
         replaceChannel: function (value) {
-            if (sessionStorage.channel) {
-                sessionStorage.channel = value;
-            } else if (localStorage.channel) {
-                localStorage.channel = value;
+            if (sessionStorage.getItem('channel')) {
+                sessionStorage.setItem('channel', value);
+            } else if (localStorage.getItem('channel')) {
+                localStorage.setItem('channel', value);
             }
         },
 
@@ -114,16 +118,16 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
 
                     if (data.hasOwnProperty('value')) {
                         if (form.remember) {
-                            localStorage.tokenKey = data.key;
-                            localStorage.tokenValue = data.value;
-                            localStorage.channel = data.channel;
+                            localStorage.setItem('tokenKey', data.key);
+                            localStorage.setItem('tokenValue', data.value);
+                            localStorage.setItem('channel', data.channel);
                             sessionStorage.removeItem('tokenKey');
                             sessionStorage.removeItem('tokenValue');
                             sessionStorage.removeItem('channel');
                         } else {
-                            sessionStorage.tokenKey = data.key;
-                            sessionStorage.tokenValue = data.value;
-                            sessionStorage.channel = data.channel;
+                            sessionStorage.setItem('tokenKey', data.key);
+                            sessionStorage.setItem('tokenValue', data.value);
+                            sessionStorage.setItem('channel', data.channel);
                             localStorage.removeItem('tokenKey');
                             localStorage.removeItem('tokenValue');
                             localStorage.removeItem('channel');
