@@ -13,7 +13,7 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
 
         getTokenKey: function () {
             var value = sessionStorage.getItem('tokenKey');
-            
+
             if (!value) {
                 value = localStorage.getItem('tokenKey');
             }
@@ -512,14 +512,14 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             }).success(function(data) {
                 var currentIds, staleIds, attitude;
                 staleIds = [];
-                if (data instanceof Array) {
+                if (data.messages instanceof Array) {
 
                     // We've just received the current list of
                     // uncleared messages, but we might be holding
                     // other messages that were cleared by another
                     // client while we were offline. They should be
                     // dropped.
-                    currentIds = data.map(function (message) {
+                    currentIds = data.messages.map(function (message) {
                         return message.publicId;
                     });
 
@@ -535,7 +535,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
                     // messages will be ordered newest first, but if they are added to the queue
                     // sequentially they will end up oldest first
-                    data.reverse();
+                    data.messages.reverse();
 
                     if (!self.lastFetched) {
                         attitude = 'silent';
@@ -543,7 +543,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                         attitude = 'normal';
                     }
 
-                    data.forEach(function (message) {
+                    data.messages.forEach(function (message) {
                         self.add(message, attitude);
                     });
 

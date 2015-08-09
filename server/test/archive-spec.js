@@ -55,11 +55,42 @@ describe('/archive', function () {
                 .expect(401).end(done);
         });
 
-
         it('requires a numeric count', function (done) {
             agent.get('/archive/foo')
+                .auth(tokenKey, tokenValue)
                 .expect('Content-Type', /json/)
                 .expect(400).end(done);
+        });
+
+        it('rejects negative counts', function (done) {
+            agent.get('/archive/-100')
+                .auth(tokenKey, tokenValue)
+                .expect('Content-Type', /json/)
+                .expect(400).end(done);
+        });
+
+        it('enforces minimum count value', function (done) {
+            agent.get('/archive/0')
+                .auth(tokenKey, tokenValue)
+                .expect(200)
+                .expect(function (res) {
+                    if (res.body.limit !== 1) {
+                        throw new Error('Min count value was not limited');
+                    }
+                })
+                .end(done);
+        });
+
+        it('enforces maximum count value', function (done) {
+            agent.get('/archive/999')
+                .auth(tokenKey, tokenValue)
+                .expect(200)
+                .expect(function (res) {
+                    if (res.body.limit !== 100) {
+                        throw new Error('Max count value was not limited');
+                    }
+                })
+                .end(done);
         });
 
         it('rejects user token passed on querystring', function (done) {
@@ -74,11 +105,12 @@ describe('/archive', function () {
                     agent.get(endpoint)
                         .auth(tokenKey, tokenValue)
                         .expect(function (res) {
-                            if (res.body[0].hasOwnProperty('id')) {
+                            if (res.body.messages[0].hasOwnProperty('id')) {
                                 throw new Error('Message contains id property');
                             }
-                        }).end(done);
-                    });
+                        })
+                        .end(done);
+                });
         });
 
         it('does not expose message user id', function (done) {
@@ -89,7 +121,7 @@ describe('/archive', function () {
                     agent.get(endpoint)
                         .auth(tokenKey, tokenValue)
                         .expect(function (res) {
-                            if (res.body[0].hasOwnProperty('UserId')) {
+                            if (res.body.messages[0].hasOwnProperty('UserId')) {
                                 throw new Error('Message contains UserId property');
                             }
                         }).end(done);
@@ -123,7 +155,7 @@ describe('/archive', function () {
                     agent.get(endpoint)
                         .auth(tokenKey, tokenValue)
                         .expect(function (res) {
-                            res.body.forEach(function (message) {
+                            res.body.messages.forEach(function (message) {
                                 if (message.source === source) {
                                     throw new Error('Found message belonging to another user');
                                 }

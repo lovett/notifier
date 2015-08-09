@@ -1242,7 +1242,10 @@ app.get('/archive/:count', passport.authenticate('basic', { session: false }), f
             delete message.id;
             return message;
         });
-        res.send(messages);
+        res.send({
+            limit: req.params.count,
+            'messages': messages
+        });
     });
 });
 
