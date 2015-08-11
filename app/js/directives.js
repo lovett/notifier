@@ -19,7 +19,7 @@ appDirectives.directive('notifierFocus', [function () {
 }]);
 
 appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$window', '$document', function (MessageList, $rootScope, $window, $document) {
-	'use strict';
+        'use strict';
 
     var shortcutMap = {
         67: {
@@ -112,9 +112,9 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$win
         }
     };
 
-	return {
+        return {
         templateUrl: '/views/shortcuts-summary.html',
-		link: function (scope) {
+                link: function (scope) {
             scope.summaryVisible = false;
             scope.$on('shortcuts:toggle', function () {
                 scope.summaryVisible = !scope.summaryVisible;
@@ -129,7 +129,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$win
 
             scope.shortcuts = shortcutMap;
 
-			angular.element($document[0]).bind('keyup', function (e) {
+                        angular.element($document[0]).bind('keyup', function (e) {
                 var charCode = e.which || e.keyCode;
 
                 if (!shortcutMap.hasOwnProperty(charCode)) {
@@ -141,9 +141,9 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$win
                 }
 
                 shortcutMap[charCode].action();
-			});
-		}
-	};
+                        });
+                }
+        };
 }]);
 
 appDirectives.directive('notifierOfflineEvent', ['$window', '$rootScope', function ($window, $rootScope) {
@@ -206,11 +206,13 @@ appDirectives.directive('notifierStatusBar', ['$log', 'MessageList', function ($
         link: function (scope) {
             scope.$on('connection:change', function (e, state) {
                 if (state === 'offline' || state === 'disconnected') {
-				    scope.message = state;
-					scope.disconnected = true;
+                    scope.message = state;
+                    scope.disconnected = true;
                 } else {
-					scope.disconnected = false;
-				}
+                    scope.disconnected = false;
+                    scope.message = '';
+                }
+                scope.$apply();
             });
 
             scope.$on('queue:change', function () {
@@ -231,11 +233,12 @@ appDirectives.directive('notifierStatusBar', ['$log', 'MessageList', function ($
                     summary.push(tallys[group] + ' ' + displayName);
                 });
 
-				if (summary.length > 1) {
-					scope.message = summary.sort().join(', ');
-				} else {
-					scope.message = '';
-				}
+                if (summary.length > 1) {
+                    scope.message = summary.sort().join(', ');
+                } else {
+                    scope.message = '';
+                }
+                scope.$apply();
             });
         }
     };

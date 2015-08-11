@@ -62,41 +62,79 @@ describe('appDirectives', function () {
         }));
     });
 
-    describe('notifierConnectionStatus', function () {
-        var scope, element;
+    describe('notifierStatusBar', function () {
+        var scope, element, messageList;
 
-        beforeEach(angular.mock.inject(function ($compile, $rootScope, $log, $filter) {
+        beforeEach(angular.mock.inject(function ($compile, $rootScope, $log, $filter, MessageList) {
             scope = $rootScope;
             filter = $filter;
-            element = angular.element('<notifier-connection-status></div>');
+            element = angular.element('<notifier-status-bar></notifier-status-bar>');
             $compile(element)(scope);
             scope.$apply();
+            messageList = MessageList;
         }));
 
         it('renders blank by default', function () {
-            assert.equal(element.html(), '<span class="status"></span>');
+            assert.equal(element.text(), '');
         });
 
         it('returns to default state following a reconnect', function () {
             scope.$emit('connection:change', 'offline');
             scope.$emit('connection:change', 'connected');
-            assert.equal(element.html(), '<span class="status"></span>');
+            assert.equal(element.text(), '');
         });
 
         it('returns to default state after coming back online', function () {
             scope.$emit('connection:change', 'offline');
             scope.$emit('connection:change', 'online');
-            assert.equal(element.html(), '<span class="status"></span>');
+            assert.equal(element.text(), '');
         });
 
         it('displays disconnected message when offline', function () {
             scope.$emit('connection:change', 'offline');
-            assert.include(element.html(), 'Offline');
+            assert.include(element.text(), 'offline');
         });
 
         it('displays disconnected message when disconnected', function () {
             scope.$emit('connection:change', 'disconnected');
-            assert.include(element.html(), 'Offline');
+            assert.include(element.text(), 'disconnected');
+        });
+
+        it('displays message tally if more than one group is present', function () {
+            messageList.messages = [
+                {title: 'test1', group: 'group1'},
+                {title: 'test2', group: 'group2'}
+            ];
+            scope.$emit('queue:change');
+            assert.equal(element.text(), '1 group1, 1 group2');
+        });
+
+        it('skips message tally if only one group is present', function () {
+            messageList.messages = [
+                {title: 'test1', group: 'group1'},
+                {title: 'test2', group: 'group1'}
+            ];
+            scope.$emit('queue:change');
+            assert.equal(element.text(), '');
+        });
+
+        it('identifies default messages as ungrouped', function () {
+            messageList.messages = [
+                {title: 'test1', group: 'default'},
+                {title: 'test2', group: 'group1'}
+            ];
+            scope.$emit('queue:change');
+            assert.equal(element.text(), '1 group1, 1 ungrouped');
+        });
+
+        it('alphabetizes groups when displaying message tally', function () {
+            messageList.messages = [
+                {title: 'test1', group: 'default'},
+                {title: 'test2', group: 'agroup'},
+                {title: 'test3', group: 'zgroup'}
+            ];
+            scope.$emit('queue:change');
+            assert.equal(element.text(), '1 agroup, 1 ungrouped, 1 zgroup');
         });
     });
 
