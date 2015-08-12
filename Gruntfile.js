@@ -462,7 +462,6 @@ module.exports = function(grunt) {
 
     if (env.NOTIFIER_ENVIRONMENT === 'dev') {
         grunt.loadNpmTasks('grunt-contrib-watch');
-        grunt.loadNpmTasks('grunt-githooks');
         grunt.loadNpmTasks('grunt-http');
         grunt.loadNpmTasks('grunt-karma');
         grunt.loadNpmTasks('grunt-lesslint');
@@ -470,7 +469,7 @@ module.exports = function(grunt) {
         grunt.loadNpmTasks('grunt-mocha-test');
         grunt.loadNpmTasks('grunt-open');
 
-        grunt.registerTask('default', ['githooks', 'build:full', 'watch']);
+        grunt.registerTask('default', ['build:full', 'watch']);
         grunt.registerTask('coverage', ['clean:coverage', 'mocha_istanbul:server', 'open:coverage-server']);
     }
 };
