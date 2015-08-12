@@ -1,9 +1,10 @@
 var touch = require('touch');
 
 module.exports = function(grunt) {
+    var env, tokenFile;
 
-    var tokenFile = '.token',
-        env = grunt.file.readJSON('env.json');
+    tokenFile = '.token';
+    env = grunt.file.readJSON('env.json');
 
     grunt.initConfig({
         env: env,
@@ -90,7 +91,7 @@ module.exports = function(grunt) {
 
         githooks: {
             all: {
-                'pre-commit': 'lesslint jshint'
+                'pre-commit': 'lesslint'
             }
         },
 
@@ -162,29 +163,6 @@ module.exports = function(grunt) {
         karma: {
             unit: {
                 configFile: 'app/test/karma.conf.js'
-            }
-        },
-
-        jshint: {
-            node: {
-                options: {
-                    jshintrc: '.jshintrc-node'
-                },
-                src: ['server/notifier-server.js', 'Gruntfile.js', 'clients/*.js']
-            },
-
-            mocha: {
-                options: {
-                    jshintrc: '.jshintrc-node'
-                },
-                src: ['server/test/*-spec.js']
-            },
-
-            browser: {
-                options: {
-                    jshintrc: '.jshintrc-browser'
-                },
-                src: ['app/js/*.js']
             }
         },
 
@@ -376,9 +354,11 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('build', 'Build the application', function (buildType) {
-        var environment = grunt.template.process('<%= env.NOTIFIER_ENVIRONMENT %>');
+        var environment, tasks;
 
-        var tasks = [];
+        environment = grunt.template.process('<%= env.NOTIFIER_ENVIRONMENT %>');
+
+        tasks = [];
 
         if (buildType === 'full') {
             tasks = tasks.concat(['clean:full', 'copy', 'uglify']);
@@ -428,9 +408,11 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('migrate', function (undo) {
-        var env = grunt.file.readJSON('env.json');
-        var configPath = 'migration-config.json';
-        var dbEnv = env.NOTIFIER_DB_CONFIG[env.NOTIFIER_DB];
+        var configPath, dbEnv, env, migrationConfig, shellTask;
+
+        env = grunt.file.readJSON('env.json');
+        configPath = 'migration-config.json';
+        dbEnv = env.NOTIFIER_DB_CONFIG[env.NOTIFIER_DB];
 
         if (process.env.NOTIFIER_DB_USER) {
             dbEnv.username = process.env.NOTIFIER_DB_USER;
@@ -444,7 +426,7 @@ module.exports = function(grunt) {
             dbEnv.dbname = process.env.NOTIFIER_DB_NAME;
         }
 
-        var migrationConfig = {
+        migrationConfig = {
             'default': {
                 'username': dbEnv.username,
                 'password': dbEnv.password,
@@ -460,7 +442,7 @@ module.exports = function(grunt) {
 
         grunt.file.write(configPath, JSON.stringify(migrationConfig));
 
-        var shellTask = 'shell:migration' ;
+        shellTask = 'shell:migration' ;
 
         if (undo === 'undo') {
             shellTask += ':undo';
@@ -479,7 +461,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-text-replace');
 
     if (env.NOTIFIER_ENVIRONMENT === 'dev') {
-        grunt.loadNpmTasks('grunt-contrib-jshint');
         grunt.loadNpmTasks('grunt-contrib-watch');
         grunt.loadNpmTasks('grunt-githooks');
         grunt.loadNpmTasks('grunt-http');

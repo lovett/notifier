@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node server/notifier-server.js",
     "devserver": "nodemon --watch server server/notifier-server.js",
-    "build": "grunt build:full"
+    "build": "grunt build:full",
+    "lint": "eslint Gruntfile.js app server"
   },
   "repository": {
     "type": "git",
@@ -58,7 +59,8 @@
     "angular-mocks": "1.4.3",
     "chai": "3.2.0",
     "chance": "0.7.6",
-    "grunt-contrib-jshint": "0.11.2",
+    "eslint": "1.0.0",
+    "eslint-plugin-mocha": "0.4.0",
     "grunt-contrib-watch": "0.6.1",
     "grunt-githooks": "0.3.1",
     "grunt-http": "1.6.0",

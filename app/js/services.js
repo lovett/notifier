@@ -6,8 +6,9 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
     return {
 
         getAuthHeader: function () {
-            var tokenKey = this.getTokenKey();
-            var tokenValue = this.getTokenValue();
+            var tokenKey, tokenValue;
+            tokenKey = this.getTokenKey();
+            tokenValue = this.getTokenValue();
             return 'Basic ' + $window.btoa(tokenKey + ':' + tokenValue);
         },
 
@@ -163,6 +164,7 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', '$filter', 'User
 
     return {
         init: function (port) {
+            var url;
 
             if (client) {
                 client.disconnect();
@@ -177,16 +179,17 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', '$filter', 'User
 
             $log.info('Websocket port is ' + port);
 
-            var url = $location.protocol() + '://' + $location.host() + ':' + port + '/messages';
+            url = $location.protocol() + '://' + $location.host() + ':' + port + '/messages';
             client = new Faye.Client(url);
 
             client.addExtension({
                 incoming: function (message, callback) {
+                    var code, segments, value;
                     $log.debug('faye incoming', message);
                     if (message.error) {
-                        var segments = message.error.split('::');
-                        var code = parseInt(segments[0], 10);
-                        var value = segments[1];
+                        segments = message.error.split('::');
+                        code = parseInt(segments[0], 10);
+                        value = segments[1];
 
                         if (code === 301) {
                             $rootScope.$broadcast('connection:resubscribe', value);
@@ -439,7 +442,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
         },
 
         unclear: function () {
-            var self, ids;
+            var ids, self;
             self = this;
             ids = removedIds.pop();
 
@@ -510,7 +513,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                     'Authorization': User.getAuthHeader()
                 }
             }).success(function(data) {
-                var currentIds, staleIds, attitude;
+                var attitude, currentIds, staleIds;
                 staleIds = [];
                 if (data.messages instanceof Array) {
 
@@ -561,7 +564,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
         },
 
         add: function (message, attitude) {
-            var exists, age;
+            var age, exists;
 
             // don't add a message that has already been added
             exists = this.messages.some(function(m) {

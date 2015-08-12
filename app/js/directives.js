@@ -1,6 +1,5 @@
 var appDirectives = angular.module('appDirectives', []);
 
-
 appDirectives.directive('notifierFocus', [function () {
     'use strict';
 
@@ -19,7 +18,7 @@ appDirectives.directive('notifierFocus', [function () {
 }]);
 
 appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$window', '$document', function (MessageList, $rootScope, $window, $document) {
-        'use strict';
+    'use strict';
 
     var shortcutMap = {
         67: {
@@ -112,9 +111,9 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$win
         }
     };
 
-        return {
+    return {
         templateUrl: '/views/shortcuts-summary.html',
-                link: function (scope) {
+        link: function (scope) {
             scope.summaryVisible = false;
             scope.$on('shortcuts:toggle', function () {
                 scope.summaryVisible = !scope.summaryVisible;
@@ -129,7 +128,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$win
 
             scope.shortcuts = shortcutMap;
 
-                        angular.element($document[0]).bind('keyup', function (e) {
+            angular.element($document[0]).bind('keyup', function (e) {
                 var charCode = e.which || e.keyCode;
 
                 if (!shortcutMap.hasOwnProperty(charCode)) {
@@ -141,9 +140,9 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$win
                 }
 
                 shortcutMap[charCode].action();
-                        });
-                }
-        };
+            });
+        }
+    };
 }]);
 
 appDirectives.directive('notifierOfflineEvent', ['$window', '$rootScope', function ($window, $rootScope) {
@@ -216,7 +215,7 @@ appDirectives.directive('notifierStatusBar', ['$log', 'MessageList', function ($
             });
 
             scope.$on('queue:change', function () {
-                var tallys, summary;
+                var summary, tallys;
 
                 tallys = MessageList.messages.reduce(function (accumulator, message) {
                     if (!accumulator.hasOwnProperty(message.group)) {
@@ -238,7 +237,7 @@ appDirectives.directive('notifierStatusBar', ['$log', 'MessageList', function ($
                 } else {
                     scope.message = '';
                 }
-                scope.$apply();
+                //scope.$apply();
             });
         }
     };

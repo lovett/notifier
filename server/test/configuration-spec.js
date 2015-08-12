@@ -31,9 +31,10 @@ describe('configuration', function () {
         });
 
         it('can be populated via env', function (done) {
-            var user = 'test-alt-user';
+            var dbConfig, user;
+            user = 'test-alt-user';
             server.nconf.set('NOTIFIER_DB_USER', user);
-            var dbConfig = server.getDbConfig();                     
+            dbConfig = server.getDbConfig();
             assert.equal(dbConfig.username, user);
             done();
         });
@@ -44,11 +45,12 @@ describe('configuration', function () {
             assert.equal(dbConfig.password, 'test-password');
             done();
         });
-        
+
         it('can be populated via env', function (done) {
-            var pass = 'test-alt-pass';
+            var dbConfig, pass;
+            pass = 'test-alt-pass';
             server.nconf.set('NOTIFIER_DB_PASS', pass);
-            var dbConfig = server.getDbConfig();                     
+            dbConfig = server.getDbConfig();
             assert.equal(dbConfig.password, pass);
             done();
         });
@@ -61,8 +63,9 @@ describe('configuration', function () {
         });
 
         it('is created if not specified', function (done) {
+            var dbConfig;
             server.nconf.clear('NOTIFIER_DB_CONFIG');
-            var dbConfig = server.getDbConfig();                     
+            dbConfig = server.getDbConfig();
             assert.isObject(dbConfig);
             done();
         });
@@ -75,4 +78,4 @@ describe('configuration', function () {
         });
     });
 
-});    
+});

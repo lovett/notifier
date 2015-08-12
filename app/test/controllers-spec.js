@@ -5,7 +5,7 @@ describe('appControllers', function () {
     });
 
     describe('MessageController', function () {
-        var controller, scope, rootScope, tokenKeyStub, pathStub, fayeInitStub, fayeSubscribeStub, userReplaceChannelStub, fayeUnsubscribeStub, fayeDisconnectStub;
+        var controller, fayeDisconnectStub, fayeInitStub, fayeSubscribeStub, fayeUnsubscribeStub, pathStub, rootScope, scope, tokenKeyStub, userReplaceChannelStub;
 
         describe('when accessed with a login', function () {
             beforeEach(angular.mock.inject(function($controller, $rootScope, $location, $log, User, Faye) {
@@ -90,15 +90,17 @@ describe('appControllers', function () {
             });
 
             it('does not listen for connection resubscribe events', function () {
-                var spy = sinon.spy(scope, '$broadcast');
-                var event = new Event('connection:resubscribe');
+                var event, spy;
+                spy = sinon.spy(scope, '$broadcast');
+                event = new Event('connection:resubscribe');
                 window.dispatchEvent(event);
                 assert(spy.notCalled);
             });
 
             it('does not listen for connection change events', function () {
-                var spy = sinon.spy(scope, '$broadcast');
-                var event = new Event('connection:change');
+                var event, spy;
+                spy = sinon.spy(scope, '$broadcast');
+                event = new Event('connection:change');
                 window.dispatchEvent(event);
                 assert(spy.notCalled);
             });
@@ -106,7 +108,7 @@ describe('appControllers', function () {
     });
 
     describe('LoginController', function () {
-        var controller, scope, loginStub, loginPromise;
+        var controller, loginPromise, loginStub, scope;
 
         beforeEach(angular.mock.inject(function ($q, $controller, $rootScope, $location, User) {
             scope = $rootScope.$new();
@@ -159,7 +161,7 @@ describe('appControllers', function () {
     });
 
     describe('LogoutController', function () {
-        var controller, scope, tokenKeyStub, logoutStub, disconnectStub, emptyStub, pathStub;
+        var controller, disconnectStub, emptyStub, logoutStub, pathStub, scope, tokenKeyStub;
 
         describe('when accessed as a logged out user', function () {
 

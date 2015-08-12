@@ -6,7 +6,7 @@ describe('appDirectives', function () {
     });
 
     describe('notifierOfflineEvent', function () {
-        var window, scope, element;
+        var element, scope, window;
         beforeEach(angular.mock.inject(function ($window, $compile, $rootScope) {
             window = $window;
             scope = $rootScope;
@@ -16,8 +16,9 @@ describe('appDirectives', function () {
         }));
 
         it('fires a connection:change event when an offline event is fired', function () {
-            var spy = sinon.spy(scope, '$broadcast');
-            var event = new Event('offline');
+            var event, spy;
+            spy = sinon.spy(scope, '$broadcast');
+            event = new Event('offline');
             window.dispatchEvent(event);
             assert(spy.calledOnce);
             assert.equal(spy.args[0][0], 'connection:change');
@@ -25,8 +26,9 @@ describe('appDirectives', function () {
         });
 
         it('fires a connection:change event when an online event is fired', function () {
-            var spy = sinon.spy(scope, '$broadcast');
-            var event = new Event('online');
+            var event, spy;
+            spy = sinon.spy(scope, '$broadcast');
+            event = new Event('online');
             window.dispatchEvent(event);
             assert(spy.calledOnce);
             assert.equal(spy.args[0][0], 'connection:change');
@@ -36,7 +38,7 @@ describe('appDirectives', function () {
     });
 
     describe('notifierAppcacheReload', function () {
-        var window, scope, element;
+        var element, scope, window;
         beforeEach(angular.mock.inject(function ($window, $compile, $rootScope) {
             window = $window;
             scope = $rootScope;
@@ -46,8 +48,9 @@ describe('appDirectives', function () {
         }));
 
         it('triggers a full page reload when the appcache is stale', function () {
-            var stub = sinon.stub(scope, 'fullReload');
-            var event = new Event('updateready');
+            var event, stub;
+            stub = sinon.stub(scope, 'fullReload');
+            event = new Event('updateready');
             window.applicationCache.dispatchEvent(event);
             assert(stub.calledOnce);
         });
@@ -63,7 +66,7 @@ describe('appDirectives', function () {
     });
 
     describe('notifierStatusBar', function () {
-        var scope, element, messageList;
+        var element, messageList, scope;
 
         beforeEach(angular.mock.inject(function ($compile, $rootScope, $log, $filter, MessageList) {
             scope = $rootScope;
@@ -139,7 +142,7 @@ describe('appDirectives', function () {
     });
 
     describe('notifierSetScope', function () {
-        var scope, element;
+        var element, scope;
 
         beforeEach(angular.mock.inject(function ($compile, $rootScope) {
             scope = $rootScope;
@@ -162,7 +165,7 @@ describe('appDirectives', function () {
     });
 
     describe('notifierMessageOptions', function () {
-        var scope, isolateScope, element, clearStub;
+        var clearStub, element, isolateScope, scope;
 
         beforeEach(angular.mock.inject(function ($compile, $rootScope, MessageList) {
             scope = $rootScope;
@@ -190,12 +193,12 @@ describe('appDirectives', function () {
         });
 
         it('renders hidden when offline', function () {
-            scope.$broadcast('connection:change', 'offline')
+            scope.$broadcast('connection:change', 'offline');
             assert.isTrue(isolateScope.hidden);
         });
 
         it('renders hidden when disconnected', function () {
-            scope.$broadcast('connection:change', 'disconnected')
+            scope.$broadcast('connection:change', 'disconnected');
             assert.isTrue(isolateScope.hidden);
         });
 
@@ -207,7 +210,7 @@ describe('appDirectives', function () {
     });
 
     describe('notifierBottomnav', function () {
-        var scope, isolateScope, element, purgeStub;
+        var element, isolateScope, purgeStub, scope;
 
         beforeEach(angular.mock.inject(function ($compile, $rootScope, MessageList, BrowserNotification) {
             BrowserNotification.state = 'unavailable';
@@ -242,28 +245,28 @@ describe('appDirectives', function () {
         });
 
         it('hides clear all link when disconnected', function () {
-            scope.$broadcast('connection:change', 'disconnected')
+            scope.$broadcast('connection:change', 'disconnected');
             assert.isTrue(isolateScope.hideClearAll);
         });
 
         it('hides clear all link when offline', function () {
-            scope.$broadcast('connection:change', 'offline')
+            scope.$broadcast('connection:change', 'offline');
             assert.isTrue(isolateScope.hideClearAll);
         });
 
         it('shows clear all link when not offline or disconnected and queue is not empty', function () {
-            scope.$broadcast('queue:change', 1)
-            scope.$broadcast('connection:change', 'foo')
+            scope.$broadcast('queue:change', 1);
+            scope.$broadcast('connection:change', 'foo');
             assert.isFalse(isolateScope.hideClearAll);
         });
 
         it('hides clear all link when queue is empty', function () {
-            scope.$broadcast('queue:change', 0)
+            scope.$broadcast('queue:change', 0);
             assert.isTrue(isolateScope.hideClearAll);
         });
 
         it('shows clear all link when queue is not empty', function () {
-            scope.$broadcast('queue:change', 1)
+            scope.$broadcast('queue:change', 1);
             assert.isFalse(isolateScope.hideClearAll);
         });
     });

@@ -1,10 +1,14 @@
+'use strict';
+
+var Chance, assert, fs, server, supertest;
+
 process.env.NODE_ENV = 'test';
 
-var fs = require('fs');
-var server = require('../notifier-server');
-var supertest = require('supertest');
-var assert = require('chai').assert;
-var Chance = require('chance');
+fs = require('fs');
+server = require('../notifier-server');
+supertest = require('supertest');
+assert = require('chai').assert;
+Chance = require('chance');
 
 fs.unlink('test.log', function () {});
 fs.unlink('test.sqlite', function () {});

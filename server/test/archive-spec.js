@@ -1,5 +1,5 @@
 describe('/archive', function () {
-    var endpoint, tokenKey, tokenValue, altTokenKey, altTokenValue;
+    var altTokenKey, altTokenValue, endpoint, tokenKey, tokenValue;
     endpoint = '/archive/10';
 
     before(function (done) {
@@ -30,7 +30,6 @@ describe('/archive', function () {
     });
 
     describe('GET', function () {
-
         it('accepts valid authorization', function (done) {
             agent.get(endpoint)
                 .auth(tokenKey, tokenValue)
@@ -125,7 +124,7 @@ describe('/archive', function () {
                                 throw new Error('Message contains UserId property');
                             }
                         }).end(done);
-                    });
+                });
         });
 
         it('returns successfully if a numeric since value is provided', function (done) {

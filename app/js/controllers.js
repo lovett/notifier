@@ -66,7 +66,7 @@ appControllers.controller('LoginController', ['$rootScope', '$scope', '$location
     }
 
     $scope.submitLogin = function (form) {
-
+        var errorCallback, promise, successCallback;
         if (form.$invalid) {
             $scope.message = 'All fields are required';
             return;
@@ -75,13 +75,13 @@ appControllers.controller('LoginController', ['$rootScope', '$scope', '$location
         $scope.message = null;
         $scope.progress = 'Logging in...';
 
-        var promise = User.logIn(form);
+        promise = User.logIn(form);
 
-        var successCallback = function () {
+        successCallback = function () {
             $location.path('/');
         };
 
-        var errorCallback = function () {
+        errorCallback = function () {
             $scope.message = 'Please try again';
             $scope.progress = null;
         };

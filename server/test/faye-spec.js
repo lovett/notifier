@@ -1,5 +1,5 @@
 describe('faye', function () {
-    var tokenKey, tokenValue, channel, message;
+    var channel, message, tokenKey, tokenValue;
 
     before(function (done) {
         server.sync(function () {
@@ -85,7 +85,7 @@ describe('faye', function () {
                 done();
             }
         });
-       client.subscribe('/test');
+        client.subscribe('/test');
     });
 
     it('rejects message publication without an app secret', function (done) {

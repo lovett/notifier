@@ -1,4 +1,3 @@
-
 describe('/message/clear', function () {
     var endpoint, tokenKey, tokenValue;
     endpoint = '/message/clear';
@@ -37,7 +36,7 @@ describe('/message/clear', function () {
                 .send({'publicId': 'test'})
                 .expect(400).end(done);
         });
-        
+
         it('rejects an invalid local id', function (done) {
             agent.post(endpoint)
                 .auth(tokenKey, tokenValue)
@@ -46,25 +45,26 @@ describe('/message/clear', function () {
         });
 
         it('accepts a valid local id', function (done) {
-            
-            var message = {
+            var callback, message;
+
+            message = {
                 'localId': chance.guid(),
                 'title': 'test',
                 'body': 'test'
             };
-                
-            var callback = function () {
+
+            callback = function () {
                 agent.post(endpoint)
                     .auth(tokenKey, tokenValue)
                     .send({'localId': message.localId})
                     .expect(204).end(done);
             };
-            
+
             agent.post('/message')
                 .auth(tokenKey, tokenValue)
                 .send(message).end(callback);
         });
-        
+
     });
-    
-});    
+
+});

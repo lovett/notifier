@@ -17,37 +17,41 @@ describe('appFilters', function () {
         });
 
         it('should not clobber its input', function () {
-            var input = new Date();
-            var preResult = input.toString();
-            var result = reldate(input);
+            var input, preResult, result;
+            input = new Date();
+            preResult = input.toString();
+            result = reldate(input);
             assert.equal(input.toString(), preResult);
         });
 
         it('accepts a date object as input', function () {
-            var input = new Date();
-            var result = reldate(input);
+            var input, result;
+            input = new Date();
+            result = reldate(input);
             assert.equal(result, 'today');
         });
 
         it('accepts a numeric unix timestamp as input', function () {
-            var input = new Date().getTime();
-            var result = reldate(input);
+            var input, result;
+            input = new Date().getTime();
+            result = reldate(input);
             assert.equal(result, 'today');
         });
 
         it('accepts a string unix timestamp as input', function () {
-            var input = new Date().getTime().toString();
-            var result = reldate(input);
+            var input, result;
+            input = new Date().getTime().toString();
+            result = reldate(input);
             assert.equal(result, 'today');
         });
 
         it('correctly identifies yesterday', function () {
-            var midnight, input, result;
+            var input, midnight, result;
             midnight = new Date();
             midnight.setHours(0, 0, 0, 0);
 
             // 11:59:59 PM of previous day
-            input = midnight.getTime() - 1000
+            input = midnight.getTime() - 1000;
             result = reldate(input);
             assert.equal(result, 'yesterday');
 
@@ -63,12 +67,12 @@ describe('appFilters', function () {
         });
 
         it('correctly identifies tomorrow', function () {
-            var midnight, input, result;
+            var input, midnight, result;
             midnight = new Date();
             midnight.setHours(0, 0, 0, 0);
 
             // 12:00:01 AM tomorrow
-            input = midnight.getTime() + 24 * 60 * 60 * 1000 + 1000
+            input = midnight.getTime() + 24 * 60 * 60 * 1000 + 1000;
             result = reldate(input);
             assert.equal(result, 'tomorrow');
 
@@ -79,7 +83,7 @@ describe('appFilters', function () {
         });
 
         it('correctly identifies today', function () {
-            var midnight, input, result;
+            var input, midnight, result;
             midnight = new Date();
             midnight.setHours(0, 0, 0, 0);
 

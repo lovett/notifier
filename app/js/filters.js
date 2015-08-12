@@ -3,7 +3,7 @@ var appFilters = angular.module('appFilters', []);
 appFilters.filter('reldate', function () {
     'use strict';
     return function (when) {
-        var d;
+        var d, delta, now;
 
         if (when instanceof Date) {
             // this avoids clobbering the original value
@@ -14,7 +14,7 @@ appFilters.filter('reldate', function () {
             d = new Date(parseInt(when, 10));
         }
 
-        var now = new Date();
+        now = new Date();
 
         // roll back to midnight
         d.setHours(0,0,0,0);
@@ -22,7 +22,7 @@ appFilters.filter('reldate', function () {
 
         // time difference as an integer number of days, accounting
         // for milliseconds
-        var delta = (now - d) / 86400 / 1000;
+        delta = (now - d) / 86400 / 1000;
 
         if (delta === 1) {
             return 'yesterday';

@@ -1,4 +1,3 @@
-/* global angular */
 var app = angular.module('appModule', [
     'appControllers',
     'appDirectives',
@@ -51,8 +50,9 @@ app.config(['$provide', function ($provide) {
         var original = $delegate.debug;
 
         $delegate.debug = function () {
-            var argsArray = Array.prototype.slice.call(arguments);
-            var fayeMessage;
+            var argsArray, fayeMessage;
+            argsArray = Array.prototype.slice.call(arguments);
+            fayeMessage;
 
             if (!$window.DEBUG) {
                 return;

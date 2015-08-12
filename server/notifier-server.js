@@ -1,25 +1,46 @@
-var bunyan = require('bunyan');
-var https = require('https');
-var fs = require('fs');
-var favicon = require('serve-favicon');
-var faye = require('faye');
-var deflate = require('permessage-deflate');
-var express = require('express');
-var bodyParser = require('body-parser');
-var responseTime = require('response-time');
-var Sequelize = require('sequelize');
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-var BasicStrategy = require('passport-http').BasicStrategy;
-var crypto = require('crypto');
-var compression = require('compression');
-var util = require('util');
-var url = require('url');
-var useragent = require('useragent');
-var nconf = require('nconf');
-var sanitizeHtml = require('sanitize-html');
-var path = require('path');
-var needle = require('needle');
+'use strict';
+var APPSECRET,
+    BasicStrategy = require('passport-http').BasicStrategy,
+    LocalStrategy = require('passport-local').Strategy,
+    Message,
+    Sequelize = require('sequelize'),
+    Token,
+    User,
+    app,
+    bayeux,
+    bayeuxClient,
+    bodyParser = require('body-parser'),
+    bunyan = require('bunyan'),
+    compression = require('compression'),
+    createUser,
+    crypto = require('crypto'),
+    dbConfig,
+    deflate = require('permessage-deflate'),
+    express = require('express'),
+    favicon = require('serve-favicon'),
+    faye = require('faye'),
+    fs = require('fs'),
+    getDbConfig,
+    https = require('https'),
+    log,
+    nconf = require('nconf'),
+    needle = require('needle'),
+    passport = require('passport'),
+    path = require('path'),
+    publishMessage,
+    responseTime = require('response-time'),
+    sanitizeHtml = require('sanitize-html'),
+    sanitizeStrict,
+    sanitizeStrictConfig,
+    sanitizeTolerant,
+    sanitizeTolerantConfig,
+    sequelize,
+    sync,
+    url = require('url'),
+    useragent = require('useragent'),
+    util = require('util'),
+    verifySubscription;
+
 
 /**
  * Application configuration
@@ -58,7 +79,7 @@ nconf.defaults({
  * Logging configuration
  * --------------------------------------------------------------------
  */
-var log = bunyan.createLogger({
+log = bunyan.createLogger({
     name: 'notifier',
     streams: [
         {
@@ -73,7 +94,6 @@ var log = bunyan.createLogger({
  * Application secret
  * --------------------------------------------------------------------
  */
-var APPSECRET;
 try {
     APPSECRET = crypto.randomBytes(60).toString('hex');
     log.trace('app secret generated');
@@ -91,8 +111,8 @@ try {
  * database is determined by the value of NOTIFIER_DB. It should
  * should correspond to one of the keys of NOTIFIER_DB_CONFIG.
  */
-var getDbConfig = function () {
-    var key, config;
+getDbConfig = function () {
+    var config, key;
     key = nconf.get('NOTIFIER_DB');
 
     if (nconf.get('NOTIFIER_DB_CONFIG') && nconf.get('NOTIFIER_DB_CONFIG').hasOwnProperty(key)) {
@@ -124,9 +144,9 @@ var getDbConfig = function () {
     return config;
 };
 
-var dbConfig = getDbConfig();
+dbConfig = getDbConfig();
 
-var sequelize = new Sequelize(dbConfig.dbname,
+sequelize = new Sequelize(dbConfig.dbname,
                               dbConfig.username,
                               dbConfig.password,
                               dbConfig.sequelize);
@@ -135,7 +155,7 @@ var sequelize = new Sequelize(dbConfig.dbname,
  * HTML sanitizer configuration
  * --------------------------------------------------------------------
  */
-var sanitizeStrictConfig = {
+sanitizeStrictConfig = {
     allowedTags: [],
     allowedAttributes: {},
     textFilter: function (text) {
@@ -143,13 +163,13 @@ var sanitizeStrictConfig = {
     },
 };
 
-var sanitizeStrict = function (context, field, value) {
+sanitizeStrict = function (context, field, value) {
     var clean = sanitizeHtml(value, sanitizeStrictConfig);
     log.trace({field: field, before: value, after: clean}, 'sanitized');
     return context.setDataValue(field, clean);
 };
 
-var sanitizeTolerantConfig = {
+sanitizeTolerantConfig = {
     allowedTags: [ 'b', 'i', 'em', 'strong', 'a', 'p' ],
     allowedAttributes: {
         'a': [ 'href' ]
@@ -160,7 +180,7 @@ var sanitizeTolerantConfig = {
     allowedSchemes: [ 'http', 'https', 'mailto' ]
 };
 
-var sanitizeTolerant = function (context, field, value) {
+sanitizeTolerant = function (context, field, value) {
     var clean = sanitizeHtml(value, sanitizeTolerantConfig);
     log.trace({field: field, before: value, after: clean}, 'sanitized');
     return context.setDataValue(field, clean);
@@ -172,7 +192,7 @@ var sanitizeTolerant = function (context, field, value) {
  * --------------------------------------------------------------------
  */
 
-var Token = sequelize.define('Token', {
+Token = sequelize.define('Token', {
     key: {
         type: Sequelize.STRING(88),
         allowNull: false,
@@ -220,7 +240,7 @@ var Token = sequelize.define('Token', {
         generateKeyAndValue: function (callback) {
             var numBytes = 64;
             crypto.randomBytes(numBytes, function(err, buf) {
-                var i, result, bag;
+                var bag, i, result;
 
                 if (err) {
                     log.error({err: err}, 'error while generating random bytes');
@@ -241,7 +261,7 @@ var Token = sequelize.define('Token', {
     }
 });
 
-var User = sequelize.define('User', {
+User = sequelize.define('User', {
     username: {
         type: Sequelize.STRING(20),
         unique: true,
@@ -307,10 +327,11 @@ var User = sequelize.define('User', {
         },
 
         hashPassword: function (password, callback) {
-            var self = this;
-            var randBytes = nconf.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
-            var keyLength = nconf.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
-            var iterations = nconf.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
+            var iterations, keyLength, randBytes, self;
+            self = this;
+            randBytes = nconf.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
+            keyLength = nconf.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
+            iterations = nconf.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
 
             crypto.randomBytes(randBytes, function(err, buf) {
                 var salt;
@@ -328,9 +349,10 @@ var User = sequelize.define('User', {
         },
 
         checkPassword: function (password, callback) {
-            var segments = this.getDataValue('passwordHash').split('::');
-            var keyLength = nconf.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
-            var iterations = nconf.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
+            var iterations, keyLength, segments;
+            segments = this.getDataValue('passwordHash').split('::');
+            keyLength = nconf.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
+            iterations = nconf.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
 
             crypto.pbkdf2(password, segments[0], iterations, keyLength, function (err, key) {
                 callback(key.toString('hex') === segments[1]);
@@ -340,7 +362,7 @@ var User = sequelize.define('User', {
 });
 
 
-var Message = sequelize.define('Message', {
+Message = sequelize.define('Message', {
     publicId: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
@@ -450,7 +472,7 @@ Message.belongsTo(User);
  * Database population
  * --------------------------------------------------------------------
  */
-var createUser = function (username, password, callback) {
+createUser = function (username, password, callback) {
     User.findOrCreate({ where: {username: username}}).spread(function (user, created) {
         if (created === false) {
             callback();
@@ -532,7 +554,7 @@ passport.use(new BasicStrategy(function(key, value, next) {
  * Websocket setup
  * --------------------------------------------------------------------
  */
-var bayeux = new faye.NodeAdapter({
+bayeux = new faye.NodeAdapter({
     mount: '/messages'
 });
 
@@ -542,7 +564,7 @@ bayeux.addWebsocketExtension(deflate);
  * Websocket helpers
  * --------------------------------------------------------------------
  */
-var verifySubscription = function (message, callback) {
+verifySubscription = function (message, callback) {
     log.info({message: message}, 'verifying subscription request');
 
     if (!message.ext || !message.ext.authToken) {
@@ -558,7 +580,7 @@ var verifySubscription = function (message, callback) {
             value: message.ext.authToken
         }
     }).then(function (token) {
-        var tokenAge;
+        var channelSegments, tokenAge;
 
         if (!token || !token.User) {
             log.warn({message: message}, 'invalid credentials');
@@ -569,7 +591,7 @@ var verifySubscription = function (message, callback) {
 
 
         // Is the requested channel still valid?
-        var channelSegments = message.subscription.replace(/^\//, '').split('/');
+        channelSegments = message.subscription.replace(/^\//, '').split('/');
 
         if (channelSegments[0] !== 'messages') {
             log.info({channel: message.subscription}, 'invalid channel');
@@ -656,7 +678,7 @@ bayeux.addExtension({
  * --------------------------------------------------------------------
  * Add the application secret to outgoing messages
  */
-var bayeuxClient = bayeux.getClient();
+bayeuxClient = bayeux.getClient();
 
 bayeuxClient.addExtension({
     outgoing: function(message, callback) {
@@ -672,10 +694,8 @@ bayeuxClient.addExtension({
  * The Express application
  * --------------------------------------------------------------------
  */
-var app = express();
+app = express();
 app.disable('x-powered-by');
-
-
 
 
 /**
@@ -712,6 +732,7 @@ app.use(function (req, res, next) {
 
 // Security safeguards
 app.use(function (req, res, next) {
+    var connectSrc, headerValue, hostname, httpProtocol, liveReloadHostPort, scriptSrc, websocketProtocol;
     // Clickjacking - see
     // https://www.owasp.org/index.php/Clickjacking
     // --------------------------------------------------------------------
@@ -722,15 +743,15 @@ app.use(function (req, res, next) {
     // --------------------------------------------------------------------
 
     // get hostname without port
-    var hostname = req.headers['x-forwarded-host'] || req.headers.host;
+    hostname = req.headers['x-forwarded-host'] || req.headers.host;
     hostname = hostname.replace(/:[0-9]+$/, '', hostname);
 
     // account for custom websocket port
-    var connectSrc = 'connect-src \'self\'';
-    var scriptSrc = 'script-src \'self\'';
+    connectSrc = 'connect-src \'self\'';
+    scriptSrc = 'script-src \'self\'';
 
-    var httpProtocol = (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'https':'http';
-    var websocketProtocol = (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'wss':'ws';
+    httpProtocol = (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'https':'http';
+    websocketProtocol = (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'wss':'ws';
 
     if (nconf.get('NOTIFIER_WEBSOCKET_PORT')) {
         connectSrc += util.format(' %s://%s:%s', websocketProtocol, hostname, nconf.get('NOTIFIER_WEBSOCKET_PORT'));
@@ -738,12 +759,12 @@ app.use(function (req, res, next) {
     }
 
     if (nconf.get('NOTIFIER_LIVERELOAD_HOST') && nconf.get('NOTIFIER_LIVERELOAD_PORT')) {
-        var liveReloadHostPort = util.format('%s:%s', nconf.get('NOTIFIER_LIVERELOAD_HOST'), nconf.get('NOTIFIER_LIVERELOAD_PORT'));
+        liveReloadHostPort = util.format('%s:%s', nconf.get('NOTIFIER_LIVERELOAD_HOST'), nconf.get('NOTIFIER_LIVERELOAD_PORT'));
         connectSrc += util.format(' %s://%s', websocketProtocol, liveReloadHostPort);
         scriptSrc += util.format(' %s://%s', httpProtocol, liveReloadHostPort);
     }
 
-    var headerValue = [];
+    headerValue = [];
     headerValue.push('default-src \'self\'');
     headerValue.push('style-src \'self\' \'unsafe-inline\'');
     headerValue.push('img-src \'self\' data:');
@@ -833,10 +854,10 @@ app.use(express.static(nconf.get('NOTIFIER_STATIC_DIR'), {
  * --------------------------------------------------------------------
  */
 app.param('count', function (req, res, next, value) {
-    var count;
+    var count, err;
 
     if (/\D/.test(value) === true) {
-        var err = new Error('Invalid count');
+        err = new Error('Invalid count');
         err.status = 400;
         next(err);
     } else {
@@ -858,7 +879,7 @@ app.param('count', function (req, res, next, value) {
  * Route helpers
  * --------------------------------------------------------------------
  */
-var publishMessage = function (user, message) {
+publishMessage = function (user, message) {
     var channel = '/messages/' + user.getChannel();
     bayeuxClient.publish(channel, JSON.stringify(message));
 
@@ -1021,6 +1042,7 @@ app.get('/authorize/onedrive/finish', function (req, res) {
 
 
 app.get('/authorize/pushbullet/start', passport.authenticate('basic', {session: false}), function (req, res) {
+    var token;
 
     function sendUrl (tokenValue) {
         var redirectUri = url.format({
@@ -1047,7 +1069,7 @@ app.get('/authorize/pushbullet/start', passport.authenticate('basic', {session: 
         });
     }
 
-    var token = Token.build({
+    token = Token.build({
         key: 'pushbullet',
         label: 'service'
     });
@@ -1127,20 +1149,21 @@ app.get('/authorize/pushbullet/finish', function (req, res) {
 });
 
 app.post('/auth', passport.authenticate('local', { session: false }), function (req, res) {
-    var tokenLabel = req.body.label || '';
+    var sendResponse, token, tokenLabel, tokenPersist;
+    tokenLabel = req.body.label || '';
     tokenLabel = tokenLabel.replace(/[^a-zA-Z0-9-\.\/ ]/, '');
     if (tokenLabel === '') {
         tokenLabel =  useragent.parse(req.headers['user-agent']).toString();
     }
 
-    var tokenPersist = req.body.persist || false;
+    tokenPersist = req.body.persist || false;
 
-    var token = Token.build({
+    token = Token.build({
         label: tokenLabel,
         persist: tokenPersist
     });
 
-    var sendResponse = function (token) {
+    sendResponse = function (token) {
         token.setUser(req.user).then(function () {
 
             res.format({
@@ -1177,10 +1200,10 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
 });
 
 app.post('/message', passport.authenticate('basic', { session: false }), function (req, res, next) {
-    var message;
+    var err, message;
 
     if (Object.keys(req.body).length === 0) {
-        var err = new Error('Message is blank');
+        err = new Error('Message is blank');
         err.status = 400;
         next(err);
         return;
@@ -1206,12 +1229,12 @@ app.post('/message', passport.authenticate('basic', { session: false }), functio
             res.sendStatus(204);
         });
     }).catch(function (error) {
-        var message = '';
+        var err, message = '';
         error.errors.forEach(function (err) {
             message += err.message + ';';
         });
 
-        var err = new Error(message);
+        err = new Error(message);
         err.status = 400;
         next(err);
     });
@@ -1343,10 +1366,10 @@ app.use(function(err, req, res, next) {
  * Server startup
  * --------------------------------------------------------------------
  */
-var sync = function (callback) {
+sync = function (callback) {
     sequelize.sync().then(function () {
+        var password, user;
         if (nconf.get('NOTIFIER_DEFAULT_USER')) {
-            var user, password;
             user = nconf.get('NOTIFIER_DEFAULT_USER').toLowerCase();
             password = nconf.get('NOTIFIER_DEFAULT_PASSWORD');
 
