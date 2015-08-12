@@ -212,15 +212,6 @@ module.exports = function(grunt) {
             }
         },
 
-        open : {
-            'coverageServer': {
-                path: 'coverage/server/lcov-report/index.html'
-            },
-            'coverageAppUnit': {
-                path: 'coverage/firefox-unit/lcov-report/index.html'
-            }
-        },
-
         replace: {
             websocket: {
                 src: ['static/views/index.html'],
@@ -381,7 +372,7 @@ module.exports = function(grunt) {
         grunt.task.run(tasks);
     });
 
-    grunt.registerTask('test', function(suite, type, viewCoverageReport) {
+    grunt.registerTask('test', function(suite, type) {
         var tasks;
 
         if (!suite) {
@@ -390,18 +381,10 @@ module.exports = function(grunt) {
 
         if (suite === 'server') {
             tasks = ['mocha_istanbul:server'];
-
-            if (viewCoverageReport) {
-                tasks.push('open:coverageServer');
-            }
         }
 
         if (suite === 'app') {
             tasks = ['karma:unit'];
-
-            if (viewCoverageReport) {
-                tasks.push('open:coverageAppUnit');
-            }
         }
 
         grunt.task.run(tasks);
@@ -467,9 +450,8 @@ module.exports = function(grunt) {
         grunt.loadNpmTasks('grunt-lesslint');
         grunt.loadNpmTasks('grunt-mocha-istanbul');
         grunt.loadNpmTasks('grunt-mocha-test');
-        grunt.loadNpmTasks('grunt-open');
 
         grunt.registerTask('default', ['build:full', 'watch']);
-        grunt.registerTask('coverage', ['clean:coverage', 'mocha_istanbul:server', 'open:coverage-server']);
+        grunt.registerTask('coverage', ['clean:coverage', 'mocha_istanbul:server']);
     }
 };

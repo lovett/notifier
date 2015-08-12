@@ -68,7 +68,6 @@
     "grunt-lesslint": "1.1.14",
     "grunt-mocha-istanbul": "2.4.0",
     "grunt-mocha-test": "0.12.7",
-    "grunt-open": "0.2.3",
     "karma": "0.13.8",
     "karma-chai": "0.1.0",
     "karma-chrome-launcher": "0.2.0",
