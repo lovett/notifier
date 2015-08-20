@@ -65,8 +65,15 @@ authorize() {
     RESPONSE_USER=$(echo "$RESPONSE" | cut -d "," -f 1)
     RESPONSE_PASS=$(echo "$RESPONSE" | cut -d "," -f 2)
 
-    echo "machine $NOTIFIER_HOST login $RESPONSE_USER password $RESPONSE_PASS" >> $HOME/.netrc
-    echo "Credentials for $NOTIFIER_HOST have been saved in $HOME/.netrc"
+    NETRC=$HOME/.netrc
+    if [ -f $NETRC ]; then
+        NETRC_TMP=$NETRC.tmp-${0##*/}
+        sed "/$NOTIFIER_HOST/d" $NETRC > $NETRC_TMP
+        mv $NETRC_TMP $NETRC
+    fi
+
+    echo "machine $NOTIFIER_HOST login $RESPONSE_USER password $RESPONSE_PASS" >> $NETRC
+    echo "Credentials for $NOTIFIER_HOST have been saved in $NETRC"
 }
 
 OPTIND=1
