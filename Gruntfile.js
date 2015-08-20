@@ -95,71 +95,6 @@ module.exports = function(grunt) {
             }
         },
 
-        http: {
-            authtoken: {
-                options: {
-                    url: 'http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/auth',
-                    headers: {
-                        'Accept': 'application/json'
-                    },
-                    method: 'POST',
-                    form: {
-                        username: '<%= env.NOTIFIER_DEFAULT_USER %>',
-                        password: '<%= env.NOTIFIER_DEFAULT_PASSWORD %>',
-                        persist: 1,
-                        label: 'grunt',
-                    },
-                    callback: function (error, response, body) {
-                        grunt.file.write(tokenFile, body);
-                    }
-                }
-            },
-            onemessage: {
-                options: {
-                    url: 'http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/message',
-                    method: 'POST',
-                    auth: {
-                        user: '<%= token.key %>',
-                        pass: '<%= token.value %>'
-                    },
-                    form: {
-                        title: 'Test message',
-                        body: new Date().getTime(),
-                        group: grunt.option('group') || 'test',
-                        url: grunt.option('url') || 'http://example.com',
-                        localId: 'test',
-                        pushbulletId: 0
-                    }
-                }
-            },
-
-            retract: {
-                options: {
-                    url: 'http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/message/clear',
-                    method: 'POST',
-                    auth: {
-                        user: '<%= token.key %>',
-                        pass: '<%= token.value %>'
-                    },
-                    form: {
-                        localId: 'test'
-                    }
-                }
-            },
-            archive: {
-                options: {
-                    url: 'http://localhost:<%= env.NOTIFIER_HTTP_PORT %>/archive/10',
-                    method: 'GET',
-                    headers: {
-                        'x-token': '<%= token.token %>'
-                    },
-                    callback: function (error, response, body) {
-                        console.dir(JSON.parse(body, undefined, 2));
-                    }
-                }
-            }
-        },
-
         karma: {
             unit: {
                 configFile: 'app/test/karma.conf.js'
@@ -445,7 +380,6 @@ module.exports = function(grunt) {
 
     if (env.NOTIFIER_ENVIRONMENT === 'dev') {
         grunt.loadNpmTasks('grunt-contrib-watch');
-        grunt.loadNpmTasks('grunt-http');
         grunt.loadNpmTasks('grunt-karma');
         grunt.loadNpmTasks('grunt-lesslint');
         grunt.loadNpmTasks('grunt-mocha-istanbul');
