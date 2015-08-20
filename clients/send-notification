@@ -130,4 +130,4 @@ curl --netrc --fail --silent --show-error \
      -d "body=$BODY" \
      -d "url=$URL"  \
      -d "pushbulletId=$PUSHBULLET_ID" \
-     "$SERVER/message" 2>&1 | logger -t "send-notification"
+     "$SERVER/message" 2>&1 | logger -t "${0##*/}" -s
