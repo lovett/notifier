@@ -1156,7 +1156,7 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
         tokenLabel =  useragent.parse(req.headers['user-agent']).toString();
     }
 
-    tokenPersist = req.body.persist || false;
+    tokenPersist = req.body.persist === '1' || req.body.persist === 'true';
 
     token = Token.build({
         label: tokenLabel,
