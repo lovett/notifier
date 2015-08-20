@@ -52,7 +52,7 @@ var APPSECRET,
  * variable exists, the configuration file is checked. As a last
  * resort, a limited set of default values are used.
  *
- * The * configuration file is env.json by default, but can be
+ * The configuration file is env.json by default, but can be
  * overriden to env-{ENVIRONMENT NAME}.json by setting the NODE_ENV
  * environment variable.
  *
@@ -147,9 +147,9 @@ getDbConfig = function () {
 dbConfig = getDbConfig();
 
 sequelize = new Sequelize(dbConfig.dbname,
-                              dbConfig.username,
-                              dbConfig.password,
-                              dbConfig.sequelize);
+                          dbConfig.username,
+                          dbConfig.password,
+                          dbConfig.sequelize);
 
 /**
  * HTML sanitizer configuration
@@ -1222,6 +1222,51 @@ app.post('/message', passport.authenticate('basic', { session: false }), functio
             message[key] = req.body[key].trim();
         }
     });
+
+    // Retract unread messages with the same local id as the incoming
+    // message. This enforces uniqueness from the client's
+    // perspective. From the perspective of the database, localIds are
+    // not unique.
+    if (message.localId) {
+        Message.findAll({
+            attributes: ['publicId'],
+            where: {
+                localId: req.body.localId,
+                unread: true,
+                UserId: req.user.id,
+                publicId: {
+                    $ne: message.publicId
+                }
+            }
+        }).then(function (existingMessages) {
+            var ids;
+            if (existingMessages.length == 0) {
+                return;
+            }
+
+            ids = existingMessages.map(function (existingMessage) {
+                return existingMessage.publicId;
+            });
+
+            Message.update({
+                unread: false
+            }, {
+                where: {
+                    publicId: {
+                        $in: ids
+                    }
+                }
+            }).then(function (updatedRows) {
+                if (updatedRows[0] > 0) {
+                    ids.forEach(function (id) {
+                        publishMessage(req.user, {
+                            'retracted': id
+                        });
+                    });
+                };
+            });
+        });
+    }
 
     message.save().then(function () {
         message.setUser(req.user).then(function () {
