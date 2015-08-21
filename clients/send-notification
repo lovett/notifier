@@ -82,9 +82,11 @@ GROUP=""
 BODY=""
 URL=""
 PUSHBULLET_ID=""
+LOCAL_ID=""
 SERVER=${NOTIFIER_SERVER:-}
+ENDPOINT="message"
 
-while getopts "ahp:s:t:g:b:u:" opt; do
+while getopts "ahcp:s:t:g:b:u:l:" opt; do
     case "$opt" in
         a)
             authorize
@@ -108,6 +110,12 @@ while getopts "ahp:s:t:g:b:u:" opt; do
         p)
             PUSHBULLET_ID="$OPTARG"
             ;;
+        l)
+            LOCAL_ID="$OPTARG"
+            ;;
+        c)
+            ENDPOINT="$ENDPOINT/clear"
+            ;;
         ?)
             usage  >&2
             exit 2
@@ -130,4 +138,5 @@ curl --netrc --fail --silent --show-error \
      -d "body=$BODY" \
      -d "url=$URL"  \
      -d "pushbulletId=$PUSHBULLET_ID" \
-     "$SERVER/message" 2>&1 | logger -t "${0##*/}" -s
+     -d "localId=$LOCAL_ID" \
+     "$SERVER/$ENDPOINT" 2>&1 | logger -t "${0##*/}" -s
