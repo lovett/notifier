@@ -1,9 +1,8 @@
 var touch = require('touch');
 
 module.exports = function(grunt) {
-    var env, tokenFile;
+    var env;
 
-    tokenFile = '.token';
     env = grunt.file.readJSON('env.json');
 
     grunt.initConfig({
@@ -36,13 +35,6 @@ module.exports = function(grunt) {
                 dest: 'static/'
             }
         },
-
-        token: (function () {
-            try {
-                return grunt.file.readJSON(tokenFile);
-            } catch (e) {
-            }
-        }()),
 
         clean: {
             full: {
