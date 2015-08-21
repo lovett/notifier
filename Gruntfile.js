@@ -19,7 +19,6 @@ module.exports = function(grunt) {
                     patterns: [
                         'static/*.min.js',
                         'static/*.min.css',
-                        'static/views/*.html',
                         'static/favicon/app-icon*.png',
                         'static/favicon/favicon.ico',
                         'static/favicon/favicon.png',
@@ -50,7 +49,7 @@ module.exports = function(grunt) {
                 src: ['static']
             },
             app: {
-                src: ['static/app*', 'static/all*']
+                src: ['static/app*', 'static/all*', 'static/views']
             },
             postBuild: {
                 src: ['static/version.json']
@@ -147,9 +146,27 @@ module.exports = function(grunt) {
             }
         },
 
+        ngtemplates: {
+            app: {
+                cwd: 'app',
+                src: 'views/*.html',
+                dest: 'static/js/templates.js',
+                options: {
+                    module: 'appModule',
+                    htmlmin: {
+                        collapseWhitespace: true,
+                        collapseBooleanAttributes: true,
+                        removeAttributeQuotes: true
+                    }
+                }
+            }
+        },
+
+
+
         replace: {
             websocket: {
-                src: ['static/views/index.html'],
+                src: ['static/index.html'],
                 overwrite: true,
                 replacements: [{
                     from: '<meta name=\"websocket port\" content=\"\"',
@@ -157,7 +174,7 @@ module.exports = function(grunt) {
                 }]
             },
             dev: {
-                src: ['static/views/index.html'],
+                src: ['static/index.html'],
                 overwrite: true,
                 replacements: [{
                     from: '<!-- livereload placeholder -->',
@@ -168,7 +185,7 @@ module.exports = function(grunt) {
                 }]
             },
             production: {
-                src: ['static/views/index.html'],
+                src: ['static/index.html'],
                 overwrite: true,
                 replacements: [{
                     from: '<!-- livereload placeholder -->',
@@ -247,7 +264,9 @@ module.exports = function(grunt) {
                                           'static/js/controllers.js',
                                           'static/js/directives.js',
                                           'static/js/filters.js',
-                                          'static/js/services.js']
+                                          'static/js/services.js',
+                                          'static/js/templates.js'
+                                         ]
                 }
             },
             lib: {
@@ -287,9 +306,9 @@ module.exports = function(grunt) {
         tasks = [];
 
         if (buildType === 'full') {
-            tasks = tasks.concat(['clean:full', 'copy', 'uglify']);
+            tasks = tasks.concat(['clean:full', 'copy', 'ngtemplates', 'uglify']);
         } else {
-            tasks = tasks.concat(['clean:app', 'copy:app', 'uglify:app']);
+            tasks = tasks.concat(['clean:app', 'copy:app', 'ngtemplates', 'uglify:app']);
         }
 
         tasks = tasks.concat(['less', 'autoprefixer', 'replace:websocket']);
@@ -369,6 +388,7 @@ module.exports = function(grunt) {
         grunt.task.run(shellTask);
     });
 
+    grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-appcache');
     grunt.loadNpmTasks('grunt-autoprefixer');
     grunt.loadNpmTasks('grunt-contrib-clean');

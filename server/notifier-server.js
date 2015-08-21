@@ -948,12 +948,12 @@ publishMessage = function (user, message) {
  * --------------------------------------------------------------------
  */
 app.get('/', function (req, res) {
-    res.sendFile(nconf.get('NOTIFIER_STATIC_DIR') + '/views/index.html');
+    res.sendFile(nconf.get('NOTIFIER_STATIC_DIR') + '/index.html');
 });
 
 app.get(/^\/(login|logout|onedrive)$/, function (req, res) {
     // For pushState compatibility, some URLs are treated as aliases of the index view
-    res.sendFile(nconf.get('NOTIFIER_STATIC_DIR') + '/views/index.html');
+    res.sendFile(nconf.get('NOTIFIER_STATIC_DIR') + '/index.html');
 });
 
 app.post('/deauth', passport.authenticate('basic', { session: false }), function (req, res) {

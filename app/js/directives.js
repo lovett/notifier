@@ -112,7 +112,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$win
     };
 
     return {
-        templateUrl: '/views/shortcuts-summary.html',
+        templateUrl: 'views/shortcuts-summary.html',
         link: function (scope) {
             scope.summaryVisible = false;
             scope.$on('shortcuts:toggle', function () {
@@ -284,7 +284,7 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'MessageLis
 
     return {
         restrict: 'A',
-        templateUrl: '/views/bottomnav.html',
+        templateUrl: 'views/bottomnav.html',
         scope: {},
         link: function (scope) {
             scope.queueSize = 0;
