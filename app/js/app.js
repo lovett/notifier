@@ -15,12 +15,12 @@ app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $lo
 
     $routeProvider.when('/login', {
         controller: 'LoginController',
-        templateUrl: 'views/login.html'
+        templateUrl: 'templates/login.html'
     });
 
     $routeProvider.when('/logout', {
         controller: 'LogoutController',
-        templateUrl: 'views/logout.html'
+        templateUrl: 'templates/logout.html'
     });
 
     $routeProvider.when('/onedrive', {
@@ -30,7 +30,7 @@ app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $lo
 
     $routeProvider.when('/', {
         controller: 'MessageController',
-        templateUrl: 'views/messages.html'
+        templateUrl: 'templates/messages.html'
     });
 
     $routeProvider.otherwise('/', {

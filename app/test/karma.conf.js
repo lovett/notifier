@@ -15,13 +15,13 @@ module.exports = function(config) {
             'node_modules/angular-mocks/angular-mocks.js',
             'static/js/*.js',
             'app/test/*spec.js',
-            'app/views/*.html'
+            'app/templates/*.html'
         ],
 
 
         // list of files to exclude
         exclude: [
-            
+
         ],
 
 
@@ -29,17 +29,17 @@ module.exports = function(config) {
         // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
         reporters: ['progress', 'coverage'],
 
-        
+
         preprocessors: {
             'static/js/*.js': 'coverage',
-            'app/views/*.html': 'ng-html2js'
+            'app/templates/*.html': 'ng-html2js'
         },
 
         ngHtml2JsPreprocessor: {
             moduleName: 'templates',
             stripPrefix: 'app'
         },
-        
+
         coverageReporter: {
             type: 'lcov',
             dir: 'coverage/',
@@ -47,7 +47,7 @@ module.exports = function(config) {
                 return browser.toLowerCase().split(/[ /-]/)[0] + '-unit';
             }
         },
-        
+
 
         // web server port
         port: 9876,

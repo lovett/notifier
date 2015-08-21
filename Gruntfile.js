@@ -49,7 +49,7 @@ module.exports = function(grunt) {
                 src: ['static']
             },
             app: {
-                src: ['static/app*', 'static/all*', 'static/views']
+                src: ['static/app*', 'static/all*', 'static/templates']
             },
             postBuild: {
                 src: ['static/version.json']
@@ -149,7 +149,7 @@ module.exports = function(grunt) {
         ngtemplates: {
             app: {
                 cwd: 'app',
-                src: 'views/*.html',
+                src: 'templates/*.html',
                 dest: 'static/js/templates.js',
                 options: {
                     module: 'appModule',
