@@ -161,7 +161,7 @@ appDirectives.directive('notifierOfflineEvent', ['$window', '$rootScope', functi
     };
 }]);
 
-appDirectives.directive('notifierAppcacheReload', ['$window', '$rootScope', '$log', function ($window, $rootScope, $log) {
+appDirectives.directive('notifierAppcacheReload', ['$window', '$interval', '$rootScope', '$log', function ($window, $interval, $rootScope, $log) {
     'use strict';
 
     return {
@@ -179,6 +179,16 @@ appDirectives.directive('notifierAppcacheReload', ['$window', '$rootScope', '$lo
             $window.applicationCache.addEventListener('updateready', function() {
                 $log.info('An appcache update is ready, requesting full reload');
                 scope.fullReload();
+            });
+
+            $window.applicationCache.addEventListener('error', function (e) {
+                var count = 5;
+                $interval(function (iteration) {
+                    $rootScope.$broadcast('connection:change', 'disconnected', 'The server is unavailable, retrying in ' + (count - iteration));
+                    if (iteration + 1 === count) {
+                        scope.fullReload();
+                    }
+                }, 1000, count, false);
             });
         }
     };
@@ -203,9 +213,9 @@ appDirectives.directive('notifierStatusBar', ['$log', 'MessageList', function ($
         restrict: 'E',
         template: '<div ng-class="{\'status-bar\': true, \'disconnected\': disconnected}">{{ message }}</div>',
         link: function (scope) {
-            scope.$on('connection:change', function (e, state) {
+            scope.$on('connection:change', function (e, state, message) {
                 if (state === 'offline' || state === 'disconnected') {
-                    scope.message = state;
+                    scope.message = message || state;
                     scope.disconnected = true;
                 } else {
                     scope.disconnected = false;
