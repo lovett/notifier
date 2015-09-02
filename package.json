@@ -10,7 +10,7 @@
     "build": "grunt build:full",
     "hooks": "cp hooks/* .git/hooks/",
     "lint": "eslint Gruntfile.js app server",
-    "onemessage": "clients/send-notification -g test -p 0 -t test -l test",
+    "onemessage": "clients/send-notification -p 0 -t test",
     "retract": "clients/send-notification -c -l test"
   },
   "repository": {
