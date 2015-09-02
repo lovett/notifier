@@ -219,9 +219,7 @@ appDirectives.directive('notifierStatusBar', ['$log', 'MessageList', function ($
                     scope.disconnected = true;
                 } else {
                     scope.disconnected = false;
-                    scope.message = '';
                 }
-                scope.$apply();
             });
 
             scope.$on('queue:change', function () {
@@ -247,7 +245,6 @@ appDirectives.directive('notifierStatusBar', ['$log', 'MessageList', function ($
                 } else {
                     scope.message = '';
                 }
-                //scope.$apply();
             });
         }
     };
