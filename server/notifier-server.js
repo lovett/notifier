@@ -710,11 +710,6 @@ app.use(favicon(nconf.get('NOTIFIER_STATIC_DIR') + '/favicon/favicon.ico'));
 app.use(function (req, res, next) {
     var err;
 
-    // Disallow querystrings on view templates
-    if (req.path.indexOf('views') === -1) {
-        return next();
-    }
-
     if (Object.keys(req.query).length !== 0) {
         err = new Error('Invalid request');
         err.status = 400;
