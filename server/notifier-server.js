@@ -706,25 +706,6 @@ app.disable('x-powered-by');
 // Handle requests for the default favicon
 app.use(favicon(nconf.get('NOTIFIER_STATIC_DIR') + '/favicon/favicon.ico'));
 
-// Static file request prechecking
-app.use(function (req, res, next) {
-    var err;
-
-    if (Object.keys(req.query).length !== 0) {
-        err = new Error('Invalid request');
-        err.status = 400;
-        return next(err);
-    }
-
-    if (req.method !== 'GET') {
-        err = new Error('Not allowed');
-        err.status = 405;
-        return next(err);
-    }
-
-    next();
-});
-
 // Security safeguards
 app.use(function (req, res, next) {
     var connectSrc, headerValue, hostname, httpProtocol, liveReloadHostPort, scriptSrc, websocketProtocol;
