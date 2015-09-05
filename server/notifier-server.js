@@ -618,11 +618,11 @@ verifySubscription = function (message, callback) {
         }
 
     }, function () {
-        log.error({message: message}, 'token lookup failed');
-        message.error = '500::Unable to verify credentials at this time';
-        callback(message);
-        return;
-    });
+            log.error({message: message}, 'token lookup failed');
+            message.error = '500::Unable to verify credentials at this time';
+            callback(message);
+            return;
+        });
 };
 
 
@@ -1119,9 +1119,7 @@ app.get('/authorize/pushbullet/finish', function (req, res) {
                 });
             });
         });
-    }, function () {
-        res.sendStatus(400);
-    });
+    }, function () { res.sendStatus(400); });
 });
 
 app.post('/auth', passport.authenticate('local', { session: false }), function (req, res) {
