@@ -574,12 +574,14 @@ verifySubscription = function (message, callback) {
         return;
     }
 
-    Token.find({
-        include: [ User ],
-        where: {
-            value: message.ext.authToken
-        }
-    }).then(function (token) {
+    function tokenNotFound () {
+        log.error({message: message}, 'token lookup failed');
+        message.error = '500::Unable to verify credentials at this time';
+        callback(message);
+        return;
+    }
+
+    function tokenFound (token) {
         var channelSegments, tokenAge;
 
         if (!token || !token.User) {
@@ -588,7 +590,6 @@ verifySubscription = function (message, callback) {
             callback(message);
             return;
         }
-
 
         // Is the requested channel still valid?
         channelSegments = message.subscription.replace(/^\//, '').split('/');
@@ -616,13 +617,14 @@ verifySubscription = function (message, callback) {
         } else {
             callback(message);
         }
+    }
 
-    }, function () {
-            log.error({message: message}, 'token lookup failed');
-            message.error = '500::Unable to verify credentials at this time';
-            callback(message);
-            return;
-        });
+    Token.find({
+        include: [ User ],
+        where: {
+            value: message.ext.authToken
+        }
+    }).then(tokenFound, tokenNotFound);
 };
 
 
