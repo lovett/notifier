@@ -5,7 +5,7 @@ HTML {
     @to: lighten(@palettePrimary, 20%);
     min-height: 100%;
     background-color: @from;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,@from), color-stop(100%,@to));
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, @from), color-stop(100%, @to));
     background: linear-gradient(180deg, @from, @to);
 }
 
@@ -45,9 +45,6 @@ MAIN {
 
 .flex-wrapper {
     height: 100%;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
     display: flex;
     box-pack: center;
     box-align: center;
@@ -139,7 +136,7 @@ FOOTER {
         position: absolute;
         top: 0;
         right: 0;
-        height: 101%; /* if 100%, Chrome leaves a 1px gap at bottom */
+        height: 101%; // if 100%
         width: 8em;
 
         A {
@@ -185,7 +182,7 @@ FOOTER {
             width: 1em;
             height: 1em;
             display: inline-block;
-            margin-bottom: -0.15em;
+            margin-bottom: -.15em;
             fill: black;
         }
     }
@@ -307,7 +304,7 @@ FOOTER {
     }
 
     FIELDSET {
-        border: none;
+        border: 0;
     }
 
     LABEL {
@@ -317,14 +314,14 @@ FOOTER {
     }
 
     LABEL:after {
-        content: ": ";
+        content: ': ';
     }
 
     .inline-label:after {
         content: none;
     }
 
-    INPUT[type=text], INPUT[type=password] {
+    INPUT[type='text'], INPUT[type='password'] {
         border: 0;
         border-bottom: 1px solid black;
         font-family: monospace;
@@ -344,7 +341,7 @@ FOOTER {
 }
 
 .fade-in.ng-enter, .fade-in.ng-leave {
-    transition: all linear 0.25s;
+    transition: all linear .25s;
 }
 
 .fade-in.ng-enter,
@@ -358,7 +355,7 @@ FOOTER {
 }
 
 .fade-out.ng-enter, .fade-out.ng-leave {
-    transition: all linear 0.25s;
+    transition: all linear .25s;
 }
 
 .fade-out.ng-enter,

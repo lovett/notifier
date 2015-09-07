@@ -10,6 +10,7 @@
     "build": "grunt build:full",
     "hooks": "cp hooks/* .git/hooks/",
     "lint": "eslint Gruntfile.js app server",
+    "lint:less": "lesshint app/less -e badges.less",
     "onemessage": "clients/send-notification -p 0 -t test",
     "retract": "clients/send-notification -c -l test",
     "test:server": "mocha --bail --reporter min server/test",
@@ -70,7 +71,6 @@
     "eslint": "1.3.1",
     "eslint-plugin-mocha": "0.5.1",
     "grunt-contrib-watch": "0.6.1",
-    "grunt-lesslint": "1.2.0",
     "istanbul": "0.3.19",
     "karma": "0.13.9",
     "karma-chai": "0.1.0",
@@ -81,6 +81,7 @@
     "karma-ng-html2js-preprocessor": "0.1.2",
     "karma-safari-launcher": "0.1.1",
     "karma-sinon": "1.0.4",
+    "lesshint": "0.9.0",
     "mocha": "2.3.0",
     "sinon": "1.16.1",
     "supertest": "1.1.0"

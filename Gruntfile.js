@@ -80,12 +80,6 @@ module.exports = function(grunt) {
             }
         },
 
-        githooks: {
-            all: {
-                'pre-commit': 'lesslint'
-            }
-        },
-
         karma: {
             unit: {
                 configFile: 'app/test/karma.conf.js'
@@ -101,17 +95,6 @@ module.exports = function(grunt) {
                     'static/all.min.css': ['node_modules/normalize.css/normalize.css',
                                            'node_modules/angular/angular-csp.css',
                                            'app/less/*']
-                }
-            }
-        },
-
-        lesslint: {
-            src: ['app/less/*.less'],
-            options: {
-                csslint: {
-                    'known-properties': false,
-                    'gradients': false,
-                    'adjoining-classes': false
                 }
             }
         },
@@ -352,7 +335,6 @@ module.exports = function(grunt) {
 
     if (env.NOTIFIER_ENVIRONMENT === 'dev') {
         grunt.loadNpmTasks('grunt-contrib-watch');
-        grunt.loadNpmTasks('grunt-lesslint');
         grunt.registerTask('default', ['build:full', 'watch']);
     }
 };

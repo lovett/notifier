@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
 
 npm run -s lint
+npm run -s lint:less
