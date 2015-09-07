@@ -220,6 +220,8 @@ appDirectives.directive('notifierStatusBar', ['$log', 'MessageList', function ($
                 } else {
                     scope.disconnected = false;
                 }
+
+                scope.$apply();
             });
 
             scope.$on('queue:change', function () {
