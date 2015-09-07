@@ -11,7 +11,11 @@
     "hooks": "cp hooks/* .git/hooks/",
     "lint": "eslint Gruntfile.js app server",
     "onemessage": "clients/send-notification -p 0 -t test",
-    "retract": "clients/send-notification -c -l test"
+    "retract": "clients/send-notification -c -l test",
+    "test:server": "mocha --bail --reporter min server/test",
+    "test:client": "karma start app/test/karma.conf.js --single-run",
+    "coverage:server": "istanbul cover --dir coverage/server _mocha -- -R min server/test",
+    "coverage:client": "echo 'Nope. Client coverage is automatically written by test:client'"
   },
   "repository": {
     "type": "git",
@@ -66,10 +70,7 @@
     "eslint": "1.3.1",
     "eslint-plugin-mocha": "0.5.1",
     "grunt-contrib-watch": "0.6.1",
-    "grunt-karma": "0.12.0",
     "grunt-lesslint": "1.2.0",
-    "grunt-mocha-istanbul": "3.0.1",
-    "grunt-mocha-test": "0.12.7",
     "istanbul": "0.3.19",
     "karma": "0.13.9",
     "karma-chai": "0.1.0",

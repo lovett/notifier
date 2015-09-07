@@ -116,28 +116,6 @@ module.exports = function(grunt) {
             }
         },
 
-        mochaTest: {
-            server: {
-                options: {
-                    reporter: 'spec',
-                    bail: true,
-                    require: 'server/test/world.js'
-                },
-                src: ['server/test/*-spec.js']
-            }
-        },
-
-        'mocha_istanbul': {
-            server: {
-                src: 'server/test',
-                options: {
-                    mask: '*-spec.js',
-                    require: ['server/test/world.js'],
-                    coverageFolder: 'coverage/server'
-                }
-            }
-        },
-
         ngtemplates: {
             app: {
                 cwd: 'app',
@@ -318,24 +296,6 @@ module.exports = function(grunt) {
         grunt.task.run(tasks);
     });
 
-    grunt.registerTask('test', function(suite, type) {
-        var tasks;
-
-        if (!suite) {
-            grunt.fail.fatal('Test suite not specified (app, server)');
-        }
-
-        if (suite === 'server') {
-            tasks = ['mocha_istanbul:server'];
-        }
-
-        if (suite === 'app') {
-            tasks = ['karma:unit'];
-        }
-
-        grunt.task.run(tasks);
-    });
-
     grunt.registerTask('migrate', function (undo) {
         var configPath, dbEnv, env, migrationConfig, shellTask;
 
@@ -392,12 +352,7 @@ module.exports = function(grunt) {
 
     if (env.NOTIFIER_ENVIRONMENT === 'dev') {
         grunt.loadNpmTasks('grunt-contrib-watch');
-        grunt.loadNpmTasks('grunt-karma');
         grunt.loadNpmTasks('grunt-lesslint');
-        grunt.loadNpmTasks('grunt-mocha-istanbul');
-        grunt.loadNpmTasks('grunt-mocha-test');
-
         grunt.registerTask('default', ['build:full', 'watch']);
-        grunt.registerTask('coverage', ['clean:coverage', 'mocha_istanbul:server']);
     }
 };
