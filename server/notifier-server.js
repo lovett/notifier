@@ -726,6 +726,16 @@ app.use(function (req, res, next) {
     connectSrc = 'connect-src \'self\'';
     scriptSrc = 'script-src \'self\'';
 
+    if (nconf.get('NOTIFIER_ENVIRONMENT') === 'dev') {
+        // This is for the benefit of Safari, which complains about a
+        // CSP policy violation somehow related to livereload yet
+        // still allows livereload to work. Adding this really just
+        // prevents an unhelpful CSP message from cluttering up the
+        // console. Only needed for dev because that's the only place
+        // livereload runs.
+        scriptSrc += ' \'unsafe-inline\'';
+    }
+
     httpProtocol = (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'https':'http';
     websocketProtocol = (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'wss':'ws';
 
@@ -923,6 +933,8 @@ publishMessage = function (user, message) {
  * Routing
  * --------------------------------------------------------------------
  */
+
+
 app.get('/', function (req, res) {
     res.sendFile(nconf.get('NOTIFIER_STATIC_DIR') + '/index.html');
 });
