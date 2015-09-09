@@ -413,8 +413,22 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
         },
 
         clear: function (ids) {
+            var self = this;
             if (!(ids instanceof Array)) {
                 ids = [ids];
+            }
+
+            function success () {
+                removedIds.push(ids);
+            }
+
+            function failure () {
+                $rootScope.$broadcast('connection:change', 'error', 'The message could not be cleared.');
+                self.messages.forEach(function (message) {
+                    if (ids.indexOf(message.publicId) > -1) {
+                        message.state = 'stuck';
+                    }
+                });
             }
 
             this.messages.forEach(function (message) {
@@ -432,9 +446,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                 data: {
                     publicId: ids
                 }
-            }).success(function () {
-                removedIds.push(ids);
-            });
+            }).then(success, failure);
         },
 
         canUnclear: function () {

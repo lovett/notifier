@@ -207,21 +207,21 @@ appDirectives.directive('notifierConnectionIcon', [function () {
     };
 }]);
 
-appDirectives.directive('notifierStatusBar', ['$log', 'MessageList', function ($log, MessageList) {
+appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList', function ($log, $timeout, MessageList) {
     'use strict';
     return {
         restrict: 'E',
         template: '<div ng-class="{\'status-bar\': true, \'disconnected\': disconnected}">{{ message }}</div>',
         link: function (scope) {
             scope.$on('connection:change', function (e, state, message) {
-                if (state === 'offline' || state === 'disconnected') {
-                    scope.message = message || state;
-                    scope.disconnected = true;
-                } else {
-                    scope.disconnected = false;
-                }
-
-                scope.$apply();
+                $timeout(function () {
+                    if (state === 'offline' || state === 'disconnected' || state === 'error') {
+                        scope.message = message || state;
+                        scope.disconnected = true;
+                    } else {
+                        scope.disconnected = false;
+                    }
+                });
             });
 
             scope.$on('queue:change', function () {
@@ -247,6 +247,8 @@ appDirectives.directive('notifierStatusBar', ['$log', 'MessageList', function ($
                 } else {
                     scope.message = '';
                 }
+
+                scope.disconnected = false;
             });
         }
     };

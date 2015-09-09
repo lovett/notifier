@@ -4,7 +4,7 @@
     <p class="app-message fade-out" ng-if="appMessage">{{ appMessage }}</p>
 
     <div ng-show="messageListVisible">
-        <article class="message {{::message.badge}}" ng-class="{focused: message.focused, extended: message.extended, hidden: message.state === 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false" ng-focus="message.focused = true" ng-blur="message.focused = false" notifier-focus="message.focused">
+        <article class="message {{::message.badge}}" ng-class="{focused: message.focused, extended: message.extended, stuck: message.state == 'stuck', hidden: message.state == 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false" ng-focus="message.focused = true" ng-blur="message.focused = false" notifier-focus="message.focused">
 
             <div class="badge"></div>
 
