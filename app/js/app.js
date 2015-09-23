@@ -82,3 +82,7 @@ app.config(['$provide', function ($provide) {
         return $delegate;
     }]);
 }]);
+
+app.run(function() {
+    FastClick.attach(document.body);
+});

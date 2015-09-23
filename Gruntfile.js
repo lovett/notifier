@@ -73,6 +73,7 @@ module.exports = function(grunt) {
                             'node_modules/angular-resource/angular-resource.js',
                             'node_modules/angular-touch/angular-touch.js',
                             'node_modules/angular-animate/angular-animate.js',
+                            'node_modules/fastclick/lib/fastclick.js'
                         ],
                         dest: 'static/'
                     }
@@ -228,7 +229,8 @@ module.exports = function(grunt) {
                         'static/angular-sanitize.js',
                         'static/angular-resource.js',
                         'static/angular-touch.js',
-                        'static/angular-animate.js'
+                        'static/angular-animate.js',
+                        'static/fastclick.js'
                     ]
                 }
             }
