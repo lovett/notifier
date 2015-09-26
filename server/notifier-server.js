@@ -946,6 +946,13 @@ app.get(/^\/(login|logout|onedrive)$/, function (req, res) {
     res.sendFile(nconf.get('NOTIFIER_STATIC_DIR') + '/index.html');
 });
 
+app.get('/status', function (req, res) {
+    // This route serves a static string as plain text for the benefit
+    // of monitoring and keep-alive applications.
+    res.type('txt');
+    res.send('OK');
+});
+
 app.post('/deauth', passport.authenticate('basic', { session: false }), function (req, res) {
 
     Token.destroy({
