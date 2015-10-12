@@ -1,32 +1,36 @@
-<main>
-    <notifier-status-bar></notifier-status-bar>
+<main class="flex-parent stacked">
+    <div class="flex-item">
+        <notifier-status-bar></notifier-status-bar>
+        <p class="app-message fade-out" ng-if="appMessage">{{ appMessage }}</p>
+    </div>
 
-    <p class="app-message fade-out" ng-if="appMessage">{{ appMessage }}</p>
+    <div class="flex-item grow">
+        <div ng-show="messageListVisible">
+            <article class="message {{::message.badge}}" ng-class="{focused: message.focused, extended: message.extended, stuck: message.state == 'stuck', hidden: message.state == 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false" ng-focus="message.focused = true" ng-blur="message.focused = false" notifier-focus="message.focused">
 
-    <div ng-show="messageListVisible">
-        <article class="message {{::message.badge}}" ng-class="{focused: message.focused, extended: message.extended, stuck: message.state == 'stuck', hidden: message.state == 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false" ng-focus="message.focused = true" ng-blur="message.focused = false" notifier-focus="message.focused">
+                <div class="badge"></div>
 
-            <div class="badge"></div>
+                <header>
+                    <h1 ng-show="message.title">
+                        <a ng-if="message.url" ng-href="{{::message.url}}" rel="noreferrer" target="_blank">
+                            {{::message.title}}
+                            <svg class="icon icon-external-link"><use xlink:href="#icon-external-link"></use></svg>
+                        </a>
+                        <span ng-if="!message.url">{{::message.title}}</span>
+                    </h1>
+                    <time datetime="{{::message.received | date:'yyyy-MM-ddTHH:mmZ'}}">
+                        {{::message.received | date:'h:mm a'}}
+                        {{::message.received | reldate | date: 'EEEE MMMM d'}}
+                    </time>
+                </header>
+                <p ng-show="message.body" ng-bind-html="message.body"></p>
 
-            <header>
-                <h1 ng-show="message.title">
-                    <a ng-if="message.url" ng-href="{{::message.url}}" rel="noreferrer" target="_blank">
-                        {{::message.title}}
-                        <svg class="icon icon-external-link"><use xlink:href="#icon-external-link"></use></svg>
-                    </a>
-                    <span ng-if="!message.url">{{::message.title}}</span>
-                </h1>
-                <time datetime="{{::message.received | date:'yyyy-MM-ddTHH:mmZ'}}">
-                    {{::message.received | date:'h:mm a'}}
-                    {{::message.received | reldate | date: 'EEEE MMMM d'}}
-                </time>
-            </header>
-            <p ng-show="message.body" ng-bind-html="message.body"></p>
+                <div class="options standard-options" notifier-message-options public-id="{{::message.publicId}}"></div>
 
-            <div class="options standard-options" notifier-message-options public-id="{{::message.publicId}}"></div>
-
-        </article>
+            </article>
+        </div>
+    </div>
+    <div class="flex-item">
+        <footer notifier-bottomnav></footer>
     </div>
 </main>
-
-<footer notifier-bottomnav></footer>

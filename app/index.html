@@ -32,16 +32,16 @@
             </symbol>
         </svg>
 
-        <div class="connecting" notifier-connection-icon>
+        <div class="flex-parent centered connecting" notifier-connection-icon>
             <svg><use xlink:href="#icon-connecting"></use></svg>
         </div>
-        <div class="view" ng-view>
+
+        <div ng-view>
             <p class="app-message"></p>
             <noscript>
                 <p class="app-message">JavaScript is not enabled. This application cannot run.<br/>😦</p>
             </noscript>
         </div>
-        <notifier-message-options></notifier-message-options>
 
         <notifier-shortcuts></notifier-shortcuts>
 
