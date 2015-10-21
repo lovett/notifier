@@ -728,6 +728,13 @@ app.use(function (req, res, next) {
     connectSrc = 'connect-src \'self\'';
     scriptSrc = 'script-src \'self\'';
 
+    // allow inline scripts for Safari only to avoid a "Refused to
+    // execute inline script..." error when extensions such as
+    // ublock are installed.
+    if (req.headers['user-agent'].indexOf('Safari') > -1 && req.headers['user-agent'].indexOf('Chrome') === -1) {
+        scriptSrc += ' \'unsafe-inline\'';
+    }
+
     httpProtocol = (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'https':'http';
     websocketProtocol = (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'wss':'ws';
 
