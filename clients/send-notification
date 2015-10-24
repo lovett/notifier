@@ -4,11 +4,11 @@
 # Send messages to notifier from the command line via curl.
 #
 # Includes the ability to request a login token from a notifier and
-# save it to .netrc.
+# save it to ~/.netrc.
 #
 
 set -u
-set -e
+#set -e
 
 usage() {
     cat <<EOF
@@ -131,12 +131,32 @@ if [ -z "$SERVER" ]; then
     exit 2
 fi
 
-curl --netrc --fail --silent --show-error \
-     --retry 20 \
-     -d "title=$TITLE" \
-     -d "group=$GROUP" \
-     -d "body=$BODY" \
-     -d "url=$URL"  \
-     -d "pushbulletId=$PUSHBULLET_ID" \
-     -d "localId=$LOCAL_ID" \
-     "$SERVER/$ENDPOINT" 2>&1 | logger -t "${0##*/}" -s
+HTTP_CODE="000"
+RETRYING=0
+while [ "$HTTP_CODE" != "204" ]; do
+    CURL_OUT=$(curl --netrc --fail --silent --show-error \
+                    --write-out ",%{http_code}" \
+                    --retry 20 \
+                    -d "title=$TITLE" \
+                    -d "group=$GROUP" \
+                    -d "body=$BODY" \
+                    -d "url=$URL"  \
+                    -d "pushbulletId=$PUSHBULLET_ID" \
+                    -d "localId=$LOCAL_ID" \
+                    "$SERVER/$ENDPOINT" 2>&1 )
+    HTTP_CODE=${CURL_OUT##*,}
+
+    if [ "$?" != "0" ] && [ $RETRYING -eq 0 ]; then
+        logger -t "${0##*/}" -s "Curl exited with $?. Retrying until success."
+        RETRYING=1
+        sleep 10
+    elif [ "$HTTP_CODE" != "204" ] && [ $RETRYING -eq 0 ]; then
+        logger -t "${0##*/}" -s "Curl received $HTTP_CODE. Retrying until 204."
+        RETRYING=1
+        sleep 10
+    fi
+done
+
+if [ $RETRYING -eq 1 ]; then
+    logger -t "${0##*/}" -s "Success."
+fi
