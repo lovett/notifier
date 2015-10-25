@@ -242,10 +242,14 @@ appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList',
                     summary.push(tallys[group] + ' ' + displayName);
                 });
 
-                if (summary.length > 1) {
-                    scope.message = summary.sort().join(', ');
+                if (summary.length > 3) {
+                    scope.message = MessageList.messages.length;
+                    scope.message += (MessageList.messages.length === 1)? ' message': ' messages';
+                    scope.message += ' in ';
+                    scope.message += ' ' + summary.length;
+                    scope.message += (summary.length === 1)? ' group': ' groups';
                 } else {
-                    scope.message = '';
+                    scope.message = summary.sort().join(', ');
                 }
 
                 scope.disconnected = false;
