@@ -16,7 +16,8 @@
     "test:server": "mocha --bail --reporter min server/test",
     "test:client": "karma start app/test/karma.conf.js --single-run",
     "coverage:server": "istanbul cover --dir coverage/server _mocha -- -R min server/test",
-    "coverage:client": "echo 'Nope. Client coverage is automatically written by test:client'"
+    "coverage:client": "echo 'Nope. Client coverage is automatically written by test:client'",
+    "deploy": "git push openshift production; clients/send-notification -g openshift -t 'Deployment complete'"
   },
   "repository": {
     "type": "git",
