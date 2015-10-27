@@ -8,7 +8,6 @@
 #
 
 set -u
-#set -e
 
 usage() {
     cat <<EOF
@@ -76,6 +75,13 @@ authorize() {
     echo "Credentials for $NOTIFIER_HOST have been saved in $NETRC"
 }
 
+# Are we running from cron?
+if [ -t 0 ]; then
+    INTERACTIVE=1
+else
+    INTERACTIVE=0
+fi
+
 OPTIND=1
 TITLE=""
 GROUP=""
@@ -134,6 +140,7 @@ fi
 HTTP_CODE="000"
 RETRYING=0
 while [ "$HTTP_CODE" != "204" ]; do
+    MESSAGE=""
     CURL_OUT=$(curl --netrc --fail --silent --show-error \
                     --write-out ",%{http_code}" \
                     --retry 20 \
@@ -147,16 +154,27 @@ while [ "$HTTP_CODE" != "204" ]; do
     HTTP_CODE=${CURL_OUT##*,}
 
     if [ "$?" != "0" ] && [ $RETRYING -eq 0 ]; then
-        logger -t "${0##*/}" -s "Curl exited with $?. Retrying until success."
-        RETRYING=1
-        sleep 10
+        MESSAGE="Curl exited with $?"
     elif [ "$HTTP_CODE" != "204" ] && [ $RETRYING -eq 0 ]; then
-        logger -t "${0##*/}" -s "Curl received $HTTP_CODE. Retrying until 204."
+        MESSAGE="Curl request failed"
+    fi
+
+    if [ ! -z "$MESSAGE" ]; then
+        MESSAGE="$MESSAGE. Will keep trying until successful."
+        if [ $INTERACTIVE -eq 1 ]; then
+            echo "☹  $MESSAGE"
+        else
+            logger -t "${0##*/}" "$MESSAGE"
+        fi
         RETRYING=1
         sleep 10
     fi
 done
 
 if [ $RETRYING -eq 1 ]; then
-    logger -t "${0##*/}" -s "Success."
+    if [ $INTERACTIVE -eq 1 ]; then
+        echo "👌  Success."
+    else
+        logger -t "${0##*/}" "Success."
+    fi
 fi
