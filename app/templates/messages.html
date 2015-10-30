@@ -20,7 +20,7 @@
                     </h1>
                     <time datetime="{{::message.received | date:'yyyy-MM-ddTHH:mmZ'}}">
                         {{::message.received | date:'h:mm a'}}
-                        {{::message.received | reldate | date: 'EEEE MMMM d'}}
+                        {{message.received | reldate | date: 'EEEE MMMM d'}}
                     </time>
                 </header>
                 <p ng-show="message.body" ng-bind-html="message.body"></p>

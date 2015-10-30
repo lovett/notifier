@@ -327,15 +327,27 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
     return self;
 }]);
 
-appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$location', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, $location, User, BrowserNotification) {
+appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$location', '$interval', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, $location, $interval, User, BrowserNotification) {
     'use strict';
 
-    var removedIds;
+    var messages, refreshTimer, removedIds;
 
+    messages = [];
     removedIds = [];
 
+    refreshTimer = $interval(function () {
+        var now = new Date();
+        now.setHours(0,0,0,0);
+
+        messages.forEach(function (message) {
+            var received = message.received;
+            received.setHours(0,0,0,0);
+            message.age_days = Math.floor((now - received) / 86400000);
+        });
+    }, 1000 * 60);
+
     return {
-        messages: [],
+        messages: messages,
 
         visitLink: function () {
             var focusedIndex;
@@ -605,7 +617,6 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             this.messages.unshift(message);
 
             $rootScope.$broadcast('queue:change', this.messages.length);
-
 
             age = (new Date() - new Date(message.received)) / 1000;
 
