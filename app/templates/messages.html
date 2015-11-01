@@ -20,7 +20,10 @@
                     </h1>
                     <time datetime="{{::message.received | date:'yyyy-MM-ddTHH:mmZ'}}">
                         {{::message.received | date:'h:mm a'}}
-                        {{message.received | reldate | date: 'EEEE MMMM d'}}
+                        <span ng-if="message.days_ago == 0">today</span>
+                        <span ng-if="message.days_ago == 1">yesterday</span>
+                        <span ng-if="message.days_ago == -1">tomorrow</span>
+                        <span ng-if="message.days_ago > 1 || message.days_ago < -1">{{ message.received | date: 'EEEE MMMM d' }}</span>
                     </time>
                 </header>
                 <p ng-show="message.body" ng-bind-html="message.body"></p>

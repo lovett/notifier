@@ -330,21 +330,25 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
 appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$location', '$interval', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, $location, $interval, User, BrowserNotification) {
     'use strict';
 
-    var messages, refreshTimer, removedIds;
+    var currentDate, messages, refreshTimer, removedIds;
 
     messages = [];
     removedIds = [];
+    currentDate = new Date().getDate();
 
     refreshTimer = $interval(function () {
-        var now = new Date();
-        now.setHours(0,0,0,0);
+        var now = new Date().getDate();
+
+        if (currentDate === now) {
+            return;
+        }
 
         messages.forEach(function (message) {
-            var received = message.received;
-            received.setHours(0,0,0,0);
-            message.age_days = Math.floor((now - received) / 86400000);
+            message.days_ago += 1;
         });
-    }, 1000 * 60);
+
+        currentDate = now;
+    }, 1000 * 10);
 
     return {
         messages: messages,
@@ -600,6 +604,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             }
 
             message.received = new Date(message.received || new Date());
+            message.days_ago = (new Date().setHours(0,0,0,0) - new Date(message.received).setHours(0,0,0,0)) / 86400000;
 
             if (message.body) {
                 message.body = message.body.replace(/\n/g, '<br/>');
@@ -623,6 +628,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             if (attitude !== 'silent' && age < 120) {
                 message.browserNotification = BrowserNotification.send(message);
             }
+
         },
     };
 }]);
