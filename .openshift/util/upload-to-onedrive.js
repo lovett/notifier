@@ -144,6 +144,17 @@ function deleteStaleFiles(maxAgeInDays) {
 
     needle.request('GET', endpoint, args, getDefaultOptions(), function (err, res) {
         var now = new Date();
+
+	if (err) {
+	    console.log(err);
+	    process.exit(1);
+	}
+
+        if (res.statusCode !== 200) {
+            console.log("Server returned " + res.statusCode + " instead of 200; exiting");
+            process.exit(1);
+        }
+
         res.body.value.forEach(function (item) {
             var ageInDays, deletionEndpoint;
 
