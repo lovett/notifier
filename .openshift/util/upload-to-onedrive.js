@@ -78,25 +78,25 @@ function refreshAuthToken(callback) {
         client_secret: nconf.get('ONEDRIVE_CLIENT_SECRET'),
         refresh_token: nconf.get('ONEDRIVE_REFRESH_TOKEN'),
         grant_type: 'refresh_token'
-    }, function (err, resp) {
+    }, function (err, res) {
         if (err) {
             console.log(err);
             process.exit(1);
         }
 
-        if (resp.statusCode !== 200) {
-            console.log(resp.body);
+        if (res.statusCode !== 200) {
+            console.log(res.body);
             process.exit(1);
         }
 
-        fs.writeFile(nconf.get('ONEDRIVE_AUTH_FILE'), JSON.stringify(resp.body), function (err) {
+        fs.writeFile(nconf.get('ONEDRIVE_AUTH_FILE'), JSON.stringify(res.body), function (err) {
             if (err) {
                 console.log(err);
                 process.exit(1);
             }
 
-            nconf.set('ONEDRIVE_REFRESH_TOKEN', resp.body.refresh_token);
-            nconf.set('ONEDRIVE_ACCESS_TOKEN', resp.body.access_token);
+            nconf.set('ONEDRIVE_REFRESH_TOKEN', res.body.refresh_token);
+            nconf.set('ONEDRIVE_ACCESS_TOKEN', res.body.access_token);
             callback();
         });
     });
@@ -112,7 +112,7 @@ function uploadFile() {
 
     var readStream = fs.createReadStream(backupFile);
 
-    needle.put(endpoint, readStream, getDefaultOptions(), function(err, resp, body) {
+    needle.put(endpoint, readStream, getDefaultOptions(), function(err, res, body) {
         if (err) {
             console.log(err);
             process.exit(1);
@@ -142,9 +142,9 @@ function deleteStaleFiles(maxAgeInDays) {
         'orderby': 'lastModifiedDateTime asc'
     }
 
-    needle.request('GET', endpoint, args, getDefaultOptions(), function (err, resp) {
+    needle.request('GET', endpoint, args, getDefaultOptions(), function (err, res) {
         var now = new Date();
-        resp.body.value.forEach(function (item) {
+        res.body.value.forEach(function (item) {
             var ageInDays, deletionEndpoint;
 
             // only consider sql.gz files
@@ -160,7 +160,7 @@ function deleteStaleFiles(maxAgeInDays) {
 
             deletionEndpoint = API_ROOT + '/drive/items/' + item.id;
 
-            needle.delete(deletionEndpoint, null, getDefaultOptions(), function (err, resp) {
+            needle.delete(deletionEndpoint, null, getDefaultOptions(), function (err, res) {
                 if (err) {
                     console.log(err);
                     process.exit(1);
