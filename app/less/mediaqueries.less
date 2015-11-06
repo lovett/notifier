@@ -4,7 +4,6 @@
     }
 
     .badge {
-	width: 0;
         width: 3em;
         background-position: center 1em;
         margin-left: .5em;
@@ -22,9 +21,14 @@
 	visibility: hidden;
     }
 
-    .message.extended .options {
-	visibility: visible;
+    .message.extended, .message.extended:hover {
+	margin-left: -2.25em;
+
+	.options {
+	    visibility: visible;
+	}
     }
+
 
 }
 
@@ -43,16 +47,6 @@
     .message {
         padding-right: 0;
     }
-
-    .message.extended {
-        padding-left: .5em;
-        padding-right: 4em;
-
-        .badge {
-            width: 0;
-        }
-    }
-
 }
 
 @media only screen and (min-width: 320px) and (max-device-width : 568px)  and (orientation: portrait) {
@@ -66,15 +60,6 @@
 
     .message {
         padding-right: 1em;
-    }
-
-    .message.extended {
-        padding-left: 1em;
-        padding-right: 5.5em;
-
-        .badge {
-            width: 0;
-        }
     }
 
     .login-form {
