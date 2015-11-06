@@ -56,7 +56,7 @@ A:hover {
     height: 3em;
     text-align: center;
     overflow: hidden;
-    padding: 0 1em 
+    padding: 0 1em
 }
 
 .status-bar.disconnected {
@@ -125,8 +125,9 @@ FOOTER {
         position: absolute;
         top: 0;
         right: 0;
-        height: 101%; // if 100%
-        width: 8em;
+        height: 101%;
+	width: 8em;
+        visibility: hidden;
 
         A {
             height: 100%;
@@ -193,8 +194,16 @@ FOOTER {
     }
 }
 
+.message:hover .options {
+    visibility: visible;
+}
+
 .message.focused {
     margin: 1em;
+
+    .options {
+	visibility: visible;
+    }
 }
 
 .message.ng-enter,
