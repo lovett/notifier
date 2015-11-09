@@ -18,14 +18,15 @@
     }
 
     .message:hover .options {
-	visibility: hidden;
+        opacity: 0;
     }
 
     .message.extended, .message.extended:hover {
 	margin-left: -2.25em;
 
 	.options {
-	    visibility: visible;
+            opacity: 1;
+            transition-property: none;
 	}
     }
 

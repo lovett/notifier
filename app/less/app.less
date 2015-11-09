@@ -127,7 +127,8 @@ FOOTER {
         right: 0;
         height: 101%;
 	width: 8em;
-        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.2s 0.25s;
 
         A {
             height: 100%;
@@ -195,14 +196,14 @@ FOOTER {
 }
 
 .message:hover .options {
-    visibility: visible;
+    opacity: 1;
 }
 
 .message.focused {
     margin: 1em;
 
     .options {
-	visibility: visible;
+        opacity: 1;
     }
 }
 
