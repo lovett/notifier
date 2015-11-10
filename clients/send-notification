@@ -7,6 +7,8 @@
 # save it to ~/.netrc.
 #
 
+VERSION="1.0.0"
+
 set -u
 
 usage() {
@@ -27,6 +29,10 @@ ${0##*/} -s SERVER -t TITLE -g GROUP -b BODY -u URL
 -p PUSHBULLET_ID
 
 EOF
+}
+
+version() {
+    echo "Version: $VERSION"
 }
 
 authorize() {
@@ -92,7 +98,7 @@ LOCAL_ID=""
 SERVER=${NOTIFIER_SERVER:-}
 ENDPOINT="message"
 
-while getopts "ahcp:s:t:g:b:u:l:" opt; do
+while getopts "ahcVp:s:t:g:b:u:l:" opt; do
     case "$opt" in
         a)
             authorize
@@ -121,6 +127,10 @@ while getopts "ahcp:s:t:g:b:u:l:" opt; do
             ;;
         c)
             ENDPOINT="$ENDPOINT/clear"
+            ;;
+        V)
+            version
+            exit
             ;;
         ?)
             usage  >&2
