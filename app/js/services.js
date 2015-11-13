@@ -592,7 +592,9 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
         },
 
         add: function (message, attitude) {
-            var age, exists;
+            var age, exists, result, self;
+
+            self = this;
 
             // don't add a message that has already been added
             exists = this.messages.some(function(m) {
@@ -619,7 +621,16 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                 message.body = message.body.replace(/(\+?1?)(\d\d\d)(\d\d\d)(\d\d\d\d)/g, '($2) $3-$4');
             }
 
-            this.messages.unshift(message);
+            result = this.messages.some(function (m, index) {
+                if (m.received < message.received) {
+                    self.messages.splice(index, 0, message);
+                    return true;
+                }
+            });
+
+            if (result === false) {
+                this.messages.push(message);
+            }
 
             $rootScope.$broadcast('queue:change', this.messages.length);
 
