@@ -114,12 +114,27 @@ FOOTER {
     }
 }
 
+.message.linked:hover {
+    cursor: pointer;
+
+    H1 SPAN {
+	text-decoration: underline;
+    }
+}
+
+.message:hover {
+    cursor: default;
+    text-decoration: none;
+}
+
 .message {
     background-color: rgb(255, 255, 255);
     margin-bottom: .5em;
     overflow: hidden;
     position: relative;
     padding: 1em 6em;
+    display: block;
+    color: black;
 
     .options {
         position: absolute;
