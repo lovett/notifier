@@ -592,7 +592,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
         },
 
         add: function (message, attitude) {
-            var age, exists, result, self;
+            var age, exists, result, self, tmp;
 
             self = this;
 
@@ -619,6 +619,14 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             if (message.group === 'phone' && message.body) {
                 // Format US phone numbers, dropping optional country code
                 message.body = message.body.replace(/(\+?1?)(\d\d\d)(\d\d\d)(\d\d\d\d)/g, '($2) $3-$4');
+            }
+
+            if (message.url) {
+                tmp = angular.element('<a></a>');
+                tmp.attr('href', message.url);
+                message.domain = tmp[0].hostname;
+            } else {
+                message.domain = null;
             }
 
             result = this.messages.some(function (m, index) {

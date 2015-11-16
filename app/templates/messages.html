@@ -22,6 +22,7 @@
                         <span ng-if="message.days_ago == -1">tomorrow</span>
                         <span ng-if="message.days_ago > 1 || message.days_ago < -1">{{ message.received | date: 'EEEE MMMM d' }}</span>
                     </time>
+		    <p class="domain" ng-if="message.domain">{{::message.domain}}</p>
                 </header>
                 <p ng-show="message.body" ng-bind-html="message.body"></p>
 
