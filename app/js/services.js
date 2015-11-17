@@ -330,25 +330,21 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
 appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$location', '$interval', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, $location, $interval, User, BrowserNotification) {
     'use strict';
 
-    var currentDate, messages, refreshTimer, removedIds;
+    var messages, refreshTimer, removedIds;
 
     messages = [];
     removedIds = [];
-    currentDate = new Date().getDate();
 
     refreshTimer = $interval(function () {
-        var now = new Date().getDate();
-
-        if (currentDate === now) {
-            return;
-        }
+        var now = new Date();
+        now.setHours(0,0,0,0);
 
         messages.forEach(function (message) {
-            message.days_ago += 1;
+            var received = new Date(message.received);
+            received.setHours(0,0,0,0);
+            message.days_ago = Math.floor((now - received) / 86400000);
         });
-
-        currentDate = now;
-    }, 1000 * 10);
+    }, 1000 * 60);
 
     return {
         messages: messages,
