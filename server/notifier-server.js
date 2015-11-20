@@ -1191,6 +1191,25 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
 
 });
 
+app.patch('/message', passport.authenticate('basic', { session: false }), function (req, res) {
+    var err;
+
+    message = Message.find({
+        where: {
+            'publicId': req.body.publicId,
+            'UserId': req.user.id
+        }
+    }).then(function (message) {
+        message.update(req.body, {fields: ['title', 'url', 'body', 'source', 'group']}).then(function (affectedRows) {
+            if (affectedRows[0] == 0) {
+                res.sendStatus(400);
+                return;
+            }
+            res.sendStatus(204);
+        });
+    });
+});
+
 app.post('/message', passport.authenticate('basic', { session: false }), function (req, res, next) {
     var err, message;
 
