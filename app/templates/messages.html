@@ -6,14 +6,14 @@
 
     <div class="flex-item grow">
         <div ng-show="messageListVisible">
-            <a ng-href="{{::message.url}}" rel="noreferrer" target="_blank" class="message {{::message.badge}}" ng-class="{linked: message.url, focused: message.focused, extended: message.extended, stuck: message.state == 'stuck', hidden: message.state == 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false" ng-focus="message.focused = true" ng-blur="message.focused = false" notifier-focus="message.focused">
+            <a ng-href="{{message.url}}" rel="noreferrer" target="_blank" class="message {{message.badge}}" ng-class="{linked: message.url, focused: message.focused, extended: message.extended, stuck: message.state == 'stuck', hidden: message.state == 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false" ng-focus="message.focused = true" ng-blur="message.focused = false" notifier-focus="message.focused">
 
                 <div class="badge"></div>
 
                 <header>
                     <h1 ng-show="message.title">
                         <svg ng-if="message.url" class="icon icon-external-link"><use xlink:href="#icon-external-link"></use></svg>
-                        <span>{{::message.title}}</span>
+                        <span>{{message.title}}</span>
                     </h1>
                     <time datetime="{{::message.received | date:'yyyy-MM-ddTHH:mmZ'}}">
                         {{::message.received | date:'h:mm a'}}
@@ -22,7 +22,7 @@
                         <span ng-if="message.days_ago == -1">tomorrow</span>
                         <span ng-if="message.days_ago > 1 || message.days_ago < -1">{{ message.received | date: 'EEEE MMMM d' }}</span>
                     </time>
-		    <p class="domain" ng-if="message.domain">{{::message.domain}}</p>
+		    <p class="domain" ng-if="message.domain">{{message.domain}}</p>
                 </header>
                 <p ng-show="message.body" ng-bind-html="message.body"></p>
 

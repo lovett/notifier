@@ -641,13 +641,13 @@ bayeux.addExtension({
         // the localId is not sent to clients
         delete message.localId;
 
-        log.trace({message: message}, 'faye server outgoing message');
+        log.info({message: message}, 'faye server outgoing message');
         return callback(message);
     },
 
     incoming: function(message, callback) {
 
-        log.trace({message: message}, 'faye server incoming message');
+        log.info({message: message}, 'faye server incoming message');
 
         message.ext = message.ext || {};
 
@@ -866,6 +866,7 @@ app.param('count', function (req, res, next, value) {
  */
 publishMessage = function (user, message) {
     var channel = '/messages/' + user.getChannel();
+
     bayeuxClient.publish(channel, JSON.stringify(message));
 
     user.getServiceTokens(function () {
@@ -1192,19 +1193,32 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
 });
 
 app.patch('/message', passport.authenticate('basic', { session: false }), function (req, res) {
-    var err;
+    var err, fields, message;
 
-    message = Message.find({
+    fields = ['title', 'url', 'body', 'source', 'group'].reduce(function (acc, field) {
+        if (req.body.hasOwnProperty(field)) {
+            acc[field] = req.body[field];
+        }
+        return acc;
+    }, {});
+
+    Message.update(fields, {
         where: {
             'publicId': req.body.publicId,
             'UserId': req.user.id
         }
-    }).then(function (message) {
-        message.update(req.body, {fields: ['title', 'url', 'body', 'source', 'group']}).then(function (affectedRows) {
-            if (affectedRows[0] == 0) {
-                res.sendStatus(400);
-                return;
+    }).then(function (affectedRows) {
+        if (affectedRows[0] !== 1) {
+            res.sendStatus(400);
+        }
+
+        Message.findOne({
+            where: {
+                'publicId': req.body.publicId,
+                'UserId': req.user.id
             }
+        }).then(function (message) {
+            publishMessage(req.user, message);
             res.sendStatus(204);
         });
     });
