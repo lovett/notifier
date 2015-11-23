@@ -450,6 +450,10 @@ Message = sequelize.define('Message', {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: true
+    },
+    deliveredAt: {
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.NOW
     }
 }, {
     timestamps: true,
@@ -1195,7 +1199,7 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
 app.patch('/message', passport.authenticate('basic', { session: false }), function (req, res) {
     var err, fields, message;
 
-    fields = ['title', 'url', 'body', 'source', 'group'].reduce(function (acc, field) {
+    fields = ['title', 'url', 'body', 'source', 'group', 'deliveredAt'].reduce(function (acc, field) {
         if (req.body.hasOwnProperty(field)) {
             acc[field] = req.body[field];
         }
@@ -1314,10 +1318,11 @@ app.get('/archive/:count', passport.authenticate('basic', { session: false }), f
     var filters = {
         attributes: ['publicId', 'title', 'url', 'body', 'source', 'group', 'received'],
         limit: req.params.count,
-        order: 'received DESC',
+        order: 'deliveredAt DESC',
         where: {
             UserId: req.user.id,
-            unread: true
+            unread: true,
+            deliveredAt: { $lte: new Date() }
         }
     };
 
