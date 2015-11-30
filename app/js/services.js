@@ -588,9 +588,11 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
         },
 
         add: function (message, attitude) {
-            var age, result, self, tmp, update;
+            var age, messageExists, messageHasChanged, result, self, tmp, update;
 
             self = this;
+            messageExists = false;
+            messageHasChanged = false;
 
             message.received = new Date(message.received || new Date());
             message.days_ago = (new Date().setHours(0,0,0,0) - new Date(message.received).setHours(0,0,0,0)) / 86400000;
@@ -619,21 +621,24 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             // Update an existing message
             update = self.messages.some(function(m) {
                 if (m.publicId === message.publicId) {
+                    messageExists = true;
                     ['title', 'body', 'badge', 'domain'].forEach(function (property) {
                         if (message[property] !== m[property]) {
                             m[property] = message[property];
+                            messageHasChanged = true;
                         }
                     });
-                    return true;
                 }
-                return false;
+                return messageExists && messageHasChanged;
             });
 
-            if (update) {
+            if (messageHasChanged) {
                 $rootScope.$apply();
-                return;
             }
 
+            if (messageExists) {
+                return;
+            }
 
             result = this.messages.some(function (m, index) {
                 if (m.received < message.received) {
