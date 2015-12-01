@@ -348,6 +348,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
     return {
         messages: messages,
+        removedIds: removedIds,
 
         visitLink: function () {
             var focusedIndex;
@@ -431,7 +432,8 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             }
 
             function success () {
-                removedIds.push(ids);
+                self.removedIds.push(ids);
+                $rootScope.$broadcast('queue:change', self.messages.length);
             }
 
             function failure () {
