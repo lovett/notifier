@@ -64,7 +64,7 @@
     "serve-favicon": "2.3.0",
     "sqlite3": "3.1.1",
     "touch": "1.0.0",
-    "useragent": "2.1.7"
+    "useragent": "2.1.8"
   },
   "devDependencies": {
     "angular-mocks": "1.4.8",
