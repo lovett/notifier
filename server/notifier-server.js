@@ -14,6 +14,7 @@ var APPSECRET,
     compression = require('compression'),
     createUser,
     crypto = require('crypto'),
+    dateparser = require('dateparser'),
     dbConfig,
     deflate = require('permessage-deflate'),
     express = require('express'),
@@ -454,6 +455,10 @@ Message = sequelize.define('Message', {
     deliveredAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW
+    },
+    expiresAt: {
+        type: Sequelize.DATE,
+        allowNull: true
     }
 }, {
     timestamps: true,
@@ -1243,7 +1248,16 @@ app.post('/message', passport.authenticate('basic', { session: false }), functio
     });
 
     message.attributes.forEach(function (key) {
+        var parseResult;
         if (key === 'id' || key === 'publicId') {
+            return;
+        }
+
+        if (key === 'expiresAt') {
+            parseResult = dateparser.parse(req.body['expiration']);
+            if (parseResult !== null) {
+                message[key] = new Date(Date.now() + parseResult.value);
+            }
             return;
         }
 

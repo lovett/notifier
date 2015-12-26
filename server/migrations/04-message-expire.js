@@ -2,7 +2,7 @@
 
 module.exports = {
     up: function(migration, DataTypes, done) {
-        migration.addColumn('Messages', 'deliveredAt', {
+        migration.addColumn('Messages', 'expiresAt', {
             type: DataTypes.DATE,
             allowNull: true
         }).then(function (err) {
@@ -15,7 +15,7 @@ module.exports = {
     },
 
     down: function(migration, DataTypes, done) {
-        migration.removeColumn('Messages', 'deliveredAt', {
+        migration.removeColumn('Messages', 'expiresAt', {
             type: DataTypes.DATE,
             allowNull: true
         }).then(function (err) {

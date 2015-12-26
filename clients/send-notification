@@ -26,7 +26,7 @@ ${0##*/} -a
 
 To send a message after setting up authentication:
 ${0##*/} -s SERVER -t TITLE -g GROUP -b BODY -u URL
--p PUSHBULLET_ID
+-p PUSHBULLET_ID -e EXPIRATION
 
 EOF
 }
@@ -97,8 +97,9 @@ PUSHBULLET_ID=""
 LOCAL_ID=""
 SERVER=${NOTIFIER_SERVER:-}
 ENDPOINT="message"
+EXPIRATION=""
 
-while getopts "ahcVp:s:t:g:b:u:l:" opt; do
+while getopts "ahcVp:s:t:g:b:u:l:e:" opt; do
     case "$opt" in
         a)
             authorize
@@ -124,6 +125,9 @@ while getopts "ahcVp:s:t:g:b:u:l:" opt; do
             ;;
         l)
             LOCAL_ID="$OPTARG"
+            ;;
+        e)
+            EXPIRATION="$OPTARG"
             ;;
         c)
             ENDPOINT="$ENDPOINT/clear"
@@ -160,6 +164,7 @@ while [ "$HTTP_CODE" != "204" ]; do
                     -d "url=$URL"  \
                     -d "pushbulletId=$PUSHBULLET_ID" \
                     -d "localId=$LOCAL_ID" \
+		    -d "expiration=$EXPIRATION" \
                     "$SERVER/$ENDPOINT" 2>&1 )
     HTTP_CODE=${CURL_OUT##*,}
 

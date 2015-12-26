@@ -5,7 +5,7 @@ module.exports = {
         migration.changeColumn('Tokens', 'value', {
             type: DataTypes.TEXT,
             allowNull: false
-        }).complete(function (err) {
+        }).then(function (err) {
             if (err) {
                 console.log(err);
             }
@@ -18,7 +18,7 @@ module.exports = {
         migration.changeColumn('Tokens', 'value', {
             type: DataTypes.STRING(88),
             allowNull: false
-        }).conplete(function (err) {
+        }).then(function (err) {
             if (err) {
                 console.log(err);
             }
