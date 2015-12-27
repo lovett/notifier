@@ -2,28 +2,23 @@
 
 module.exports = {
     up: function(migration, DataTypes, done) {
-        migration.addColumn('Messages', 'deliveredAt', {
-            type: DataTypes.DATE,
-            allowNull: true
-        }).then(function (err) {
-            if (err) {
-                console.log(err);
+        var field, table;
+        table = 'Messages';
+        field = 'deliveredAt';
+        migration.describeTable(table).then(function (attributes) {
+            if (attributes.hasOwnProperty(field)) {
+                done();
+                return;
             }
-            done();
-        });
 
+            migration.addColumn(table, field, {
+                type: DataTypes.TIME,
+                allowNull: true
+            }).then(done);
+        });
     },
 
     down: function(migration, DataTypes, done) {
-        migration.removeColumn('Messages', 'deliveredAt', {
-            type: DataTypes.DATE,
-            allowNull: true
-        }).then(function (err) {
-            if (err) {
-                console.log(err);
-            }
-            done();
-        });
-
+        done();
     }
 };

@@ -2,17 +2,23 @@
 
 module.exports = {
     up: function(migration, DataTypes, done) {
-        migration.addColumn('Messages', 'expiresAt', {
-            type: DataTypes.TIME,
-            allowNull: true
-        }).then(done).catch(function (err) {
-            console.log(err);
+        var field, table;
+        table = 'Messages';
+        field = 'expiresAt';
+        migration.describeTable(table).then(function (attributes) {
+            if (attributes.hasOwnProperty(field)) {
+                done();
+                return;
+            }
+
+            migration.addColumn(table, field, {
+                type: DataTypes.TIME,
+                allowNull: true
+            }).then(done);
         });
     },
 
     down: function(migration, DataTypes, done) {
-        migration.removeColumn('Messages', 'expiresAt').then(done).catch(function (err) {
-            console.log(err);
-        });
+        done();
     }
 };

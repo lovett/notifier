@@ -5,25 +5,10 @@ module.exports = {
         migration.changeColumn('Tokens', 'value', {
             type: DataTypes.TEXT,
             allowNull: false
-        }).then(function (err) {
-            if (err) {
-                console.log(err);
-            }
-            done();
-        });
-
+        }).then(done);
     },
 
     down: function(migration, DataTypes, done) {
-        migration.changeColumn('Tokens', 'value', {
-            type: DataTypes.STRING(88),
-            allowNull: false
-        }).then(function (err) {
-            if (err) {
-                console.log(err);
-            }
-            done();
-        });
-
+        done();
     }
 };

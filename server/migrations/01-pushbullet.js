@@ -3,15 +3,15 @@
 module.exports = {
     up: function(migration, DataTypes, done) {
         migration.describeTable('Messages').then(function (attributes) {
-            if (!attributes.hasOwnProperty('pushbulletId')) {
-                migration.addColumn('Messages', 'pushbulletId', DataTypes.STRING);
+            if (attributes.hasOwnProperty('pushbulletId')) {
+                done();
             }
-            done();
+
+            migration.addColumn('Messages', 'pushbulletId', DataTypes.STRING).then(done);
         });
     },
 
     down: function(migration, DataTypes, done) {
-        //migration.removeColumn('Messages', 'pushbulletId');
         done();
     }
 };
