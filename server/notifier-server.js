@@ -457,7 +457,7 @@ Message = sequelize.define('Message', {
         defaultValue: Sequelize.NOW
     },
     expiresAt: {
-        type: Sequelize.DATE,
+        type: Sequelize.TIME,
         allowNull: true
     }
 }, {
