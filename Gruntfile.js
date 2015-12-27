@@ -239,14 +239,6 @@ module.exports = function(grunt) {
 
     });
 
-    grunt.registerTask('reset', 'Delete the dev database, restart the server', function () {
-        var env = grunt.config.get('env');
-        if (env.NOTIFIER_DB_DRIVER === 'sqlite') {
-            grunt.file.delete(env.NOTIFIER_SQLITE_PATH);
-        }
-        touch('server/notifier-server.js');
-    });
-
     grunt.registerTask('build', 'Build the application', function (buildType) {
         var environment, tasks;
 

@@ -17,7 +17,8 @@
     "test:client": "karma start app/test/karma.conf.js --single-run",
     "coverage:server": "istanbul cover --dir coverage/server _mocha -- -R min server/test",
     "coverage:client": "echo 'Nope. Client coverage is automatically written by test:client'",
-    "deploy": "git push openshift production; clients/send-notification -g openshift -t 'Deployment complete'"
+    "deploy": "git push openshift production; clients/send-notification -g openshift -t 'Deployment complete'",
+    "resetdb": "rm notifier.sqlite; touch server/notifier-server.js"
   },
   "repository": {
     "type": "git",
