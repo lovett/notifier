@@ -177,15 +177,6 @@ module.exports = function(grunt) {
                     }
                     return './node_modules/.bin/sequelize ' + action + ' --env default --config migration-config.json --migrations-path server/migrations';
                 }
-            },
-            'logs': {
-                command: [
-                    'mkdir -p production_logs',
-                    'cd production_logs',
-                    'rhc scp notifier download ./ app-root/logs/cron_hourly.log',
-                    'rhc scp notifier download ./ app-root/logs/nodejs.log',
-                    'rhc scp notifier download ./ app-root/logs/notifier.log'
-                ].join(' && ')
             }
         },
 

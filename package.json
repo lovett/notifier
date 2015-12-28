@@ -18,7 +18,12 @@
     "coverage:server": "istanbul cover --dir coverage/server _mocha -- -R min server/test",
     "coverage:client": "echo 'Nope. Client coverage is automatically written by test:client'",
     "deploy": "git push openshift production; clients/send-notification -g openshift -t 'Deployment complete'",
-    "resetdb": "rm notifier.sqlite; touch server/notifier-server.js"
+    "resetdb": "rm notifier.sqlite; touch server/notifier-server.js",
+    "prelogfetch": "mkdir -p production_logs",
+    "logfetch": "npm run logfetch:cron && npm run logfetch:notifier && npm run logfetch:node",
+    "logfetch:cron": "rhc scp notifier download production_logs app-root/logs/cron_hourly.log",
+    "logfetch:notifier": "rhc scp notifier download production_logs app-root/logs/notifier.log",
+    "logfetch:node": "rhc scp notifier download production_logs app-root/logs/nodejs.log"
   },
   "repository": {
     "type": "git",
