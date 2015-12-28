@@ -82,12 +82,13 @@ nconf.defaults({
  */
 log = bunyan.createLogger({
     name: 'notifier',
-    streams: [
-        {
-            path: nconf.get('NOTIFIER_LOG'),
-            level: nconf.get('NOTIFIER_LOG_LEVEL')
-        }
-    ],
+    streams: [{
+        type: 'rotating-file',
+        path: nconf.get('NOTIFIER_LOG'),
+        period: '1d',
+        count: 7,
+        level: nconf.get('NOTIFIER_LOG_LEVEL')
+    }],
     serializers: bunyan.stdSerializers
 });
 
