@@ -11,7 +11,7 @@
     }
 }
 
-@media only screen and (min-width: 320px) and (max-device-width : 568px) {
+@media only screen and (min-width: 320px) and (max-device-width : 1024px) {
     .page-header NAV {
         text-align: right;
     }
@@ -46,7 +46,7 @@
 
 }
 
-@media only screen and (min-width: 320px) and (max-device-width : 568px) and (orientation: landscape) {
+@media only screen and (min-width: 320px) and (max-device-width : 1024px) and (orientation: landscape) {
     .app-message {
         top: 1em;
     }
@@ -61,6 +61,11 @@
     .message {
         padding-right: 0;
     }
+
+    .message.extended, .message.extended:hover {
+        margin-left: 0;
+    }
+
 }
 
 @media only screen and (min-width: 320px) and (max-device-width : 568px)  and (orientation: portrait) {
