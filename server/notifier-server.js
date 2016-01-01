@@ -126,7 +126,7 @@ getDbConfig = function () {
     }
 
     config.sequelize.logging = function (msg) {
-        log.debug({
+        log.info({
             sequelize: msg
         }, 'query');
     };
@@ -575,7 +575,7 @@ bayeux.addWebsocketExtension(deflate);
  * --------------------------------------------------------------------
  */
 verifySubscription = function (message, callback) {
-    log.info({message: message}, 'verifying subscription request');
+    log.debug({message: message}, 'verifying subscription request');
 
     if (!message.ext || !message.ext.authToken) {
         log.warn({message: message}, 'credentials missing');
@@ -618,15 +618,11 @@ verifySubscription = function (message, callback) {
             return;
         }
 
-        // Advance the token updatedAt value if older than 1 hour
-        tokenAge = new Date() - new Date(token.updatedAt);
-        if (tokenAge > (60 * 60 * 1000)) {
-            token.save().then(function () {
-                callback(message);
-            });
-        } else {
+        // Advance the token updatedAt value
+        token.setDataValue('updatedAt', new Date());
+        token.save().then(function () {
             callback(message);
-        }
+        });
     }
 
     Token.find({
@@ -651,13 +647,13 @@ bayeux.addExtension({
         // the localId is not sent to clients
         delete message.localId;
 
-        log.info({message: message}, 'faye server outgoing message');
+        log.debug({message: message}, 'faye server outgoing message');
         return callback(message);
     },
 
     incoming: function(message, callback) {
 
-        log.info({message: message}, 'faye server incoming message');
+        log.debug({message: message}, 'faye server incoming message');
 
         message.ext = message.ext || {};
 
