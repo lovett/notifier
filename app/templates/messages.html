@@ -5,7 +5,7 @@
     </div>
 
     <div class="flex-item grow">
-        <div ng-show="messageListVisible" ng-class="{columns: queue.messages.length > 0}">
+        <div ng-show="messageListVisible" ng-class="{columns: queue.messages.length > 1}">
             <a ng-href="{{message.url}}" rel="noreferrer" target="_blank" class="message {{message.badge}}" ng-class="{linked: message.url, focused: message.focused, extended: message.extended, stuck: message.state == 'stuck', hidden: message.state == 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false" ng-focus="message.focused = true" ng-blur="message.focused = false" notifier-focus="message.focused">
 
                 <div class="badge"></div>

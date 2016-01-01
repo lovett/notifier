@@ -1,9 +1,13 @@
 @media only screen and (min-width: 1024px) {
-    .columns .message {
-	width: 49%;
-	box-sizing: border-box;
-	display: inline-block;
-	margin-right: .5em;
+    .columns {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+
+        .message {
+            flex: 49.75% 0;
+            box-sizing: border-box;
+        }
     }
 }
 
@@ -31,12 +35,12 @@
     }
 
     .message.extended, .message.extended:hover {
-	margin-left: -2.25em;
+        margin-left: -2.25em;
 
-	.options {
+        .options {
             opacity: 1;
             transition-property: none;
-	}
+        }
     }
 
 
