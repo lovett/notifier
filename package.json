@@ -11,7 +11,7 @@
     "hooks": "cp hooks/* .git/hooks/",
     "lint": "eslint Gruntfile.js app server",
     "lint:less": "lesshint app/less -e badges.less",
-    "onemessage": "clients/send-notification -p 0 -t test -e '10 minutes'",
+    "onemessage": "clients/send-notification -s $NOTIFIER_DEV -p 0 -t test -e '10 minutes'",
     "retract": "clients/send-notification -c -l test",
     "test:server": "mocha --bail --reporter min server/test",
     "test:client": "karma start app/test/karma.conf.js --single-run",
