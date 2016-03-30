@@ -457,7 +457,12 @@ Message = sequelize.define('Message', {
     },
     expiresAt: {
         type: Sequelize.TIME,
-        allowNull: true
+        allowNull: true,
+        get: function () {
+            var value = this.getDataValue('expiresAt');
+            if (!value) return null;
+            return new Date(value);
+        }
     }
 }, {
     timestamps: true,
@@ -1325,7 +1330,7 @@ app.post('/message', passport.authenticate('basic', { session: false }), functio
 
 app.get('/archive/:count', passport.authenticate('basic', { session: false }), function (req, res) {
     var filters = {
-        attributes: ['publicId', 'title', 'url', 'body', 'source', 'group', 'received'],
+        attributes: ['publicId', 'title', 'url', 'body', 'source', 'group', 'received', 'expiresAt'],
         limit: req.params.count,
         order: 'deliveredAt DESC',
         where: {

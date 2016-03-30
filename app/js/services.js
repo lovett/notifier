@@ -340,9 +340,18 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
         now.setHours(0,0,0,0);
 
         messages.forEach(function (message) {
-            var received = new Date(message.received);
+            var expires, received;
+            received = new Date(message.received);
             received.setHours(0,0,0,0);
             message.days_ago = Math.floor((now - received) / 86400000);
+
+            if (message.expiresAt) {
+                expires = new Date(message.expiresAt);
+                expires.setHours(0,0,0,0);
+                message.expire_days = Math.floor((expires - now) / 86400000);
+                message.expired = (message.expiresAt < now);
+            }
+
         });
     }, 1000 * 60);
 
@@ -598,6 +607,16 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
             message.received = new Date(message.received || new Date());
             message.days_ago = (new Date().setHours(0,0,0,0) - new Date(message.received).setHours(0,0,0,0)) / 86400000;
+
+            message.expire_days = null;
+            if (message.expiresAt) {
+                message.expire_days = (new Date(message.expiresAt).setHours(0,0,0,0) - new Date().setHours(0,0,0,0)) / 86400000;
+            }
+
+            if (typeof message.expiresAt === 'string') {
+                message.expiresAt = new Date(message.expiresAt);
+                message.expired = (message.expiresAt < new Date());
+            }
 
             if (message.body) {
                 message.body = message.body.replace(/\n/g, '<br/>');

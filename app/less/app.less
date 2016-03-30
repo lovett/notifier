@@ -196,8 +196,12 @@ FOOTER {
         display: block;
     }
 
-    .domain {
+    .domain, .expiration {
 	font-size: .7em;
+    }
+
+    .expiration {
+        font-style: italic;
     }
 
     .right {
@@ -208,6 +212,11 @@ FOOTER {
 
 .message:hover .options {
     display: block;
+}
+
+.message.expired {
+    background-color: #ccc;
+    color: #666;
 }
 
 .message.focused {

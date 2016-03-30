@@ -6,7 +6,7 @@
 
     <div class="flex-item grow">
         <div ng-show="messageListVisible" ng-class="{columns: queue.messages.length > 1}">
-            <a ng-href="{{message.url}}" rel="noreferrer" target="_blank" class="message {{message.badge}}" ng-class="{linked: message.url, focused: message.focused, extended: message.extended, stuck: message.state == 'stuck', hidden: message.state == 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false" ng-focus="message.focused = true" ng-blur="message.focused = false" notifier-focus="message.focused">
+            <a ng-href="{{message.url}}" rel="noreferrer" target="_blank" class="message {{message.badge}}" ng-class="{linked: message.url, expired: message.expired, focused: message.focused, extended: message.extended, stuck: message.state == 'stuck', hidden: message.state == 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false" ng-focus="message.focused = true" ng-blur="message.focused = false" notifier-focus="message.focused">
 
                 <div class="badge"></div>
 
@@ -22,6 +22,14 @@
                         <span ng-if="message.days_ago == -1">tomorrow</span>
                         <span ng-if="message.days_ago > 1 || message.days_ago < -1">{{ message.received | date: 'EEEE MMMM d' }}</span>
                     </time>
+                    <p class="expiration" ng-if="message.expiresAt">
+                        Expires: {{ message.expiresAt | date: 'h:mm a' }}
+                        <span ng-if="message.expire_days == 0">today</span>
+                        <span ng-if="message.expire_days == 1">tomorrow</span>
+                        <span ng-if="message.expire_days == -1">yesterday</span>
+                        <span ng-if="message.expire_days > 1 || message.expire_days < -1">{{ message.received | date: 'EEEE MMMM d' }}</span>
+
+                    </p>
 		    <p class="domain" ng-if="message.domain">{{message.domain}}</p>
                 </header>
                 <p ng-show="message.body" ng-bind-html="message.body"></p>
