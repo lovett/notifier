@@ -1330,7 +1330,7 @@ app.post('/message', passport.authenticate('basic', { session: false }), functio
 
 app.get('/archive/:count', passport.authenticate('basic', { session: false }), function (req, res) {
     var filters = {
-        attributes: ['publicId', 'title', 'url', 'body', 'source', 'group', 'received', 'expiresAt'],
+        attributes: ['id', 'publicId', 'title', 'url', 'body', 'source', 'group', 'received', 'expiresAt'],
         limit: req.params.count,
         order: 'deliveredAt DESC',
         where: {
@@ -1350,10 +1350,21 @@ app.get('/archive/:count', passport.authenticate('basic', { session: false }), f
     }
 
     Message.findAll(filters).then(function (messages) {
+        var now = new Date();
+
+        messages = messages.filter(function (message) {
+            if ( message.expiresAt < now) {
+                message.update({unread: false});
+                return false;
+            }
+            return true;
+        });
+
         messages = messages.map(function (message) {
             delete message.id;
             return message;
         });
+
         res.send({
             limit: req.params.count,
             'messages': messages
