@@ -330,32 +330,34 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
 appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$location', '$interval', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, $location, $interval, User, BrowserNotification) {
     'use strict';
 
-    var messages, refreshTimer, removedIds;
+    var messages, methods, refreshTimer, removedIds;
 
     messages = [];
     removedIds = [];
 
     refreshTimer = $interval(function () {
-        var now = new Date();
-        now.setHours(0,0,0,0);
+        var now, today;
+        now = new Date();
+        today = new Date();
+        today.setHours(0,0,0,0);
 
         messages.forEach(function (message) {
-            var expires, received;
-            received = new Date(message.received);
-            received.setHours(0,0,0,0);
-            message.days_ago = Math.floor((now - received) / 86400000);
+            var expires, receivedDay;
+            receivedDay = message.received;
+            receivedDay.setHours(0,0,0,0);
+            message.days_ago = Math.floor((today - receivedDay) / 86400000);
 
-            if (message.expiresAt) {
+            if (message.expired) {
+                methods.clear(message.publicId);
+            } else if (message.expiresAt) {
                 expires = new Date(message.expiresAt);
-                expires.setHours(0,0,0,0);
-                message.expire_days = Math.floor((expires - now) / 86400000);
-                message.expired = (message.expiresAt < now);
+                message.expired = (expires < now);
             }
 
         });
     }, 1000 * 60);
 
-    return {
+    methods = {
         messages: messages,
         removedIds: removedIds,
 
@@ -680,6 +682,8 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                 message.browserNotification = BrowserNotification.send(message);
             }
 
-        },
+        }
     };
+    return methods;
+
 }]);
