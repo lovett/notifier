@@ -99,11 +99,15 @@ describe('/archive', function () {
         it('does not expose message id', function (done) {
             agent.post('/message')
                 .auth(tokenKey, tokenValue)
-                .send({ title: 'test'})
+                .send({ title: 'test2'})
                 .end(function () {
                     agent.get(endpoint)
                         .auth(tokenKey, tokenValue)
                         .expect(function (res) {
+                            if (res.body.messages.length < 1) {
+                                throw new Error('No messages returned');
+                            }
+
                             if (res.body.messages[0].hasOwnProperty('id')) {
                                 throw new Error('Message contains id property');
                             }
@@ -120,6 +124,10 @@ describe('/archive', function () {
                     agent.get(endpoint)
                         .auth(tokenKey, tokenValue)
                         .expect(function (res) {
+                            if (res.body.messages.length < 1) {
+                                throw new Error('No messages returned');
+                            }
+
                             if (res.body.messages[0].hasOwnProperty('UserId')) {
                                 throw new Error('Message contains UserId property');
                             }

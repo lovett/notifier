@@ -1353,7 +1353,11 @@ app.get('/archive/:count', passport.authenticate('basic', { session: false }), f
         var now = new Date();
 
         messages = messages.filter(function (message) {
-            if ( message.expiresAt < now) {
+            if (message.expiresAt === null) {
+                return true;
+            }
+
+            if (message.expiresAt < now) {
                 message.update({unread: false});
                 return false;
             }
@@ -1361,8 +1365,9 @@ app.get('/archive/:count', passport.authenticate('basic', { session: false }), f
         });
 
         messages = messages.map(function (message) {
-            delete message.id;
-            return message;
+            var messageValues = message.get({plain: true});
+            delete messageValues.id;
+            return messageValues;
         });
 
         res.send({
