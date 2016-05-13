@@ -822,7 +822,7 @@ app.use(function(req, res, next) {
 
 // Parse urlencoded request bodies
 app.use(bodyParser.urlencoded({
-    extended: false,
+    extended: true,
     limit: '5kb'
 }));
 
