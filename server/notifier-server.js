@@ -341,7 +341,7 @@ User = sequelize.define('User', {
 
                 salt = buf.toString('hex');
 
-                crypto.pbkdf2(password, salt, iterations, keyLength, function (err, key) {
+                crypto.pbkdf2(password, salt, iterations, keyLength, 'sha1', function (err, key) {
                     self.setDataValue('passwordHash', util.format('%s::%s', salt, key.toString('hex')));
                     callback();
                 });
@@ -354,7 +354,7 @@ User = sequelize.define('User', {
             keyLength = nconf.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
             iterations = nconf.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
 
-            crypto.pbkdf2(password, segments[0], iterations, keyLength, function (err, key) {
+            crypto.pbkdf2(password, segments[0], iterations, keyLength, 'sha1', function (err, key) {
                 callback(key.toString('hex') === segments[1]);
             });
         },
