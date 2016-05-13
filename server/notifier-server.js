@@ -1248,22 +1248,34 @@ app.post('/message', passport.authenticate('basic', { session: false }), functio
     });
 
     message.attributes.forEach(function (key) {
-        var parseResult;
+        var fieldName, parseResult, value;
         if (key === 'id' || key === 'publicId') {
             return;
         }
 
         if (key === 'expiresAt') {
-            parseResult = dateparser.parse(req.body['expiration']);
+            fieldName = 'expiration';
+        } else {
+            fieldName = key;
+        }
+
+        if (req.body.hasOwnProperty(fieldName) === false) {
+            return;
+        }
+
+        if (req.body[fieldName].trim() === '') {
+            return;
+        }
+
+        if (fieldName === 'expiration') {
+            parseResult = dateparser.parse(req.body[fieldName]);
             if (parseResult !== null) {
                 message[key] = new Date(Date.now() + parseResult.value);
             }
             return;
         }
 
-        if (req.body.hasOwnProperty(key) && req.body[key]) {
-            message[key] = req.body[key].trim();
-        }
+        message[key] = req.body[key].trim();
     });
 
     // Retract unread messages with the same local id as the incoming
