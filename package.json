@@ -77,7 +77,7 @@
     "angular-mocks": "1.5.5",
     "chai": "3.5.0",
     "chance": "1.0.3",
-    "eslint": "2.9.0",
+    "eslint": "2.10.0",
     "eslint-plugin-mocha": "2.2.0",
     "grunt-contrib-watch": "1.0.0",
     "istanbul": "0.4.3",
