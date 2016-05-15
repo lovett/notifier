@@ -420,12 +420,12 @@ Message = sequelize.define('Message', {
         }
     },
     source: {
-        type: Sequelize.STRING(20),
+        type: Sequelize.STRING(100),
         allowNull: true,
         validate: {
             len: {
-                args: [1,20],
-                msg: 'should be 1-20 characters long'
+                args: [1,100],
+                msg: 'should be 1-100 characters long'
             }
         },
         set: function (value) {
@@ -433,13 +433,13 @@ Message = sequelize.define('Message', {
         }
     },
     group: {
-        type: Sequelize.STRING(20),
+        type: Sequelize.STRING(50),
         allowNull: true,
         defaultValue: 'default',
         validate: {
             len: {
-                args: [1,20],
-                msg: 'should be 1-20 characters long'
+                args: [1,50],
+                msg: 'should be 1-50 characters long'
             }
         },
         set: function (value) {
