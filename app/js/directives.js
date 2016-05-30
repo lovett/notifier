@@ -214,14 +214,14 @@ appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList',
         template: '<div ng-class="{\'status-bar\': true, \'disconnected\': disconnected}">{{ message }}</div>',
         link: function (scope) {
             scope.$on('connection:change', function (e, state, message) {
-                $timeout(function () {
-                    if (state === 'offline' || state === 'disconnected' || state === 'error') {
-                        scope.message = message || state;
-                        scope.disconnected = true;
-                    } else {
-                        scope.disconnected = false;
-                    }
-                });
+                if (state === 'offline' || state === 'disconnected' || state === 'error') {
+                    scope.message = message || state;
+                    scope.disconnected = true;
+                } else {
+                    scope.message = '';
+                    scope.disconnected = false;
+                }
+                scope.$apply();
             });
 
             scope.$on('queue:change', function () {
@@ -253,6 +253,7 @@ appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList',
                 }
 
                 scope.disconnected = false;
+                scope.$apply();
             });
         }
     };

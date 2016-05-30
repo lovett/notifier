@@ -93,9 +93,9 @@ describe('appDirectives', function () {
             assert.equal(element.text(), '');
         });
 
-        it('displays disconnected message when offline', function () {
+        it('displays offline message when offline', function () {
             scope.$emit('connection:change', 'offline');
-            assert.include(element.text(), 'offline');
+            assert.include(element.html(), 'offline');
         });
 
         it('displays disconnected message when disconnected', function () {
@@ -112,13 +112,13 @@ describe('appDirectives', function () {
             assert.equal(element.text(), '1 group1, 1 group2');
         });
 
-        it('skips message tally if only one group is present', function () {
+        it('displays message tally if only one group is present', function () {
             messageList.messages = [
                 {title: 'test1', group: 'group1'},
                 {title: 'test2', group: 'group1'}
             ];
             scope.$emit('queue:change');
-            assert.equal(element.text(), '');
+            assert.equal(element.text(), '2 group1');
         });
 
         it('identifies default messages as ungrouped', function () {
