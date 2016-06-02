@@ -1,4 +1,47 @@
 #!/usr/bin/env sh
 
-npm run -s lint
-npm run -s lint:less
+set -eu
+
+ROOT=$(mktemp -d)
+CHANGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+staged () {
+    echo "$CHANGED_FILES" | grep --quiet "$1"
+    return $?
+}
+
+echo "Runing pre-commit hook..."
+mkdir -p $ROOT
+git checkout-index --prefix=$ROOT/ -af
+
+if staged "package.json"; then
+    echo "Checking package.json"
+    node "$ROOT/package.json"
+    echo "...ok"
+fi
+
+if staged "Gruntfile.js"; then
+    echo "Checking Gruntfile.js..."
+    node_modules/.bin/eslint "$ROOT/Gruntfile.js"
+    echo "...ok"
+fi
+
+if staged "app"; then
+    echo "Checking app files..."
+    node_modules/.bin/eslint "$ROOT/app"
+    echo "...ok"
+fi
+
+if staged "server"; then
+    echo "Checking server files..."
+    node_modules/.bin/eslint "$ROOT/server"
+    echo "...ok"
+fi
+
+if staged "less"; then
+    echo "Checking less files..."
+    node_modules/.bin/lesshint app/less -e badges.less
+    echo "...ok"
+fi
+
+rm -rf $ROOT
