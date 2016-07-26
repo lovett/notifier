@@ -253,7 +253,6 @@ appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList',
                 }
 
                 scope.disconnected = false;
-                scope.$apply();
             });
         }
     };
