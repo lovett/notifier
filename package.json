@@ -75,8 +75,8 @@
     "angular-mocks": "1.5.8",
     "chai": "3.5.0",
     "chance": "1.0.4",
-    "eslint": "3.2.0",
-    "eslint-plugin-mocha": "4.2.0",
+    "eslint": "3.2.2",
+    "eslint-plugin-mocha": "4.3.0",
     "grunt-contrib-watch": "1.0.0",
     "istanbul": "0.4.4",
     "karma": "1.1.2",
@@ -88,8 +88,8 @@
     "karma-ng-html2js-preprocessor": "1.0.0",
     "karma-safari-launcher": "1.0.0",
     "karma-sinon": "1.0.5",
-    "lesshint": "2.0.1",
-    "mocha": "2.5.3",
+    "lesshint": "2.0.2",
+    "mocha": "3.0.1",
     "sinon": "1.17.5",
     "supertest": "2.0.0"
   }
