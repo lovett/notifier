@@ -1,6 +1,7 @@
 {
   "name": "notifier",
   "private": true,
+
   "version": "0.0.0",
   "description": "A notification service for user-generated events",
   "main": "server/notifier-server.js",
@@ -64,7 +65,7 @@
     "permessage-deflate": "0.1.5",
     "response-time": "2.3.1",
     "sanitize-html": "1.13.0",
-    "sequelize": "3.24.2",
+    "sequelize": "3.24.3",
     "sequelize-cli": "2.4.0",
     "serve-favicon": "2.3.0",
     "sqlite3": "3.1.4",
@@ -88,7 +89,7 @@
     "karma-ng-html2js-preprocessor": "1.0.0",
     "karma-safari-launcher": "1.0.0",
     "karma-sinon": "1.0.5",
-    "lesshint": "2.1.0",
+    "lesshint": "2.1.1",
     "mocha": "3.0.2",
     "sinon": "1.17.5",
     "supertest": "2.0.0"
