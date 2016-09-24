@@ -76,7 +76,7 @@
     "angular-mocks": "1.5.8",
     "chai": "3.5.0",
     "chance": "1.0.4",
-    "eslint": "3.5.0",
+    "eslint": "3.6.0",
     "eslint-plugin-mocha": "4.5.1",
     "grunt-contrib-watch": "1.0.0",
     "istanbul": "0.4.5",
@@ -91,7 +91,7 @@
     "karma-sinon": "1.0.5",
     "lesshint": "2.1.1",
     "mocha": "3.0.2",
-    "sinon": "1.17.5",
+    "sinon": "1.17.6",
     "supertest": "2.0.0"
   }
 }
