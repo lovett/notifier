@@ -43,7 +43,7 @@
     "dateparser": "1.0.6",
     "express": "4.14.0",
     "fastclick": "1.0.6",
-    "faye": "1.2.2",
+    "faye": "1.2.3",
     "grunt": "1.0.1",
     "grunt-angular-templates": "1.1.0",
     "grunt-appcache": "0.2.0",
@@ -76,8 +76,8 @@
     "angular-mocks": "1.5.8",
     "chai": "3.5.0",
     "chance": "1.0.4",
-    "eslint": "3.7.1",
-    "eslint-plugin-mocha": "4.6.0",
+    "eslint": "3.8.0",
+    "eslint-plugin-mocha": "4.7.0",
     "grunt-contrib-watch": "1.0.0",
     "istanbul": "0.4.5",
     "karma": "1.3.0",
@@ -90,7 +90,7 @@
     "karma-safari-launcher": "1.0.0",
     "karma-sinon": "1.0.5",
     "lesshint": "2.1.1",
-    "mocha": "3.1.0",
+    "mocha": "3.1.2",
     "sinon": "1.17.6",
     "supertest": "2.0.0"
   }
