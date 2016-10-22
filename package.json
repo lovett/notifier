@@ -38,7 +38,7 @@
     "angular-sanitize": "1.5.8",
     "angular-touch": "1.5.8",
     "body-parser": "1.15.2",
-    "bunyan": "1.8.1",
+    "bunyan": "1.8.3",
     "compression": "1.6.2",
     "dateparser": "1.0.6",
     "express": "4.14.0",
@@ -65,7 +65,7 @@
     "permessage-deflate": "0.1.5",
     "response-time": "2.3.1",
     "sanitize-html": "1.13.0",
-    "sequelize": "3.24.3",
+    "sequelize": "3.24.5",
     "sequelize-cli": "2.4.0",
     "serve-favicon": "2.3.0",
     "sqlite3": "3.1.6",
@@ -76,7 +76,7 @@
     "angular-mocks": "1.5.8",
     "chai": "3.5.0",
     "chance": "1.0.4",
-    "eslint": "3.8.0",
+    "eslint": "3.8.1",
     "eslint-plugin-mocha": "4.7.0",
     "grunt-contrib-watch": "1.0.0",
     "istanbul": "0.4.5",
@@ -92,6 +92,6 @@
     "lesshint": "2.1.1",
     "mocha": "3.1.2",
     "sinon": "1.17.6",
-    "supertest": "2.0.0"
+    "supertest": "2.0.1"
   }
 }
