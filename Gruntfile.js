@@ -1,5 +1,3 @@
-var touch = require('touch');
-
 module.exports = function(grunt) {
     var env;
 
@@ -87,9 +85,11 @@ module.exports = function(grunt) {
                     cleancss: true
                 },
                 files: {
-                    'static/all.min.css': ['node_modules/normalize.css/normalize.css',
-                                           'node_modules/angular/angular-csp.css',
-                                           'app/less/*']
+                    'static/all.min.css': [
+                        'node_modules/normalize.css/normalize.css',
+                        'node_modules/angular/angular-csp.css',
+                        'app/less/*'
+                    ]
                 }
             }
         },
@@ -199,13 +199,14 @@ module.exports = function(grunt) {
                     sourceMap: true
                 },
                 files: {
-                    'static/app.min.js': ['static/js/app.js',
-                                          'static/js/controllers.js',
-                                          'static/js/directives.js',
-                                          'static/js/filters.js',
-                                          'static/js/services.js',
-                                          'static/js/templates.js'
-                                         ]
+                    'static/app.min.js': [
+                        'static/js/app.js',
+                        'static/js/controllers.js',
+                        'static/js/directives.js',
+                        'static/js/filters.js',
+                        'static/js/services.js',
+                        'static/js/templates.js'
+                    ]
                 }
             },
             lib: {

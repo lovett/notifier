@@ -69,7 +69,6 @@
     "sequelize-cli": "2.5.1",
     "serve-favicon": "2.3.2",
     "sqlite3": "3.1.8",
-    "touch": "1.0.0",
     "useragent": "2.1.11"
   },
   "devDependencies": {
