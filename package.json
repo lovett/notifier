@@ -7,8 +7,9 @@
   "scripts": {
     "start": "node server/notifier-server.js",
     "devserver": "nodemon --watch server/notifier-server.js",
-    "build": "grunt build:full",
-    "postinstall": "npm prune; cp hooks/* .git/hooks/",
+    "build": "npm install --only=production --no-optional --no-progress && grunt --no-color build:full",
+    "postinstall": "npm prune",
+    "hooks": "cp hooks/* .git/hooks/",
     "onemessage": "clients/send-notification -s $NOTIFIER_DEV -p 0 -t test -e '10 minutes'",
     "retract": "clients/send-notification -c -l test",
     "test:server": "mocha --bail --reporter min server/test",
