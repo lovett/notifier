@@ -17,16 +17,6 @@
     "NOTIFIER_PUSHBULLET_CLIENT_SECRET": "",
     "NOTIFIER_DB": "sqlite",
     "NOTIFIER_DB_CONFIG": {
-        "mysql": {
-            "sequelize": {
-                "host": "localhost",
-                "port": "3306",
-                "dialect": "mysql"
-            },
-            "username": "username_for_mysql_database",
-            "password": "password_for_mysql_database",
-            "dbname": "name_of_mysql_database"
-        },
         "sqlite": {
             "sequelize": {
                 "storage": "notifier.sqlite",

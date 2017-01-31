@@ -158,12 +158,6 @@ module.exports = function(grunt) {
                     'rm temp-*.png'
                 ].join(' && ')
             },
-            'mysqlimport': {
-                command: [
-                    'BACKUP_FILE=$(find "<%= nconf.get("NOTIFIER_DB_BACKUP_DIR") %>" -type f -name *.gz | tail -n 1)',
-                    'gunzip -c "$BACKUP_FILE"  | mysql <%= nconfig.get("NOTIFIER_DB_NAME") %>'
-                ].join(' && ')
-            },
             'migration': {
                 command: function (undo) {
                     var action = 'db:migrate';
