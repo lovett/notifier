@@ -149,10 +149,6 @@ module.exports = function(grunt) {
                 command: [
                     'cd app/favicon',
                     'convert app-icon.png -geometry 180x180 app-icon-180.png',
-                    'convert app-icon.png -geometry 152x152 app-icon-152.png',
-                    'convert app-icon.png -geometry 144x144 app-icon-144.png',
-                    'convert app-icon.png -geometry 120x120 app-icon-120.png',
-                    'convert app-icon.png -geometry 76x76 app-icon-76.png',
                     'convert favicon.png -geometry 48x48 -transparent white temp-48.png',
                     'convert favicon.png -geometry 32x32 -transparent white temp-32.png',
                     'convert favicon.png -geometry 16x16 -transparent white temp-16.png',
