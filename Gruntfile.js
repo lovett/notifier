@@ -1,11 +1,10 @@
+var nconf = require('nconf');
 module.exports = function(grunt) {
-    var env;
-
-    env = grunt.file.readJSON('env.json');
+    nconf.env();
+    nconf.file('env.json');
 
     grunt.initConfig({
-        env: env,
-
+        nconf: nconf,
         appcache: {
             options: {
                 basePath: 'static'
@@ -118,7 +117,7 @@ module.exports = function(grunt) {
                 overwrite: true,
                 replacements: [{
                     from: '<meta name=\"websocket port\" content=\"\"',
-                    to: '<meta name=\"websocket port\" content=\"<%= env.NOTIFIER_WEBSOCKET_PORT %>\"'
+                    to: '<meta name=\"websocket port\" content=\"<%= nconf.get("NOTIFIER_WEBSOCKET_PORT") %>\"'
                 }]
             },
             dev: {
@@ -126,10 +125,10 @@ module.exports = function(grunt) {
                 overwrite: true,
                 replacements: [{
                     from: '<!-- livereload placeholder -->',
-                    to: '<script src=\'//<%= env.NOTIFIER_LIVERELOAD_HOST %>:<%= env.NOTIFIER_LIVERELOAD_PORT %>/livereload.js\'></script>'
+                    to: '<script src=\'//<%= nconf.get("NOTIFIER_LIVERELOAD_HOST") %>:<%= nconf.get("NOTIFIER_LIVERELOAD_PORT") %>/livereload.js\'></script>'
                 }, {
                     from: '<!-- environment name placeholder -->',
-                    to: '<%= env.NOTIFIER_ENVIRONMENT %>'
+                    to: '<%= nconf.get("NOTIFIER_ENVIRONMENT") %>'
                 }]
             },
             production: {
@@ -165,8 +164,8 @@ module.exports = function(grunt) {
             },
             'mysqlimport': {
                 command: [
-                    'BACKUP_FILE=$(find "<%= env.NOTIFIER_DB_BACKUP_DIR %>" -type f -name *.gz | tail -n 1)',
-                    'gunzip -c "$BACKUP_FILE"  | mysql <%= env.NOTIFIER_DB_NAME %>'
+                    'BACKUP_FILE=$(find "<%= nconf.get("NOTIFIER_DB_BACKUP_DIR") %>" -type f -name *.gz | tail -n 1)',
+                    'gunzip -c "$BACKUP_FILE"  | mysql <%= nconfig.get("NOTIFIER_DB_NAME") %>'
                 ].join(' && ')
             },
             'migration': {
@@ -183,8 +182,8 @@ module.exports = function(grunt) {
         watch: {
             options: {
                 livereload: {
-                    host: '<%= env.NOTIFIER_LIVERELOAD_HOST %>',
-                    port: '<%= env.NOTIFIER_LIVERELOAD_PORT %>'
+                    host: '<%= nconf.get("NOTIFIER_LIVERELOAD_HOST") %>',
+                    port: '<%= nconf.get("NOTIFIER_LIVERELOAD_PORT") %>'
                 }
             },
             app: {
@@ -234,7 +233,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', 'Build the application', function (buildType) {
         var environment, tasks;
 
-        environment = grunt.template.process('<%= env.NOTIFIER_ENVIRONMENT %>');
+        environment = grunt.template.process('<%= nconf.get("NOTIFIER_ENVIRONMENT") %>');
 
         tasks = [];
 
@@ -313,7 +312,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-shell');
     grunt.loadNpmTasks('grunt-text-replace');
 
-    if (env.NOTIFIER_ENVIRONMENT === 'dev') {
+    if (nconf.get('NOTIFIER_ENVIRONMENT') === 'dev') {
         grunt.loadNpmTasks('grunt-contrib-watch');
         grunt.registerTask('default', ['build:full', 'watch']);
     }
