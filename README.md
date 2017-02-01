@@ -1,6 +1,6 @@
 # Notifier
 
-Notifier is a web-based notification service. Messages come in via 
+Notifier is a web-based notification service. Messages come in via
 HTTP and go out over websocket to connected clients. Clients can
 be web browsers or other scripts written in any language.
 
@@ -24,7 +24,7 @@ Then install the remaining NPM packages locally:
 `npm install`
 
 The notifier server is configured via a JSON file. A default file is
-provided as `env-sample.json`. Copy this file to `env.json` and
+provided as `config-sample.json`. Copy this file to `config.json` and
 customize as appropriate. Now use Grunt to build the browser UI:
 
 `grunt`
@@ -49,5 +49,4 @@ The icons used in the browser UI are taken from the
 The server and browser clients use [Faye](http://faye.jcoglan.com) for
 publish-subscribe over websockets.
 
-The browser UI uses [AngularJS](https://angularjs.org). 
-
+The browser UI uses [AngularJS](https://angularjs.org).

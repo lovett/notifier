@@ -12,9 +12,9 @@ static
 *.sqlite
 *.log
 .token
-env*.json
-!env-sample.json
-!env-test.json
+config*.json
+!config-sample.json
+!config-test.json
 coverage
 *.bak
 migration-config.json

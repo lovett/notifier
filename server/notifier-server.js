@@ -53,8 +53,8 @@ var APPSECRET,
  * variable exists, the configuration file is checked. As a last
  * resort, a limited set of default values are used.
  *
- * The configuration file is env.json by default, but can be
- * overriden to env-{ENVIRONMENT NAME}.json by setting the NODE_ENV
+ * The configuration file is config.json by default, but can be
+ * overriden to config-{ENVIRONMENT NAME}.json by setting the NODE_ENV
  * environment variable.
  *
  */
@@ -62,9 +62,9 @@ nconf.argv();
 nconf.env();
 
 if (process.env.NODE_ENV) {
-    nconf.file('env-' + process.env.NODE_ENV + '.json');
+    nconf.file('config-' + process.env.NODE_ENV + '.json');
 } else {
-    nconf.file(path.resolve(__dirname + '/../env.json'));
+    nconf.file(path.resolve(__dirname + '/../config.json'));
 }
 
 nconf.defaults({

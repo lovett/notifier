@@ -73,12 +73,13 @@ describe('/message', function () {
         it('accepts a fully-populated message', function (done) {
             agent.post(endpoint)
                 .auth(tokenKey, tokenValue)
-                .send({'title': 'test',
-                       'url': 'http://example.com',
-                       'source': 'mocha',
-                       'body': 'testing',
-                       'group': 'message-spec'
-                      })
+                .send({
+                    'title': 'test',
+                    'url': 'http://example.com',
+                    'source': 'mocha',
+                    'body': 'testing',
+                    'group': 'message-spec'
+                })
                 .expect(204).end(done);
         });
 

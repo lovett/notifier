@@ -1,7 +1,7 @@
 var nconf = require('nconf');
 module.exports = function(grunt) {
     nconf.env();
-    nconf.file('env.json');
+    nconf.file('config.json');
 
     grunt.initConfig({
         nconf: nconf,
@@ -251,7 +251,7 @@ module.exports = function(grunt) {
     grunt.registerTask('migrate', function (undo) {
         var configPath, dbEnv, env, migrationConfig, shellTask;
 
-        env = grunt.file.readJSON('env.json');
+        env = grunt.file.readJSON('config.json');
         configPath = 'migration-config.json';
         dbEnv = env.NOTIFIER_DB_CONFIG[env.NOTIFIER_DB];
 
