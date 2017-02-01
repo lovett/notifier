@@ -60,9 +60,9 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                 method: 'GET',
                 url: '/services',
                 headers: {'Authorization': auth}
-            }).success(function (data) {
+            }).then(function (data) {
                 callback(data);
-            }).error(function () {
+            }).catch(function () {
                 callback([]);
             });
 
@@ -81,7 +81,7 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                 headers: {
                     'Authorization': auth
                 }
-            }).success(function (data) {
+            }).then(function (data) {
                 callback(data.url);
             });
         },
@@ -97,7 +97,7 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                 headers: {
                     'Authorization': auth
                 }
-            }).success(function () {
+            }).then(function () {
                 callback();
             });
         },
@@ -492,7 +492,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                 data: {
                     publicId: ids
                 }
-            }).success(function () {
+            }).then(function () {
                 self.fetch();
             });
         },
@@ -549,7 +549,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                 headers: {
                     'Authorization': User.getAuthHeader()
                 }
-            }).success(function(data) {
+            }).then(function(data) {
                 var attitude, currentIds, staleIds;
                 staleIds = [];
                 if (data.messages instanceof Array) {
@@ -592,7 +592,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                     self.lastFetched = now;
 
                 }
-            }).error(function (data, status) {
+            }).catch(function (data, status) {
                 self.lastFetched = now;
                 if (status === 401) {
                     $location.path('/login');
