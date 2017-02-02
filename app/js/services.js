@@ -60,8 +60,8 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                 method: 'GET',
                 url: '/services',
                 headers: {'Authorization': auth}
-            }).then(function (data) {
-                callback(data);
+            }).then(function (res) {
+                callback(res.data);
             }).catch(function () {
                 callback([]);
             });
@@ -81,8 +81,8 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                 headers: {
                     'Authorization': auth
                 }
-            }).then(function (data) {
-                callback(data.url);
+            }).then(function (res) {
+                callback(res.data.url);
             });
         },
 
@@ -110,9 +110,9 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                     'username': form.username,
                     'password': form.password
                 },
-                transformResponse: function (data) {
+                transformResponse: function (res) {
                     try {
-                        data = JSON.parse(data);
+                        data = JSON.parse(res.data);
                     } catch (e) {
                         data = {};
                     }
@@ -549,17 +549,17 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                 headers: {
                     'Authorization': User.getAuthHeader()
                 }
-            }).then(function(data) {
+            }).then(function(res) {
                 var attitude, currentIds, staleIds;
                 staleIds = [];
-                if (data.messages instanceof Array) {
+                if (res.data.messages instanceof Array) {
 
                     // We've just received the current list of
                     // uncleared messages, but we might be holding
                     // other messages that were cleared by another
                     // client while we were offline. They should be
                     // dropped.
-                    currentIds = data.messages.map(function (message) {
+                    currentIds = res.data.messages.map(function (message) {
                         return message.publicId;
                     });
 
@@ -575,7 +575,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
                     // messages will be ordered newest first, but if they are added to the queue
                     // sequentially they will end up oldest first
-                    data.messages.reverse();
+                    res.data.messages.reverse();
 
                     if (!self.lastFetched) {
                         attitude = 'silent';
@@ -583,7 +583,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                         attitude = 'normal';
                     }
 
-                    data.messages.forEach(function (message) {
+                    res.data.messages.forEach(function (message) {
                         self.add(message, attitude);
                     });
 
