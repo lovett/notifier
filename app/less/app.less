@@ -1,12 +1,8 @@
 @palettePrimary: #2D8E5E;
 
 HTML {
-    @from: @palettePrimary;
-    @to: lighten(@palettePrimary, 20%);
     min-height: 100%;
-    background-color: @from;
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, @from), color-stop(100%, @to));
-    background: linear-gradient(180deg, @from, @to);
+    background-color: @palettePrimary;
 }
 
 BODY {
@@ -56,7 +52,7 @@ A:hover {
     height: 3em;
     text-align: center;
     overflow: hidden;
-    padding: 0 1em
+    padding: 0 1em;
 }
 
 .status-bar.disconnected {
@@ -66,17 +62,18 @@ A:hover {
 FOOTER {
     font-size: 0.85em;
 
+    A {
+        color: white;
+        display: inline-block;
+        line-height: 1;
+        margin: 1em;
+    }
+
     NAV {
         background-color: @palettePrimary;
         display: inline-block;
         width: 100%;
 
-        A {
-            color: white;
-            display: inline-block;
-            line-height: 1;
-			margin: 1em;
-        }
 
         A:last-of-type {
             position: absolute;
@@ -86,18 +83,13 @@ FOOTER {
 
     .app-settings {
         .reset;
-        background-color: lighten(@palettePrimary, 5%);
+        background-color: lighten(@palettePrimary, 10%);
         clear: both;
         color: black;
-
-        A {
-            color: white;
-        }
 
         LI {
             margin: 0;
             display: inline-block;
-            padding: 1em;
         }
     }
 }
@@ -141,7 +133,7 @@ FOOTER {
         top: 0;
         right: 0;
         height: 101%;
-	width: 8em;
+        width: 8em;
         display: none;
         transition: opacity 0.1s 0.2s;
 
@@ -197,7 +189,7 @@ FOOTER {
     }
 
     .domain, .expiration {
-	font-size: 0.7em;
+        font-size: 0.7em;
     }
 
     .expiration {
@@ -221,6 +213,7 @@ FOOTER {
 
 .message.focused {
     box-shadow: 0 0 0.25em 0.5em darken(@palettePrimary, 10%);
+
     .options {
         opacity: 1;
     }
@@ -321,7 +314,6 @@ FOOTER {
 .disabled {
     background-color: darken(@palettePrimary, 10%);
 }
-
 
 .login-form {
     .field {
