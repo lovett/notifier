@@ -1,7 +1,10 @@
 var nconf = require('nconf');
 module.exports = function(grunt) {
     nconf.env();
-    nconf.file('config.json');
+
+    if (process.env.NODE_ENV) {
+        nconf.file('local', 'config-' + process.env.NODE_ENV + '.json');
+    }
 
     grunt.initConfig({
         nconf: nconf,
@@ -128,7 +131,7 @@ module.exports = function(grunt) {
                     to: '<script src=\'//<%= nconf.get("NOTIFIER_LIVERELOAD_HOST") %>:<%= nconf.get("NOTIFIER_LIVERELOAD_PORT") %>/livereload.js\'></script>'
                 }, {
                     from: '<!-- environment name placeholder -->',
-                    to: '<%= nconf.get("NOTIFIER_ENVIRONMENT") %>'
+                    to: '<%= nconf.get("NODE_ENV") %>'
                 }]
             },
             production: {
@@ -223,7 +226,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', 'Build the application', function (buildType) {
         var environment, tasks;
 
-        environment = grunt.template.process('<%= nconf.get("NOTIFIER_ENVIRONMENT") %>');
+        environment = grunt.template.process('<%= nconf.get("NODE_ENV") %>');
 
         tasks = [];
 
@@ -302,8 +305,12 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-shell');
     grunt.loadNpmTasks('grunt-text-replace');
 
-    if (nconf.get('NOTIFIER_ENVIRONMENT') === 'dev') {
+    if (process.env.NODE_ENV === 'development') {
         grunt.loadNpmTasks('grunt-contrib-watch');
         grunt.registerTask('default', ['build:full', 'watch']);
+    } else {
+        grunt.registerTask('default', function () {
+            grunt.log.error('There is no default task unless NODE_ENV is set to development.');
+        });
     }
 };

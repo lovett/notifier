@@ -13,7 +13,6 @@ static
 *.log
 .token
 config*.json
-!config-sample.json
 !config-test.json
 coverage
 *.bak

@@ -25,7 +25,7 @@ tmux attach-session -d -t "$PROJECT_NAME" || {
     tmux new-window -a -t "$PROJECT_NAME" bash
 
     ## 2: Grunt
-    tmux new-window -a -t "$PROJECT_NAME" -n "grunt" "grunt"
+    tmux new-window -a -t "$PROJECT_NAME" -n "grunt" "NODE_ENV=development grunt"
 
     ## 3: Log
     rm -f "$LOG"

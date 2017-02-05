@@ -45,27 +45,23 @@ var APPSECRET,
 
 /**
  * Application configuration
- * --------------------------------------------------------------------
  *
- * Configuration settings are sourced from multiple
- * locations. Command-line arugments are checked first. If not defined
- * there, environment variables are considered. If no environment
- * variable exists, the configuration file is checked. As a last
- * resort, a limited set of default values are used.
+ * Configuration is sourced from the following places:
  *
- * The configuration file is config.json by default, but can be
- * overriden to config-{ENVIRONMENT NAME}.json by setting the NODE_ENV
- * environment variable.
- *
+ * 1. The file /etc/notifier.json
+ * 2. Environment variables
+ * 3. A JSON file in the application root named according to NODE_ENV.
+ * 4. Internal defaults.
  */
-nconf.argv();
+
+nconf.file('global', '/etc/notifier.json');
+
 nconf.env();
 
 if (process.env.NODE_ENV) {
-    nconf.file('config-' + process.env.NODE_ENV + '.json');
-} else {
-    nconf.file(path.resolve(__dirname + '/../config.json'));
+    nconf.file('local', path.resolve(__dirname + '/../config-' + process.env.NODE_ENV + '.json'));
 }
+
 
 nconf.defaults({
     'NOTIFIER_LOG': 'notifier.log',
@@ -73,7 +69,38 @@ nconf.defaults({
     'NOTIFIER_PASSWORD_HASH_RANDBYTES': 64,
     'NOTIFIER_PASSWORD_HASH_KEYLENGTH': 64,
     'NOTIFIER_PASSWORD_HASH_ITERATIONS': 20000,
-    'NOTIFIER_STATIC_DIR': path.resolve(__dirname + '/../static')
+    'NOTIFIER_STATIC_DIR': path.resolve(__dirname + '/../static'),
+    'NOTIFIER_LIVERELOAD_HOST': 'localhost',
+    'NOTIFIER_LIVERELOAD_PORT': 35729,
+    'NOTIFIER_SSL_KEY': undefined,
+    'NOTIFIER_SSL_CERT': undefined,
+    'NOTIFIER_HTTP_IP': '0.0.0.0',
+    'NOTIFIER_HTTP_PORT': 8080,
+    'NOTIFIER_WEBSOCKET_PORT': 8080,
+    'NOTIFIER_FORCE_HTTPS': 0,
+    'NOTIFIER_DEFAULT_USER': undefined,
+    'NOTIFIER_DEFAULT_PASSWORD': undefined,
+    'NOTIFIER_DB_BACKUP_DIR': undefined,
+    'NOTIFIER_PUSHBULLET_CLIENT_ID': undefined,
+    'NOTIFIER_PUSHBULLET_CLIENT_SECRET': undefined,
+    'NOTIFIER_DB': 'sqlite',
+    'NOTIFIER_DB_CONFIG': {
+        'sqlite': {
+            'sequelize': {
+                'storage': './notifier.sqlite',
+                'dialect': 'sqlite'
+            },
+            'username': '',
+            'password': '',
+            'dbname': 'notifier.sqlite'
+        }
+    },
+    'ONEDRIVE_AUTH_FILE': undefined,
+    'ONEDRIVE_CLIENT_ID': undefined,
+    'ONEDRIVE_CLIENT_SECRET': undefined,
+    'ONEDRIVE_PATH': undefined,
+    'ONEDRIVE_REDIRECT': undefined,
+    'ONEDRIVE_RETAIN_DAYS': 3
 });
 
 /**
@@ -744,8 +771,8 @@ app.use(function (req, res, next) {
         scriptSrc += ' \'unsafe-inline\'';
     }
 
-    httpProtocol = (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'https':'http';
-    websocketProtocol = (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true')? 'wss':'ws';
+    httpProtocol = (parseInt(nconf.get('NOTIFIER_FORCE_HTTPS'), 10) === 1)? 'https':'http';
+    websocketProtocol = (httpProtocol === 'https')? 'wss':'ws';
 
     if (nconf.get('NOTIFIER_WEBSOCKET_PORT')) {
         connectSrc += util.format(' %s://%s:%s', websocketProtocol, hostname, nconf.get('NOTIFIER_WEBSOCKET_PORT'));
