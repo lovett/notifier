@@ -65,7 +65,7 @@ if (process.env.NODE_ENV) {
 
 nconf.defaults({
     'NOTIFIER_LOG': 'notifier.log',
-    'NOTIFIER_LOG_LEVEL': 'warn',
+    'NOTIFIER_LOG_LEVEL': 'debug',
     'NOTIFIER_PASSWORD_HASH_RANDBYTES': 64,
     'NOTIFIER_PASSWORD_HASH_KEYLENGTH': 64,
     'NOTIFIER_PASSWORD_HASH_ITERATIONS': 20000,
@@ -83,17 +83,12 @@ nconf.defaults({
     'NOTIFIER_DB_BACKUP_DIR': undefined,
     'NOTIFIER_PUSHBULLET_CLIENT_ID': undefined,
     'NOTIFIER_PUSHBULLET_CLIENT_SECRET': undefined,
-    'NOTIFIER_DB': 'sqlite',
-    'NOTIFIER_DB_CONFIG': {
-        'sqlite': {
-            'sequelize': {
-                'storage': './notifier.sqlite',
-                'dialect': 'sqlite'
-            },
-            'username': '',
-            'password': '',
-            'dbname': 'notifier.sqlite'
-        }
+    'NOTIFIER_DB_USER': undefined,
+    'NOTIFIER_DB_PASS': undefined,
+    'NOTIFIER_DB_NAME': 'notifier.sqlite',
+    'NOTIFIER_DB_OPTS': {
+        'storage': './notifier.sqlite',
+        'dialect': 'sqlite'
     },
     'ONEDRIVE_AUTH_FILE': undefined,
     'ONEDRIVE_CLIENT_ID': undefined,
@@ -118,6 +113,13 @@ log = bunyan.createLogger({
     serializers: bunyan.stdSerializers
 });
 
+nconf.set('NOTIFIER_DB_OPTS:logging', function (msg) {
+    log.info({
+        sequelize: msg
+    }, 'query');
+});
+
+
 /**
  * Application secret
  * --------------------------------------------------------------------
@@ -134,50 +136,13 @@ try {
 /**
  * Database configuration
  * --------------------------------------------------------------------
- *
- * NOTIFIER_DB_CONFIG can define multiple databases. The active
- * database is determined by the value of NOTIFIER_DB. It should
- * should correspond to one of the keys of NOTIFIER_DB_CONFIG.
  */
-getDbConfig = function () {
-    var config, key;
-    key = nconf.get('NOTIFIER_DB');
-
-    if (nconf.get('NOTIFIER_DB_CONFIG') && nconf.get('NOTIFIER_DB_CONFIG').hasOwnProperty(key)) {
-        config = nconf.get('NOTIFIER_DB_CONFIG')[key];
-    } else {
-        config = {
-            sequelize: {}
-        };
-    }
-
-    config.sequelize.logging = function (msg) {
-        log.info({
-            sequelize: msg
-        }, 'query');
-    };
-
-    if (nconf.get('NOTIFIER_DB_USER')) {
-        config.username = nconf.get('NOTIFIER_DB_USER');
-    }
-
-    if (nconf.get('NOTIFIER_DB_PASS')) {
-        config.password = nconf.get('NOTIFIER_DB_PASS');
-    }
-
-    if (nconf.get('NOTIFIER_DB_NAME')) {
-        config.dbname = nconf.get('NOTIFIER_DB_NAME');
-    }
-
-    return config;
-};
-
-dbConfig = getDbConfig();
-
-sequelize = new Sequelize(dbConfig.dbname,
-                          dbConfig.username,
-                          dbConfig.password,
-                          dbConfig.sequelize);
+sequelize = new Sequelize(
+    nconf.get('NOTIFIER_DB_NAME'),
+    nconf.get('NOTIFIER_DB_USER'),
+    nconf.get('NOTIFIER_DB_PASS'),
+    nconf.get('NOTIFIER_DB_OPTS')
+);
 
 /**
  * HTML sanitizer configuration
