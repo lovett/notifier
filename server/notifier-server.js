@@ -74,12 +74,12 @@ nconf.defaults({
     'NOTIFIER_LIVERELOAD_PORT': 35729,
     'NOTIFIER_SSL_KEY': undefined,
     'NOTIFIER_SSL_CERT': undefined,
-    'NOTIFIER_HTTP_IP': '0.0.0.0',
+    'NOTIFIER_HTTP_IP': '127.0.0.1',
     'NOTIFIER_HTTP_PORT': 8080,
     'NOTIFIER_WEBSOCKET_PORT': 8080,
     'NOTIFIER_FORCE_HTTPS': 0,
-    'NOTIFIER_DEFAULT_USER': undefined,
-    'NOTIFIER_DEFAULT_PASSWORD': undefined,
+    'NOTIFIER_DEFAULT_USER': 'notifier',
+    'NOTIFIER_DEFAULT_PASSWORD': 'notifier',
     'NOTIFIER_DB_BACKUP_DIR': undefined,
     'NOTIFIER_PUSHBULLET_CLIENT_ID': undefined,
     'NOTIFIER_PUSHBULLET_CLIENT_SECRET': undefined,
@@ -102,6 +102,7 @@ nconf.defaults({
     'ONEDRIVE_REDIRECT': undefined,
     'ONEDRIVE_RETAIN_DAYS': 3
 });
+
 
 /**
  * Logging configuration
