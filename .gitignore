@@ -4,13 +4,14 @@
 \#*
 TAGS
 node_modules
-bower_components
+notifier
 production_logs
 static
 .nodemonignore
 *.scpt
 *.sqlite
 *.log
+*.tar.gz
 .token
 config*.json
 !config-test.json
