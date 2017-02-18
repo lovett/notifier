@@ -1526,5 +1526,4 @@ exports.app = app;
 exports.bayeuxClient = bayeuxClient;
 exports.verifySubscription = verifySubscription;
 exports.createUser = createUser;
-exports.getDbConfig = getDbConfig;
 exports.nconf = nconf;
