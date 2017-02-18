@@ -26,7 +26,7 @@
     "logfetch:node": "rhc scp notifier download production_logs app-root/logs/nodejs.log",
     "logtail:dev": "tail -f notifier.log | bunyan",
     "build:archive": "rsync -arv --include-from=rsync.conf --delete --delete-excluded . notifier",
-    "postbuild:archive": "exit; tar --create --gzip --file=notifier.tar.gz notifier"
+    "postbuild:archive": "tar --create --gzip --file=notifier.tar.gz notifier"
   },
   "repository": {
     "type": "git",
