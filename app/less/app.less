@@ -1,4 +1,6 @@
 @palettePrimary: #2D8E5E;
+@paletteAccent: #CBD47B;
+@paletteMessaging: #AB6651;
 
 HTML {
     min-height: 100%;
@@ -56,7 +58,7 @@ A:hover {
 }
 
 .status-bar.disconnected {
-    background-color: Crimson;
+    background-color: @paletteMessaging;
 }
 
 FOOTER {
@@ -116,6 +118,8 @@ FOOTER {
 }
 
 .message {
+    box-sizing: border-box;
+    border: 0.25em solid @palettePrimary;
     background-color: rgb(255, 255, 255);
     margin-bottom: 0.5em;
     overflow: hidden;
@@ -212,7 +216,7 @@ FOOTER {
 }
 
 .message.focused {
-    box-shadow: 0 0 0.25em 0.5em darken(@palettePrimary, 10%);
+    border-color: @paletteAccent;
 
     .options {
         opacity: 1;
