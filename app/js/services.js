@@ -592,9 +592,9 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                     self.lastFetched = now;
 
                 }
-            }).catch(function (data, status) {
+            }).catch(function (data) {
                 self.lastFetched = now;
-                if (status === 401) {
+                if (data.status === 401) {
                     $location.path('/login');
                 }
             });
