@@ -111,8 +111,9 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                     'password': form.password
                 },
                 transformResponse: function (res) {
+                    var data;
                     try {
-                        data = JSON.parse(res.data);
+                        data = JSON.parse(res);
                     } catch (e) {
                         data = {};
                     }
