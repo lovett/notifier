@@ -1313,6 +1313,7 @@ app.post('/message', passport.authenticate('basic', { session: false }), functio
                     });
                 };
             });
+            return null;
         });
     }
 
@@ -1321,6 +1322,7 @@ app.post('/message', passport.authenticate('basic', { session: false }), functio
             publishMessage(req.user, message);
             res.sendStatus(204);
         });
+        return null;
     }).catch(function (error) {
         var err, message = '';
         error.errors.forEach(function (err) {
@@ -1491,6 +1493,7 @@ sync = function (callback) {
                 callback();
             });
         }
+        return null;
     }).catch(function (err) {
         log.fatal(err);
         process.exit();
