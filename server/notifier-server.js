@@ -547,7 +547,7 @@ passport.use(new BasicStrategy(function(key, value, next) {
         };
 
         next(null, token.User);
-
+        return true;
     }).catch(function () {
         err = new Error('Application error');
         err.status = 500;
@@ -1423,6 +1423,7 @@ app.post('/message/clear', passport.authenticate('basic', { session: false }), f
                 'retracted': id
             });
             res.sendStatus(204);
+            return true;
         }).catch(function () {
             res.sendStatus(500);
         });
