@@ -61,6 +61,7 @@
     "grunt-text-replace": "0.4.0",
     "nconf": "0.8.4",
     "needle": "1.5.2",
+    "nodemon": "1.11.0",
     "normalize.css": "5.0.0",
     "passport": "0.3.2",
     "passport-http": "0.3.0",
