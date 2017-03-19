@@ -59,6 +59,7 @@
     "grunt-contrib-uglify": "2.2.0",
     "grunt-shell": "2.1.0",
     "grunt-text-replace": "0.4.0",
+    "morgan": "^1.8.1",
     "nconf": "0.8.4",
     "needle": "1.5.2",
     "nodemon": "1.11.0",
