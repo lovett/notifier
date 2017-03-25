@@ -42,7 +42,6 @@
     "angular-sanitize": "1.6.3",
     "angular-touch": "1.6.3",
     "body-parser": "1.17.1",
-    "bunyan": "1.8.8",
     "compression": "1.6.2",
     "dateparser": "1.0.6",
     "express": "4.15.2",
@@ -70,7 +69,7 @@
     "permessage-deflate": "0.1.5",
     "response-time": "2.3.2",
     "sanitize-html": "1.14.1",
-    "sequelize": "3.30.2",
+    "sequelize": "3.30.3",
     "sequelize-cli": "2.6.0",
     "serve-favicon": "2.4.1",
     "sqlite3": "3.1.8",
@@ -95,7 +94,7 @@
     "karma-sinon": "1.0.5",
     "lesshint": "3.1.0",
     "mocha": "3.2.0",
-    "sinon": "2.0.0",
+    "sinon": "2.1.0",
     "supertest": "3.0.0"
   }
 }
