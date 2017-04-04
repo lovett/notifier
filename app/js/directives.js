@@ -194,19 +194,6 @@ appDirectives.directive('notifierAppcacheReload', ['$window', '$interval', '$roo
     };
 }]);
 
-
-appDirectives.directive('notifierConnectionIcon', [function () {
-    'use strict';
-    return {
-        restrict: 'A',
-        link: function (scope, element) {
-            scope.$on('connection:change', function () {
-                element.addClass('hidden');
-            });
-        }
-    };
-}]);
-
 appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList', function ($log, $timeout, MessageList) {
     'use strict';
     return {
