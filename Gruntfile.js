@@ -123,7 +123,7 @@ module.exports = function(grunt) {
                     to: '<meta name=\"websocket port\" content=\"<%= nconf.get("NOTIFIER_WEBSOCKET_PORT") %>\"'
                 }]
             },
-            dev: {
+            development: {
                 src: ['static/index.html'],
                 overwrite: true,
                 replacements: [{
@@ -238,8 +238,8 @@ module.exports = function(grunt) {
 
         tasks = tasks.concat(['less', 'autoprefixer', 'replace:websocket']);
 
-        if (environment === 'dev') {
-            tasks = tasks.concat('replace:dev');
+        if (environment === 'development') {
+            tasks = tasks.concat('replace:development');
         } else {
             grunt.config.set('uglify.app.options.sourceMap', false);
             grunt.config.set('uglify.lib.options.sourceMap', false);
