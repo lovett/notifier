@@ -6,6 +6,7 @@ var APPSECRET,
     Sequelize = require('sequelize'),
     Token,
     User,
+    accessLog,
     app,
     bayeux,
     bayeuxClient,
@@ -14,13 +15,11 @@ var APPSECRET,
     createUser,
     crypto = require('crypto'),
     dateparser = require('dateparser'),
-    dbConfig,
     deflate = require('permessage-deflate'),
     express = require('express'),
     favicon = require('serve-favicon'),
     faye = require('faye'),
     fs = require('fs'),
-    getDbConfig,
     https = require('https'),
     morgan = require('morgan'),
     nconf = require('nconf'),
@@ -35,6 +34,7 @@ var APPSECRET,
     sanitizeTolerant,
     sanitizeTolerantConfig,
     sequelize,
+    sequelizeLogger,
     sync,
     url = require('url'),
     useragent = require('useragent'),
@@ -63,8 +63,8 @@ if (process.env.NODE_ENV) {
 
 
 nconf.defaults({
-    'NOTIFIER_LOG': 'notifier.log',
-    'NOTIFIER_LOG_LEVEL': 'debug',
+    'NOTIFIER_LOG_QUERIES': 0,
+    'NOTIFIER_ACCESS_LOG': 'notifier.log',
     'NOTIFIER_PASSWORD_HASH_RANDBYTES': 64,
     'NOTIFIER_PASSWORD_HASH_KEYLENGTH': 64,
     'NOTIFIER_PASSWORD_HASH_ITERATIONS': 20000,
@@ -82,13 +82,10 @@ nconf.defaults({
     'NOTIFIER_DB_BACKUP_DIR': undefined,
     'NOTIFIER_PUSHBULLET_CLIENT_ID': undefined,
     'NOTIFIER_PUSHBULLET_CLIENT_SECRET': undefined,
+    'NOTIFIER_DB_DIALECT': 'sqlite',
     'NOTIFIER_DB_USER': undefined,
     'NOTIFIER_DB_PASS': undefined,
-    'NOTIFIER_DB_NAME': 'notifier.sqlite',
-    'NOTIFIER_DB_OPTS': {
-        'storage': './notifier.sqlite',
-        'dialect': 'sqlite'
-    },
+    'NOTIFIER_DB': path.resolve(__dirname + '/../notifier.sqlite'),
     'ONEDRIVE_AUTH_FILE': undefined,
     'ONEDRIVE_CLIENT_ID': undefined,
     'ONEDRIVE_CLIENT_SECRET': undefined,
@@ -103,9 +100,9 @@ nconf.defaults({
  */
 try {
     APPSECRET = crypto.randomBytes(60).toString('hex');
-    console.log('app secret generated');
+    //console.log('app secret generated');
 } catch (ex) {
-    console.log('unable to generate app secret - entropy sources drained?');
+    //console.log('unable to generate app secret - entropy sources drained?');
     process.exit();
 }
 
@@ -114,12 +111,20 @@ try {
  * Database configuration
  * --------------------------------------------------------------------
  */
-sequelize = new Sequelize(
-    nconf.get('NOTIFIER_DB_NAME'),
-    nconf.get('NOTIFIER_DB_USER'),
-    nconf.get('NOTIFIER_DB_PASS'),
-    nconf.get('NOTIFIER_DB_OPTS')
-);
+
+sequelizeLogger = function () {};
+if (parseInt(nconf.get('NOTIFIER_LOG_QUERIES'), 10) === 1) {
+    sequelizeLogger = console.log;
+}
+
+if (nconf.get('NOTIFIER_DB_DIALECT') === 'sqlite') {
+    sequelize = new Sequelize(null, null, null, {
+        'dialect': nconf.get('NOTIFIER_DB_DIALECT'),
+        'storage': nconf.get('NOTIFIER_DB'),
+        'logging': sequelizeLogger
+    });
+}
+
 
 /**
  * HTML sanitizer configuration
@@ -135,7 +140,7 @@ sanitizeStrictConfig = {
 
 sanitizeStrict = function (context, field, value) {
     var clean = sanitizeHtml(value, sanitizeStrictConfig);
-    console.log({field: field, before: value, after: clean}, 'sanitized');
+    //console.log({field: field, before: value, after: clean}, 'sanitized');
     return context.setDataValue(field, clean);
 };
 
@@ -152,7 +157,7 @@ sanitizeTolerantConfig = {
 
 sanitizeTolerant = function (context, field, value) {
     var clean = sanitizeHtml(value, sanitizeTolerantConfig);
-    console.log({field: field, before: value, after: clean}, 'sanitized');
+    //console.log({field: field, before: value, after: clean}, 'sanitized');
     return context.setDataValue(field, clean);
 };
 
@@ -548,17 +553,15 @@ bayeux.addWebsocketExtension(deflate);
  * --------------------------------------------------------------------
  */
 verifySubscription = function (message, callback) {
-    console.log({message: message}, 'verifying subscription request');
+    //console.log({message: message}, 'verifying subscription request');
 
     if (!message.ext || !message.ext.authToken) {
-        console.warn({message: message}, 'credentials missing');
         message.error = '401::Credentials missing';
         callback(message);
         return;
     }
 
     function tokenNotFound () {
-        console.error({message: message}, 'token lookup failed');
         message.error = '500::Unable to verify credentials at this time';
         callback(message);
         return;
@@ -568,7 +571,6 @@ verifySubscription = function (message, callback) {
         var channelSegments, tokenAge;
 
         if (!token || !token.User) {
-            console.warn({message: message}, 'invalid credentials');
             message.error = '401::Invalid Credentials';
             callback(message);
             return;
@@ -578,14 +580,14 @@ verifySubscription = function (message, callback) {
         channelSegments = message.subscription.replace(/^\//, '').split('/');
 
         if (channelSegments[0] !== 'messages') {
-            console.log({channel: message.subscription}, 'invalid channel');
+            //console.log({channel: message.subscription}, 'invalid channel');
             message.error = '400::Invalid subscription channel';
             callback(message);
             return;
         }
 
         if (channelSegments[1] !== token.User.getChannel()) {
-            console.log({channel: message.subscription}, 'stale channel');
+            //console.log({channel: message.subscription}, 'stale channel');
             message.error = '301::' + token.User.getChannel();
             callback(message);
             return;
@@ -620,13 +622,13 @@ bayeux.addExtension({
         // the localId is not sent to clients
         delete message.localId;
 
-        console.log({message: message}, 'faye server outgoing message');
+        //console.log({message: message}, 'faye server outgoing message');
         return callback(message);
     },
 
     incoming: function(message, callback) {
 
-        console.log({message: message}, 'faye server incoming message');
+        //console.log({message: message}, 'faye server incoming message');
 
         message.ext = message.ext || {};
 
@@ -643,7 +645,6 @@ bayeux.addExtension({
 
         // Anything else must have the application secret
         if (message.ext.secret !== APPSECRET) {
-            console.warn({message: message}, 'suspicious message, no secret');
             message.error = '403::Forbidden';
         }
 
@@ -663,7 +664,7 @@ bayeuxClient = bayeux.getClient();
 
 bayeuxClient.addExtension({
     outgoing: function(message, callback) {
-        console.log({message: message}, 'faye server-side client outgoing message');
+        //console.log({message: message}, 'faye server-side client outgoing message');
         message.ext = message.ext || {};
         message.ext.secret = APPSECRET;
         callback(message);
@@ -685,7 +686,11 @@ app.disable('x-powered-by');
  */
 
 // Logging
-app.use(morgan('tiny'));
+accessLog = fs.createWriteStream(
+    nconf.get('NOTIFIER_ACCESS_LOG'),
+    {flags: 'a'}
+);
+app.use(morgan('combined', {stream: accessLog}));
 
 
 // Handle requests for the default favicon
@@ -1477,7 +1482,7 @@ if (!module.parent) {
         }
 
         server.on('listening', function () {
-            console.log({ip: nconf.get('NOTIFIER_HTTP_IP'), port: nconf.get('NOTIFIER_HTTP_PORT')}, 'appstart');
+            //console.log({ip: nconf.get('NOTIFIER_HTTP_IP'), port: nconf.get('NOTIFIER_HTTP_PORT')}, 'appstart');
 
             // Attach to the express server returned by listen, rather than app itself.
             // https://github.com/faye/faye/issues/256

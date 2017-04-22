@@ -1,19 +1,9 @@
 {
-    "NOTIFIER_LOG": "test.log",
-    "NOTIFIER_LOG_LEVEL": "trace",
-    "NOTIFIER_HTTP_PORT": 9080,
-    "NOTIFIER_WEBSOCKET_PORT": 9080,
-    "NOTIFIER_FORCE_HTTPS": 1,
-    "NOTIFIER_DEFAULT_USER": "test",
-    "NOTIFIER_DEFAULT_PASSWORD": "test",
-    "NOTIFIER_DB": "sqlite",
-    "NOTIFIER_DB_CONFIG": {
-        "sqlite": {
-            "sequelize": {
-                "storage": "./test.sqlite",
-                "dialect": "sqlite"
-            },
-            "dbname": "./test.sqlite"
-        }
-    },
+  "NOTIFIER_ACCESS_LOG": "test.log",
+  "NOTIFIER_HTTP_PORT": 9080,
+  "NOTIFIER_WEBSOCKET_PORT": 9080,
+  "NOTIFIER_FORCE_HTTPS": 1,
+  "NOTIFIER_DEFAULT_USER": "test",
+  "NOTIFIER_DEFAULT_PASSWORD": "test",
+  "NOTIFIER_DB": "test.sqlite"
 }
