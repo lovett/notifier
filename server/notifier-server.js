@@ -58,7 +58,7 @@ nconf.file('global', '/etc/notifier.json');
 nconf.env();
 
 if (process.env.NODE_ENV) {
-    nconf.file('local', path.resolve(__dirname + '/../config-' + process.env.NODE_ENV + '.json'));
+    nconf.file('local', path.resolve(__dirname + '/config-' + process.env.NODE_ENV + '.json'));
 }
 
 

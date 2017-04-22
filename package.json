@@ -6,7 +6,7 @@
   "main": "server/notifier-server.js",
   "scripts": {
     "start": "node server/notifier-server.js",
-    "devserver": "NODE_ENV=development nodemon --watch server/notifier-server.js",
+    "devserver": "NODE_ENV=dev nodemon --watch server/notifier-server.js",
     "build": "npm install --production --no-optional && grunt --no-color build:full",
     "postbuild": "npm run -s build:archive",
     "postinstall": "npm prune",
