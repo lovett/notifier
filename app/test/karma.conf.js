@@ -11,9 +11,9 @@ module.exports = function(config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'static/lib.min.js',
+            'public/lib.min.js',
             'node_modules/angular-mocks/angular-mocks.js',
-            'static/js/*.js',
+            'public/js/*.js',
             'app/test/*spec.js',
             'app/templates/*.html'
         ],
@@ -31,7 +31,7 @@ module.exports = function(config) {
 
 
         preprocessors: {
-            'static/js/*.js': 'coverage',
+            'public/js/*.js': 'coverage',
             'app/templates/*.html': 'ng-html2js'
         },
 

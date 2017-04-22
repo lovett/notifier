@@ -68,7 +68,7 @@ nconf.defaults({
     'NOTIFIER_PASSWORD_HASH_RANDBYTES': 64,
     'NOTIFIER_PASSWORD_HASH_KEYLENGTH': 64,
     'NOTIFIER_PASSWORD_HASH_ITERATIONS': 20000,
-    'NOTIFIER_STATIC_DIR': path.resolve(__dirname + '/../static'),
+    'NOTIFIER_PUBLIC_DIR': path.resolve(__dirname + '/../public'),
     'NOTIFIER_LIVERELOAD_HOST': 'localhost',
     'NOTIFIER_LIVERELOAD_PORT': 35729,
     'NOTIFIER_SSL_KEY': undefined,
@@ -689,7 +689,7 @@ app.use(morgan('tiny'));
 
 
 // Handle requests for the default favicon
-app.use(favicon(nconf.get('NOTIFIER_STATIC_DIR') + '/favicon/favicon.ico'));
+app.use(favicon(nconf.get('NOTIFIER_PUBLIC_DIR') + '/favicon/favicon.ico'));
 
 // Security safeguards
 app.use(function (req, res, next) {
@@ -790,8 +790,8 @@ app.use(bodyParser.json({
 app.use(passport.initialize());
 
 
-// Static fileserving
-app.use(express.static(nconf.get('NOTIFIER_STATIC_DIR'), {
+// Public fileserving
+app.use(express.static(nconf.get('NOTIFIER_PUBLIC_DIR'), {
     setHeaders: function (res) {
         res.set('Cache-Control', 'no-cache, private');
     },
@@ -900,12 +900,12 @@ publishMessage = function (user, message) {
 
 
 app.get('/', function (req, res) {
-    res.sendFile(nconf.get('NOTIFIER_STATIC_DIR') + '/index.html');
+    res.sendFile(nconf.get('NOTIFIER_PUBLIC_DIR') + '/index.html');
 });
 
 app.get(/^\/(login|logout|onedrive)$/, function (req, res) {
     // For pushState compatibility, some URLs are treated as aliases of the index view
-    res.sendFile(nconf.get('NOTIFIER_STATIC_DIR') + '/index.html');
+    res.sendFile(nconf.get('NOTIFIER_PUBLIC_DIR') + '/index.html');
 });
 
 app.get('/status', function (req, res) {

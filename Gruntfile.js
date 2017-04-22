@@ -10,17 +10,17 @@ module.exports = function(grunt) {
         nconf: nconf,
         appcache: {
             options: {
-                basePath: 'static'
+                basePath: 'public'
             },
             all: {
-                dest: 'static/notifier.appcache',
+                dest: 'public/notifier.appcache',
                 cache: {
                     patterns: [
-                        'static/*.min.js',
-                        'static/*.min.css',
-                        'static/favicon/app-icon*.png',
-                        'static/favicon/favicon.ico',
-                        'static/favicon/favicon.png',
+                        'public/*.min.js',
+                        'public/*.min.css',
+                        'public/favicon/app-icon*.png',
+                        'public/favicon/favicon.ico',
+                        'public/favicon/favicon.png',
                     ]
                 },
                 network: '*'
@@ -31,20 +31,20 @@ module.exports = function(grunt) {
             app: {
                 expand: true,
                 flatten: true,
-                src: 'static/all.min.css',
-                dest: 'static/'
+                src: 'public/all.min.css',
+                dest: 'public/'
             }
         },
 
         clean: {
             full: {
-                src: ['static']
+                src: ['public']
             },
             app: {
-                src: ['static/app*', 'static/all*', 'static/templates']
+                src: ['public/app*', 'public/all*', 'public/templates']
             },
             postBuild: {
-                src: ['static/version.json']
+                src: ['public/version.json']
             }
         },
 
@@ -55,7 +55,7 @@ module.exports = function(grunt) {
                         expand: true,
                         cwd: 'app/',
                         src: ['**', '!**/*.psd'],
-                        dest: 'static/'
+                        dest: 'public/'
                     }
                 ]
             },
@@ -75,7 +75,7 @@ module.exports = function(grunt) {
                             'node_modules/angular-animate/angular-animate.js',
                             'node_modules/fastclick/lib/fastclick.js'
                         ],
-                        dest: 'static/'
+                        dest: 'public/'
                     }
                 ]
             }
@@ -87,7 +87,7 @@ module.exports = function(grunt) {
                     cleancss: true
                 },
                 files: {
-                    'static/all.min.css': [
+                    'public/all.min.css': [
                         'node_modules/normalize.css/normalize.css',
                         'node_modules/angular/angular-csp.css',
                         'app/less/*'
@@ -100,7 +100,7 @@ module.exports = function(grunt) {
             app: {
                 cwd: 'app',
                 src: 'templates/*.html',
-                dest: 'static/js/templates.js',
+                dest: 'public/js/templates.js',
                 options: {
                     module: 'appModule',
                     htmlmin: {
@@ -116,7 +116,7 @@ module.exports = function(grunt) {
 
         replace: {
             websocket: {
-                src: ['static/index.html'],
+                src: ['public/index.html'],
                 overwrite: true,
                 replacements: [{
                     from: '<meta name=\"websocket port\" content=\"\"',
@@ -124,7 +124,7 @@ module.exports = function(grunt) {
                 }]
             },
             development: {
-                src: ['static/index.html'],
+                src: ['public/index.html'],
                 overwrite: true,
                 replacements: [{
                     from: '<!-- livereload placeholder -->',
@@ -135,7 +135,7 @@ module.exports = function(grunt) {
                 }]
             },
             production: {
-                src: ['static/index.html'],
+                src: ['public/index.html'],
                 overwrite: true,
                 replacements: [{
                     from: '<!-- livereload placeholder -->',
@@ -191,13 +191,13 @@ module.exports = function(grunt) {
                     sourceMap: true
                 },
                 files: {
-                    'static/app.min.js': [
-                        'static/js/app.js',
-                        'static/js/controllers.js',
-                        'static/js/directives.js',
-                        'static/js/filters.js',
-                        'static/js/services.js',
-                        'static/js/templates.js'
+                    'public/app.min.js': [
+                        'public/js/app.js',
+                        'public/js/controllers.js',
+                        'public/js/directives.js',
+                        'public/js/filters.js',
+                        'public/js/services.js',
+                        'public/js/templates.js'
                     ]
                 }
             },
@@ -206,15 +206,15 @@ module.exports = function(grunt) {
                     sourceMap: true
                 },
                 files: {
-                    'static/lib.min.js': [
-                        'static/angular.js',
-                        'static/angular-route.js',
-                        'static/faye-browser.js',
-                        'static/angular-sanitize.js',
-                        'static/angular-resource.js',
-                        'static/angular-touch.js',
-                        'static/angular-animate.js',
-                        'static/fastclick.js'
+                    'public/lib.min.js': [
+                        'public/angular.js',
+                        'public/angular-route.js',
+                        'public/faye-browser.js',
+                        'public/angular-sanitize.js',
+                        'public/angular-resource.js',
+                        'public/angular-touch.js',
+                        'public/angular-animate.js',
+                        'public/fastclick.js'
                     ]
                 }
             }
