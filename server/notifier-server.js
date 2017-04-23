@@ -35,11 +35,6 @@ var APPSECRET,
     path = require('path'),
     publishMessage,
     responseTime = require('response-time'),
-    sanitizeHtml = require('sanitize-html'),
-    sanitizeStrict,
-    sanitizeStrictConfig,
-    sanitizeTolerant,
-    sanitizeTolerantConfig,
     sequelize,
     sequelizeLogger,
     sync,
@@ -48,7 +43,8 @@ var APPSECRET,
     util = require('util'),
 
     validation = {
-        count: require('./validation/count')
+        count: require('./validation/count'),
+        sanitize: require('./validation/sanitize')
     },
     verifySubscription;
 
@@ -135,43 +131,6 @@ if (nconf.get('NOTIFIER_DB_DIALECT') === 'sqlite') {
         'logging': sequelizeLogger
     });
 }
-
-
-/**
- * HTML sanitizer configuration
- * --------------------------------------------------------------------
- */
-sanitizeStrictConfig = {
-    allowedTags: [],
-    allowedAttributes: {},
-    textFilter: function (text) {
-        return text.replace(/&quot;/g, '"');
-    },
-};
-
-sanitizeStrict = function (context, field, value) {
-    var clean = sanitizeHtml(value, sanitizeStrictConfig);
-    //console.log({field: field, before: value, after: clean}, 'sanitized');
-    return context.setDataValue(field, clean);
-};
-
-sanitizeTolerantConfig = {
-    allowedTags: [ 'b', 'i', 'em', 'strong', 'a', 'p' ],
-    allowedAttributes: {
-        'a': [ 'href' ]
-    },
-    textFilter: function (text) {
-        return text.replace(/&quot;/g, '"');
-    },
-    allowedSchemes: [ 'http', 'https', 'mailto' ]
-};
-
-sanitizeTolerant = function (context, field, value) {
-    var clean = sanitizeHtml(value, sanitizeTolerantConfig);
-    //console.log({field: field, before: value, after: clean}, 'sanitized');
-    return context.setDataValue(field, clean);
-};
-
 
 /**
  * ORM model definition
@@ -347,7 +306,6 @@ User = sequelize.define('User', {
     }
 });
 
-
 Message = sequelize.define('Message', {
     publicId: {
         type: Sequelize.UUID,
@@ -358,7 +316,7 @@ Message = sequelize.define('Message', {
         type: Sequelize.STRING(255),
         allowNull: true,
         set: function (value) {
-            return sanitizeStrict(this, 'localId', value);
+            return this.setDataValue('localId', validation.sanitize.strictSanitize(value));
         }
     },
     pushbulletId: {
@@ -375,7 +333,7 @@ Message = sequelize.define('Message', {
             }
         },
         set: function (value) {
-            return sanitizeStrict(this, 'title', value);
+            return this.setDataValue('title', validation.sanitize.strictSanitize(value));
         }
     },
     url: {
@@ -389,7 +347,7 @@ Message = sequelize.define('Message', {
             }
         },
         set: function (value) {
-            return sanitizeStrict(this, 'url', value);
+            return this.setDataValue('url', validation.sanitize.strictSanitize(value));
         }
     },
     body: {
@@ -402,7 +360,7 @@ Message = sequelize.define('Message', {
             }
         },
         set: function (value) {
-            return sanitizeTolerant(this, 'body', value);
+            return this.setDataValue('body', validation.sanitize.tolerantSanitize(value));
         }
     },
     source: {
@@ -415,7 +373,7 @@ Message = sequelize.define('Message', {
             }
         },
         set: function (value) {
-            return sanitizeStrict(this, 'source', value);
+            return this.setDataValue('source', validation.sanitize.strictSanitize(value));
         }
     },
     group: {
@@ -429,7 +387,7 @@ Message = sequelize.define('Message', {
             }
         },
         set: function (value) {
-            return sanitizeStrict(this, 'group', value);
+            return this.setDataValue('group', validation.sanitize.strictSanitize(value));
         }
     },
     unread: {
