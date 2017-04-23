@@ -83,6 +83,7 @@
     "eslint-plugin-mocha": "4.9.0",
     "grunt-contrib-watch": "1.0.0",
     "istanbul": "0.4.5",
+    "jsdoc": "^3.4.3",
     "karma": "1.6.0",
     "karma-chai": "0.1.0",
     "karma-chrome-launcher": "2.0.0",
