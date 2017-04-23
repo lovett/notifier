@@ -17,11 +17,18 @@ var APPSECRET,
     dateparser = require('dateparser'),
     deflate = require('permessage-deflate'),
     express = require('express'),
-    favicon = require('serve-favicon'),
+
     faye = require('faye'),
     fs = require('fs'),
     https = require('https'),
-    morgan = require('morgan'),
+
+    middleware = {
+        favicon:  require('./middleware/favicon'),
+        logger:   require('./middleware/logger'),
+        security: require('./middleware/security'),
+        asset:    require('./middleware/asset')
+    },
+
     nconf = require('nconf'),
     needle = require('needle'),
     passport = require('passport'),
@@ -677,108 +684,18 @@ bayeuxClient.addExtension({
  * --------------------------------------------------------------------
  */
 app = express();
+
 app.disable('x-powered-by');
 
+app.use(middleware.logger(nconf));
 
-/**
- * Express middleware
- * --------------------------------------------------------------------
- */
+app.use(middleware.favicon(nconf));
 
-// Logging
-accessLog = fs.createWriteStream(
-    nconf.get('NOTIFIER_ACCESS_LOG'),
-    {flags: 'a'}
-);
-app.use(morgan('combined', {stream: accessLog}));
+app.use(middleware.security(nconf));
 
-
-// Handle requests for the default favicon
-app.use(favicon(nconf.get('NOTIFIER_PUBLIC_DIR') + '/favicon/favicon.ico'));
-
-// Security safeguards
-app.use(function (req, res, next) {
-    var connectSrc, headerValue, hostname, httpProtocol, liveReloadHostPort, scriptSrc, websocketProtocol;
-    // Clickjacking - see
-    // https://www.owasp.org/index.php/Clickjacking
-    // --------------------------------------------------------------------
-    res.setHeader('X-Frame-Options', 'DENY');
-
-    // Content security policy - see
-    // http://content-security-policy.com
-    // --------------------------------------------------------------------
-
-    // get hostname without port
-    hostname = req.headers['x-forwarded-host'] || req.headers.host;
-    hostname = hostname.replace(/:[0-9]+$/, '', hostname);
-
-    // account for custom websocket port
-    connectSrc = 'connect-src \'self\'';
-    scriptSrc = 'script-src \'self\'';
-
-    // allow inline scripts for Safari only to avoid a "Refused to
-    // execute inline script..." error when extensions such as
-    // ublock are installed.
-    if (req.headers['user-agent'].indexOf('Safari') > -1 && req.headers['user-agent'].indexOf('Chrome') === -1) {
-        scriptSrc += ' \'unsafe-inline\'';
-    }
-
-    httpProtocol = (parseInt(nconf.get('NOTIFIER_FORCE_HTTPS'), 10) === 1)? 'https':'http';
-    websocketProtocol = (httpProtocol === 'https')? 'wss':'ws';
-
-    if (nconf.get('NOTIFIER_WEBSOCKET_PORT')) {
-        connectSrc += util.format(' %s://%s:%s', websocketProtocol, hostname, nconf.get('NOTIFIER_WEBSOCKET_PORT'));
-        scriptSrc  += util.format(' %s://%s:%s', httpProtocol, hostname, nconf.get('NOTIFIER_WEBSOCKET_PORT'));
-    }
-
-    if (nconf.get('NOTIFIER_LIVERELOAD_HOST') && nconf.get('NOTIFIER_LIVERELOAD_PORT')) {
-        liveReloadHostPort = util.format('%s:%s', nconf.get('NOTIFIER_LIVERELOAD_HOST'), nconf.get('NOTIFIER_LIVERELOAD_PORT'));
-        connectSrc += util.format(' %s://%s', websocketProtocol, liveReloadHostPort);
-        scriptSrc += util.format(' %s://%s', httpProtocol, liveReloadHostPort);
-    }
-
-    headerValue = [];
-    headerValue.push('default-src \'self\'');
-    headerValue.push('style-src \'self\' \'unsafe-inline\'');
-    headerValue.push('img-src \'self\' data:');
-    headerValue.push(connectSrc);
-    headerValue.push(scriptSrc);
-
-    res.setHeader('Content-Security-Policy', headerValue.join('; '));
-
-    // Flash cross domain policy file - see
-    // http://www.adobe.com/devnet-docs/acrobatetk/tools/AppSec/CrossDomain_PolicyFile_Specification.pdf
-    // --------------------------------------------------------------------
-    if (req.path === '/crossdomain.xml') {
-        res.set('Content-Type', 'text/x-cross-domain-policy');
-    }
-
-    next();
-});
-
-// Require HTTPS
-if (nconf.get('NOTIFIER_FORCE_HTTPS') === 'true') {
-    app.use(function (req, res, next) {
-        // HTTP Strict Transport Security - see
-        // https://www.owasp.org/index.php/HTTP_Strict_Transport_Security
-        // --------------------------------------------------------------------
-        res.setHeader('Strict-Transport-Security', util.format('max-age=%d', 60 * 60 * 24 * 30));
-
-        if (req.headers['x-forwarded-proto'] === 'http') {
-            res.redirect('https://' + req.headers['x-forwarded-host'] + req.url);
-        } else {
-            return next();
-        }
-    });
-}
-
-// Populate the X-Response-Time header
 app.use(responseTime());
 
-// Use compression
-app.use(compression({
-    threshold: 0
-}));
+app.use(compression());
 
 // Parse urlencoded request bodies
 app.use(bodyParser.urlencoded({
@@ -791,17 +708,9 @@ app.use(bodyParser.json({
     limit: '5kb'
 }));
 
-// Authentication
 app.use(passport.initialize());
 
-
-// Public fileserving
-app.use(express.static(nconf.get('NOTIFIER_PUBLIC_DIR'), {
-    setHeaders: function (res) {
-        res.set('Cache-Control', 'no-cache, private');
-    },
-    etag: false
-}));
+app.use(middleware.asset(nconf));
 
 /**
  * Parameter validation
