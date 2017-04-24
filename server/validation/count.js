@@ -25,4 +25,4 @@ function count (req, res, next, value) {
     next();
 }
 
-exports = module.exports = count;
+module.exports = exports = count;

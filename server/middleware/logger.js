@@ -14,4 +14,4 @@ function main(config) {
     return morgan('combined', {stream: stream});
 }
 
-exports = module.exports = main;
+module.exports = exports = main;

@@ -5,4 +5,4 @@ function main(config) {
     return favicon(path);
 }
 
-exports = module.exports = main;
+module.exports = exports = main;

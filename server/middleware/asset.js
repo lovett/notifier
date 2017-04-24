@@ -12,4 +12,4 @@ function main(config) {
     );
 }
 
-exports = module.exports = main;
+module.exports = exports = main;
