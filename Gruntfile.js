@@ -161,15 +161,6 @@ module.exports = function(grunt) {
                     'rm temp-*.png'
                 ].join(' && ')
             },
-            'migration': {
-                command: function (undo) {
-                    var action = 'db:migrate';
-                    if (undo) {
-                        action += ':undo';
-                    }
-                    return './node_modules/.bin/sequelize ' + action + ' --env default --config migration-config.json --migrations-path server/migrations';
-                }
-            }
         },
 
         watch: {
@@ -249,50 +240,6 @@ module.exports = function(grunt) {
         tasks = tasks.concat(['clean:postBuild', 'appcache']);
 
         grunt.task.run(tasks);
-    });
-
-    grunt.registerTask('migrate', function (undo) {
-        var configPath, dbEnv, env, migrationConfig, shellTask;
-
-        env = grunt.file.readJSON('config.json');
-        configPath = 'migration-config.json';
-        dbEnv = env.NOTIFIER_DB_CONFIG[env.NOTIFIER_DB];
-
-        if (process.env.NOTIFIER_DB_USER) {
-            dbEnv.username = process.env.NOTIFIER_DB_USER;
-        }
-
-        if (process.env.NOTIFIER_DB_PASS) {
-            dbEnv.password = process.env.NOTIFIER_DB_PASS;
-        }
-
-        if (process.env.NOTIFIER_DB_NAME) {
-            dbEnv.dbname = process.env.NOTIFIER_DB_NAME;
-        }
-
-        migrationConfig = {
-            'default': {
-                'username': dbEnv.username,
-                'password': dbEnv.password,
-                'database': dbEnv.dbname,
-                'dialect': dbEnv.sequelize.dialect,
-                'host': dbEnv.sequelize.host
-            }
-        };
-
-        if (dbEnv.sequelize.hasOwnProperty('storage')) {
-            migrationConfig.default.storage = dbEnv.sequelize.storage;
-        }
-
-        grunt.file.write(configPath, JSON.stringify(migrationConfig));
-
-        shellTask = 'shell:migration' ;
-
-        if (undo === 'undo') {
-            shellTask += ':undo';
-        }
-
-        grunt.task.run(shellTask);
     });
 
     grunt.loadNpmTasks('grunt-angular-templates');
