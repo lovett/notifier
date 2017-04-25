@@ -35,6 +35,11 @@ var APPSECRET,
     path = require('path'),
     publishMessage,
     responseTime = require('response-time'),
+    router,
+    routes = {
+        home: require('./routes/home'),
+        status: require('./routes/status')
+    },
     sequelize,
     sequelizeLogger,
     sync,
@@ -647,6 +652,11 @@ bayeuxClient.addExtension({
  */
 app = express();
 
+app.use(function (req, res, next) {
+    res.locals.public_dir = nconf.get('NOTIFIER_PUBLIC_DIR');
+    next();
+});
+
 app.disable('x-powered-by');
 
 app.use(middleware.logger(nconf));
@@ -752,25 +762,12 @@ publishMessage = function (user, message) {
 
 /**
  * Routing
- * --------------------------------------------------------------------
+ *
+ * For pushState compatibility, some URLs are treated as aliases of the homepage.
  */
+app.use(/^\/(login|logout|onedrive)?$/, routes.home);
 
-
-app.get('/', function (req, res) {
-    res.sendFile(nconf.get('NOTIFIER_PUBLIC_DIR') + '/index.html');
-});
-
-app.get(/^\/(login|logout|onedrive)$/, function (req, res) {
-    // For pushState compatibility, some URLs are treated as aliases of the index view
-    res.sendFile(nconf.get('NOTIFIER_PUBLIC_DIR') + '/index.html');
-});
-
-app.get('/status', function (req, res) {
-    // This route serves a static string as plain text for the benefit
-    // of monitoring and keep-alive applications.
-    res.type('txt');
-    res.send('OK');
-});
+app.use('/status', routes.status);
 
 app.post('/deauth', passport.authenticate('basic', { session: false }), function (req, res) {
 
