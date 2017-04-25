@@ -1,7 +1,7 @@
 var favicon = require('serve-favicon');
 
-function main(config) {
-    var path = config.get('NOTIFIER_PUBLIC_DIR') + '/favicon/favicon.ico';
+function main(public_dir) {
+    var path = public_dir + '/favicon/favicon.ico';
     return favicon(path);
 }
 

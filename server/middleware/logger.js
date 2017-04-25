@@ -3,11 +3,11 @@ var fs, morgan;
 fs = require('fs');
 morgan = require('morgan');
 
-function main(config) {
+function main(log_path) {
     var stream;
 
     stream = fs.createWriteStream(
-        config.get('NOTIFIER_ACCESS_LOG'),
+        log_path,
         {flags: 'a'}
     );
 

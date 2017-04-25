@@ -1,8 +1,8 @@
 var express = require('express');
 
-function main(config) {
+function main(public_dir) {
     return express.static(
-        config.get('NOTIFIER_PUBLIC_DIR'),
+        public_dir,
         {
             setHeaders: function (res) {
                 res.set('Cache-Control', 'no-cache, private');

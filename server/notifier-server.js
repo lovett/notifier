@@ -654,16 +654,20 @@ app = express();
 
 app.use(function (req, res, next) {
     res.locals.public_dir = nconf.get('NOTIFIER_PUBLIC_DIR');
+    res.locals.force_https = parseInt(nconf.get('NOTIFIER_FORCE_HTTPS'), 10) === 1;
+    res.locals.websocket_port = nconf.get('NOTIFIER_WEBSOCKET_PORT');
+    res.locals.livereload_host = nconf.get('NOTIFIER_LIVERELOAD_HOST');
+    res.locals.livereload_port = nconf.get('NOTIFIER_LIVERELOAD_PORT');
     next();
 });
 
 app.disable('x-powered-by');
 
-app.use(middleware.logger(nconf));
+app.use(middleware.logger(nconf.get('NOTIFIER_ACCESS_LOG')));
 
-app.use(middleware.favicon(nconf));
+app.use(middleware.favicon(nconf.get('NOTIFIER_PUBLIC_DIR')));
 
-app.use(middleware.security(nconf));
+app.use(middleware.security);
 
 app.use(responseTime());
 
@@ -682,7 +686,7 @@ app.use(bodyParser.json({
 
 app.use(passport.initialize());
 
-app.use(middleware.asset(nconf));
+app.use(middleware.asset(nconf.get('NOTIFIER_PUBLIC_DIR')));
 
 /**
  * Parameter validation
