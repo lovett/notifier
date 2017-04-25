@@ -1,37 +1,32 @@
 # Notifier
 
-Notifier is a web-based notification service. Messages come in via
-HTTP and go out over websocket to connected clients. Clients can
-be web browsers or other scripts written in any language.
+Notifier is a web-based notification service using Node.js. Messages
+are received over HTTP and sent over websocket to connected clients.
 
-The notifer server is a Node.js application. It handles incoming
-messages, manages websocket connections, and serves the browser
-UI.
+Messages are stateful. When a client clears a messge, it is
+revoked from all other clients.
 
-## Installation
+Message are also stored by the server, even after they have been cleared.
 
-The first thing you'll need to run Notifier is Node.js. If you can
-invoke Node.js as "node", you're set. If your installation provides
-"nodejs" but not "node" (as is the case with Node.js packages on
-Debian for example), symlink `/usr/bin/node` to `/usr/bin/nodejs`.
+## Installation and Setup
 
-Next, you'll need 3 NPM packages installed globally:
+Third-party libraries can be installed using standard `npm install`
+procedures. Everything is application-local with no implicit
+dependency on globally-available packages.
 
-`npm install -g grunt-cli bunyan nodemon`
+The server is configured with internal defaults that can be
+selectively overriden via an external JSON file. This file can either
+be located at `/etc/notifier.json` or within the application directory
+under `server/config-{env}.json` where `{env}` corresponds to the
+value of NODE_ENV.
 
-Then install the remaining NPM packages locally:
+Before the application can be used, the browser UI must be be built by running:
 
-`npm install`
+`npm run -s build`
 
-The notifier server is configured via a JSON file. A default file is
-provided as `config-sample.json`. Copy this file to `config.json` and
-customize as appropriate. Now use Grunt to build the browser UI:
+The server can be started by running:
 
-`grunt`
-
-Now start the server:
-
-`grunt shell:server`
+`npm run -s start`
 
 Authenticate with the server and send yourself a test message via grunt:
 
@@ -49,4 +44,4 @@ The icons used in the browser UI are taken from the
 The server and browser clients use [Faye](http://faye.jcoglan.com) for
 publish-subscribe over websockets.
 
-The browser UI uses [AngularJS](https://angularjs.org).
+The browser UI uses [AngularJS 1](https://angularjs.org).
