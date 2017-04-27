@@ -5,10 +5,9 @@
   "description": "A notification service for user-generated events",
   "main": "server/notifier-server.js",
   "scripts": {
+    "build": "grunt --no-color build:full",
     "start": "node server/notifier-server.js",
     "devserver": "NODE_ENV=dev nodemon --watch server/notifier-server.js",
-    "build": "npm install --production --no-optional && grunt --no-color build:full",
-    "postbuild": "npm run -s build:archive",
     "postinstall": "npm prune",
     "hooks": "cp hooks/* .git/hooks/",
     "onemessage": "clients/send-notification -s $NOTIFIER_DEV -p 0 -t test -e '10 minutes'",
@@ -24,9 +23,7 @@
     "logfetch:cron": "rhc scp notifier download production_logs app-root/logs/cron_hourly.log",
     "logfetch:notifier": "rhc scp notifier download production_logs app-root/logs/notifier.log",
     "logfetch:node": "rhc scp notifier download production_logs app-root/logs/nodejs.log",
-    "logtail:dev": "tail -f notifier.log",
-    "build:archive": "rsync -arv --include-from=rsync.conf --delete --delete-excluded . notifier",
-    "postbuild:archive": "tar --create --gzip --file=notifier.tar.gz notifier"
+    "logtail:dev": "tail -f notifier.log"
   },
   "repository": {
     "type": "git",

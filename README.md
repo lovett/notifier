@@ -10,31 +10,37 @@ Message are also stored by the server, even after they have been cleared.
 
 ## Installation and Setup
 
-Third-party libraries can be installed using standard `npm install`
-procedures. Everything is application-local with no implicit
-dependency on globally-available packages.
+Third-party libraries can be installed using the standard technique:
 
-The server is configured with internal defaults that can be
-selectively overriden via an external JSON file. This file can either
-be located at `/etc/notifier.json` or within the application directory
-under `server/config-{env}.json` where `{env}` corresponds to the
-value of NODE_ENV.
+`npm install`
 
-Before the application can be used, the browser UI must be be built by running:
+All libraries are application-local. Globally-available packages are
+not referenced, even if a package would prefer to be installed
+globally.
 
-`npm run -s build`
+Once libraries are installed, the browser UI can be built by running:
 
-The server can be started by running:
+`npm run build`
 
-`npm run -s start`
+To start the server, run:
+
+`npm run start`
+
+By default the server will run using a reasonable default
+configuration that can be selectively overriden with an externa JSON
+file.  This file can either be located at `/etc/notifier.json` or
+within the application directory under `server/config-[env].json`
+where `[env]` corresponds to the value of NODE_ENV.
+
+By default, the server runs on `localhost:8080` with a default
+username and password of "notifier".
+
+## Usage
 
 Authenticate with the server and send yourself a test message via grunt:
 
 `grunt http:authtoken; grunt http:onemessage`
 
-Finally, view the application in a web browser. By default, it will be
-running on localhost:8080. The default username and password are both
-"notifier".
 
 ## Attribution
 
