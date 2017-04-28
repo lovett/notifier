@@ -9,12 +9,49 @@ PATH=./node_modules/.bin:$PATH
 export NPM_CONFIG_LOGLEVEL=error
 export NPM_CONFIG_PROGRESS=false
 
+ARTIFACT=notifier.tar.gz
+
 npm install --no-optional
+
+npm prune
 
 grunt --no-color build:full
 
+if [ -f "$ARTIFACT" ]; then
+    rm "$ARTIFACT"
+fi
+
+rsync -ar \
+      --include='package.json' \
+      --exclude='***/.bin' \
+      --exclude='***/test' \
+      --exclude='***/tests' \
+      --exclude='***/doc' \
+      --exclude='***/docs' \
+      --exclude='***/*.md' \
+      --exclude='***/Makefile' \
+      --exclude='***/CHANGES' \
+      --exclude='***/AUTHORS' \
+      --exclude='***/bower.json' \
+      --exclude='***/*.ts' \
+      --exclude='***/.coverage' \
+      --exclude='***/.grunt' \
+      --exclude='***/.sass-cache' \
+      --exclude='***/.idea' \
+      --exclude='***/docs-build' \
+      --exclude='***/server/config-*.json' \
+      --include='server/***' \
+      --include='public/***' \
+      --include='node_modules/***' \
+      --exclude='*' \
+      --delete \
+      --delete-excluded \
+      . notifier
+
+cd notifier
+
 npm prune --production
 
-rsync -ar --include-from=rsync.conf --delete --delete-excluded . notifier
+cd ../
 
-tar --create --gzip --file=notifier.tar.gz notifier
+tar --create --gzip --file="$ARTIFACT" notifier
