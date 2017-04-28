@@ -13,8 +13,6 @@ ARTIFACT=notifier.tar.gz
 
 npm install --no-optional
 
-npm prune
-
 grunt --no-color build:full
 
 if [ -f "$ARTIFACT" ]; then
