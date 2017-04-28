@@ -8,7 +8,6 @@
     "build": "grunt --no-color build:full",
     "start": "node server/notifier-server.js",
     "devserver": "NODE_ENV=dev nodemon --watch server/notifier-server.js",
-    "postinstall": "npm prune",
     "hooks": "cp hooks/* .git/hooks/",
     "onemessage": "clients/send-notification -s $NOTIFIER_DEV -p 0 -t test -e '10 minutes'",
     "retract": "clients/send-notification -c -l test",
