@@ -1308,7 +1308,7 @@ sync = function (callback) {
 
             createUser(user, password, function (err) {
                 if (err) {
-                    log.fatal(err);
+                    console.error(err);
                     process.exit();
                 }
                 callback();
@@ -1316,7 +1316,7 @@ sync = function (callback) {
         }
         return null;
     }).catch(function (err) {
-        log.fatal(err);
+        console.error(err);
         process.exit();
     });
 };
