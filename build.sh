@@ -33,6 +33,8 @@ rsync -ar \
       --exclude='***/bower.json' \
       --exclude='***/*.ts' \
       --exclude='***/.coverage' \
+      --exclude='***/.travis.yml' \
+      --exclude='***/.eslintrc' \
       --exclude='***/.grunt' \
       --exclude='***/.sass-cache' \
       --exclude='***/.idea' \
