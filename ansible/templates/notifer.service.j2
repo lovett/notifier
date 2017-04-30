@@ -1,0 +1,6 @@
+[Service]
+User=notifier
+Group=notifier
+WorkingDirectory={{ installation_directory }}
+ExecStart={{ nodejs_path }} server/notifier-server.js
+Environment=NODE_ENV=production

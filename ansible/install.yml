@@ -1,0 +1,60 @@
+---
+- hosts: all
+  vars_files:
+    - vars.yml
+  tasks:
+  - name: Create the application user
+    become: true
+    user:
+      state=present
+      groups=""
+      name="notifier"
+      createhome=no
+      home="{{ installation_directory }}"
+      shell="/usr/sbin/nologin"
+      system=yes
+
+  - name: Create the application directories
+    become: true
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: notifier
+      group: notifier
+      mode: 0700
+    with_items:
+      - /var/notifier
+      - /var/log/notifier
+
+  - name: Populate the application config
+    become: true
+    template:
+      owner: "notifier"
+      group: "notifier"
+      src: "notifier.json.j2"
+      dest: "/etc/notifier.json"
+      mode: 0600
+
+  - name: Populate the systemd unit
+    become: true
+    template:
+      src: "notifer.service.j2"
+      dest: "/etc/systemd/system/notifier.service"
+    notify:
+      - systemd.reload
+      - systemd.enable.notifier
+
+  - name: Restart the application
+    become: true
+    command: systemctl reload-or-restart notifier
+
+  handlers:
+  - name: systemd.reload
+    become: true
+    command: systemctl daemon-reload
+
+  - name: systemd.enable.notifier
+    become: true
+    command: systemctl enable notifier
+
+...
