@@ -21,6 +21,7 @@ fi
 
 rsync -ar \
       --include='package.json' \
+      --include='README.md' \
       --exclude='***/.bin' \
       --exclude='***/test' \
       --exclude='***/tests' \
