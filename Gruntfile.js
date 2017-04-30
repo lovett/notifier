@@ -1,6 +1,9 @@
 var nconf = require('nconf');
 module.exports = function(grunt) {
     nconf.env();
+    nconf.defaults({
+        'NOTIFIER_BASE_URL': '/'
+    });
 
     if (process.env.NODE_ENV) {
         nconf.file('local', 'config-' + process.env.NODE_ENV + '.json');
@@ -14,6 +17,7 @@ module.exports = function(grunt) {
             },
             all: {
                 dest: 'public/notifier.appcache',
+                baseUrl: nconf.get('NOTIFIER_BASE_URL'),
                 cache: {
                     patterns: [
                         'public/*.min.js',
@@ -123,6 +127,16 @@ module.exports = function(grunt) {
                     to: '<meta name=\"websocket port\" content=\"<%= nconf.get("NOTIFIER_WEBSOCKET_PORT") %>\"'
                 }]
             },
+
+            base: {
+                src: ['public/index.html'],
+                overwrite: true,
+                replacements: [{
+                    from: '<base url="" />',
+                    to: '<base url="<%= nconf.get("NOTIFIER_BASE_URL") %>" />'
+                }]
+            },
+
             development: {
                 src: ['public/index.html'],
                 overwrite: true,
@@ -227,7 +241,7 @@ module.exports = function(grunt) {
             tasks = tasks.concat(['clean:app', 'copy:app', 'ngtemplates', 'uglify:app']);
         }
 
-        tasks = tasks.concat(['less', 'autoprefixer', 'replace:websocket']);
+        tasks = tasks.concat(['less', 'autoprefixer', 'replace:websocket', 'replace:base']);
 
         if (environment === 'development') {
             tasks = tasks.concat('replace:development');

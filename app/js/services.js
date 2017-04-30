@@ -40,7 +40,7 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
             }
 
             if (value) {
-                return '/messages/' + value;
+                return 'messages/' + value;
             } else {
                 return false;
             }
@@ -180,7 +180,8 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', '$filter', 'User
 
             $log.info('Websocket port is ' + port);
 
-            url = $location.protocol() + '://' + $location.host() + ':' + port + '/messages';
+            //url = $location.protocol() + '://' + $location.host() + ':' + port + '/messages';
+            url = 'messages';
             client = new Faye.Client(url);
 
             client.addExtension({
@@ -465,7 +466,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
             $http({
                 method: 'POST',
-                url: '/message/clear',
+                url: 'message/clear',
                 headers: {
                     'Authorization': User.getAuthHeader()
                 },
@@ -486,7 +487,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
             $http({
                 method: 'POST',
-                url: '/message/unclear',
+                url: 'message/unclear',
                 headers: {
                     'Authorization': User.getAuthHeader()
                 },

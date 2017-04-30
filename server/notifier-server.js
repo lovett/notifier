@@ -77,6 +77,7 @@ if (process.env.NODE_ENV) {
 nconf.defaults({
     'NOTIFIER_LOG_QUERIES': 0,
     'NOTIFIER_ACCESS_LOG': 'notifier.log',
+    'NOTIFIER_BASE_URL': '/',
     'NOTIFIER_PASSWORD_HASH_RANDBYTES': 64,
     'NOTIFIER_PASSWORD_HASH_KEYLENGTH': 64,
     'NOTIFIER_PASSWORD_HASH_ITERATIONS': 20000,
@@ -850,7 +851,7 @@ app.get('/authorize/onedrive/finish', function (req, res) {
             if (err) {
                 res.sendStatus(500);
             } else {
-                res.redirect('/');
+                res.redirect(nconf.get('NOTIFIER_BASE_URL'));
             }
         });
 
@@ -920,7 +921,7 @@ app.get('/authorize/pushbullet/finish', function (req, res) {
     }).then(function (token) {
         if (!token.User) {
             console.error({}, 'user not found during pushbullet auth callback');
-            res.redirect('/');
+            res.redirect(nconf.get('NOTIFIER_BASE_URL'));
             return;
         }
 
@@ -931,7 +932,7 @@ app.get('/authorize/pushbullet/finish', function (req, res) {
                     UserId: token.User.id
                 }
             }).then(function () {
-                res.redirect('/');
+                res.redirect(nconf.get('NOTIFIER_BASE_URL'));
             });
             return;
         }
@@ -956,7 +957,7 @@ app.get('/authorize/pushbullet/finish', function (req, res) {
                     value: body.access_token,
                     persist: true
                 }).then(function () {
-                    res.redirect('/');
+                    res.redirect(nconf.get('NOTIFIER_BASE_URL'));
                 });
             });
         });
