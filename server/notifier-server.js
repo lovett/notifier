@@ -119,6 +119,33 @@ try {
     process.exit();
 }
 
+/**
+ * The Express application
+ * --------------------------------------------------------------------
+ */
+app = express();
+
+app.use(function (req, res, next) {
+    res.locals.public_dir = nconf.get('NOTIFIER_PUBLIC_DIR');
+    res.locals.force_https = parseInt(nconf.get('NOTIFIER_FORCE_HTTPS'), 10) === 1;
+    res.locals.websocket_port = nconf.get('NOTIFIER_WEBSOCKET_PORT');
+    res.locals.livereload_host = nconf.get('NOTIFIER_LIVERELOAD_HOST');
+    res.locals.livereload_port = nconf.get('NOTIFIER_LIVERELOAD_PORT');
+    next();
+});
+
+app.disable('x-powered-by');
+
+app.use(middleware.logger(nconf.get('NOTIFIER_ACCESS_LOG')));
+
+app.use(middleware.favicon(nconf.get('NOTIFIER_PUBLIC_DIR')));
+
+app.use(middleware.security);
+
+app.use(responseTime());
+
+app.use(compression());
+
 
 /**
  * Database configuration
@@ -131,6 +158,7 @@ if (parseInt(nconf.get('NOTIFIER_LOG_QUERIES'), 10) === 1) {
 }
 
 if (nconf.get('NOTIFIER_DB_DIALECT') === 'sqlite') {
+
     sequelize = new Sequelize(null, null, null, {
         'dialect': nconf.get('NOTIFIER_DB_DIALECT'),
         'storage': nconf.get('NOTIFIER_DB'),
@@ -645,34 +673,6 @@ bayeuxClient.addExtension({
         callback(message);
     }
 });
-
-
-/**
- * The Express application
- * --------------------------------------------------------------------
- */
-app = express();
-
-app.use(function (req, res, next) {
-    res.locals.public_dir = nconf.get('NOTIFIER_PUBLIC_DIR');
-    res.locals.force_https = parseInt(nconf.get('NOTIFIER_FORCE_HTTPS'), 10) === 1;
-    res.locals.websocket_port = nconf.get('NOTIFIER_WEBSOCKET_PORT');
-    res.locals.livereload_host = nconf.get('NOTIFIER_LIVERELOAD_HOST');
-    res.locals.livereload_port = nconf.get('NOTIFIER_LIVERELOAD_PORT');
-    next();
-});
-
-app.disable('x-powered-by');
-
-app.use(middleware.logger(nconf.get('NOTIFIER_ACCESS_LOG')));
-
-app.use(middleware.favicon(nconf.get('NOTIFIER_PUBLIC_DIR')));
-
-app.use(middleware.security);
-
-app.use(responseTime());
-
-app.use(compression());
 
 // Parse urlencoded request bodies
 app.use(bodyParser.urlencoded({
