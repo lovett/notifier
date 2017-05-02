@@ -16,7 +16,7 @@ router = express.Router();
 router.get('/', function(req, res, next) {
     let tokenKeysToJson = () => res.json(Object.keys(req.user.serviceTokens));
 
-    req.user.getServiceTokens(tokensKeysToJson);
+    req.user.getServiceTokens(tokenKeysToJson);
 });
 
 module.exports = exports = router;
