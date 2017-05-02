@@ -93,7 +93,7 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                 data: {
                     'service': service
                 },
-                url: '/revoke',
+                url: 'revoke',
                 headers: {
                     'Authorization': auth
                 }

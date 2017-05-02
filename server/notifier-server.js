@@ -38,7 +38,9 @@ var APPSECRET,
     responseTime = require('response-time'),
     router,
     routes = {
+        deauth: require('./routes/deauth'),
         index: require('./routes/index'),
+        revoke: require('./routes/revoke'),
         status: require('./routes/status'),
         services: require('./routes/services')
     },
@@ -84,8 +86,7 @@ nconf.defaults({
     'NOTIFIER_PASSWORD_HASH_KEYLENGTH': 64,
     'NOTIFIER_PASSWORD_HASH_ITERATIONS': 20000,
     'NOTIFIER_PUBLIC_DIR': path.resolve(__dirname + '/../public'),
-    'NOTIFIER_LIVERELOAD_HOST': 'localhost',
-    'NOTIFIER_LIVERELOAD_PORT': 35729,
+    'NOTIFIER_LIVERELOAD_HOST': 'localhost:35729',
     'NOTIFIER_SSL_KEY': undefined,
     'NOTIFIER_SSL_CERT': undefined,
     'NOTIFIER_HTTP_IP': '127.0.0.1',
@@ -137,7 +138,6 @@ app.use(function (req, res, next) {
     res.locals.force_https = parseInt(nconf.get('NOTIFIER_FORCE_HTTPS'), 10) === 1;
     res.locals.websocket_port = nconf.get('NOTIFIER_WEBSOCKET_PORT');
     res.locals.livereload_host = nconf.get('NOTIFIER_LIVERELOAD_HOST');
-    res.locals.livereload_port = nconf.get('NOTIFIER_LIVERELOAD_PORT');
     next();
 });
 
@@ -248,6 +248,8 @@ Token = sequelize.define('Token', {
         }
     }
 });
+
+app.locals.Token = Token;
 
 User = sequelize.define('User', {
     username: {
@@ -713,7 +715,7 @@ publishMessage = function (user, message) {
 
     bayeuxClient.publish(channel, JSON.stringify(message));
 
-    user.getServiceTokens(function () {
+    user.getServiceTokens(function (tokens) {
         var pushbulletParams;
 
         if (!user.serviceTokens.hasOwnProperty('pushbullet')) {
@@ -781,30 +783,11 @@ router.use(/^\/(login|logout|onedrive)?$/, routes.index);
 
 router.use('/status', routes.status);
 
-router.post('/deauth', app.locals.protected, function (req, res) {
-    Token.destroy({
-        where: {
-            value: req.user.token.value
-        }
-    }).then(function () {
-        res.sendStatus(200);
-    }).catch(function () {
-        res.sendStatus(500);
-    });
-});
+router.use('/deauth', app.locals.protected, routes.deauth);
 
 router.use('/services', app.locals.protected, routes.services);
 
-
-router.post('/revoke', app.locals.protected, function (req, res) {
-    req.user.purgeServiceToken(req.body.service, function (numDeletions) {
-        if (numDeletions === 0) {
-            res.sendStatus(500);
-        } else {
-            res.sendStatus(200);
-        }
-    });
-});
+router.use('/revoke', app.locals.protected, routes.revoke);
 
 router.get('/authorize/onedrive/start', app.locals.protected, function (req, res) {
     var endpoint = url.parse('https://login.live.com/oauth20_authorize.srf');
