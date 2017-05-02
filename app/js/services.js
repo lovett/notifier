@@ -58,7 +58,7 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
             var auth = this.getAuthHeader();
             $http({
                 method: 'GET',
-                url: '/services',
+                url: 'services',
                 headers: {'Authorization': auth}
             }).then(function (res) {
                 callback(res.data);

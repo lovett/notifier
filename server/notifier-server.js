@@ -39,7 +39,8 @@ var APPSECRET,
     router,
     routes = {
         index: require('./routes/index'),
-        status: require('./routes/status')
+        status: require('./routes/status'),
+        services: require('./routes/services')
     },
     sequelize,
     sequelizeLogger,
@@ -790,14 +791,8 @@ router.post('/deauth', passport.authenticate('basic', { session: false }), funct
     });
 });
 
+router.use('/services', passport.authenticate('basic', { session: false}), routes.services);
 
-
-router.get('/services', passport.authenticate('basic', { session: false}), function (req, res) {
-    req.user.getServiceTokens(function () {
-        var tokens = Object.keys(req.user.serviceTokens);
-        res.json(tokens);
-    });
-});
 
 router.post('/revoke', passport.authenticate('basic', {session: false}), function (req, res) {
     req.user.purgeServiceToken(req.body.service, function (numDeletions) {
