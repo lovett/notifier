@@ -1,18 +1,18 @@
 <!doctype html>
 <html manifest="notifier.appcache" ng-app="appModule" lang="en" ng-csp notifier-appcache-reload notifier-offline-event>
     <head>
-        <title>Notifier <!-- environment name placeholder --></title>
+        <title><%= title %></title>
+        <base href="<%= base_href %>" />
 
         <link rel="shortcut icon" href="favicon/favicon.ico" />
         <link rel="apple-touch-icon" href="favicon/app-icon-180.png"/>
         <link rel="mask-icon" href="svg/starburst-outline.svg" color="#2D8E5E" />
         <meta name="msapplication-TileColor" content="#2D8E5E" />
-        <meta name="msapplication-TileImage" content="/favicon/app-icon-180.png" />
+        <meta name="msapplication-TileImage" content="favicon/app-icon-180.png" />
         <meta name="description" content="A notification service"/>
         <meta name="robots" content="noindex, nofollow, noarchive"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-        <meta name="websocket port" content="" notifier-set-scope="websocketPort" />
-        <base url="" />
+        <meta name="websocket port" content="<%= websocket_port %>" />
         <link rel="stylesheet" href="all.min.css" />
     </head>
     <body>
@@ -38,7 +38,11 @@
         <script src="lib.min.js"></script>
         <script src="app.min.js"></script>
 
+        <% if (livereload_url) { %>
+        <script src="<%= livereload_url %>"></script>
+        <% } else { %>
+        <!-- livereload disabled -->
+        <% } %>
 
-        <!-- livereload placeholder -->
     </body>
 </html>

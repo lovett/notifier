@@ -16,6 +16,7 @@ var APPSECRET,
     crypto = require('crypto'),
     dateparser = require('dateparser'),
     deflate = require('permessage-deflate'),
+    ejs = require('ejs'),
     express = require('express'),
 
     faye = require('faye'),
@@ -37,7 +38,7 @@ var APPSECRET,
     responseTime = require('response-time'),
     router,
     routes = {
-        home: require('./routes/home'),
+        index: require('./routes/index'),
         status: require('./routes/status')
     },
     sequelize,
@@ -125,7 +126,12 @@ try {
  */
 app = express();
 
+app.set('view engine', 'ejs');
+
 app.use(function (req, res, next) {
+    res.locals.env = process.env.NODE_ENV;
+    res.locals.base_url = nconf.get('NOTIFIER_BASE_URL');
+    res.locals.websocket_port = nconf.get('NOTIFIER_WEBSOCKET_PORT');
     res.locals.public_dir = nconf.get('NOTIFIER_PUBLIC_DIR');
     res.locals.force_https = parseInt(nconf.get('NOTIFIER_FORCE_HTTPS'), 10) === 1;
     res.locals.websocket_port = nconf.get('NOTIFIER_WEBSOCKET_PORT');
@@ -546,7 +552,7 @@ passport.use(new BasicStrategy(function(key, value, next) {
  * --------------------------------------------------------------------
  */
 bayeux = new faye.NodeAdapter({
-    mount: '/messages'
+    mount: nconf.get('NOTIFIER_BASE_URL') + 'messages'
 });
 
 bayeux.addWebsocketExtension(deflate);
@@ -687,7 +693,6 @@ app.use(bodyParser.json({
 
 app.use(passport.initialize());
 
-app.use(middleware.asset(nconf.get('NOTIFIER_PUBLIC_DIR')));
 
 /**
  * Parameter validation
@@ -765,17 +770,15 @@ publishMessage = function (user, message) {
 };
 
 
-/**
- * Routing
- *
- * For pushState compatibility, some URLs are treated as aliases of the homepage.
- */
-app.use(/^\/(login|logout|onedrive)?$/, routes.home);
+router = express.Router();
 
-app.use('/status', routes.status);
+router.use(middleware.asset(nconf.get('NOTIFIER_PUBLIC_DIR')));
 
-app.post('/deauth', passport.authenticate('basic', { session: false }), function (req, res) {
+router.use(/^\/(login|logout|onedrive)?$/, routes.index);
 
+router.use('/status', routes.status);
+
+router.post('/deauth', passport.authenticate('basic', { session: false }), function (req, res) {
     Token.destroy({
         where: {
             value: req.user.token.value
@@ -787,14 +790,16 @@ app.post('/deauth', passport.authenticate('basic', { session: false }), function
     });
 });
 
-app.get('/services', passport.authenticate('basic', { session: false}), function (req, res) {
+
+
+router.get('/services', passport.authenticate('basic', { session: false}), function (req, res) {
     req.user.getServiceTokens(function () {
         var tokens = Object.keys(req.user.serviceTokens);
         res.json(tokens);
     });
 });
 
-app.post('/revoke', passport.authenticate('basic', {session: false}), function (req, res) {
+router.post('/revoke', passport.authenticate('basic', {session: false}), function (req, res) {
     req.user.purgeServiceToken(req.body.service, function (numDeletions) {
         if (numDeletions === 0) {
             res.sendStatus(500);
@@ -804,7 +809,7 @@ app.post('/revoke', passport.authenticate('basic', {session: false}), function (
     });
 });
 
-app.get('/authorize/onedrive/start', passport.authenticate('basic', {session: false}), function (req, res) {
+router.get('/authorize/onedrive/start', passport.authenticate('basic', {session: false}), function (req, res) {
     var endpoint = url.parse('https://login.live.com/oauth20_authorize.srf');
 
     // this endpoint can only be accessed by the default user
@@ -825,7 +830,7 @@ app.get('/authorize/onedrive/start', passport.authenticate('basic', {session: fa
     });
 });
 
-app.get('/authorize/onedrive/finish', function (req, res) {
+router.get('/authorize/onedrive/finish', function (req, res) {
     if (!req.query.code) {
         res.sendStatus(400);
         return;
@@ -859,7 +864,7 @@ app.get('/authorize/onedrive/finish', function (req, res) {
 });
 
 
-app.get('/authorize/pushbullet/start', passport.authenticate('basic', {session: false}), function (req, res) {
+router.get('/authorize/pushbullet/start', passport.authenticate('basic', {session: false}), function (req, res) {
     var token;
 
     function sendUrl (tokenValue) {
@@ -905,7 +910,7 @@ app.get('/authorize/pushbullet/start', passport.authenticate('basic', {session: 
 
 });
 
-app.get('/authorize/pushbullet/finish', function (req, res) {
+router.get('/authorize/pushbullet/finish', function (req, res) {
     var tokenUrl = url.format({
         protocol: 'https',
         slashes: true,
@@ -964,7 +969,7 @@ app.get('/authorize/pushbullet/finish', function (req, res) {
     }, function () { res.sendStatus(400); });
 });
 
-app.post('/auth', passport.authenticate('local', { session: false }), function (req, res) {
+router.post('/auth', passport.authenticate('local', { session: false }), function (req, res) {
     var sendResponse, token, tokenLabel, tokenPersist;
     tokenLabel = req.body.label || '';
     tokenLabel = tokenLabel.replace(/[^a-zA-Z0-9-\.\/ ]/, '');
@@ -1015,7 +1020,7 @@ app.post('/auth', passport.authenticate('local', { session: false }), function (
 
 });
 
-app.patch('/message', passport.authenticate('basic', { session: false }), function (req, res) {
+router.patch('/message', passport.authenticate('basic', { session: false }), function (req, res) {
     var err, fields, message;
 
     fields = ['title', 'url', 'body', 'source', 'group', 'deliveredAt'].reduce(function (acc, field) {
@@ -1047,7 +1052,7 @@ app.patch('/message', passport.authenticate('basic', { session: false }), functi
     });
 });
 
-app.post('/message', passport.authenticate('basic', { session: false }), function (req, res, next) {
+router.post('/message', passport.authenticate('basic', { session: false }), function (req, res, next) {
     var err, message;
 
     if (Object.keys(req.body).length === 0) {
@@ -1156,7 +1161,7 @@ app.post('/message', passport.authenticate('basic', { session: false }), functio
     });
 });
 
-app.get('/archive/:count', passport.authenticate('basic', { session: false }), function (req, res) {
+router.get('/archive/:count', passport.authenticate('basic', { session: false }), function (req, res) {
     var filters = {
         attributes: ['id', 'publicId', 'title', 'url', 'body', 'source', 'group', 'received', 'expiresAt'],
         limit: req.params.count,
@@ -1205,7 +1210,7 @@ app.get('/archive/:count', passport.authenticate('basic', { session: false }), f
     });
 });
 
-app.post('/message/unclear', passport.authenticate('basic', { session: false}), function (req, res) {
+router.post('/message/unclear', passport.authenticate('basic', { session: false}), function (req, res) {
     var update = function (id) {
         Message.update(
             {unread: true},
@@ -1228,7 +1233,7 @@ app.post('/message/unclear', passport.authenticate('basic', { session: false}), 
     }
 });
 
-app.post('/message/clear', passport.authenticate('basic', { session: false }), function (req, res) {
+router.post('/message/clear', passport.authenticate('basic', { session: false }), function (req, res) {
 
     var update = function (id) {
         Message.update(
@@ -1272,6 +1277,8 @@ app.post('/message/clear', passport.authenticate('basic', { session: false }), f
     }
 
 });
+
+app.use(nconf.get('NOTIFIER_BASE_URL'), router);
 
 
 /**

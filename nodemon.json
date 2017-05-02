@@ -1,4 +1,6 @@
 {
   "verbose": true,
-  "ignore": ["test", "migrations", "flycheck_*", "#*"]
+  "ignore": ["test", "migrations", "flycheck_*", "#*"],
+  "watch": ["server", "views"],
+  "ext": "js,ejs"
 }

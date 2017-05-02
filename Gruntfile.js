@@ -1,13 +1,14 @@
 var nconf = require('nconf');
 module.exports = function(grunt) {
     nconf.env();
+
+    if (process.env.NODE_ENV) {
+        nconf.file('local', 'server/config-' + process.env.NODE_ENV + '.json');
+    }
+
     nconf.defaults({
         'NOTIFIER_BASE_URL': '/'
     });
-
-    if (process.env.NODE_ENV) {
-        nconf.file('local', 'config-' + process.env.NODE_ENV + '.json');
-    }
 
     grunt.initConfig({
         nconf: nconf,
@@ -116,51 +117,6 @@ module.exports = function(grunt) {
             }
         },
 
-
-
-        replace: {
-            websocket: {
-                src: ['public/index.html'],
-                overwrite: true,
-                replacements: [{
-                    from: '<meta name=\"websocket port\" content=\"\"',
-                    to: '<meta name=\"websocket port\" content=\"<%= nconf.get("NOTIFIER_WEBSOCKET_PORT") %>\"'
-                }]
-            },
-
-            base: {
-                src: ['public/index.html'],
-                overwrite: true,
-                replacements: [{
-                    from: '<base url="" />',
-                    to: '<base url="<%= nconf.get("NOTIFIER_BASE_URL") %>" />'
-                }]
-            },
-
-            development: {
-                src: ['public/index.html'],
-                overwrite: true,
-                replacements: [{
-                    from: '<!-- livereload placeholder -->',
-                    to: '<script src=\'//<%= nconf.get("NOTIFIER_LIVERELOAD_HOST") %>:<%= nconf.get("NOTIFIER_LIVERELOAD_PORT") %>/livereload.js\'></script>'
-                }, {
-                    from: '<!-- environment name placeholder -->',
-                    to: '<%= nconf.get("NODE_ENV") %>'
-                }]
-            },
-            production: {
-                src: ['public/index.html'],
-                overwrite: true,
-                replacements: [{
-                    from: '<!-- livereload placeholder -->',
-                    to: ''
-                }, {
-                    from: '<!-- environment name placeholder -->',
-                    to: ''
-                }]
-            }
-        },
-
         shell: {
             'favicon': {
                 command: [
@@ -241,14 +197,11 @@ module.exports = function(grunt) {
             tasks = tasks.concat(['clean:app', 'copy:app', 'ngtemplates', 'uglify:app']);
         }
 
-        tasks = tasks.concat(['less', 'autoprefixer', 'replace:websocket', 'replace:base']);
+        tasks = tasks.concat(['less', 'autoprefixer']);
 
-        if (environment === 'development') {
-            tasks = tasks.concat('replace:development');
-        } else {
+        if (environment !== 'dev') {
             grunt.config.set('uglify.app.options.sourceMap', false);
             grunt.config.set('uglify.lib.options.sourceMap', false);
-            tasks = tasks.concat('replace:production');
         }
 
         tasks = tasks.concat(['clean:postBuild', 'appcache']);
@@ -264,14 +217,13 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-shell');
-    grunt.loadNpmTasks('grunt-text-replace');
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'dev') {
         grunt.loadNpmTasks('grunt-contrib-watch');
         grunt.registerTask('default', ['build:full', 'watch']);
     } else {
         grunt.registerTask('default', function () {
-            grunt.log.error('There is no default task unless NODE_ENV is set to development.');
+            grunt.log.error('There is no default task unless NODE_ENV is set to dev.');
         });
     }
 };

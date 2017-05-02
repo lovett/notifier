@@ -77,7 +77,7 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                     'protocol': $window.location.protocol,
                     'host': $window.location.host
                 },
-                url: '/authorize/' + service + '/start',
+                url: 'authorize/' + service + '/start',
                 headers: {
                     'Authorization': auth
                 }
@@ -105,7 +105,7 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
         logIn: function (form) {
             return $http({
                 method: 'POST',
-                url: '/auth',
+                url: 'auth',
                 data: {
                     'username': form.username,
                     'password': form.password
@@ -150,7 +150,7 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
 
             $http({
                 method: 'POST',
-                url: '/deauth',
+                url: 'deauth',
                 headers: {
                     'Authorization': auth
                 }
@@ -180,9 +180,7 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', '$filter', 'User
 
             $log.info('Websocket port is ' + port);
 
-            //url = $location.protocol() + '://' + $location.host() + ':' + port + '/messages';
-            url = 'messages';
-            client = new Faye.Client(url);
+            client = new Faye.Client('messages');
 
             client.addExtension({
                 incoming: function (message, callback) {
@@ -543,7 +541,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             }
 
             self = this;
-            url = '/archive/25';
+            url = 'archive/25';
 
             $http({
                 method: 'GET',
@@ -597,7 +595,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             }).catch(function (data) {
                 self.lastFetched = now;
                 if (data.status === 401) {
-                    $location.path('/login');
+                    $location.path('login');
                 }
             });
         },

@@ -4,7 +4,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
     'use strict';
 
     if (User.getTokenKey() === false) {
-        $location.path('/login');
+        $location.path('login');
         return;
     }
 
