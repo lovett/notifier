@@ -1,57 +1,51 @@
 var util = require('util');
 
 function main (req, res, next) {
-    var connectSrc, headerValue, hostname, httpProtocol, liveReloadHostPort, scriptSrc, websocketProtocol;
-    // Clickjacking - see
-    // https://www.owasp.org/index.php/Clickjacking
+    let csp, hostname, liveReload, port, scheme, socketScheme;
+
+    // Clickjacking - https://www.owasp.org/index.php/Clickjacking
     res.setHeader('X-Frame-Options', 'DENY');
 
-    // Content security policy - see
-    // http://content-security-policy.com
+    // Content security policy - http://content-security-policy.com
+    hostname = req.headers['x-forwarded-server'] || req.headers['x-forwarded-host'] || req.headers.host;
+    hostname = hostname.replace(/:[0-9]+$/, '');
 
-    // get hostname without port
-    hostname = req.headers['x-forwarded-host'] || req.headers.host;
-    hostname = hostname.replace(/:[0-9]+$/, '', hostname);
+    port = req.headers['x-forwarded-port'] || req.headers['x-forwarded-host'] || req.headers.host;
+    port = parseInt(port.replace(/.*:/, ''), 10);
 
-    // account for custom websocket port
-    connectSrc = 'connect-src \'self\'';
-    scriptSrc = 'script-src \'self\'';
+    scheme = req.headers['x-forwarded-proto'];
+    scheme = (scheme === 'https' || req.headers['x-https'] === 'On' || res.locals.force_https) ? 'https' : 'http';
 
-    // allow inline scripts for Safari only to avoid a "Refused to
-    // execute inline script..." error when extensions such as
-    // ublock are installed.
-    if (req.headers['user-agent'].indexOf('Safari') > -1 && req.headers['user-agent'].indexOf('Chrome') === -1) {
-        scriptSrc += ' \'unsafe-inline\'';
-    }
+    socketScheme = (scheme === 'https') ? 'wss' : 'ws';
 
-    httpProtocol = (res.locals.force_https)? 'https':'http';
-    websocketProtocol = (httpProtocol === 'https')? 'wss':'ws';
-
-    if (res.locals.websocket_port) {
-        connectSrc += util.format(' %s://%s:%s', websocketProtocol, hostname, res.locals.websocket_port);
-        scriptSrc  += util.format(' %s://%s:%s', httpProtocol, hostname, res.locals.websocket_port);
-    }
+    csp = {
+        'default-src': ['self'],
+        'connect-src': ['self', 'unsafe-inline', util.format('%s://%s', socketScheme, hostname)],
+        'style-src': ['self', 'unsafe-inline'],
+        'img-src': ['self', 'data:']
+    };
 
     if (res.locals.livereload_host && res.locals.livereload_port) {
-        liveReloadHostPort = util.format('%s:%s', res.locals.livereload_host, res.locals.livereload_port);
-        connectSrc += util.format(' %s://%s', websocketProtocol, liveReloadHostPort);
-        scriptSrc += util.format(' %s://%s', httpProtocol, liveReloadHostPort);
+        liveReload = util.format('//%s:%s', res.locals.livereload_host, res.locals.livereload_port);
+        csp['connect-src'].push(socketScheme + liveReload);
+        csp['script-src'].push(scheme + liveReload);
     }
 
-    headerValue = [];
-    headerValue.push('default-src \'self\'');
-    headerValue.push('style-src \'self\' \'unsafe-inline\'');
-    headerValue.push('img-src \'self\' data:');
-    headerValue.push(connectSrc);
-    headerValue.push(scriptSrc);
+    csp = Object.keys(csp).reduce(function (acc, key) {
+        let values = csp[key].map(
+            value => {
+                if (value.match(/.:/)) return value;
+                return util.format('\'%s\'', value);
+            }
+        );
+        return acc + util.format('%s %s; ', key, values.join(' '));
+    }, '');
 
-    res.setHeader('Content-Security-Policy', headerValue.join('; '));
+    res.setHeader('Content-Security-Policy', csp);
 
     // Require HTTPS
-    if (res.locals.force_https === 'true') {
-        // HTTP Strict Transport Security - see
-        // https://www.owasp.org/index.php/HTTP_Strict_Transport_Security
-        // --------------------------------------------------------------------
+    if (Boolean(res.locals.force_https)) {
+        // HTTP Strict Transport Security - https://www.owasp.org/index.php/HTTP_Strict_Transport_Security
         res.setHeader('Strict-Transport-Security', util.format('max-age=%d', 60 * 60 * 24 * 30));
 
         if (req.headers['x-forwarded-proto'] === 'http') {
