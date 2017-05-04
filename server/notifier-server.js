@@ -1,11 +1,7 @@
 'use strict';
-var APPSECRET,
-    BasicStrategy = require('passport-http').BasicStrategy,
+var BasicStrategy = require('passport-http').BasicStrategy,
     LocalStrategy = require('passport-local').Strategy,
-    Message,
     Sequelize = require('sequelize'),
-    Token,
-    User,
     accessLog,
     app,
     bayeux,
@@ -28,6 +24,12 @@ var APPSECRET,
         logger:   require('./middleware/logger'),
         security: require('./middleware/security'),
         asset:    require('./middleware/asset')
+    },
+
+    models = {
+        Message: require('./models/Message'),
+        User: require('./models/User'),
+        Token: require('./models/Token'),
     },
 
     nconf = require('nconf'),
@@ -111,18 +113,6 @@ nconf.defaults({
 });
 
 /**
- * Application secret
- * --------------------------------------------------------------------
- */
-try {
-    APPSECRET = crypto.randomBytes(60).toString('hex');
-    //console.log('app secret generated');
-} catch (ex) {
-    //console.log('unable to generate app secret - entropy sources drained?');
-    process.exit();
-}
-
-/**
  * The Express application
  * --------------------------------------------------------------------
  */
@@ -141,6 +131,10 @@ app.use(function (req, res, next) {
 });
 
 app.disable('x-powered-by');
+
+app.locals.config = nconf;
+
+app.locals.appsecret = crypto.randomBytes(60).toString('hex');
 
 app.locals.protected = passport.authenticate('basic', { session: false });
 
@@ -174,299 +168,15 @@ if (nconf.get('NOTIFIER_DB_DIALECT') === 'sqlite') {
     });
 }
 
-/**
- * ORM model definition
- * --------------------------------------------------------------------
- */
+app.locals.Token = models.Token(sequelize, app);
+app.locals.User = models.User(sequelize, app);
+app.locals.Message = models.Message(sequelize, app);
 
-Token = sequelize.define('Token', {
-    key: {
-        type: Sequelize.STRING(88),
-        allowNull: false,
-        validate: {
-            len: {
-                args: [1, 88],
-                msg: 'should be between 1 and 88 characters'
-            }
-        }
-    },
-    value: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-    },
-    label: {
-        type: Sequelize.STRING(100),
-        allowNull: true,
-        validate: {
-            len: {
-                args: [1, 100],
-                msg: 'should be between 1 and 100 characters'
-            }
-        }
-    },
-    persist: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false,
-        allowNull: false
-    }
-}, {
-    classMethods: {
-        prune: function (callback) {
-            Token.destroy({
-                where: {
-                    persist: false,
-                    updatedAt: {
-                        lt: new Date(new Date().getTime() - (60 * 60 * 24 * 7 * 1000))
-                    }
-                }
-            }).then(function () {
-                callback();
-            });
-        },
+app.locals.Token.belongsTo(app.locals.User);
+app.locals.User.hasMany(app.locals.Token);
+app.locals.User.hasMany(app.locals.Message);
 
-        generateKeyAndValue: function (callback) {
-            var numBytes = 64;
-            crypto.randomBytes(numBytes, function(err, buf) {
-                var bag, i, result;
-
-                if (err) {
-                    console.error({err: err}, 'error while generating random bytes');
-                    callback();
-                }
-
-                bag = 'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789';
-
-                result = '';
-                for (i=0; i < numBytes; i = i + 1) {
-                    result += bag[buf[i] % bag.length];
-                }
-                callback(result.substring(0, numBytes/2),
-                         result.substring(numBytes/2));
-
-            });
-        }
-    }
-});
-
-app.locals.Token = Token;
-
-User = sequelize.define('User', {
-    username: {
-        type: Sequelize.STRING(20),
-        unique: true,
-        allowNull: false,
-        validate: {
-            len: {
-                args: [1, 20],
-                msg: 'should be between 1 and 20 characters'
-            }
-        }
-    },
-    passwordHash: {
-        type: Sequelize.STRING(258),
-        allowNull: true,
-        validate: {
-            len: {
-                args: [1, 258],
-                msg: 'should be between 1 and 258 characters'
-            }
-        }
-    }
-}, {
-    instanceMethods: {
-        purgeServiceToken: function (service, callback) {
-            if (!service) {
-                callback(0);
-            }
-
-            Token.destroy({
-                where: {
-                    'UserId': this.id,
-                    'label': 'service',
-                    'key': service
-                }
-            }).then(function (affectedRows) {
-                callback(affectedRows);
-            });
-        },
-        getServiceTokens: function (callback) {
-            var user = this;
-            user.serviceTokens = {};
-
-            Token.findAll({
-                where: {
-                    'UserId': user.id,
-                    'label': 'service'
-                },
-                attributes: ['key', 'value']
-            }).then(function (tokens) {
-                tokens.forEach(function (token) {
-                    user.serviceTokens[token.key] = token.value;
-                });
-                callback();
-            });
-        },
-
-        getChannel: function () {
-            var hmac = crypto.createHmac('sha256', APPSECRET);
-            hmac.setEncoding('hex');
-            hmac.write(this.id.toString());
-            hmac.end();
-            return hmac.read();
-        },
-
-        hashPassword: function (password, callback) {
-            var iterations, keyLength, randBytes, self;
-            self = this;
-            randBytes = nconf.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
-            keyLength = nconf.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
-            iterations = nconf.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
-
-            crypto.randomBytes(randBytes, function(err, buf) {
-                var salt;
-                if (err) {
-                    console.error({err: err}, 'error while generating random bytes');
-                }
-
-                salt = buf.toString('hex');
-
-                crypto.pbkdf2(password, salt, iterations, keyLength, 'sha1', function (err, key) {
-                    self.setDataValue('passwordHash', util.format('%s::%s', salt, key.toString('hex')));
-                    callback();
-                });
-            });
-        },
-
-        checkPassword: function (password, callback) {
-            var iterations, keyLength, segments;
-            segments = this.getDataValue('passwordHash').split('::');
-            keyLength = nconf.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
-            iterations = nconf.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
-
-            crypto.pbkdf2(password, segments[0], iterations, keyLength, 'sha1', function (err, key) {
-                callback(key.toString('hex') === segments[1]);
-            });
-        },
-    }
-});
-
-Message = sequelize.define('Message', {
-    publicId: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
-        allowNull: false
-    },
-    localId: {
-        type: Sequelize.STRING(255),
-        allowNull: true,
-        set: function (value) {
-            return this.setDataValue('localId', validation.sanitize.strictSanitize(value));
-        }
-    },
-    pushbulletId: {
-        type: Sequelize.STRING(255),
-        allowNull: true
-    },
-    title: {
-        type: Sequelize.STRING(255),
-        allowNull: false,
-        validate: {
-            len: {
-                args: [1,255],
-                msg: 'should be 1-255 characters long'
-            }
-        },
-        set: function (value) {
-            return this.setDataValue('title', validation.sanitize.strictSanitize(value));
-        }
-    },
-    url: {
-        type: Sequelize.STRING(255),
-        allowNull: true,
-        validate: {
-            isUrl: true,
-            len: {
-                args: [1,255],
-                msg: 'should be 1-255 characters long'
-            }
-        },
-        set: function (value) {
-            return this.setDataValue('url', validation.sanitize.strictSanitize(value));
-        }
-    },
-    body: {
-        type: Sequelize.STRING(500),
-        allowNull: true,
-        validate: {
-            len: {
-                args: [1,500],
-                msg: 'should be 1-500 characters long'
-            }
-        },
-        set: function (value) {
-            return this.setDataValue('body', validation.sanitize.tolerantSanitize(value));
-        }
-    },
-    source: {
-        type: Sequelize.STRING(100),
-        allowNull: true,
-        validate: {
-            len: {
-                args: [1,100],
-                msg: 'should be 1-100 characters long'
-            }
-        },
-        set: function (value) {
-            return this.setDataValue('source', validation.sanitize.strictSanitize(value));
-        }
-    },
-    group: {
-        type: Sequelize.STRING(50),
-        allowNull: true,
-        defaultValue: 'default',
-        validate: {
-            len: {
-                args: [1,50],
-                msg: 'should be 1-50 characters long'
-            }
-        },
-        set: function (value) {
-            return this.setDataValue('group', validation.sanitize.strictSanitize(value));
-        }
-    },
-    unread: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: true
-    },
-    deliveredAt: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
-    },
-    expiresAt: {
-        type: Sequelize.TIME,
-        allowNull: true,
-        get: function () {
-            var value = this.getDataValue('expiresAt');
-            if (!value) return null;
-            return new Date(value);
-        }
-    }
-}, {
-    timestamps: true,
-    updatedAt: false,
-    createdAt: 'received'
-});
-
-/**
- * ORM associations
- * --------------------------------------------------------------------
- */
-User.hasMany(Token);
-Token.belongsTo(User);
-
-User.hasMany(Message);
-Message.belongsTo(User);
+app.locals.Message.belongsTo(app.locals.User);
 
 
 /**
@@ -474,7 +184,7 @@ Message.belongsTo(User);
  * --------------------------------------------------------------------
  */
 createUser = function (username, password, callback) {
-    User.findOrCreate({ where: {username: username}}).spread(function (user, created) {
+    app.locals.User.findOrCreate({ where: {username: username}}).spread(function (user, created) {
         if (created === false) {
             callback();
         } else {
@@ -496,7 +206,7 @@ createUser = function (username, password, callback) {
  * --------------------------------------------------------------------
  */
 passport.use(new LocalStrategy(function (username, password, done) {
-    User.find({ where: { username: username } }).then(function (user) {
+    app.locals.User.find({ where: { username: username } }).then(function (user) {
 
         if (!user) {
             return done(null, false);
@@ -517,8 +227,8 @@ passport.use(new LocalStrategy(function (username, password, done) {
 
 passport.use(new BasicStrategy(function(key, value, next) {
     var err;
-    Token.find({
-        include: [ User],
+    app.locals.Token.find({
+        include: [ app.locals.User],
         where: {
             value: value
         }
@@ -613,8 +323,8 @@ verifySubscription = function (message, callback) {
         });
     }
 
-    Token.find({
-        include: [ User ],
+    app.locals.Token.find({
+        include: [ app.locals.User ],
         where: {
             value: message.ext.authToken
         }
@@ -657,7 +367,7 @@ bayeux.addExtension({
         }
 
         // Anything else must have the application secret
-        if (message.ext.secret !== APPSECRET) {
+        if (message.ext.secret !== app.locals.appsecret) {
             message.error = '403::Forbidden';
         }
 
@@ -679,7 +389,7 @@ bayeuxClient.addExtension({
     outgoing: function(message, callback) {
         //console.log({message: message}, 'faye server-side client outgoing message');
         message.ext = message.ext || {};
-        message.ext.secret = APPSECRET;
+        message.ext.secret = app.locals.appsecret;
         callback(message);
     }
 });
@@ -726,7 +436,7 @@ publishMessage = function (user, message) {
         }
 
         if (message.hasOwnProperty('retracted')) {
-            Message.find({
+            app.locals.Message.find({
                 where: {'publicId': message.retracted},
                 attributes: ['pushbulletId']
             }).then(function (message) {
@@ -764,7 +474,7 @@ publishMessage = function (user, message) {
                     return;
                 }
 
-                Message.update(
+                app.locals.Message.update(
                     {pushbulletId: res.body.iden},
                     {where: {id: message.id}}
                 );
@@ -1009,7 +719,7 @@ router.patch('/message', app.locals.protected, function (req, res) {
         return acc;
     }, {});
 
-    Message.update(fields, {
+    app.locals.Message.update(fields, {
         where: {
             'publicId': req.body.publicId,
             'UserId': req.user.id
@@ -1019,7 +729,7 @@ router.patch('/message', app.locals.protected, function (req, res) {
             res.sendStatus(400);
         }
 
-        Message.findOne({
+        app.locals.Message.findOne({
             where: {
                 'publicId': req.body.publicId,
                 'UserId': req.user.id
@@ -1041,7 +751,7 @@ router.post('/message', app.locals.protected, function (req, res, next) {
         return;
     }
 
-    message = Message.build({
+    message = app.locals.Message.build({
         received: new Date()
     });
 
@@ -1081,7 +791,7 @@ router.post('/message', app.locals.protected, function (req, res, next) {
     // perspective. From the perspective of the database, localIds are
     // not unique.
     if (message.localId) {
-        Message.findAll({
+        app.locals.Message.findAll({
             attributes: ['publicId'],
             where: {
                 localId: req.body.localId,
@@ -1101,7 +811,7 @@ router.post('/message', app.locals.protected, function (req, res, next) {
                 return existingMessage.publicId;
             });
 
-            Message.update({
+            app.locals.Message.update({
                 unread: false
             }, {
                 where: {
@@ -1161,7 +871,7 @@ router.get('/archive/:count', app.locals.protected, function (req, res) {
         }
     }
 
-    Message.findAll(filters).then(function (messages) {
+    app.locals.Message.findAll(filters).then(function (messages) {
         var now = new Date();
 
         messages = messages.filter(function (message) {
@@ -1191,7 +901,7 @@ router.get('/archive/:count', app.locals.protected, function (req, res) {
 
 router.post('/message/unclear', app.locals.protected, function (req, res) {
     var update = function (id) {
-        Message.update(
+        app.locals.Message.update(
             {unread: true},
             {where: {publicId: id}}
         ).then(function (affectedRows) {
@@ -1215,7 +925,7 @@ router.post('/message/unclear', app.locals.protected, function (req, res) {
 router.post('/message/clear', app.locals.protected, function (req, res) {
 
     var update = function (id) {
-        Message.update(
+        app.locals.Message.update(
             {unread: false},
             {where: {publicId: id}}
         ).then(function (affectedRows) {
@@ -1237,7 +947,7 @@ router.post('/message/clear', app.locals.protected, function (req, res) {
     if (req.body.hasOwnProperty('publicId')) {
         update(req.body.publicId);
     } else if (req.body.hasOwnProperty('localId')) {
-        Message.find({
+        app.locals.Message.find({
             where: {
                 localId: req.body.localId,
                 unread: true
