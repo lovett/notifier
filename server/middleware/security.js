@@ -7,20 +7,24 @@ function main (req, res, next) {
     res.setHeader('X-Frame-Options', 'DENY');
 
     // Content security policy - http://content-security-policy.com
+    scheme = req.headers['x-forwarded-proto'];
+    scheme = (scheme === 'https' || req.headers['x-https'] === 'On' || res.locals.force_https) ? 'https' : 'http';
+
+    socketScheme = (scheme === 'https') ? 'wss' : 'ws';
+
     hostname = req.headers['x-forwarded-server'] || req.headers['x-forwarded-host'] || req.headers.host;
     hostname = hostname.replace(/:[0-9]+$/, '');
 
     port = req.headers['x-forwarded-port'] || req.headers['x-forwarded-host'] || req.headers.host;
     port = parseInt(port.replace(/.*:/, ''), 10);
 
-    scheme = req.headers['x-forwarded-proto'];
-    scheme = (scheme === 'https' || req.headers['x-https'] === 'On' || res.locals.force_https) ? 'https' : 'http';
-
-    socketScheme = (scheme === 'https') ? 'wss' : 'ws';
+    if ((scheme === 'http' && port !== 80) || (scheme === 'https' && port !== 443)) {
+        port = ':' + port;
+    }
 
     csp = {
         'default-src': ['self'],
-        'connect-src': ['self', 'unsafe-inline', util.format('%s://%s', socketScheme, hostname)],
+        'connect-src': ['self', 'unsafe-inline', util.format('%s://%s%s', socketScheme, hostname, port)],
         'style-src': ['self', 'unsafe-inline'],
         'img-src': ['self', 'data:']
     };
