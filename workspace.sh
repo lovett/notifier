@@ -30,7 +30,7 @@ tmux attach-session -d -t "$PROJECT_NAME" || {
     ## 3: Log
     rm -f "$LOG"
     touch "$LOG"
-    tmux new-window -a -n "log" -t "$PROJECT" "npm run-script logtail:dev"
+    tmux new-window -a -n "log" -t "$PROJECT" "multitail notifier.log"
 
     ## 4: Dev server
     tmux new-window -a -t "$PROJECT_NAME" -n "devserver" "npm run-script devserver"

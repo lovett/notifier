@@ -21,8 +21,7 @@
     "logfetch": "npm run logfetch:cron && npm run logfetch:notifier && npm run logfetch:node",
     "logfetch:cron": "rhc scp notifier download production_logs app-root/logs/cron_hourly.log",
     "logfetch:notifier": "rhc scp notifier download production_logs app-root/logs/notifier.log",
-    "logfetch:node": "rhc scp notifier download production_logs app-root/logs/nodejs.log",
-    "logtail:dev": "tail -f notifier.log"
+    "logfetch:node": "rhc scp notifier download production_logs app-root/logs/nodejs.log"
   },
   "repository": {
     "type": "git",
