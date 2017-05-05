@@ -2,12 +2,10 @@
 var Sequelize = require('sequelize'),
     accessLog,
     app,
-
     auth = {
         basic: require('./auth/basic.js'),
         local: require('./auth/local.js')
     },
-
     bayeux,
     bayeuxClient,
     bodyParser = require('body-parser'),
@@ -18,24 +16,20 @@ var Sequelize = require('sequelize'),
     deflate = require('permessage-deflate'),
     ejs = require('ejs'),
     express = require('express'),
-
     faye = require('faye'),
     fs = require('fs'),
     https = require('https'),
-
     middleware = {
         favicon:  require('./middleware/favicon'),
         logger:   require('./middleware/logger'),
         security: require('./middleware/security'),
         asset:    require('./middleware/asset')
     },
-
     models = {
         Message: require('./models/Message'),
         User: require('./models/User'),
         Token: require('./models/Token'),
     },
-
     nconf = require('nconf'),
     needle = require('needle'),
     passport = require('passport'),
@@ -56,33 +50,32 @@ var Sequelize = require('sequelize'),
     url = require('url'),
     useragent = require('useragent'),
     util = require('util'),
-
     validation = {
         count: require('./validation/count'),
         sanitize: require('./validation/sanitize')
     },
     verifySubscription;
 
-
 /**
  * Application configuration
  *
- * Configuration is sourced from the following places:
+ * Configuration is sourced from multiple places. Whichever one
+ * provides a value first wins.
  *
- * 1. The file /etc/notifier.json
- * 2. Environment variables
- * 3. A JSON file in the application root named according to NODE_ENV.
- * 4. Internal defaults.
+ * - Environment variables
+ * - JSON file named after NODE_ENV
+ * - JSON file named config.json
+ * - JSON file in /etc
+ * - Internal defaults
  */
-
-nconf.file('global', '/etc/notifier.json');
 
 nconf.env();
 
-if (process.env.NODE_ENV) {
-    nconf.file('local', path.resolve(__dirname + '/config-' + process.env.NODE_ENV + '.json'));
-}
+nconf.file('environment', path.resolve(__dirname + '/config-' + process.env.NODE_ENV + '.json'));
 
+nconf.file('application', path.resolve(__dirname + '/config.json'));
+
+nconf.file('host', '/etc/notifier.json');
 
 nconf.defaults({
     'NOTIFIER_LOG_QUERIES': 0,
