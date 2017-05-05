@@ -23,8 +23,8 @@ function main (req, res, next) {
     }
 
     csp = {
-        'default-src': ['self'],
         'connect-src': ['self', 'unsafe-inline', util.format('%s://%s%s', socketScheme, hostname, port)],
+        'script-src': ['self', 'unsafe-inline', util.format('%s://%s%s', scheme, hostname, port)],
         'style-src': ['self', 'unsafe-inline'],
         'img-src': ['self', 'data:']
     };
