@@ -12,7 +12,7 @@ router = express.Router();
 router.get('/', function(req, res, next) {
     var livereloadUrl, title;
 
-    if (res.locals.livereload_host) {
+    if (res.locals.livereload_host && res.locals.livereload_port) {
         livereloadUrl = util.format(
             '//%s:%d/livereload.js',
             res.locals.livereload_host,

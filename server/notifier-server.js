@@ -85,7 +85,8 @@ nconf.defaults({
     'NOTIFIER_PASSWORD_HASH_KEYLENGTH': 64,
     'NOTIFIER_PASSWORD_HASH_ITERATIONS': 20000,
     'NOTIFIER_PUBLIC_DIR': path.resolve(__dirname + '/../public'),
-    'NOTIFIER_LIVERELOAD_HOST': 'localhost:35729',
+    'NOTIFIER_LIVERELOAD_HOST': undefined,
+    'NOTIFIER_LIVERELOAD_PORT': 35729,
     'NOTIFIER_SSL_KEY': undefined,
     'NOTIFIER_SSL_CERT': undefined,
     'NOTIFIER_HTTP_IP': '127.0.0.1',
@@ -124,6 +125,7 @@ app.use(function (req, res, next) {
     res.locals.force_https = parseInt(nconf.get('NOTIFIER_FORCE_HTTPS'), 10) === 1;
     res.locals.websocket_port = nconf.get('NOTIFIER_WEBSOCKET_PORT');
     res.locals.livereload_host = nconf.get('NOTIFIER_LIVERELOAD_HOST');
+    res.locals.livereload_port = nconf.get('NOTIFIER_LIVERELOAD_PORT');
     next();
 });
 
