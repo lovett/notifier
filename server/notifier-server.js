@@ -1,9 +1,13 @@
 'use strict';
-var BasicStrategy = require('passport-http').BasicStrategy,
-    LocalStrategy = require('passport-local').Strategy,
-    Sequelize = require('sequelize'),
+var Sequelize = require('sequelize'),
     accessLog,
     app,
+
+    auth = {
+        basic: require('./auth/basic.js'),
+        local: require('./auth/local.js')
+    },
+
     bayeux,
     bayeuxClient,
     bodyParser = require('body-parser'),
@@ -202,66 +206,6 @@ createUser = function (username, password, callback) {
 };
 
 /**
- * Authentication configuration
- * --------------------------------------------------------------------
- */
-passport.use(new LocalStrategy(function (username, password, done) {
-    app.locals.User.find({ where: { username: username } }).then(function (user) {
-
-        if (!user) {
-            return done(null, false);
-        }
-
-        user.checkPassword(password, function (valid) {
-            if (valid) {
-                return done(null, user);
-            } else {
-                return done(null, false);
-            }
-        });
-    }, function (error) {
-        return done(error);
-    });
-}));
-
-
-passport.use(new BasicStrategy(function(key, value, next) {
-    var err;
-    app.locals.Token.find({
-        include: [ app.locals.User],
-        where: {
-            value: value
-        }
-    }).then(function (token) {
-        err = new Error('Invalid token');
-        err.status = 401;
-
-        if (!token) {
-            next(err);
-            return;
-        }
-
-        if (token.key !== key) {
-            next(err);
-            return;
-        }
-
-        token.User.token = {
-            key: key,
-            value: value
-        };
-
-        next(null, token.User);
-        return true;
-    }).catch(function () {
-        err = new Error('Application error');
-        err.status = 500;
-        next(err);
-        return;
-    });
-}));
-
-/**
  * Websocket setup
  * --------------------------------------------------------------------
  */
@@ -405,13 +349,11 @@ app.use(bodyParser.json({
     limit: '5kb'
 }));
 
+passport.use(auth.local(app));
+passport.use(auth.basic(app));
+
 app.use(passport.initialize());
 
-
-/**
- * Parameter validation
- * --------------------------------------------------------------------
- */
 app.param('count', validation.count);
 
 
