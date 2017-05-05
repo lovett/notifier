@@ -1,14 +1,18 @@
 var util = require('util');
 
 function main (req, res, next) {
-    let csp, hostname, liveReload, port, scheme, socketScheme;
+    let config, csp, forceHttps, hostname, liveReload, port, scheme, socketScheme;
+
+    config = res.app.locals.config;
+
+    forceHttps = Boolean(config.get('NOTIFIER_FORCE_HTTPS'));
 
     // Clickjacking - https://www.owasp.org/index.php/Clickjacking
     res.setHeader('X-Frame-Options', 'DENY');
 
     // Content security policy - http://content-security-policy.com
     scheme = req.headers['x-forwarded-proto'];
-    scheme = (scheme === 'https' || req.headers['x-https'] === 'On' || res.locals.force_https) ? 'https' : 'http';
+    scheme = (scheme === 'https' || req.headers['x-https'] === 'On' || forceHttps) ? 'https' : 'http';
 
     socketScheme = (scheme === 'https') ? 'wss' : 'ws';
 
@@ -29,8 +33,12 @@ function main (req, res, next) {
         'img-src': ['self', 'data:']
     };
 
-    if (res.locals.livereload_host && res.locals.livereload_port) {
-        liveReload = util.format('//%s:%s', res.locals.livereload_host, res.locals.livereload_port);
+    if (config.get('NOTIFIER_LIVERELOAD_HOST') && config.get('NOTIFIER_LIVERELOAD_PORT')) {
+        liveReload = util.format(
+            '//%s:%s',
+            config.get('NOTIFIER_LIVERELOAD_HOST'),
+            config.get('NOTIFIER_LIVERELOAD_PORT')
+        );
         csp['connect-src'].push(socketScheme + liveReload);
         csp['script-src'].push(scheme + liveReload);
     }
@@ -48,7 +56,7 @@ function main (req, res, next) {
     res.setHeader('Content-Security-Policy', csp);
 
     // Require HTTPS
-    if (Boolean(res.locals.force_https)) {
+    if (forceHttps) {
         // HTTP Strict Transport Security - https://www.owasp.org/index.php/HTTP_Strict_Transport_Security
         res.setHeader('Strict-Transport-Security', util.format('max-age=%d', 60 * 60 * 24 * 30));
 

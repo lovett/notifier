@@ -118,17 +118,6 @@ app = express();
 
 app.set('view engine', 'ejs');
 
-app.use(function (req, res, next) {
-    res.locals.env = process.env.NODE_ENV;
-    res.locals.base_url = nconf.get('NOTIFIER_BASE_URL');
-    res.locals.public_dir = nconf.get('NOTIFIER_PUBLIC_DIR');
-    res.locals.force_https = parseInt(nconf.get('NOTIFIER_FORCE_HTTPS'), 10) === 1;
-    res.locals.websocket_port = nconf.get('NOTIFIER_WEBSOCKET_PORT');
-    res.locals.livereload_host = nconf.get('NOTIFIER_LIVERELOAD_HOST');
-    res.locals.livereload_port = nconf.get('NOTIFIER_LIVERELOAD_PORT');
-    next();
-});
-
 app.disable('x-powered-by');
 
 app.locals.config = nconf;

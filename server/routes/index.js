@@ -10,24 +10,26 @@ router = express.Router();
  * The application homepage
  */
 router.get('/', function(req, res, next) {
-    var livereloadUrl, title;
+    var config, livereloadUrl, title;
 
-    if (res.locals.livereload_host && res.locals.livereload_port) {
+    config = res.app.config;
+
+    if (config.get('NOTIFIER_LIVERELOAD_HOST') && confing.get('NOTIFIER_LIVERELOAD_PORT')) {
         livereloadUrl = util.format(
             '//%s:%d/livereload.js',
-            res.locals.livereload_host,
-            res.locals.livereload_port
+            config.get('NOTIFIER_LIVERELOAD_HOST'),
+            config.get('NOTIFIER_LIVERELOAD_PORT')
         );
     }
 
     title = 'Notifier';
-    if (res.locals.env !== 'production') {
-        title += ' ' + res.locals.env;
+    if (res.app.env !== 'production') {
+        title += ' ' + res.app.env;
     }
 
     res.render('index', {
-        'base_href': res.locals.base_url,
-        'websocket_port': res.locals.websocket_port,
+        'base_href': config.get('NOTIFIER_BASE_URL'),
+        'websocket_port': config.get('NOTIFIER_WEBSOCKET_PORT'),
         'livereload_url': livereloadUrl,
         'title': title
     });
