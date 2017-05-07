@@ -1,57 +1,65 @@
-let express, router;
+'use strict';
+
+let express, router, useragent;
 
 express = require('express');
-
 router = express.Router();
+useragent = require('useragent');
 
-router.post('/', function (req, res) {
-    var sendResponse, token, tokenLabel, tokenPersist;
+router.post('/', (req, res) => {
+    let asJson, asRejection, asText, generateCallback, pruneCallback, sendFailure, sendResponse, token, tokenLabel, tokenPersist;
+
     tokenLabel = req.body.label || '';
     tokenLabel = tokenLabel.replace(/[^a-zA-Z0-9-\.\/ ]/, '');
     if (tokenLabel === '') {
-        tokenLabel =  useragent.parse(req.headers['user-agent']).toString();
+        tokenLabel = useragent.parse(req.headers['user-agent']).toString();
     }
 
-    tokenPersist = req.body.persist === '1' || req.body.persist === 'true';
+    tokenPersist = ['1', 'true'].indexOf(req.body.persist) > -1;
 
     token = res.app.locals.Token.build({
         label: tokenLabel,
         persist: tokenPersist
     });
 
-    sendResponse = function (token) {
-        token.setUser(req.user).then(function () {
+    res.app.locals.Token.generateKeyAndValue(generateCallback);
 
-            res.format({
-                'text/plain': function () {
-                    var csv = util.format('%s,%s,%s',
-                                          token.key, token.value, req.user.getChannel());
-                    res.send(csv);
-                },
-                'application/json': function () {
-                    res.json({
-                        key: token.key,
-                        value: token.value,
-                        channel: req.user.getChannel()
-                    });
-                },
-                'default': function () {
-                    res.status(406).send('Not Acceptable');
-                }
-            });
+    generateCallback = (key, value) => {
+        token.key = key;
+        token.value = value;
+        res.app.locals.Token.prune(pruneCallback(token));
+    };
+
+    pruneCallback = () => {
+        token.save()
+            .then(() => token.setUser(req.user))
+            .then(sendResponse)
+            .catch(sendFailure);
+    };
+
+    sendResponse = () => {
+        res.format({
+            'text/plain': asText,
+            'application/json': asJson,
+            'default': asRejection
         });
     };
 
-    res.app.locals.Token.generateKeyAndValue(function (key, value) {
-        token.key = key;
-        token.value = value;
+    asText = () => res.send(`${token.key},${token.value},${req.user.getChannel()}`);
 
-        res.app.locals.Token.prune(function () {
-            token.save().then(sendResponse, function (error) {
-                res.status(400).json(error);
-            });
+    asRejection = () => res.status(req.app.locals.badMethodCode).send('Not Acceptable');
+
+    asJson = () => {
+        res.json({
+            key: token.key,
+            value: token.value,
+            channel: req.user.getChannel()
         });
-    });
+    };
+
+    sendFailure = (error) => {
+        res.status(req.app.locals.badRequestCode).json(error);
+    };
 
 });
 

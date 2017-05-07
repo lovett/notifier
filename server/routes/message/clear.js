@@ -1,29 +1,31 @@
-var express, router;
+'use strict';
+
+let express, router;
 
 express = require('express');
 
 router = express.Router();
 
-router.post('/', function (req, res) {
+router.post('/', (req, res) => {
 
-    var update = function (id) {
+    let update = function (id) {
         req.app.locals.Message.update(
             {unread: false},
             {where: {publicId: id}}
-        ).then(function (affectedRows) {
+        ).then((affectedRows) => {
             if (affectedRows[0] === 0) {
                 res.sendStatus(400);
+
                 return;
             }
 
-            publishMessage(req.user, {
+            req.app.publishMessage(req.user, {
                 'retracted': id
             });
             res.sendStatus(204);
+
             return true;
-        }).catch(function () {
-            res.sendStatus(500);
-        });
+        }).catch(() => res.sendStatus(500));
     };
 
     if (req.body.hasOwnProperty('publicId')) {
@@ -35,13 +37,12 @@ router.post('/', function (req, res) {
                 unread: true
             },
             limit: 1
-        }).then(function (message) {
+        }).then((message) => {
             if (!message) {
                 res.sendStatus(400);
             } else {
                 update(message.publicId);
             }
-
         });
     } else {
         res.sendStatus(400);

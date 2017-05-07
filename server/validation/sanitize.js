@@ -1,3 +1,4 @@
+'use strict';
 let sanitizeHtml = require('sanitize-html');
 
 /**

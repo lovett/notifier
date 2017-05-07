@@ -21,3 +21,4 @@ migration-config.json
 ansible/*.retry
 ansible/inventory
 ansible/vars.yml
+.vscode

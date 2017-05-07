@@ -1,13 +1,12 @@
-var Message = require('./Message'),
-    Sequelize = require('sequelize'),
-    Token = require('./Token'),
-    crypto = require('crypto'),
-    sanitize =  require('../validation/sanitize');
+/* eslint no-invalid-this: 0 */
+'use strict';
+let Sequelize = require('sequelize'),
+    crypto = require('crypto');
 
 function main (sequelize, app) {
-    var model;
+    let fields, instanceMethods;
 
-    model = sequelize.define('User', {
+    fields = {
         username: {
             type: Sequelize.STRING(20),
             unique: true,
@@ -30,85 +29,89 @@ function main (sequelize, app) {
                 }
             }
         }
-    }, {
-        instanceMethods: {
-            purgeServiceToken: function (service, callback) {
-                if (!service) {
-                    callback(0);
+    };
+
+    instanceMethods = {
+        purgeServiceToken: (service, callback) => {
+            if (!service) {
+                callback(0);
+            }
+
+            app.locals.Token.destroy({
+                where: {
+                    'UserId': this.id,
+                    'label': 'service',
+                    'key': service
+                }
+            }).then((affectedRows) => callback(affectedRows));
+        },
+        getServiceTokens: function (callback) {
+            let user = this;
+
+            user.serviceTokens = {};
+
+            app.locals.Token.findAll({
+                where: {
+                    'UserId': user.id,
+                    'label': 'service'
+                },
+                attributes: ['key', 'value']
+            }).then((tokens) => {
+                tokens.forEach((token) => user.serviceTokens[token.key] = token.value);
+                callback();
+            });
+        },
+
+        getChannel: function () {
+            let hmac = crypto.createHmac('sha256', app.locals.appsecret);
+
+            hmac.setEncoding('hex');
+            hmac.write(this.id.toString());
+            hmac.end();
+
+            return hmac.read();
+        },
+
+        hashPassword: function (password, callback) {
+            let iterations, keyLength, randBytes, self;
+
+            self = this;
+            randBytes = app.locals.config.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
+            keyLength = app.locals.config.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
+            iterations = app.locals.config.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
+
+            crypto.randomBytes(randBytes, (err, buf) => {
+                let salt;
+
+                if (err) {
+                    process.stderr.write('Error while generating random bytes\n');
                 }
 
-                app.locals.Token.destroy({
-                    where: {
-                        'UserId': this.id,
-                        'label': 'service',
-                        'key': service
-                    }
-                }).then(function (affectedRows) {
-                    callback(affectedRows);
-                });
-            },
-            getServiceTokens: function (callback) {
-                var user = this;
-                user.serviceTokens = {};
+                salt = buf.toString('hex');
 
-                Token.findAll({
-                    where: {
-                        'UserId': user.id,
-                        'label': 'service'
-                    },
-                    attributes: ['key', 'value']
-                }).then(function (tokens) {
-                    tokens.forEach(function (token) {
-                        user.serviceTokens[token.key] = token.value;
-                    });
+                crypto.pbkdf2(password, salt, iterations, keyLength, 'sha1', (err, key) => {
+                    self.setDataValue('passwordHash', `${salt}::${key.toString('hex')}`);
                     callback();
                 });
-            },
+            });
+        },
 
-            getChannel: function () {
-                var hmac = crypto.createHmac('sha256', app.locals.appsecret);
-                hmac.setEncoding('hex');
-                hmac.write(this.id.toString());
-                hmac.end();
-                return hmac.read();
-            },
+        checkPassword: function (password, callback) {
+            let iterations, keyLength, segments;
 
-            hashPassword: function (password, callback) {
-                var iterations, keyLength, randBytes, self;
-                self = this;
-                randBytes = app.locals.config.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
-                keyLength = app.locals.config.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
-                iterations = app.locals.config.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
+            segments = this.getDataValue('passwordHash').split('::');
+            keyLength = app.locals.config.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
+            iterations = app.locals.config.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
 
-                crypto.randomBytes(randBytes, function(err, buf) {
-                    var salt;
-                    if (err) {
-                        console.error({err: err}, 'error while generating random bytes');
-                    }
-
-                    salt = buf.toString('hex');
-
-                    crypto.pbkdf2(password, salt, iterations, keyLength, 'sha1', function (err, key) {
-                        self.setDataValue('passwordHash', util.format('%s::%s', salt, key.toString('hex')));
-                        callback();
-                    });
-                });
-            },
-
-            checkPassword: function (password, callback) {
-                var iterations, keyLength, segments;
-                segments = this.getDataValue('passwordHash').split('::');
-                keyLength = app.locals.config.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
-                iterations = app.locals.config.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
-
-                crypto.pbkdf2(password, segments[0], iterations, keyLength, 'sha1', function (err, key) {
-                    callback(key.toString('hex') === segments[1]);
-                });
-            }
+            crypto.pbkdf2(password, segments[0], iterations, keyLength, 'sha1', (err, key) => {
+                callback(key.toString('hex') === segments[1]);
+            });
         }
-    });
+    };
 
-    return model;
+    return sequelize.define('User', fields, {
+        'instanceMethods': instanceMethods
+    });
 }
 
 module.exports = exports = main;

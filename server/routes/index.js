@@ -1,4 +1,6 @@
-var express, router, util;
+'use strict';
+
+let express, router, util;
 
 express = require('express');
 
@@ -9,12 +11,12 @@ router = express.Router();
 /**
  * The application homepage
  */
-router.get('/', function(req, res, next) {
-    var config, livereloadUrl, title;
+router.get('/', (req, res) => {
+    let config, livereloadUrl, title;
 
-    config = res.app.config;
+    config = req.app.locals.config;
 
-    if (config.get('NOTIFIER_LIVERELOAD_HOST') && confing.get('NOTIFIER_LIVERELOAD_PORT')) {
+    if (config.get('NOTIFIER_LIVERELOAD_HOST') && config.get('NOTIFIER_LIVERELOAD_PORT')) {
         livereloadUrl = util.format(
             '//%s:%d/livereload.js',
             config.get('NOTIFIER_LIVERELOAD_HOST'),

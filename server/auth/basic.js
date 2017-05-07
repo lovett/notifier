@@ -1,24 +1,28 @@
-var BasicStrategy = require('passport-http').BasicStrategy;
+'use strict';
+let BasicStrategy = require('passport-http').BasicStrategy;
 
 function main (app) {
-    var strategy = new BasicStrategy(function (key, value, next) {
-        var err;
+    return new BasicStrategy((key, value, next) => {
+        let err;
+
         app.locals.Token.find({
             include: [ app.locals.User],
             where: {
                 value: value
             }
-        }).then(function (token) {
+        }).then((token) => {
             err = new Error('Invalid token');
             err.status = 401;
 
             if (!token) {
                 next(err);
+
                 return;
             }
 
             if (token.key !== key) {
                 next(err);
+
                 return;
             }
 
@@ -28,16 +32,14 @@ function main (app) {
             };
 
             next(null, token.User);
+
             return true;
-        }).catch(function () {
+        }).catch(() => {
             err = new Error('Application error');
             err.status = 500;
             next(err);
-            return;
         });
     });
-
-    return strategy;
 }
 
 module.exports = exports = main;

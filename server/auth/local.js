@@ -1,26 +1,22 @@
-var LocalStrategy = require('passport-local').Strategy;
+'use strict';
+let LocalStrategy = require('passport-local').Strategy;
 
 function main (app) {
-    var strategy = new LocalStrategy(function (username, password, done) {
-        app.locals.User.find({ where: { username: username } }).then(function (user) {
-
+    return new LocalStrategy((username, password, done) => {
+        app.locals.User.find({ where: { username: username } }).then((user) => {
             if (!user) {
                 return done(null, false);
             }
 
-            user.checkPassword(password, function (valid) {
+            user.checkPassword(password, (valid) => {
                 if (valid) {
                     return done(null, user);
                 } else {
                     return done(null, false);
                 }
             });
-        }, function (error) {
-            return done(error);
-        });
+        }).catch((error) => done(error));
     });
-
-    return strategy;
 }
 
 module.exports = exports = main;
