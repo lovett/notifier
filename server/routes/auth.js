@@ -47,7 +47,7 @@ router.post('/', (req, res) => {
 
     asText = () => res.send(`${token.key},${token.value},${req.user.getChannel()}`);
 
-    asRejection = () => res.status(req.app.locals.badMethodCode).send('Not Acceptable');
+    asRejection = () => res.status(406).send('Not Acceptable');
 
     asJson = () => {
         res.json({
@@ -58,7 +58,7 @@ router.post('/', (req, res) => {
     };
 
     sendFailure = (error) => {
-        res.status(req.app.locals.badRequestCode).json(error);
+        res.status(400).json(error);
     };
 
 });

@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
 
     // this endpoint can only be accessed by the default user
     if (req.user.username !== req.app.locals.config.get('NOTIFIER_DEFAULT_USER')) {
-        res.sendStatus(req.app.badRequestCode);
+        res.sendStatus(400);
 
         return;
     }

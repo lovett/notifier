@@ -1,14 +1,17 @@
-let express, router;
+'use strict';
+let express, router, url;
 
 express = require('express');
 
 router = express.Router();
 
-router.get('/', function (req, res) {
-    var token;
+url = require('url');
+
+router.get('/', (req, res) => {
+    let token;
 
     function sendUrl (tokenValue) {
-        var redirectUri = url.format({
+        let redirectUri = url.format({
             protocol: req.query.protocol,
             host: req.query.host,
             pathname: '/authorize/pushbullet/finish',
@@ -24,7 +27,7 @@ router.get('/', function (req, res) {
                 host: 'www.pushbullet.com',
                 pathname: '/authorize',
                 query: {
-                    'client_id': nconf.get('PUSHBULLET_CLIENT_ID'),
+                    'client_id': req.app.locals.nconf.get('PUSHBULLET_CLIENT_ID'),
                     'response_type': 'code',
                     'redirect_uri': redirectUri
                 }
@@ -37,13 +40,13 @@ router.get('/', function (req, res) {
         label: 'service'
     });
 
-    req.app.locals.Token.generateKeyAndValue(function (key, value) {
+    req.app.locals.Token.generateKeyAndValue((key, value) => {
         token.value = value;
-        token.save().then(function (token) {
-            token.setUser(req.user).then(function () {
+        token.save().then((token) => {
+            token.setUser(req.user).then(() => {
                 sendUrl(token.value);
             });
-        }, function (error) {
+        }, (error) => {
             res.status(400).json(error);
         });
     });

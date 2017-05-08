@@ -1,4 +1,5 @@
-let express, passport, router;
+'use strict';
+let express, router;
 
 express = require('express');
 
@@ -13,7 +14,7 @@ router = express.Router();
  * Client-specific functionality is not included. In particular:
  * browser notifications.
  */
-router.get('/', function(req, res, next) {
+router.get('/', (req, res, next) => {
     let tokenKeysToJson = () => res.json(Object.keys(req.user.serviceTokens));
 
     req.user.getServiceTokens(tokenKeysToJson);

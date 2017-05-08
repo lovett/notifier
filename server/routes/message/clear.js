@@ -1,8 +1,8 @@
 'use strict';
-
-let express, router;
+let express, publishMessage, router;
 
 express = require('express');
+publishMessage = require('../../helpers/publish-message');
 
 router = express.Router();
 
@@ -19,7 +19,7 @@ router.post('/', (req, res) => {
                 return;
             }
 
-            req.app.publishMessage(req.user, {
+            publishMessage(req.app, req.user, {
                 'retracted': id
             });
             res.sendStatus(204);

@@ -106,12 +106,6 @@ app.disable('x-powered-by');
 
 app.locals.config = nconf;
 
-app.locals.badRequestCode = 400;
-
-app.locals.badMethodCode = 406;
-
-app.locals.applicationErrorCode = 500;
-
 app.locals.appsecret = crypto.randomBytes(app.locals.config.get('NOTIFIER_PASSWORD_HASH_RANDBYTES')).toString('hex');
 
 app.locals.protected = passport.authenticate('basic', { session: false });
@@ -157,7 +151,7 @@ if (nconf.get('NOTIFIER_DB_DIALECT') === 'sqlite') {
 
 app.locals.Token = Token(sequelize, app);
 app.locals.User = User(sequelize, app);
-app.locals.Message = Message(sequelize, app);
+app.locals.Message = Message(sequelize);
 
 app.locals.Token.belongsTo(app.locals.User);
 app.locals.User.hasMany(app.locals.Token);

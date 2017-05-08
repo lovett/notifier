@@ -12,7 +12,6 @@ function main (app) {
             }
         }).then((token) => {
             err = new Error('Invalid token');
-            err.status = 401;
 
             if (!token) {
                 next(err);
@@ -36,7 +35,6 @@ function main (app) {
             return true;
         }).catch(() => {
             err = new Error('Application error');
-            err.status = 500;
             next(err);
         });
     });

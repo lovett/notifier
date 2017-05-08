@@ -1,11 +1,19 @@
-let express, router;
+'use strict';
+let express, needle, router, url;
 
 express = require('express');
+needle = require('needle');
+url = require('url');
 
 router = express.Router();
 
-router.get('/', function (req, res) {
-    var tokenUrl = url.format({
+
+router.get('/', (req, res) => {
+    let config, tokenUrl;
+
+    config = req.app.locals.config;
+
+    tokenUrl = url.format({
         protocol: 'https',
         slashes: true,
         host: 'api.pushbullet.com',
@@ -13,15 +21,16 @@ router.get('/', function (req, res) {
     });
 
     req.app.locals.Token.find({
-        include: [ User],
+        include: [ req.app.locals.User],
         where: {
             value: req.query.token
         }
-    }).then(function (token) {
+    }).then((token) => {
         if (!token.User) {
             console.error({}, 'user not found during pushbullet auth callback');
-            res.redirect(nconf.get('NOTIFIER_BASE_URL'));
-            return;
+            res.redirect(config.get('NOTIFIER_BASE_URL'));
+
+            return false;
         }
 
         if (!req.query.code) {
@@ -30,19 +39,18 @@ router.get('/', function (req, res) {
                     key: 'pushbullet',
                     UserId: token.User.id
                 }
-            }).then(function () {
-                res.redirect(nconf.get('NOTIFIER_BASE_URL'));
-            });
+            }).then(() => res.redirect(config.get('NOTIFIER_BASE_URL')));
+
             return;
         }
 
         needle.post(tokenUrl, {
             'grant_type': 'authorization_code',
-            'client_id': nconf.get('PUSHBULLET_CLIENT_ID'),
-            'client_secret': nconf.get('PUSHBULLET_CLIENT_SECRET'),
+            'client_id': config.get('PUSHBULLET_CLIENT_ID'),
+            'client_secret': config.get('PUSHBULLET_CLIENT_SECRET'),
             'code': req.query.code
-        }, function (err, resp, body) {
-            req.app.local.Token.destroy({
+        }, (err, resp, body) => {
+            req.app.locals.Token.destroy({
                 where: {
                     key: 'pushbullet',
                     UserId: token.User.id,
@@ -50,17 +58,14 @@ router.get('/', function (req, res) {
                         $ne: token.id
                     }
                 }
-            }).then(function () {
-                /*jshint camelcase: false */
+            }).then(() => {
                 token.updateAttributes({
                     value: body.access_token,
                     persist: true
-                }).then(function () {
-                    res.redirect(nconf.get('NOTIFIER_BASE_URL'));
-                });
+                }).then(() => res.redirect(config.get('NOTIFIER_BASE_URL')));
             });
         });
-    }, function () { res.sendStatus(400); });
+    }, () => res.sendStatus(400));
 });
 
 module.exports = exports = router;

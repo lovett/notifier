@@ -3,19 +3,18 @@
 /**
  * Validate a numeric string as a number between 1 and 100
  *
- * @param {request}  req   - Express request object
- * @param {response} res   - Express resposne object
- * @param {next}     next  - Express middleware callback
- * @param {string}   value - The numeric string to validate
+ * @param {Object} req   - Express request object
+ * @param {Object} res   - Express resposne object
+ * @param {Object} next  - Express middleware callback
+ * @param {string} value - The numeric string to validate
  */
 function count (req, res, next, value) {
-    let count, err;
+    let count;
 
     if (/\D/.test(value) === true) {
-        err = new Error('Invalid count');
-        err.status = 400;
+        res.status = 400;
 
-        return next(err);
+        return next(new Error('Invalid count'));
     }
 
     count = parseInt(value, 10);

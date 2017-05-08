@@ -1,25 +1,29 @@
-var express, router;
+'use strict';
+let dateparser, express, publishMessage, router;
 
+dateparser = require('dateparser');
 express = require('express');
+publishMessage = require('../../helpers/publish-message');
 
 router = express.Router();
 
-router.post('/', function (req, res, next) {
-    var err, message;
+router.post('/', (req, res, next) => {
+    let err, message;
 
     if (Object.keys(req.body).length === 0) {
         err = new Error('Message is blank');
-        err.status = 400;
-        next(err);
-        return;
+        res.status(400);
+
+        return next(err);
     }
 
     message = req.app.locals.Message.build({
         received: new Date()
     });
 
-    message.attributes.forEach(function (key) {
-        var fieldName, parseResult, value;
+    message.attributes.forEach((key) => {
+        let fieldName, parseResult;
+
         if (key === 'id' || key === 'publicId') {
             return;
         }
@@ -43,6 +47,7 @@ router.post('/', function (req, res, next) {
             if (parseResult !== null) {
                 message[key] = new Date(Date.now() + parseResult.value);
             }
+
             return;
         }
 
@@ -64,13 +69,14 @@ router.post('/', function (req, res, next) {
                     $ne: message.publicId
                 }
             }
-        }).then(function (existingMessages) {
-            var ids;
+        }).then((existingMessages) => {
+            let ids;
+
             if (existingMessages.length == 0) {
                 return;
             }
 
-            ids = existingMessages.map(function (existingMessage) {
+            ids = existingMessages.map((existingMessage) => {
                 return existingMessage.publicId;
             });
 
@@ -82,44 +88,46 @@ router.post('/', function (req, res, next) {
                         $in: ids
                     }
                 }
-            }).then(function (updatedRows) {
+            }).then((updatedRows) => {
                 if (updatedRows[0] > 0) {
-                    ids.forEach(function (id) {
-                        publishMessage(req.user, {
+                    ids.forEach((id) => {
+                        publishMessage(req.app, req.user, {
                             'retracted': id
                         });
                     });
-                };
+                }
             });
+
             return null;
         });
     }
 
-    message.save().then(function () {
-        message.setUser(req.user).then(function () {
+    message.save().then(() => {
+        message.setUser(req.user).then(() => {
             publishMessage(req.user, message);
             res.sendStatus(204);
         });
-        return null;
-    }).catch(function (error) {
-        var err, message = '';
-        error.errors.forEach(function (err) {
+    }).catch((error) => {
+        let err, message = '';
+
+        error.errors.forEach((err) => {
             message += err.message + ';';
         });
 
         err = new Error(message);
-        err.status = 400;
+        res.status(400);
         next(err);
     });
 });
 
-router.patch('/', function (req, res) {
-    var err, fields, message;
+router.patch('/', (req, res) => {
+    let fields;
 
-    fields = ['title', 'url', 'body', 'source', 'group', 'deliveredAt'].reduce(function (acc, field) {
+    fields = ['title', 'url', 'body', 'source', 'group', 'deliveredAt'].reduce((acc, field) => {
         if (req.body.hasOwnProperty(field)) {
             acc[field] = req.body[field];
         }
+
         return acc;
     }, {});
 
@@ -128,17 +136,17 @@ router.patch('/', function (req, res) {
             'publicId': req.body.publicId,
             'UserId': req.user.id
         }
-    }).then(function (affectedRows) {
+    }).then((affectedRows) => {
         if (affectedRows[0] !== 1) {
             res.sendStatus(400);
         }
 
-        app.locals.Message.findOne({
+        req.app.locals.Message.findOne({
             where: {
                 'publicId': req.body.publicId,
                 'UserId': req.user.id
             }
-        }).then(function (message) {
+        }).then((message) => {
             publishMessage(req.user, message);
             res.sendStatus(204);
         });

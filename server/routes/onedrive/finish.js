@@ -1,5 +1,4 @@
 'use strict';
-
 let express, fs, needle, router;
 
 express = require('express');
@@ -11,18 +10,20 @@ needle = require('needle');
 router = express.Router();
 
 router.get('/', (req, res) => {
-    let callback;
+    let callback, config;
+
+    config = req.app.locals.config;
 
     if (!req.query.code) {
-        res.sendStatus(req.app.badRequestCode);
+        res.sendStatus(400);
 
         return;
     }
 
     needle.post('https://login.live.com/oauth20_token.srf', {
-        'client_id': req.app.config.get('ONEDRIVE_CLIENT_ID'),
-        'redirect_uri': req.app.config.get('ONEDRIVE_REDIRECT'),
-        'client_secret': req.app.config.get('ONEDRIVE_CLIENT_SECRET'),
+        'client_id': config.get('ONEDRIVE_CLIENT_ID'),
+        'redirect_uri': config.get('ONEDRIVE_REDIRECT'),
+        'client_secret': config.get('ONEDRIVE_CLIENT_SECRET'),
         'code': req.query.code,
         'grant_type': 'authorization_code'
     }, callback);
@@ -30,25 +31,25 @@ router.get('/', (req, res) => {
 
     callback = (err, resp) => {
         if (err) {
-            res.send(req.app.applicationError);
+            res.send(500);
 
             return;
         }
 
         if (resp.body.error) {
-            res.status(req.app.locals.badRequestCode).json(resp.body);
+            res.status(400).json(resp.body);
 
             return;
         }
 
-        fs.writeFile(req.app.config.get('ONEDRIVE_AUTH_FILE'), JSON.stringify(resp.body), (err) => {
+        fs.writeFile(config.get('ONEDRIVE_AUTH_FILE'), JSON.stringify(resp.body), (err) => {
             if (err) {
-                res.sendStatus(req.app.locals.applicationErrorCode);
+                res.sendStatus(500);
 
                 return;
             }
 
-            res.redirect(req.app.config.get('NOTIFIER_BASE_URL'));
+            res.redirect(config.get('NOTIFIER_BASE_URL'));
         });
     };
 });
