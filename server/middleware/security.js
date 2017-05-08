@@ -4,7 +4,7 @@ let util;
 util = require('util');
 
 function main (req, res, next) {
-    let config, csp, forceHttps, hostname, liveReload, port, scheme, socketScheme;
+    let config, csp, forceHttps, hostname, liveReload, numericPort, port, scheme, socketScheme;
 
     config = req.app.locals.config;
 
@@ -23,10 +23,12 @@ function main (req, res, next) {
     hostname = hostname.replace(/:[0-9]+$/, '');
 
     port = req.headers['x-forwarded-port'] || req.headers['x-forwarded-host'] || req.headers.host;
-    port = parseInt(port.replace(/.*:/, ''), 10);
+    numericPort = parseInt(port.replace(/.*:/, ''), 10);
 
-    if ((scheme === 'http' && port !== 80) || (scheme === 'https' && port !== 443)) {
-        port = ':' + port;
+    if ((scheme === 'http' && numericPort !== 80) || (scheme === 'https' && numericPort !== 443)) {
+        port = ':' + numericPort;
+    } else {
+        port = '';
     }
 
     csp = {
