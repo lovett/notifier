@@ -1,4 +1,7 @@
-var util = require('util');
+'use strict';
+let util;
+
+util = require('util');
 
 function main (req, res, next) {
     let config, csp, forceHttps, hostname, liveReload, port, scheme, socketScheme;
@@ -35,7 +38,7 @@ function main (req, res, next) {
 
     if (config.get('NOTIFIER_LIVERELOAD_HOST') && config.get('NOTIFIER_LIVERELOAD_PORT')) {
         liveReload = util.format(
-            '//%s:%s',
+            '://%s:%s',
             config.get('NOTIFIER_LIVERELOAD_HOST'),
             config.get('NOTIFIER_LIVERELOAD_PORT')
         );
@@ -43,13 +46,17 @@ function main (req, res, next) {
         csp['script-src'].push(scheme + liveReload);
     }
 
-    csp = Object.keys(csp).reduce(function (acc, key) {
-        let values = csp[key].map(
+    csp = Object.keys(csp).reduce((acc, key) => {
+        let values;
+
+        values = csp[key].map(
             value => {
                 if (value.match(/.:/)) return value;
+
                 return util.format('\'%s\'', value);
             }
         );
+
         return acc + util.format('%s %s; ', key, values.join(' '));
     }, '');
 
