@@ -17,17 +17,17 @@ router.post('/', (req, res) => {
 
     tokenPersist = ['1', 'true'].indexOf(req.body.persist) > -1;
 
-    token = res.app.locals.Token.build({
+    token = req.app.locals.Token.build({
         label: tokenLabel,
         persist: tokenPersist
     });
 
-    res.app.locals.Token.generateKeyAndValue(generateCallback);
+    req.app.locals.Token.generateKeyAndValue(generateCallback);
 
     generateCallback = (key, value) => {
         token.key = key;
         token.value = value;
-        res.app.locals.Token.prune(pruneCallback(token));
+        req.app.locals.Token.prune(pruneCallback(token));
     };
 
     pruneCallback = () => {

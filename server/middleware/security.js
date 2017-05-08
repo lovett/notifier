@@ -3,7 +3,7 @@ var util = require('util');
 function main (req, res, next) {
     let config, csp, forceHttps, hostname, liveReload, port, scheme, socketScheme;
 
-    config = res.app.locals.config;
+    config = req.app.locals.config;
 
     forceHttps = Boolean(config.get('NOTIFIER_FORCE_HTTPS'));
 

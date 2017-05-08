@@ -25,7 +25,7 @@ router.get('/', (req, res) => {
     }
 
     title = 'Notifier';
-    if (res.app.env && req.app.env !== 'production') {
+    if (req.app.env && req.app.env !== 'production') {
         title += ' ' + req.app.env;
     }
 

@@ -12,7 +12,7 @@ router.get('/', function (req, res) {
         pathname: '/oauth2/token'
     });
 
-    res.app.locals.Token.find({
+    req.app.locals.Token.find({
         include: [ User],
         where: {
             value: req.query.token
@@ -25,7 +25,7 @@ router.get('/', function (req, res) {
         }
 
         if (!req.query.code) {
-            res.app.locals.Token.destroy({
+            req.app.locals.Token.destroy({
                 where: {
                     key: 'pushbullet',
                     UserId: token.User.id
@@ -42,7 +42,7 @@ router.get('/', function (req, res) {
             'client_secret': nconf.get('PUSHBULLET_CLIENT_SECRET'),
             'code': req.query.code
         }, function (err, resp, body) {
-            res.app.local.Token.destroy({
+            req.app.local.Token.destroy({
                 where: {
                     key: 'pushbullet',
                     UserId: token.User.id,

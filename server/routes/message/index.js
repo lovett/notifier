@@ -14,7 +14,7 @@ router.post('/', function (req, res, next) {
         return;
     }
 
-    message = res.app.locals.Message.build({
+    message = req.app.locals.Message.build({
         received: new Date()
     });
 
@@ -54,7 +54,7 @@ router.post('/', function (req, res, next) {
     // perspective. From the perspective of the database, localIds are
     // not unique.
     if (message.localId) {
-        res.app.locals.Message.findAll({
+        req.app.locals.Message.findAll({
             attributes: ['publicId'],
             where: {
                 localId: req.body.localId,
@@ -74,7 +74,7 @@ router.post('/', function (req, res, next) {
                 return existingMessage.publicId;
             });
 
-            res.app.locals.Message.update({
+            req.app.locals.Message.update({
                 unread: false
             }, {
                 where: {
@@ -123,7 +123,7 @@ router.patch('/', function (req, res) {
         return acc;
     }, {});
 
-    res.app.locals.Message.update(fields, {
+    req.app.locals.Message.update(fields, {
         where: {
             'publicId': req.body.publicId,
             'UserId': req.user.id

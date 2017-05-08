@@ -32,12 +32,12 @@ router.get('/', function (req, res) {
         });
     }
 
-    token = res.app.locals.Token.build({
+    token = req.app.locals.Token.build({
         key: 'pushbullet',
         label: 'service'
     });
 
-    res.app.locals.Token.generateKeyAndValue(function (key, value) {
+    req.app.locals.Token.generateKeyAndValue(function (key, value) {
         token.value = value;
         token.save().then(function (token) {
             token.setUser(req.user).then(function () {
