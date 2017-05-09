@@ -1,11 +1,12 @@
-var express, router;
+'use strict';
+let express, router;
 
 express = require('express');
 
 router = express.Router();
 
-router.get('/:count', function (req, res) {
-    var filters = {
+router.get('/:count', (req, res) => {
+    let filters = {
         attributes: ['id', 'publicId', 'title', 'url', 'body', 'source', 'group', 'received', 'expiresAt'],
         limit: req.params.count,
         order: 'deliveredAt DESC',
@@ -25,24 +26,28 @@ router.get('/:count', function (req, res) {
         }
     }
 
-    req.app.locals.Message.findAll(filters).then(function (messages) {
-        var now = new Date();
+    req.app.locals.Message.findAll(filters).then((messages) => {
+        let now = new Date();
 
-        messages = messages.filter(function (message) {
+        messages = messages.filter((message) => {
             if (message.expiresAt === null) {
                 return true;
             }
 
             if (message.expiresAt < now) {
                 message.update({unread: false});
+
                 return false;
             }
+
             return true;
         });
 
-        messages = messages.map(function (message) {
-            var messageValues = message.get({plain: true});
+        messages = messages.map((message) => {
+            let messageValues = message.get({plain: true});
+
             delete messageValues.id;
+
             return messageValues;
         });
 
