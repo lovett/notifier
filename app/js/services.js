@@ -40,7 +40,8 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
             }
 
             if (value) {
-                return 'messages/' + value;
+                // This is not a URL. It must be an absolute path.
+                return '/messages/' + value;
             } else {
                 return false;
             }

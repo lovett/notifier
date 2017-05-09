@@ -3,6 +3,7 @@
 let needle = require('needle');
 
 function main (app, user, message) {
+    // This is not a URL. It must be an absolute path.
     let channel = '/messages/' + user.getChannel();
 
     app.locals.bayeuxClient.publish(channel, JSON.stringify(message));
