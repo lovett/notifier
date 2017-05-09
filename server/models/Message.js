@@ -16,7 +16,9 @@ function main (sequelize) {
         localId: {
             type: Sequelize.STRING(255),
             allowNull: true,
-            set: (value) => this.setDataValue('localId', sanitize.strictSanitize(value))
+            set: function (value) {
+                return this.setDataValue('localId', sanitize.strictSanitize(value));
+            }
         },
 
         pushbulletId: {
@@ -33,7 +35,9 @@ function main (sequelize) {
                     msg: 'should be 1-255 characters long'
                 }
             },
-            set: (value) => this.setDataValue('title', sanitize.strictSanitize(value))
+            set: function (value) {
+                return this.setDataValue('title', sanitize.strictSanitize(value));
+            }
         },
 
         url: {
@@ -46,7 +50,9 @@ function main (sequelize) {
                     msg: 'should be 1-255 characters long'
                 }
             },
-            set: (value) => this.setDataValue('url', sanitize.strictSanitize(value))
+            set: function (value) {
+                return this.setDataValue('url', sanitize.strictSanitize(value));
+            }
         },
 
         body: {
@@ -106,7 +112,7 @@ function main (sequelize) {
         expiresAt: {
             type: Sequelize.TIME,
             allowNull: true,
-            get: () => {
+            get: function () {
                 let value = this.getDataValue('expiresAt');
 
                 if (!value) return null;

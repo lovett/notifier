@@ -4,7 +4,6 @@ let dateparser, express, publishMessage, router;
 dateparser = require('dateparser');
 express = require('express');
 publishMessage = require('../../helpers/publish-message');
-
 router = express.Router();
 
 router.post('/', (req, res, next) => {
@@ -104,7 +103,7 @@ router.post('/', (req, res, next) => {
 
     message.save().then(() => {
         message.setUser(req.user).then(() => {
-            publishMessage(req.user, message);
+            publishMessage(req.app, req.user, message);
             res.sendStatus(204);
         });
     }).catch((error) => {
@@ -147,7 +146,7 @@ router.patch('/', (req, res) => {
                 'UserId': req.user.id
             }
         }).then((message) => {
-            publishMessage(req.user, message);
+            publishMessage(req.app, req.user, message);
             res.sendStatus(204);
         });
     });

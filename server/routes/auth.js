@@ -22,7 +22,12 @@ router.post('/', (req, res) => {
         persist: tokenPersist
     });
 
-    req.app.locals.Token.generateKeyAndValue(generateCallback);
+    pruneCallback = (token) => {
+        token.save()
+            .then(() => token.setUser(req.user))
+            .then(sendResponse)
+            .catch(sendFailure);
+    };
 
     generateCallback = (key, value) => {
         token.key = key;
@@ -30,12 +35,9 @@ router.post('/', (req, res) => {
         req.app.locals.Token.prune(pruneCallback(token));
     };
 
-    pruneCallback = () => {
-        token.save()
-            .then(() => token.setUser(req.user))
-            .then(sendResponse)
-            .catch(sendFailure);
-    };
+    req.app.locals.Token.generateKeyAndValue(generateCallback);
+
+
 
     sendResponse = () => {
         res.format({
