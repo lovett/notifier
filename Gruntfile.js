@@ -1,4 +1,7 @@
-var nconf = require('nconf');
+'use strict';
+
+let nconf = require('nconf');
+
 module.exports = function(grunt) {
     nconf.env();
 
@@ -91,6 +94,7 @@ module.exports = function(grunt) {
                 options: {
                     cleancss: true
                 },
+
                 files: {
                     'public/all.min.css': [
                         'node_modules/normalize.css/normalize.css',
@@ -117,29 +121,14 @@ module.exports = function(grunt) {
             }
         },
 
-        shell: {
-            'favicon': {
-                command: [
-                    'cd app/favicon',
-                    'convert app-icon.png -geometry 180x180 app-icon-180.png',
-                    'convert favicon.png -geometry 48x48 -transparent white temp-48.png',
-                    'convert favicon.png -geometry 32x32 -transparent white temp-32.png',
-                    'convert favicon.png -geometry 16x16 -transparent white temp-16.png',
-                    'optipng -quiet -o 3 app-icon-*.png',
-                    'advdef -q -z -4 -i 5 app-icon-*.png',
-                    'convert temp-16.png temp-32.png temp-48.png favicon.ico',
-                    'rm temp-*.png'
-                ].join(' && ')
-            },
-        },
-
         watch: {
             options: {
                 livereload: {
-                    host: '<%= nconf.get("NOTIFIER_LIVERELOAD_HOST") %>',
-                    port: '<%= nconf.get("NOTIFIER_LIVERELOAD_PORT") %>'
+                    host: nconf.get('NOTIFIER_LIVERELOAD_HOST'),
+                    port: nconf.get('NOTIFIER_LIVERELOAD_PORT')
                 }
             },
+
             app: {
                 files: ['app/**', 'Gruntfile.js', '!app/**/.*', '!app/**/flycheck_*'],
                 tasks: ['build']
@@ -184,8 +173,8 @@ module.exports = function(grunt) {
 
     });
 
-    grunt.registerTask('build', 'Build the application', function (buildType) {
-        var environment, tasks;
+    grunt.registerTask('build', 'Build the application', (buildType) => {
+        let environment, tasks;
 
         environment = grunt.template.process('<%= nconf.get("NODE_ENV") %>');
 
@@ -216,14 +205,16 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-shell');
 
     if (process.env.NODE_ENV === 'dev') {
         grunt.loadNpmTasks('grunt-contrib-watch');
         grunt.registerTask('default', ['build:full', 'watch']);
-    } else {
-        grunt.registerTask('default', function () {
-            grunt.log.error('There is no default task unless NODE_ENV is set to dev.');
-        });
+
+        return;
     }
+
+    grunt.registerTask(
+        'default',
+        () => grunt.log.error('There is no default task unless NODE_ENV is set to dev.')
+    );
 };
