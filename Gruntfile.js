@@ -3,7 +3,7 @@ module.exports = function(grunt) {
     nconf.env();
 
     if (process.env.NODE_ENV) {
-        nconf.file('local', 'server/config-' + process.env.NODE_ENV + '.json');
+        nconf.file('local', 'config-' + process.env.NODE_ENV + '.json');
     }
 
     nconf.defaults({

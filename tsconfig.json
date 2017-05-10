@@ -6,9 +6,9 @@
     "module": "commonJS"
   },
   "include": [
-    "server/**/*"
+    "modules/**/*"
   ],
   "exclude": [
-    "server/test/*"
+    "test/*"
   ]
 }

@@ -40,8 +40,7 @@ rsync -ar \
       --exclude='***/.sass-cache' \
       --exclude='***/.idea' \
       --exclude='***/docs-build' \
-      --exclude='***/server/config-*.json' \
-      --include='server/***' \
+      --exclude='config-*.json' \
       --include='public/***' \
       --include='node_modules/***' \
       --exclude='*' \

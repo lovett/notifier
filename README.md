@@ -29,7 +29,7 @@ To start the server, run:
 By default the server will run using a reasonable default
 configuration that can be selectively overriden with an externa JSON
 file.  This file can either be located at `/etc/notifier.json` or
-within the application directory under `server/config-[env].json`
+within the application directory under `config-[env].json`
 where `[env]` corresponds to the value of NODE_ENV.
 
 By default, the server runs on `localhost:8080` with a default
