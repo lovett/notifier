@@ -1,5 +1,5 @@
 {
   "verbose": true,
-  "ignore": ["test", "flycheck_*", "#*"],
+  "ignore": ["test", "flycheck_*", "#*", "public"],
   "ext": "js,ejs"
 }
