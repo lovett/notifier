@@ -4,7 +4,29 @@ let Sequelize = require('sequelize'),
     crypto = require('crypto');
 
 function main (sequelize, app) {
-    let fields, instanceMethods;
+    let fields, hasher, instanceMethods;
+
+    hasher = (instance, options, done) => {
+        let iterations, keyLength, randBytes;
+
+        randBytes = app.locals.config.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
+        keyLength = app.locals.config.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
+        iterations = app.locals.config.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
+
+        crypto.randomBytes(randBytes, (err, buf) => {
+            let salt;
+
+            if (err) throw err;
+
+            salt = buf.toString('hex');
+
+            crypto.pbkdf2(instance.get('passwordHash'), salt, iterations, keyLength, 'sha1', (err, key) => {
+                if (err) throw err;
+                instance.set('passwordHash', `${salt}::${key.toString('hex')}`);
+                done();
+            });
+        });
+    };
 
     fields = {
         username: {
@@ -21,7 +43,7 @@ function main (sequelize, app) {
 
         passwordHash: {
             type: Sequelize.STRING(258),
-            allowNull: true,
+            allowNull: false,
             validate: {
                 len: {
                     args: [1, 258],
@@ -72,30 +94,6 @@ function main (sequelize, app) {
             return hmac.read();
         },
 
-        hashPassword: function (password, callback) {
-            let iterations, keyLength, randBytes, self;
-
-            self = this;
-            randBytes = app.locals.config.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
-            keyLength = app.locals.config.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
-            iterations = app.locals.config.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
-
-            crypto.randomBytes(randBytes, (err, buf) => {
-                let salt;
-
-                if (err) {
-                    process.stderr.write('Error while generating random bytes\n');
-                }
-
-                salt = buf.toString('hex');
-
-                crypto.pbkdf2(password, salt, iterations, keyLength, 'sha1', (err, key) => {
-                    self.setDataValue('passwordHash', `${salt}::${key.toString('hex')}`);
-                    callback();
-                });
-            });
-        },
-
         checkPassword: function (password, callback) {
             let iterations, keyLength, segments;
 
@@ -110,7 +108,11 @@ function main (sequelize, app) {
     };
 
     return sequelize.define('User', fields, {
-        'instanceMethods': instanceMethods
+        'instanceMethods': instanceMethods,
+        'hooks': {
+            'beforeCreate': hasher,
+            'beforeUpdate': hasher
+        }
     });
 }
 

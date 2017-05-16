@@ -39,15 +39,16 @@ function main (app) {
             return;
         }
 
-        user = app.locals.User.create({
+        app.locals.User.create({
             id: DEFAULT_USER_ID,
             username: username,
             passwordHash: password
+        }).then((user) => {
+            process.stdout.write('Created a default user:\n');
+            process.stdout.write(`- Username: ${user.username}\n`);
+            process.stdout.write(`- Password: ${password}\n`);
         });
 
-        process.stdout.write('Created a default user:\n');
-        process.stdout.write(`- Username: ${username}\n`);
-        process.stdout.write(`- Password: ${password}\n`);
     });
 }
 
