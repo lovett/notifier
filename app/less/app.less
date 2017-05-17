@@ -1,5 +1,5 @@
 @palettePrimary: #2D8E5E;
-@paletteAccent: #CBD47B;
+@paletteAccent: black;
 
 HTML {
     min-height: 100%;
@@ -114,7 +114,7 @@ FOOTER {
 .message {
     min-height: 6em;
     box-sizing: border-box;
-    border: 0.25em solid @palettePrimary;
+    border: 0.5em solid @palettePrimary;
     background-color: rgb(255, 255, 255);
     margin-bottom: 0.5em;
     overflow: hidden;
@@ -204,6 +204,7 @@ FOOTER {
 
 .message.focused {
     border-color: @paletteAccent;
+    outline: 0;
 
     .options {
         opacity: 1;
