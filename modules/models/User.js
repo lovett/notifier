@@ -54,7 +54,7 @@ function main (sequelize, app) {
     };
 
     instanceMethods = {
-        purgeServiceToken: (service, callback) => {
+        purgeServiceToken: function (service, callback){
             if (!service) {
                 callback(0);
             }
