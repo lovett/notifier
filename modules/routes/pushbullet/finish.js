@@ -9,7 +9,7 @@ router = express.Router();
 
 
 router.get('/', (req, res) => {
-    let config, tokenUrl;
+    let config, querystringToken, tokenUrl;
 
     config = req.app.locals.config;
 
@@ -20,17 +20,21 @@ router.get('/', (req, res) => {
         pathname: '/oauth2/token'
     });
 
+    // If access has been denied, Pushbullet incorrectly formats
+    // the URL with an extra ? which results in req.query.token
+    // containing the token plus extra garbage.
+    querystringToken = req.query.token.replace(/\?.*/, '');
+
     req.app.locals.Token.find({
         include: [ req.app.locals.User],
         where: {
-            value: req.query.token
+            value: querystringToken
         }
     }).then((token) => {
-        if (!token.User) {
-            console.error({}, 'user not found during pushbullet auth callback');
+        if (!token || !token.User) {
             res.redirect(config.get('NOTIFIER_BASE_URL'));
 
-            return false;
+            return;
         }
 
         if (!req.query.code) {
@@ -46,8 +50,8 @@ router.get('/', (req, res) => {
 
         needle.post(tokenUrl, {
             'grant_type': 'authorization_code',
-            'client_id': config.get('PUSHBULLET_CLIENT_ID'),
-            'client_secret': config.get('PUSHBULLET_CLIENT_SECRET'),
+            'client_id': config.get('NOTIFIER_PUSHBULLET_CLIENT_ID'),
+            'client_secret': config.get('NOTIFIER_PUSHBULLET_CLIENT_SECRET'),
             'code': req.query.code
         }, (err, resp, body) => {
             req.app.locals.Token.destroy({

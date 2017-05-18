@@ -11,10 +11,14 @@ router.get('/', (req, res) => {
     let token;
 
     function sendUrl (tokenValue) {
-        let redirectUri = url.format({
+        let config, redirectUri;
+
+        config = req.app.locals.config;
+
+        redirectUri = url.format({
             protocol: req.query.protocol,
             host: req.query.host,
-            pathname: '/authorize/pushbullet/finish',
+            pathname: config.get('NOTIFIER_BASE_URL') + 'authorize/pushbullet/finish',
             query: {
                 token: tokenValue
             }
@@ -27,7 +31,7 @@ router.get('/', (req, res) => {
                 host: 'www.pushbullet.com',
                 pathname: '/authorize',
                 query: {
-                    'client_id': req.app.locals.nconf.get('PUSHBULLET_CLIENT_ID'),
+                    'client_id': config.get('NOTIFIER_PUSHBULLET_CLIENT_ID'),
                     'response_type': 'code',
                     'redirect_uri': redirectUri
                 }
