@@ -34,8 +34,6 @@ function main (app) {
 
     app.locals.User.findOne(filter).then(user => {
         if (user) {
-            process.stdout.write('Default user already exists\n');
-
             return;
         }
 
