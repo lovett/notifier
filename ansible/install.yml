@@ -40,21 +40,16 @@
     template:
       src: "notifer.service.j2"
       dest: "/etc/systemd/system/notifier.service"
-    notify:
-      - systemd.reload
-      - systemd.enable.notifier
+
+  - name: Enable systemd service
+    become: true
+    command: systemctl enable notifier
+
+  - name: Reload systemd
+    become: true
+    command: systemctl daemon-reload
 
   - name: Restart the application
     become: true
     command: systemctl reload-or-restart notifier
-
-  handlers:
-  - name: systemd.reload
-    become: true
-    command: systemctl daemon-reload
-
-  - name: systemd.enable.notifier
-    become: true
-    command: systemctl enable notifier
-
 ...
