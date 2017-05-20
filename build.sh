@@ -22,6 +22,10 @@ fi
 rsync -ar \
       --include='package.json' \
       --include='README.md' \
+      --include='notifier.js' \
+      --include='public/***' \
+      --include='node_modules/***' \
+      --include='modules/***' \
       --exclude='***/.bin' \
       --exclude='***/test' \
       --exclude='***/tests' \
@@ -41,8 +45,6 @@ rsync -ar \
       --exclude='***/.idea' \
       --exclude='***/docs-build' \
       --exclude='config-*.json' \
-      --include='public/***' \
-      --include='node_modules/***' \
       --exclude='*' \
       --delete \
       --delete-excluded \
