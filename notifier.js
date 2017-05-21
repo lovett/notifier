@@ -4,6 +4,7 @@ let Message = require('./modules/models/Message'),
     Token = require('./modules/models/Token'),
     User = require('./modules/models/User'),
     app,
+    appCache = require('./modules/routes/appcache'),
     archive = require('./modules/routes/archive'),
     asset = require('./modules/middleware/asset'),
     auth = require('./modules/routes/auth'),
@@ -230,6 +231,8 @@ router = express.Router();
 router.use(asset(nconf.get('NOTIFIER_PUBLIC_DIR')));
 
 router.use(/^\/(login|logout|onedrive)?$/, index);
+
+router.use('/notifier.appcache', appCache);
 
 router.use('/status', status);
 

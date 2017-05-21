@@ -15,25 +15,6 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         nconf: nconf,
-        appcache: {
-            options: {
-                basePath: 'public'
-            },
-            all: {
-                dest: 'public/notifier.appcache',
-                baseUrl: nconf.get('NOTIFIER_BASE_URL'),
-                cache: {
-                    patterns: [
-                        'public/*.min.js',
-                        'public/*.min.css',
-                        'public/favicon/app-icon*.png',
-                        'public/favicon/favicon.ico',
-                        'public/favicon/favicon.png',
-                    ]
-                },
-                network: '*'
-            }
-        },
 
         autoprefixer: {
             app: {
@@ -50,9 +31,6 @@ module.exports = function(grunt) {
             },
             app: {
                 src: ['public/app*', 'public/all*', 'public/templates']
-            },
-            postBuild: {
-                src: ['public/version.json']
             }
         },
 
@@ -193,13 +171,13 @@ module.exports = function(grunt) {
             grunt.config.set('uglify.lib.options.sourceMap', false);
         }
 
-        tasks = tasks.concat(['clean:postBuild', 'appcache']);
-
         grunt.task.run(tasks);
+
+        grunt.file.write('build.txt', new Date());
+
     });
 
     grunt.loadNpmTasks('grunt-angular-templates');
-    grunt.loadNpmTasks('grunt-appcache');
     grunt.loadNpmTasks('grunt-autoprefixer');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
