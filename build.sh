@@ -26,6 +26,7 @@ rsync -ar \
       --include='public/***' \
       --include='node_modules/***' \
       --include='modules/***' \
+      --include='views/***' \
       --exclude='***/.bin' \
       --exclude='***/test' \
       --exclude='***/tests' \
