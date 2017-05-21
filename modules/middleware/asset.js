@@ -1,4 +1,6 @@
-var express = require('express');
+'use strict';
+
+let express = require('express');
 
 function main(public_dir) {
     return express.static(
