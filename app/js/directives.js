@@ -318,7 +318,7 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'MessageLis
             });
 
             scope.$on('settings:logout', function () {
-                $window.location = '/logout';
+                $window.location = 'logout';
             });
 
             scope.$on('settings:browserNotifications', function (e, state) {
