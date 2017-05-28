@@ -1,19 +1,22 @@
-.flex-parent.centered {
-    display: flex;
-    box-pack: center;
-    box-align: center;
-    flex-align: center;
-    align-items: center;
-    justify-content: center;
-}
+.flex-parent {
+    min-height: 100vh;
 
+    &.centered {
+        display: flex;
+        box-pack: center;
+        box-align: center;
+        flex-align: center;
+        align-items: center;
+        justify-content: center;
+    }
 
-.flex-parent.stacked {
-    display: flex;
-    flex-direction: column;
-    min-height: 98vh;
+    &.stacked {
+        display: flex;
+        flex-direction: column;
+        min-height: 98vh;
 
-    .grow {
-        flex-grow: 1;
+        .grow {
+            flex-grow: 1;
+        }
     }
 }
