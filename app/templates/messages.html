@@ -8,9 +8,7 @@
         <div ng-show="messageListVisible" ng-class="{columns: queue.messages.length > 1}">
             <a ng-href="{{message.url}}" rel="noreferrer" target="_blank" class="message {{message.badge}}" ng-class="{linked: message.url, expired: message.expired, focused: message.focused, extended: message.extended, stuck: message.state == 'stuck', hidden: message.state == 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false" ng-focus="message.focused = true" ng-blur="message.focused = false" notifier-focus="message.focused">
 
-                <div class="badge">
-                    <svg ng-if="message.url" class="icon icon-external-link"><use xlink:href="#icon-external-link"></use></svg>
-                </div>
+                <div class="badge"></div>
 
                 <header>
                     <h1 ng-show="message.title">
