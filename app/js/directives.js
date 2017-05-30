@@ -128,7 +128,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$win
 
             scope.shortcuts = shortcutMap;
 
-            angular.element($document[0]).bind('keyup', function (e) {
+            angular.element($document[0]).bind('keydown', function (e) {
                 var charCode = e.which || e.keyCode;
 
                 if (!shortcutMap.hasOwnProperty(charCode)) {
