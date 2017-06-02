@@ -44,7 +44,6 @@ function main (sequelize) {
             type: Sequelize.STRING(255),
             allowNull: true,
             validate: {
-                isUrl: true,
                 len: {
                     args: [1, 255],
                     msg: 'should be 1-255 characters long'
