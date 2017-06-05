@@ -288,7 +288,7 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
         return new Notification(message.title, {
             'body': messageBody,
             'tag' : message.publicId,
-            'icon': '/favicon/favicon.png'
+            'icon': 'favicon/favicon.png'
         });
 
     };
