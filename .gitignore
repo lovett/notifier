@@ -23,3 +23,4 @@ ansible/inventory
 ansible/vars.yml
 .vscode
 build.txt
+modules/**/*.js
