@@ -1,10 +1,13 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "module": "commonJS"
+    "alwaysStrict": true,
+    "module": "commonJS",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "target": "ES6"
   },
   "include": [
+    "notifier.ts",
     "modules/**/*"
   ],
   "exclude": [

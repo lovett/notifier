@@ -1,13 +1,9 @@
-'use strict';
-let express, router, url;
+import * as express from "express";
+import * as url from "url";
 
-express = require('express');
+const router = express.Router();
 
-router = express.Router();
-
-url = require('url');
-
-router.get('/', (req, res) => {
+router.get('/', (req: express.Request, res: express.Response) => {
     let token;
 
     function sendUrl (tokenValue) {
@@ -57,4 +53,4 @@ router.get('/', (req, res) => {
 
 });
 
-module.exports = exports = router;
+export default router;

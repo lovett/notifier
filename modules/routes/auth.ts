@@ -1,12 +1,9 @@
-'use strict';
+import * as express from "express";
+import * as useragent from "useragent";
 
-let express, router, useragent;
+const router = express.Router();
 
-express = require('express');
-router = express.Router();
-useragent = require('useragent');
-
-router.post('/', (req, res) => {
+router.post('/', (req: express.Request, res: express.Response) => {
     let asJson, asRejection, asText, generateCallback, pruneCallback, sendFailure, sendResponse, token, tokenLabel, tokenPersist;
 
     tokenLabel = req.body.label || '';
@@ -65,4 +62,4 @@ router.post('/', (req, res) => {
 
 });
 
-module.exports = exports = router;
+export default router;

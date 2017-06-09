@@ -1,8 +1,6 @@
-'use strict';
+import * as express from "express";
 
-let express = require('express');
-
-function main(public_dir) {
+export default function (public_dir) {
     return express.static(
         public_dir,
         {
@@ -13,5 +11,3 @@ function main(public_dir) {
         }
     );
 }
-
-module.exports = exports = main;

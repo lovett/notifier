@@ -1,8 +1,5 @@
-var favicon = require('serve-favicon');
+import serveFavicon = require('serve-favicon');
 
-function main(public_dir) {
-    var path = public_dir + '/favicon/favicon.ico';
-    return favicon(path);
+export default function (public_dir) {
+    return serveFavicon(public_dir + '/favicon/favicon.ico');
 }
-
-module.exports = exports = main;

@@ -1,13 +1,10 @@
-'use strict';
-let express, router;
+import * as express from "express";
 
-express = require('express');
+const router = express.Router();
 
-router = express.Router();
-
-router.get('/', (req, res) => {
+router.get('/', (req: express.Request, res: express.Response) => {
     res.type('appcache');
     res.render('appCache');
 });
 
-module.exports = exports = router;
+export default router;

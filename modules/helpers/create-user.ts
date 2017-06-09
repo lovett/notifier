@@ -1,6 +1,4 @@
-'use strict';
-
-let crypto = require('crypto');
+import * as crypto from "crypto";
 
 function randomString (len) {
     let randomBytes;
@@ -10,7 +8,7 @@ function randomString (len) {
     return randomBytes.toString('hex').slice(0,len);
 }
 
-function main (app) {
+export default function (app) {
     let filter, password, username;
 
     const DEFAULT_USER_ID = 1;
@@ -49,5 +47,3 @@ function main (app) {
 
     });
 }
-
-module.exports = exports = main;

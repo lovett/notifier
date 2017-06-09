@@ -1,15 +1,13 @@
-let express, router;
+import * as express from "express";
 
-express = require('express');
-
-router = express.Router();
+const router = express.Router();
 
 /**
  * Remove a access token
  *
  * This is the destructive counterpart to /auth
  */
-router.post('/', function(req, res) {
+router.post('/', function(req: express.Request, res: express.Response) {
     let params = {
         where: {
             value: req.user.token.value
@@ -20,4 +18,4 @@ router.post('/', function(req, res) {
         .then(() => res.sendStatus(200));
 });
 
-module.exports = exports = router;
+export default router;

@@ -1,14 +1,9 @@
-'use strict';
+import * as express from "express";
+import * as url from "url";
 
-let express, router, url;
+const router = express.Router();
 
-express = require('express');
-
-router = express.Router();
-
-url = require('url');
-
-router.get('/', (req, res) => {
+router.get('/', (req: express.Request, res: express.Response) => {
     let endpoint = url.parse('https://login.live.com/oauth20_authorize.srf');
 
     // this endpoint can only be accessed by the default user
@@ -30,4 +25,4 @@ router.get('/', (req, res) => {
     });
 });
 
-module.exports = exports = router;
+export default router;

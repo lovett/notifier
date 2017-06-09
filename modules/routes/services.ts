@@ -1,9 +1,6 @@
-'use strict';
-let express, router;
+import * as express from "express";
 
-express = require('express');
-
-router = express.Router();
+const router = express.Router();
 
 /**
  * Return a list of the additonal functionality the user has opted into
@@ -14,10 +11,10 @@ router = express.Router();
  * Client-specific functionality is not included. In particular:
  * browser notifications.
  */
-router.get('/', (req, res, next) => {
+router.get('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     let tokenKeysToJson = () => res.json(Object.keys(req.user.serviceTokens));
 
     req.user.getServiceTokens(tokenKeysToJson);
 });
 
-module.exports = exports = router;
+export default router;

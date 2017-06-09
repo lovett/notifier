@@ -1,16 +1,27 @@
-'use strict';
-let express, router;
+import {Request, Response, NextFunction} from "express";
 
-express = require('express');
+const express = require('express');
 
-router = express.Router();
+const router = express.Router();
 
-router.get('/:count', (req, res) => {
+interface WhereDate {
+    $lte?: Date,
+    $gt?: Date
+}
+
+interface WhereFilter {
+    UserId: number,
+    unread: boolean,
+    deliveredAt: WhereDate,
+    received?: WhereDate
+}
+
+router.get('/:count', (req: Request, res: Response) => {
     let filters = {
         attributes: ['id', 'publicId', 'title', 'url', 'body', 'source', 'group', 'received', 'expiresAt'],
         limit: req.params.count,
         order: 'deliveredAt DESC',
-        where: {
+        where: <WhereFilter>{
             UserId: req.user.id,
             unread: true,
             deliveredAt: { $lte: new Date() }
@@ -21,7 +32,7 @@ router.get('/:count', (req, res) => {
         req.query.since = parseInt(req.query.since, 10) || 0;
         if (req.query.since > 0) {
             filters.where.received = {
-                gt: new Date(req.query.since)
+                $gt: new Date(req.query.since)
             };
         }
     }
@@ -58,4 +69,4 @@ router.get('/:count', (req, res) => {
     });
 });
 
-module.exports = exports = router;
+export default router;

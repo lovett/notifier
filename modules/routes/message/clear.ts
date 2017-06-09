@@ -1,12 +1,9 @@
-'use strict';
-let express, publishMessage, router;
+import * as express from "express";
+import publishMessage from "../../helpers/publish-message";
 
-express = require('express');
-publishMessage = require('../../helpers/publish-message');
+const router = express.Router();
 
-router = express.Router();
-
-router.post('/', (req, res) => {
+router.post('/', (req: express.Request, res: express.Response) => {
 
     let update = function (id) {
         req.app.locals.Message.update(
@@ -50,4 +47,4 @@ router.post('/', (req, res) => {
 
 });
 
-module.exports = exports = router;
+export default router;

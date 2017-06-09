@@ -1,15 +1,14 @@
-'use strict';
-let sanitizeHtml = require('sanitize-html');
+import sanitizeHtml from "sanitize-html"
 
 /**
  * Remove all markup from a value
  *
  */
-exports.strictSanitize = (value) => {
+export function strictSanitize (value: string) {
     let config = {
-        allowedTags: [],
+        allowedTags: [] as string[],
         allowedAttributes: {},
-        textFilter: function (text) {
+        textFilter: function (text: string) {
             return text.replace(/&quot;/g, '"');
         }
     };
@@ -17,20 +16,21 @@ exports.strictSanitize = (value) => {
     return sanitizeHtml(value, config);
 };
 
-exports.tolerantSanitize = (value) => {
+/**
+ * Filter markup from a value based on a whitelist
+ *
+ */
+export function tolerantSanitize (value: string) {
     let config = {
         allowedTags: [ 'b', 'i', 'em', 'strong', 'a', 'p' ],
         allowedAttributes: {
             'a': [ 'href' ]
         },
-        textFilter: function (text) {
+        textFilter: function (text: string) {
             return text.replace(/&quot;/g, '"');
         },
         allowedSchemes: [ 'http', 'https', 'mailto' ]
     };
 
     return sanitizeHtml(value, config);
-};
-
-
-module.exports = exports;
+}

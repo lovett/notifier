@@ -1,10 +1,8 @@
-var express, router;
+import * as express from "express";
 
-express = require('express');
+const router = express.Router();
 
-router = express.Router();
-
-router.post('/', function (req, res) {
+router.post('/', function (req: express.Request, res: express.Response) {
     var update = function (id) {
         req.app.locals.Message.update(
             {unread: true},
@@ -27,4 +25,4 @@ router.post('/', function (req, res) {
     }
 });
 
-module.exports = exports = router;
+export default router;

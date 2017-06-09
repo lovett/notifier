@@ -1,17 +1,12 @@
-'use strict';
+import * as express from "express";
+import * as util from "util";
 
-let express, router, util;
-
-express = require('express');
-
-util = require('util');
-
-router = express.Router();
+const router = express.Router();
 
 /**
  * The application homepage
  */
-router.get('/', (req, res) => {
+router.get('/', (req: express.Request, res: express.Response) => {
     let config, livereloadUrl, title;
 
     config = req.app.locals.config;
@@ -37,4 +32,4 @@ router.get('/', (req, res) => {
     });
 });
 
-module.exports = exports = router;
+export default router;

@@ -1,7 +1,6 @@
-'use strict';
-let LocalStrategy = require('passport-local').Strategy;
+import {Strategy as LocalStrategy} from "passport-local"
 
-function main (app) {
+export default function (app) {
     return new LocalStrategy((username, password, done) => {
         app.locals.User.find({ where: { username: username } }).then((user) => {
             if (!user) {
@@ -18,5 +17,3 @@ function main (app) {
         }).catch((error) => done(error));
     });
 }
-
-module.exports = exports = main;

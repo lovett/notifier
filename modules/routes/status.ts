@@ -1,15 +1,13 @@
-var express, router;
+import * as express from "express";
 
-express = require('express');
-
-router = express.Router();
+const router = express.Router();
 
 /**
  * A static are-you-alive endpoint for monitoring and keep-alive
  */
-router.get('/', function(req, res, next) {
+router.get('/', function(req: express.Request, res: express.Response, next: express.NextFunction) {
     res.type('txt');
     res.send('OK');
 });
 
-module.exports = exports = router;
+export default router;

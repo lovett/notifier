@@ -1,33 +1,26 @@
-/* eslint no-invalid-this: 0 */
-'use strict';
-let Sequelize = require('sequelize'),
-    crypto = require('crypto');
+import * as crypto from "crypto";
+import * as Sequelize from "sequelize";
 
-function main (sequelize, app) {
+export default function (sequelize, app) {
     let fields, hasher, instanceMethods;
-
     hasher = (instance, options, done) => {
         let iterations, keyLength, randBytes;
-
         randBytes = app.locals.config.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
         keyLength = app.locals.config.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
         iterations = app.locals.config.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
-
         crypto.randomBytes(randBytes, (err, buf) => {
             let salt;
-
-            if (err) throw err;
-
+            if (err)
+                throw err;
             salt = buf.toString('hex');
-
             crypto.pbkdf2(instance.get('passwordHash'), salt, iterations, keyLength, 'sha1', (err, key) => {
-                if (err) throw err;
+                if (err)
+                    throw err;
                 instance.set('passwordHash', `${salt}::${key.toString('hex')}`);
                 done();
             });
         });
     };
-
     fields = {
         username: {
             type: Sequelize.STRING(20),
@@ -40,7 +33,6 @@ function main (sequelize, app) {
                 }
             }
         },
-
         passwordHash: {
             type: Sequelize.STRING(258),
             allowNull: false,
@@ -52,13 +44,11 @@ function main (sequelize, app) {
             }
         }
     };
-
     instanceMethods = {
-        purgeServiceToken: function (service, callback){
+        purgeServiceToken: function (service, callback) {
             if (!service) {
                 callback(0);
             }
-
             app.locals.Token.destroy({
                 where: {
                     'UserId': this.id,
@@ -69,9 +59,7 @@ function main (sequelize, app) {
         },
         getServiceTokens: function (callback) {
             let user = this;
-
             user.serviceTokens = {};
-
             app.locals.Token.findAll({
                 where: {
                     'UserId': user.id,
@@ -83,30 +71,23 @@ function main (sequelize, app) {
                 callback();
             });
         },
-
         getChannel: function () {
             let hmac = crypto.createHmac('sha256', app.locals.appsecret);
-
             hmac.setEncoding('hex');
             hmac.write(this.id.toString());
             hmac.end();
-
             return hmac.read();
         },
-
         checkPassword: function (password, callback) {
             let iterations, keyLength, segments;
-
             segments = this.getDataValue('passwordHash').split('::');
             keyLength = app.locals.config.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
             iterations = app.locals.config.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
-
             crypto.pbkdf2(password, segments[0], iterations, keyLength, 'sha1', (err, key) => {
                 callback(key.toString('hex') === segments[1]);
             });
         }
     };
-
     return sequelize.define('User', fields, {
         'instanceMethods': instanceMethods,
         'hooks': {
@@ -115,5 +96,3 @@ function main (sequelize, app) {
         }
     });
 }
-
-module.exports = exports = main;

@@ -1,9 +1,7 @@
-/* eslint no-invalid-this: 0 */
-'use strict';
-let Sequelize = require('sequelize'),
-    crypto = require('crypto');
+import * as crypto from "crypto";
+import * as Sequelize from "sequelize";
 
-function main (sequelize, app) {
+export default function (sequelize, app) {
     let classMethods, fields;
 
     fields = {
@@ -82,6 +80,3 @@ function main (sequelize, app) {
         'classMethods': classMethods
     });
 }
-
-
-module.exports = exports = main;

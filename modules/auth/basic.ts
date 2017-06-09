@@ -1,7 +1,6 @@
-'use strict';
-let BasicStrategy = require('passport-http').BasicStrategy;
+import {BasicStrategy} from "passport-http"
 
-function main (app) {
+export default function (app) {
     return new BasicStrategy((key, value, next) => {
 
         app.locals.Token.findOne({
@@ -25,5 +24,3 @@ function main (app) {
         });
     });
 }
-
-module.exports = exports = main;

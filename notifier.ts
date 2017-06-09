@@ -1,49 +1,47 @@
-'use strict';
-let Message = require('./modules/models/Message'),
-    Sequelize = require('sequelize'),
-    Token = require('./modules/models/Token'),
-    User = require('./modules/models/User'),
-    app,
-    appCache = require('./modules/routes/appcache'),
-    archive = require('./modules/routes/archive'),
-    asset = require('./modules/middleware/asset'),
-    auth = require('./modules/routes/auth'),
-    authBasic = require('./modules/auth/basic.js'),
-    authLocal = require('./modules/auth/local.js'),
-    bayeux,
-    bodyParser = require('body-parser'),
-    compression = require('compression'),
-    createUser = require('./modules/helpers/create-user'),
-    crypto = require('crypto'),
-    deauth = require('./modules/routes/deauth'),
-    deflate = require('permessage-deflate'),
-    express = require('express'),
-    favicon = require('./modules/middleware/favicon'),
-    faye = require('faye'),
-    fs = require('fs'),
-    https = require('https'),
-    index = require('./modules/routes/index'),
-    logger = require('./modules/middleware/logger'),
-    messageClear = require('./modules/routes/message/clear'),
-    messageIndex = require('./modules/routes/message/index'),
-    messageUnclear = require('./modules/routes/message/unclear'),
-    nconf = require('nconf'),
-    onedriveFinish = require('./modules/routes/onedrive/finish'),
-    onedriveStart = require('./modules/routes/onedrive/start'),
-    passport = require('passport'),
-    path = require('path'),
-    pushbulletFinish = require('./modules/routes/pushbullet/finish'),
-    pushbulletStart = require('./modules/routes/pushbullet/start'),
-    responseTime = require('response-time'),
-    revoke = require('./modules/routes/revoke'),
-    router,
-    security = require('./modules/middleware/security'),
-    sequelize,
-    sequelizeLogger,
-    services = require('./modules/routes/services'),
-    status = require('./modules/routes/status'),
-    validateCount = require('./modules/validation/count'),
-    verifySubscription = require('./modules/helpers/verify-subscription');
+import * as Sequelize from "sequelize";
+import * as bodyParser from "body-parser";
+import * as compression from "compression";
+import * as crypto from "crypto";
+import * as express from "express";
+import * as fs from "fs";
+import * as https from "https";
+import * as nconf from "nconf";
+import * as passport from "passport";
+import * as path from "path";
+import * as responseTime from "response-time";
+
+import Message from "./modules/models/Message";
+import Token from "./modules/models/Token";
+import User from "./modules/models/User";
+import appCache from "./modules/routes/appcache";
+import archive from "./modules/routes/archive";
+import asset from "./modules/middleware/asset";
+import auth from "./modules/routes/auth";
+import authBasic from "./modules/auth/basic";
+import authLocal from "./modules/auth/local";
+import createUser from "./modules/helpers/create-user";
+import deauth from "./modules/routes/deauth";
+import favicon from "./modules/middleware/favicon";
+import index from "./modules/routes/index";
+import logger from "./modules/middleware/logger";
+import messageClear from "./modules/routes/message/clear";
+import messageIndex from "./modules/routes/message/index";
+import messageUnclear from "./modules/routes/message/unclear";
+import onedriveFinish from "./modules/routes/onedrive/finish";
+import onedriveStart from "./modules/routes/onedrive/start";
+import pushbulletFinish from "./modules/routes/pushbullet/finish";
+import pushbulletStart from "./modules/routes/pushbullet/start";
+import revoke from "./modules/routes/revoke";
+import security from "./modules/middleware/security";
+import services from "./modules/routes/services";
+import status from "./modules/routes/status";
+import validateCount from "./modules/validation/count";
+import verifySubscription from "./modules/helpers/verify-subscription";
+
+let app, bayeux, deflate, faye, router, sequelize, sequelizeLogger;
+
+deflate = require('permessage-deflate');
+faye = require('faye');
 
 /**
  * Application configuration
@@ -222,6 +220,7 @@ app.locals.bayeuxClient.addExtension({
  * Routes
  */
 passport.use(authLocal(app));
+
 passport.use(authBasic(app));
 
 app.use(passport.initialize());

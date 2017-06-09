@@ -1,9 +1,7 @@
-'use strict';
-let util;
+import * as util from "util";
+import * as express from "express";
 
-util = require('util');
-
-function main (req, res, next) {
+export default function (req: express.Request, res: express.Response, next: express.NextFunction) {
     let config, csp, forceHttps, hostname, liveReload, numericPort, port, scheme, socketScheme;
 
     config = req.app.locals.config;
@@ -76,5 +74,3 @@ function main (req, res, next) {
 
     next();
 }
-
-module.exports = exports = main;

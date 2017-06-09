@@ -1,15 +1,10 @@
-'use strict';
-let express, fs, needle, router;
+import * as express from "express";
+import * as fs from "fs";
+import * as needle from "needle";
 
-express = require('express');
+const router = express.Router();
 
-fs = require('fs');
-
-needle = require('needle');
-
-router = express.Router();
-
-router.get('/', (req, res) => {
+router.get('/', (req: express.Request, res: express.Response) => {
     let callback, config;
 
     config = req.app.locals.config;
@@ -54,4 +49,4 @@ router.get('/', (req, res) => {
     };
 });
 
-module.exports = exports = router;
+export default router;

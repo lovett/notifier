@@ -1,6 +1,4 @@
-'use strict';
-
-function main (app, message, callback) {
+export default function (app, message, callback) {
     if (!message.ext || !message.ext.authToken) {
         message.error = '401::Credentials missing';
         callback(message);
@@ -56,5 +54,3 @@ function main (app, message, callback) {
         }
     }).then(tokenFound).catch(tokenNotFound);
 }
-
-module.exports = exports = main;

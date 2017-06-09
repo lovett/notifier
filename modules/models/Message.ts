@@ -1,9 +1,7 @@
-/* eslint no-invalid-this: 0 */
-'use strict';
-let Sequelize = require('sequelize'),
-    sanitize = require('../validation/sanitize');
+import * as Sequelize from "sequelize";
+import * as sanitize from "../validation/sanitize";
 
-function main (sequelize) {
+export default function (sequelize) {
     let fields;
 
     fields = {
@@ -127,5 +125,3 @@ function main (sequelize) {
         'createdAt': 'received'
     });
 }
-
-module.exports = exports = main;

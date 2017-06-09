@@ -1,12 +1,10 @@
-'use strict';
-let dateparser, express, publishMessage, router;
+import * as express from "express";
+import publishMessage from "../../helpers/publish-message";
 
-dateparser = require('dateparser');
-express = require('express');
-publishMessage = require('../../helpers/publish-message');
-router = express.Router();
+const dateparser = require('dateparser');
+const router = express.Router();
 
-router.post('/', (req, res, next) => {
+router.post('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     let err, message;
 
     if (Object.keys(req.body).length === 0) {
@@ -152,4 +150,4 @@ router.patch('/', (req, res) => {
     });
 });
 
-module.exports = exports = router;
+export default router;

@@ -1,11 +1,9 @@
-let express, router;
+import * as express from "express";
 
-express = require('express');
+const router = express.Router();
 
-router = express.Router();
-
-router.post('/', function (req, res) {
-    let statusCodeByDeletionCount = (count) => {
+router.post('/', function (req: express.Request, res: express.Response) {
+    let statusCodeByDeletionCount = (count: number) => {
         if (count === 0) {
             res.sendStatus(500);
             return;
@@ -16,4 +14,4 @@ router.post('/', function (req, res) {
     req.user.purgeServiceToken(req.body.service, statusCodeByDeletionCount);
 });
 
-module.exports = exports = router;
+export default router;

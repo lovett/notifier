@@ -1,8 +1,6 @@
-'use strict';
+import * as needle from "needle";
 
-let needle = require('needle');
-
-function main (app, user, message) {
+export default function (app, user, message) {
     // This is not a URL. It must be an absolute path.
     let channel = '/messages/' + user.getChannel();
 
@@ -65,5 +63,3 @@ function main (app, user, message) {
         }
     });
 }
-
-module.exports = exports = main;
