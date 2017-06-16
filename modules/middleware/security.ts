@@ -12,15 +12,15 @@ export default function (req: express.Request, res: express.Response, next: expr
     res.setHeader('X-Frame-Options', 'DENY');
 
     // Content security policy - http://content-security-policy.com
-    scheme = req.headers['x-forwarded-proto'];
-    scheme = (scheme === 'https' || req.headers['x-https'] === 'On' || forceHttps) ? 'https' : 'http';
+    scheme = req.get('x-forwarded-proto');
+    scheme = (scheme === 'https' || req.get('x-https') === 'On' || forceHttps) ? 'https' : 'http';
 
     socketScheme = (scheme === 'https') ? 'wss' : 'ws';
 
-    hostname = req.headers['x-forwarded-server'] || req.headers['x-forwarded-host'] || req.headers.host;
+    hostname = req.get('x-forwarded-server') || req.get('x-forwarded-host') || req.headers.host;
     hostname = hostname.replace(/:[0-9]+$/, '');
 
-    port = req.headers['x-forwarded-port'] || req.headers['x-forwarded-host'] || req.headers.host;
+    port = req.get('x-forwarded-port') || req.get('x-forwarded-host') || req.headers.host;
     numericPort = parseInt(port.replace(/.*:/, ''), 10);
 
     if ((scheme === 'http' && numericPort !== 80) || (scheme === 'https' && numericPort !== 443)) {
@@ -67,7 +67,7 @@ export default function (req: express.Request, res: express.Response, next: expr
         // HTTP Strict Transport Security - https://www.owasp.org/index.php/HTTP_Strict_Transport_Security
         res.setHeader('Strict-Transport-Security', util.format('max-age=%d', 60 * 60 * 24 * 30));
 
-        if (req.headers['x-forwarded-proto'] === 'http') {
+        if (req.get('x-forwarded-proto') === 'http') {
             res.redirect('https://' + req.headers['x-forwarded-host'] + req.url);
         }
     }

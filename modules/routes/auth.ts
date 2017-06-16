@@ -9,7 +9,7 @@ router.post('/', (req: express.Request, res: express.Response) => {
     tokenLabel = req.body.label || '';
     tokenLabel = tokenLabel.replace(/[^a-zA-Z0-9-\.\/ ]/, '');
     if (tokenLabel === '') {
-        tokenLabel = useragent.parse(req.headers['user-agent']).toString();
+        tokenLabel = useragent.parse(req.get('user-agent')).toString();
     }
 
     tokenPersist = ['1', 'true'].indexOf(req.body.persist) > -1;
