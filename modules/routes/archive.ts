@@ -20,7 +20,7 @@ router.get('/:count', (req: Request, res: Response) => {
     let filters = {
         attributes: ['id', 'publicId', 'title', 'url', 'body', 'source', 'group', 'received', 'expiresAt'],
         limit: req.params.count,
-        order: 'deliveredAt DESC',
+        order: [['deliveredAt', 'DESC']],
         where: <WhereFilter>{
             UserId: req.user.id,
             unread: true,
