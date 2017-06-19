@@ -15,6 +15,8 @@ npm install --no-optional
 
 grunt --no-color build:full
 
+tsc
+
 if [ -f "$ARTIFACT" ]; then
     rm "$ARTIFACT"
 fi
