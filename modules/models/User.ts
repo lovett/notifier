@@ -69,15 +69,20 @@ export default function (sequelize, app) {
 
     model.prototype.getServiceTokens = function(callback) {
         let user = this;
+
         user.serviceTokens = {};
         app.locals.Token.findAll({
             where: {
                 'UserId': user.id,
-                'label': 'service'
+                'label': {
+                    $in: ['service', 'userval']
+                }
             },
-            attributes: ['key', 'value']
+            attributes: ['key', 'value', 'label']
         }).then((tokens) => {
-            tokens.forEach((token) => user.serviceTokens[token.key] = token.value);
+            user.serviceTokens = tokens.map((token) => {
+                return token.dataValues;
+            });
             callback();
         });
     };

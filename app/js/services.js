@@ -62,11 +62,25 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                 url: 'services',
                 headers: {'Authorization': auth}
             }).then(function (res) {
+                console.log(res.data);
                 callback(res.data);
             }).catch(function () {
                 callback([]);
             });
+        },
 
+        setService: function (service, callback) {
+            var auth = this.getAuthHeader();
+            $http({
+                method: 'POST',
+                url: 'services',
+                headers: {'Authorization': auth},
+                data: service
+            }).then(function (res) {
+                callback(true);
+            }).catch(function () {
+                callback(false);
+            });
         },
 
         authorize: function (service, callback) {
@@ -263,6 +277,42 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', '$filter', 'User
         }
 
     };
+}]);
+
+appServices.service('WebhookNotification', ['$window', '$rootScope', 'User', function ($window, $rootScope, User) {
+    'use strict';
+
+    var self = {
+        url: null
+    };
+
+    self.enable = function () {
+        var promptMessage = 'Url:';
+        var url = $window.prompt(promptMessage, self.url || '');
+
+        if (url === null) {
+            return;
+        }
+
+        url = url.trim();
+
+        if (url.length > 0 && url.indexOf('http') !== 0) {
+            alert('Invalid URL. Please try again.');
+            return;
+        }
+
+        self.url = url;
+
+        User.setService({
+            'webhook': self.url
+        }, function (result) {
+            self.state = (url && result === true) ? 'active' : 'inactive';
+            $rootScope.$broadcast('settings:webhookNotifications', self.state);
+        });
+
+    };
+
+    return self;
 }]);
 
 appServices.service('BrowserNotification', ['$window', '$rootScope', function ($window, $rootScope) {

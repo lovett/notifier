@@ -281,7 +281,7 @@ appDirectives.directive('notifierMessageOptions', ['MessageList', function (Mess
     };
 }]);
 
-appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'MessageList', 'User', '$window', '$document', function (BrowserNotification, MessageList, User, $window, $document) {
+appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNotification', 'MessageList', 'User', '$window', '$document', function (BrowserNotification, WebhookNotification, MessageList, User, $window, $document) {
     'use strict';
 
     return {
@@ -325,16 +325,24 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'MessageLis
                 scope.state.bn = state;
             });
 
+            scope.$on('settings:webhookNotifications', function (e, state) {
+                scope.state.webhook = state;
+            });
+
             scope.state = {
-                bn: BrowserNotification.state
+                bn: BrowserNotification.state,
+                webhook: WebhookNotification.state
             };
 
-            scope.settingsVisible = false;
-
+            scope.serviceProps = {};
 
             scope.enable = function (service) {
                 if (service === 'bn') {
                     BrowserNotification.enable();
+                }
+
+                if (service === 'webhook') {
+                    WebhookNotification.enable();
                 }
             };
 
@@ -363,7 +371,10 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'MessageLis
 
                 User.getServices(function (services) {
                     services.forEach(function (service) {
-                        scope.state[service] = 'active';
+                        scope.state[service.key] = 'active';
+                        if (service.key === 'webhook') {
+                            WebhookNotification.url = service.value;
+                        }
                     });
                     $window.scrollTo(0, $document[0].body.clientHeight);
                 });
