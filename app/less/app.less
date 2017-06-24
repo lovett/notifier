@@ -2,22 +2,38 @@
 @paletteAccent: black;
 
 HTML {
-    min-height: 100vh;
     background-color: @palettePrimary;
+    height: 100%;
 }
 
 BODY {
     font-family: 'Geneva', Arial, sans-serif;
-    min-height: 100vh;
+    height: 100%;
 }
 
 MAIN {
-    min-height: 100vh;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.stacked {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .growable {
+        flex: 1 0 auto;
+    }
 }
 
 A {
     color: @palettePrimary;
     text-decoration: none;
+}
+
+.page-jacket {
+    height: 100%;
 }
 
 A:hover {
@@ -91,6 +107,8 @@ FOOTER {
             margin: 0;
             display: inline-block;
         }
+
+
     }
 }
 
@@ -130,6 +148,10 @@ FOOTER {
     page-break-inside: avoid;
     break-inside: avoid;
     vertical-align: top;
+
+    H1 {
+        color: inherit;
+    }
 
     .options {
         position: absolute;
@@ -268,42 +290,42 @@ FOOTER {
     visibility: hidden;
 }
 
-.onebox {
-    text-align: center;
-
-    P {
-        padding: 0;
-        margin: 1em 0;
-    }
-
-    H1 {
-        .reset;
-        line-height: 1;
-        font-size: 2em;
-        margin-bottom: 1em;
-        color: white;
-    }
-
-    BUTTON {
-        padding: 0.5em 1em;
-        border: 0;
-        background-color: darken(@palettePrimary, 20%);
-        color: white;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        font-size: 0.85em;
-    }
-
-    BUTTON:hover {
-        background-color: darken(@palettePrimary, 10%);
-    }
+H1 {
+    line-height: 1;
+    font-size: 2em;
+    margin-bottom: 1em;
+    color: white;
 }
+
+P {
+    padding: 0;
+    margin: 1em 0;
+}
+
+BUTTON {
+    padding: 0.5em 1em;
+    border: 0;
+    background-color: darken(@palettePrimary, 20%);
+    color: white;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 0.85em;
+}
+
+BUTTON:hover {
+    background-color: darken(@palettePrimary, 10%);
+}
+
 
 .disabled {
     background-color: darken(@palettePrimary, 10%);
 }
 
-.login-form {
+.centered {
+    text-align: center;
+}
+
+FORM[name='loginForm'] {
     .field {
         margin-bottom: 1.5em;
     }
@@ -327,7 +349,6 @@ FOOTER {
 
     LABEL {
         display: inline-block;
-        vertical-align: bottom;
         min-width: 6em;
     }
 
@@ -340,12 +361,10 @@ FOOTER {
     }
 
     INPUT[type='text'], INPUT[type='password'] {
-        border: 0;
-        border-bottom: 1px solid black;
         font-family: monospace;
-        width: 15em;
         font-size: 1.3em;
         border-radius: 0;
+        padding: 0.25em;
     }
 }
 

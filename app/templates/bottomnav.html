@@ -1,7 +1,13 @@
 <ul class="app-settings" ng-show="settingsVisible">
-    <li ng-hide="state.bn == 'unavailable'"><a tabindex="0" ng-click="enable('bn')" ng-href="">{{state.bn|symbolize}} Browser notifications</a></li>
-    <li><a tabindex="0" ng-click="toggle('pushbullet')" ng-href="">{{state.pushbullet|symbolize}} Pushbullet</a></li>
-    <li><a tabindex="0" ng-click="enable('webhook')" ng-href="">{{ state.webhook|symbolize}} Web hook</a></li>
+    <li ng-hide="state.bn == 'unavailable'">
+        <a tabindex="0" ng-click="enable('bn')" ng-href="">{{state.bn|symbolize}} Browser notifications</a>
+    </li>
+    <li>
+        <a tabindex="0" ng-click="toggle('pushbullet')" ng-href="">{{state.pushbullet|symbolize}} Pushbullet</a>
+    </li>
+    <li>
+        <a tabindex="0" ng-click="enable('webhook')" ng-href="">{{ state.webhook|symbolize}} Web hook</a>
+    </li>
 </ul>
 
 <nav>
