@@ -4,7 +4,7 @@ function publishWebsocket(app, user, message) {
     app.locals.bayeuxClient.publish(`/messages/${ user.getChannel() }`, JSON.stringify(message));
 }
 
-function publishPushbullet(user, message, tokenValue) {
+function publishPushbullet(app, user, message, tokenValue) {
     let params;
 
     if (message.pushbulletId === '0') {
@@ -76,11 +76,11 @@ export default function (app, user, message) {
 
         for (let token of user.serviceTokens) {
             if (token.key === 'pushbullet') {
-                //publishPushbullet(user, message.dataValues, token.value)
+                publishPushbullet(app, user, message.dataValues, token.value)
             }
 
             if (token.key === 'webhook') {
-                publishWebhook(user, message.dataValues, token.value);
+                publishWebhook(app, user, message.dataValues);
             }
         }
     });
