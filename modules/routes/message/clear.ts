@@ -11,7 +11,7 @@ router.post('/', (req: express.Request, res: express.Response) => {
             {where: {publicId: id}}
         ).then((affectedRows) => {
             if (affectedRows[0] === 0) {
-                res.sendStatus(400);
+                res.sendStatus(304);
 
                 return;
             }
@@ -36,7 +36,7 @@ router.post('/', (req: express.Request, res: express.Response) => {
             limit: 1
         }).then((message) => {
             if (!message) {
-                res.sendStatus(400);
+                res.sendStatus(404);
             } else {
                 update(message.publicId);
             }
