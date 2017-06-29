@@ -1,5 +1,6 @@
 {
-  "verbose": true,
+  "verbose": false,
   "ignore": ["test", "flycheck_*", "#*", "public", "clients"],
-  "ext": "js,ejs"
+  "ext": "js,ejs",
+  "delay": 1000
 }
