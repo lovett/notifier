@@ -2,8 +2,9 @@
 @paletteAccent: black;
 
 HTML {
-    background-color: @palettePrimary;
+    background-color: #333;
     height: 100%;
+    color: #fff;
 }
 
 BODY {
@@ -34,6 +35,10 @@ A {
 
 .page-jacket {
     height: 100%;
+
+    &.connected {
+        background-color: @palettePrimary;
+    }
 }
 
 A:hover {
@@ -294,7 +299,6 @@ H1 {
     line-height: 1;
     font-size: 2em;
     margin-bottom: 1em;
-    color: white;
 }
 
 P {
@@ -305,7 +309,7 @@ P {
 BUTTON {
     padding: 0.5em 1em;
     border: 0;
-    background-color: darken(@palettePrimary, 20%);
+    background-color: @palettePrimary;
     color: white;
     letter-spacing: 1px;
     text-transform: uppercase;

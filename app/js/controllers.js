@@ -42,6 +42,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
     });
 
     $scope.$on('connection:change', function (e, state) {
+        $scope.connectionState = state;
         if (state === 'online') {
             Faye.init($scope.websocketPort);
             Faye.subscribe();
