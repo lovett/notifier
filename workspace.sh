@@ -36,7 +36,7 @@ tmux attach-session -d -t "$PROJECT_NAME" || {
     ## 5: Log
     rm -f "$LOG"
     touch "$LOG" 2> /dev/null
-    tmux new-window -a -n "log" -t "$PROJECT" "tail -f notifier.log"
+    tmux new-window -a -n "log" -t "$PROJECT_NAME" "tail -f notifier.log"
 
 
     tmux select-window -t "$PROJECT_NAME":0
