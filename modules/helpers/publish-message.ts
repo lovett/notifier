@@ -7,10 +7,6 @@ function publishWebsocket(app, user, message) {
 function publishPushbullet(app, user, message, tokenValue) {
     let params;
 
-    if (message.pushbulletId === '0') {
-        return;
-    }
-
     if (message.hasOwnProperty('retracted')) {
         app.locals.Message.find({
             where: { 'publicId': message.retracted },
@@ -24,6 +20,10 @@ function publishPushbullet(app, user, message, tokenValue) {
                 'password': ''
             });
         });
+        return;
+    }
+
+    if (message.pushbulletId === '0') {
         return;
     }
 
@@ -76,17 +76,22 @@ function publishWebhook(user, message, tokenValue) {
 
 export default function (app, user, message) {
 
+
+    if (message.hasOwnProperty('dataValues')) {
+        message = message.dataValues;
+    }
+
     publishWebsocket(app, user, message);
 
     user.getServiceTokens(() => {
 
         for (let token of user.serviceTokens) {
             if (token.key === 'pushbullet') {
-                publishPushbullet(app, user, message.dataValues, token.value)
+                publishPushbullet(app, user, message, token.value)
             }
 
             if (token.key === 'webhook') {
-                publishWebhook(user, message.dataValues, token.value);
+                publishWebhook(user, message, token.value);
             }
         }
     });
