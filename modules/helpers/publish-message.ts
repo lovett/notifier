@@ -62,9 +62,15 @@ function publishWebhook(user, message, tokenValue) {
     }
 
     needle.post(tokenValue, message, options, (err, res) => {
-        if (res.body.error) {
+        if (err) {
             return false;
         }
+
+        if (res.body && res.body.error) {
+            return false;
+        }
+
+        return true;
     });
 }
 
@@ -80,7 +86,7 @@ export default function (app, user, message) {
             }
 
             if (token.key === 'webhook') {
-                publishWebhook(app, user, message.dataValues);
+                publishWebhook(user, message.dataValues, token.value);
             }
         }
     });
