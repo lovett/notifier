@@ -168,16 +168,16 @@ RETRY_SLEEP=60
 
 until [ "$RETRIES" -lt 1 ]; do
     RETRIES=$(( RETRIES - 1 ))
-    CURL_OUT=$(curl --netrc --fail --silent --show-error \
+    CURL_OUT=$(curl -vvv --netrc --fail --silent --show-error \
                     --write-out ",%{http_code}" \
                     --retry 10 \
-                    -d "title=$TITLE" \
-                    -d "group=$GROUP" \
-                    -d "body=$BODY" \
-                    -d "url=$URL"  \
-                    -d "pushbulletId=$PUSHBULLET_ID" \
-                    -d "localId=$LOCAL_ID" \
-		    -d "expiration=$EXPIRATION" \
+                    --data-urlencode "title=$TITLE" \
+                    --data-urlencode "group=$GROUP" \
+                    --data-urlencode "body=$BODY" \
+                    --data-urlencode "url=$URL"  \
+                    --data-urlencode "pushbulletId=$PUSHBULLET_ID" \
+                    --data-urlencode "localId=$LOCAL_ID" \
+		    --data-urlencode "expiration=$EXPIRATION" \
                     "$SERVER/$ENDPOINT" 2>&1 )
     HTTP_CODE=${CURL_OUT##*,}
 
