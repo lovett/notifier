@@ -205,7 +205,6 @@ appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList',
                     scope.message = message || state;
                     scope.disconnected = true;
                 } else {
-                    scope.message = '';
                     scope.disconnected = false;
                 }
                 scope.$apply();
