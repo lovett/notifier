@@ -30,7 +30,7 @@ export default function (req: express.Request, res: express.Response, next: expr
     }
 
     csp = {
-        'default-src': ['self', 'data:']
+        'default-src': ['self', 'data:'],
         'connect-src': ['unsafe-inline', util.format('%s://%s%s', socketScheme, hostname, port)],
         'script-src': [util.format('%s://%s%s', scheme, hostname, port)],
     };
