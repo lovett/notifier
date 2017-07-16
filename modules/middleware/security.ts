@@ -30,10 +30,9 @@ export default function (req: express.Request, res: express.Response, next: expr
     }
 
     csp = {
-        'connect-src': ['self', 'data:', 'unsafe-inline', util.format('%s://%s%s', socketScheme, hostname, port)],
-        'script-src': ['self', 'unsafe-inline', util.format('%s://%s%s', scheme, hostname, port)],
-        'style-src': ['self', 'unsafe-inline'],
-        'img-src': ['self', 'data:']
+        'default-src': ['self', 'data:']
+        'connect-src': ['unsafe-inline', util.format('%s://%s%s', socketScheme, hostname, port)],
+        'script-src': [util.format('%s://%s%s', scheme, hostname, port)],
     };
 
     if (config.get('NOTIFIER_LIVERELOAD_HOST') && config.get('NOTIFIER_LIVERELOAD_PORT')) {
