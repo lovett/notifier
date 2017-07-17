@@ -97,6 +97,7 @@
     "normalize.css": "7.0.0",
     "sinon": "2.3.8",
     "supertest": "3.0.0",
+    "tslint": "5.5.0",
     "typescript": "2.4.1"
   }
 }
