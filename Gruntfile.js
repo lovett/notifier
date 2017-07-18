@@ -55,6 +55,8 @@ module.exports = function(grunt) {
                             'node_modules/angular/angular.js',
                             'node_modules/angular-route/angular-route.js',
                             'node_modules/faye/client/faye-browser.js',
+                            'node_modules/faye/client/faye-browser-min.js',
+                            'node_modules/faye/client/faye-browser-min.js.map',
                             'node_modules/angular-sanitize/angular-sanitize.js',
                             'node_modules/angular-resource/angular-resource.js',
                             'node_modules/angular-touch/angular-touch.js',
@@ -145,10 +147,18 @@ module.exports = function(grunt) {
                         'public/fastclick.js'
                     ]
                 }
+            },
+            worker: {
+                options: {
+                    sourceMap: true
+                },
+                files: {
+                    'public/worker.min.js': [
+                        'public/js/worker.js'
+                    ]
+                }
             }
-
         },
-
     });
 
     grunt.registerTask('build', 'Build the application', (buildType) => {
@@ -161,7 +171,7 @@ module.exports = function(grunt) {
         if (buildType === 'full') {
             tasks = tasks.concat(['clean:full', 'copy', 'ngtemplates', 'uglify']);
         } else {
-            tasks = tasks.concat(['clean:app', 'copy:app', 'ngtemplates', 'uglify:app']);
+            tasks = tasks.concat(['clean:app', 'copy:app', 'ngtemplates', 'uglify:app', 'uglify:worker']);
         }
 
         tasks = tasks.concat(['less', 'autoprefixer']);

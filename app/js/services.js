@@ -11,7 +11,6 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
             tokenValue = this.getTokenValue();
             return 'Basic ' + $window.btoa(tokenKey + ':' + tokenValue);
         },
-
         getTokenKey: function () {
             var value = sessionStorage.getItem('tokenKey');
 
@@ -62,7 +61,6 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                 url: 'services',
                 headers: {'Authorization': auth}
             }).then(function (res) {
-                console.log(res.data);
                 callback(res.data);
             }).catch(function () {
                 callback([]);
@@ -176,107 +174,66 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
 
 appServices.factory('Faye', ['$location', '$rootScope', '$log', '$filter', 'User', 'MessageList', function ($location, $rootScope, $log, $filter, User, MessageList) {
     'use strict';
-    var client, subscription;
+    var worker = new Worker('worker.min.js');
 
     return {
+
         init: function (port) {
-            var url;
-
-            if (client) {
-                client.disconnect();
-                client = undefined;
-                $log.info('Destroyed Faye client');
-            }
-
             port = parseInt(port, 10) || 0;
+
             if (port === 0) {
                 port = $location.port();
             }
 
             $log.info('Websocket port is ' + port);
 
-            client = new Faye.Client('messages');
+            worker.onmessage = function (e) {
+                var reply = e.data;
 
-            client.addExtension({
-                incoming: function (message, callback) {
-                    var code, segments, value;
-                    $log.debug('faye incoming', message);
-                    if (message.error) {
-                        segments = message.error.split('::');
-                        code = parseInt(segments[0], 10);
-                        value = segments[1];
-
-                        if (code === 301) {
-                            $rootScope.$broadcast('connection:resubscribe', value);
-                        }
-                    }
-                    $rootScope.$apply();
-                    return callback(message);
-                },
-                outgoing: function(message, callback) {
-                    $log.debug('faye outgoing', message);
-                    if (message.channel !== '/meta/subscribe') {
-                        return callback(message);
-                    }
-
-                    if (!message.ext) {
-                        message.ext = {};
-                    }
-                    message.ext.authToken = User.getTokenValue();
-                    $rootScope.$apply();
-
-                    return callback(message);
+                if (reply.event === 'disconnected') {
+                    var now = $filter('date')(new Date(), 'mediumTime');
+                    $log.warn('Faye transport down at ' + now);
+                    $rootScope.$broadcast('connection:change', 'disconnected');
                 }
-            });
 
-            client.on('transport:down', function () {
-                var now = $filter('date')(new Date(), 'mediumTime');
-                $log.warn('Faye transport down at ' + now);
-                $rootScope.$broadcast('connection:change', 'disconnected');
-                $rootScope.$apply();
-            });
+                if (reply.event === 'connected') {
+                    var now = $filter('date')(new Date(), 'mediumTime');
+                    $log.info('Faye transport up at ' + now);
+                    $rootScope.$broadcast('connection:change', 'connected');
+                }
 
-            client.on('transport:up', function () {
-                var now = $filter('date')(new Date(), 'mediumTime');
-                $log.info('Faye transport up at ' + now);
-                $rootScope.$broadcast('connection:change', 'connected');
+                if (reply.event === 'resubscribe') {
+                    $rootScope.$broadcast('connection:resubscribe', reply.channel);
+                }
+
+                if (reply.event === 'drop') {
+                    MessageList.drop(reply.retractions);
+                }
+
+                if (reply.event === 'add') {
+                    MessageList.add(reply.message);
+                }
+
                 $rootScope.$apply();
-            });
+            };
+
+            worker.postMessage({'action': 'init', 'token': User.getTokenValue()});
         },
 
         subscribe: function () {
             var channel = User.getChannel();
-
-            subscription = client.subscribe(channel, function (message) {
-                if (typeof message === 'string') {
-                    try {
-                        message = JSON.parse(message);
-                    } catch (e) {
-                        $log.error('Unable to parse message: ', e);
-                    }
-                }
-
-                if (message.hasOwnProperty('retracted')) {
-                    MessageList.drop(message.retracted);
-                } else {
-                    MessageList.add(message);
-                }
-
-                $rootScope.$apply();
-            });
+            worker.postMessage({'action': 'subscribe', 'channel': channel});
         },
 
         unsubscribe: function (channel) {
-            client.unsubscribe(channel);
+            worker.postMessage({'action': 'unsubscribe', 'channel': channel});
         },
 
         disconnect: function () {
-            if (client) {
-                client.disconnect();
-            }
+            worker.postMessage({'action': 'disconnect'});
         }
-
     };
+
 }]);
 
 appServices.service('WebhookNotification', ['$window', '$rootScope', 'User', function ($window, $rootScope, User) {
@@ -732,7 +689,6 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             if (attitude !== 'silent' && age < 120) {
                 message.browserNotification = BrowserNotification.send(message);
             }
-
         }
     };
     return methods;

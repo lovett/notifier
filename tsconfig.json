@@ -4,11 +4,16 @@
     "module": "commonJS",
     "moduleResolution": "node",
     "noImplicitAny": false,
-    "target": "ES6"
+    "target": "ES5",
+    "lib": [
+      "webworker",
+      "es5"
+    ]
   },
   "include": [
     "notifier.ts",
-    "modules/**/*"
+    "modules/**/*",
+    "app/**/*.ts"
   ],
   "exclude": [
     "test/*"
