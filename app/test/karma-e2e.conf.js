@@ -13,7 +13,7 @@ module.exports = function(config) {
         // list of files / patterns to load in the browser
         files: [
             'public/lib.min.js',
-            'public/js/*.js'
+            'public/scripts/*.js'
         ],
 
 
@@ -29,7 +29,7 @@ module.exports = function(config) {
             // source files, that you wanna generate coverage for
             // do not include tests or libraries
             // (these files will be instrumented by Istanbul)
-            'public/js/*.js': ['coverage']
+            'public/scripts/*.js': ['coverage']
         },
 
 

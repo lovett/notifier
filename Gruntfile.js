@@ -89,7 +89,7 @@ module.exports = function(grunt) {
             app: {
                 cwd: 'app',
                 src: 'templates/*.html',
-                dest: 'public/js/templates.js',
+                dest: 'public/scripts/templates.js',
                 options: {
                     module: 'appModule',
                     htmlmin: {
@@ -122,12 +122,12 @@ module.exports = function(grunt) {
                 },
                 files: {
                     'public/app.min.js': [
-                        'public/js/app.js',
-                        'public/js/controllers.js',
-                        'public/js/directives.js',
-                        'public/js/filters.js',
-                        'public/js/services.js',
-                        'public/js/templates.js'
+                        'public/scripts/app.js',
+                        'public/scripts/controllers.js',
+                        'public/scripts/directives.js',
+                        'public/scripts/filters.js',
+                        'public/scripts/services.js',
+                        'public/scripts/templates.js'
                     ]
                 }
             },
@@ -154,7 +154,7 @@ module.exports = function(grunt) {
                 },
                 files: {
                     'public/worker.min.js': [
-                        'public/js/worker.js'
+                        'public/scripts/worker.js'
                     ]
                 }
             }

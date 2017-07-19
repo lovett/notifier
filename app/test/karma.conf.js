@@ -13,7 +13,7 @@ module.exports = function(config) {
         files: [
             'public/lib.min.js',
             'node_modules/angular-mocks/angular-mocks.js',
-            'public/js/*.js',
+            'public/scripts/*.js',
             'app/test/*spec.js',
             'app/templates/*.html'
         ],
@@ -31,7 +31,7 @@ module.exports = function(config) {
 
 
         preprocessors: {
-            'public/js/*.js': 'coverage',
+            'public/scripts/*.js': 'coverage',
             'app/templates/*.html': 'ng-html2js'
         },
 
