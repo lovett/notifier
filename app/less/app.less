@@ -1,5 +1,5 @@
 @palettePrimary: #2D8E5E;
-@paletteAccent: black;
+@paletteAccent: #F08551;
 
 HTML {
     background-color: #333;
@@ -32,6 +32,12 @@ A {
 .page-jacket {
     &.connected {
         background-color: @palettePrimary;
+
+        NAV {
+            visibility: visible;
+            background-color: @palettePrimary;
+        }
+
     }
 }
 
@@ -85,8 +91,9 @@ FOOTER {
         margin: 1em;
     }
 
+
     NAV {
-        background-color: @palettePrimary;
+        visibility: hidden;
         display: inline-block;
         width: 100%;
 
@@ -135,7 +142,7 @@ FOOTER {
 .message {
     min-height: 6em;
     box-sizing: border-box;
-    border: 0.25em solid @palettePrimary;
+    border: 0.25em solid transparent;
     background-color: rgb(255, 255, 255);
     margin-bottom: 0.5em;
     overflow: hidden;
@@ -227,7 +234,7 @@ FOOTER {
     color: #666;
 }
 
-.message.focused {
+.message.focused, .message:focus {
     border-color: @paletteAccent;
     outline: 0;
 
