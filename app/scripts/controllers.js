@@ -46,13 +46,14 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
         });
     }]);
 appControllers.controller('LoginController', ['$rootScope', '$scope', '$location', 'User', function ($rootScope, $scope, $location, User) {
-        'use strict';
         $rootScope.$broadcast('connection:change', 'inactive');
         if (User.getTokenKey()) {
             User.logOut();
         }
         $scope.submitLogin = function (form) {
-            var errorCallback, promise, successCallback;
+            var errorCallback;
+            var promise;
+            var successCallback;
             if (form.$invalid) {
                 $scope.message = 'All fields are required';
                 return;
@@ -71,7 +72,6 @@ appControllers.controller('LoginController', ['$rootScope', '$scope', '$location
         };
     }]);
 appControllers.controller('LogoutController', ['$rootScope', '$scope', '$location', 'User', 'MessageList', 'Faye', function ($rootScope, $scope, $location, User, MessageList, Faye) {
-        'use strict';
         $rootScope.$broadcast('connection:change', 'inactive');
         if (User.getTokenKey()) {
             Faye.disconnect();
@@ -83,7 +83,6 @@ appControllers.controller('LogoutController', ['$rootScope', '$scope', '$locatio
         };
     }]);
 appControllers.controller('OnedriveController', ['$scope', '$window', '$location', 'User', function ($scope, $window, $location, User) {
-        'use strict';
         if (User.getTokenKey() === false) {
             $location.path('/login');
             return;

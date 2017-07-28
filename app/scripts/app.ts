@@ -1,4 +1,4 @@
-var app = angular.module('appModule', [
+const app = angular.module('appModule', [
     'appControllers',
     'appDirectives',
     'appFilters',
@@ -7,51 +7,50 @@ var app = angular.module('appModule', [
     'ngResource',
     'ngRoute',
     'ngTouch',
-    'ngAnimate'
+    'ngAnimate',
 ]);
 
-app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
+app.config(['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) => {
     'use strict';
 
     $routeProvider.when('/login', {
         controller: 'LoginController',
-        templateUrl: 'templates/login.html'
+        templateUrl: 'templates/login.html',
     });
 
     $routeProvider.when('/logout', {
         controller: 'LogoutController',
-        templateUrl: 'templates/logout.html'
+        templateUrl: 'templates/logout.html',
     });
 
     $routeProvider.when('/onedrive', {
         controller: 'OnedriveController',
-        template: ''
+        template: '',
     });
 
     $routeProvider.when('/', {
         controller: 'MessageController',
-        templateUrl: 'templates/messages.html'
+        templateUrl: 'templates/messages.html',
     });
 
     $routeProvider.otherwise('/', {
-        redirectTo: '/'
+        redirectTo: '/',
     });
 
     $locationProvider.html5Mode({
-        enabled: true
+        enabled: true,
     });
 }]);
 
-app.config(['$provide', function ($provide) {
+app.config(['$provide', ($provide) => {
     'use strict';
-    $provide.decorator('$log', ['$window', '$delegate', function ($window, $delegate) {
+    $provide.decorator('$log', ['$window', '$delegate', ($window, $delegate) => {
 
-        var original = $delegate.debug;
+        const original = $delegate.debug;
 
-        $delegate.debug = function () {
-            var argsArray, fayeMessage;
-            argsArray = Array.prototype.slice.call(arguments);
-            fayeMessage;
+        $delegate.debug = (...args) => {
+            const argsArray = Array.prototype.slice.call(args);
+            let fayeMessage;
 
             if (!$window.DEBUG) {
                 return;
@@ -82,6 +81,4 @@ app.config(['$provide', function ($provide) {
     }]);
 }]);
 
-app.run(function() {
-    FastClick.attach(document.body);
-});
+app.run(() => FastClick.attach(document.body));

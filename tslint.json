@@ -6,7 +6,7 @@
     "indent": [true, "spaces"],
     "linebreak-style": [true, "LF"],
     "max-line-length": {
-      "options": [120]
+      "options": [300]
     },
     "new-parens": true,
     "no-arg": true,

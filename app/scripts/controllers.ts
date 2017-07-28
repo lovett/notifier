@@ -1,6 +1,6 @@
-var appControllers = angular.module('appControllers', []);
+const appControllers = angular.module('appControllers', []);
 
-appControllers.controller('MessageController', ['$rootScope', '$scope', '$location', 'User', 'Faye', 'MessageList', function ($rootScope, $scope, $location, User, Faye, MessageList) {
+appControllers.controller('MessageController', ['$rootScope', '$scope', '$location', 'User', 'Faye', 'MessageList', ($rootScope, $scope, $location, User, Faye, MessageList) => {
     'use strict';
 
     if (User.getTokenKey() === false) {
@@ -12,17 +12,17 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
     // When the shortcut summary is show, hide the message list so
     // that the height of the body stays true to the visible content.
     $scope.messageListVisible = true;
-    $scope.$on('shortcuts:toggle', function () {
+    $scope.$on('shortcuts:toggle', () => {
         $scope.messageListVisible = !$scope.messageListVisible;
         $scope.$apply();
     });
 
-    $scope.$on('shortcuts:hide', function () {
+    $scope.$on('shortcuts:hide', () => {
         $scope.messageListVisible = true;
         $scope.$apply();
     });
 
-    $scope.$on('queue:change', function (e, size) {
+    $scope.$on('queue:change', (e, size) => {
         if (size === 0) {
             $scope.appMessage = 'No new messages.';
         } else {
@@ -35,13 +35,13 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
     Faye.init($scope.websocketPort);
     Faye.subscribe();
 
-    $scope.$on('connection:resubscribe', function (e, channel) {
+    $scope.$on('connection:resubscribe', (e, channel) => {
         Faye.unsubscribe(User.getChannel());
         User.replaceChannel(channel);
         Faye.subscribe();
     });
 
-    $scope.$on('connection:change', function (e, state) {
+    $scope.$on('connection:change', (e, state) => {
         $scope.connectionState = state;
         if (state === 'online') {
             Faye.init($scope.websocketPort);
@@ -57,8 +57,7 @@ appControllers.controller('MessageController', ['$rootScope', '$scope', '$locati
 
 }]);
 
-appControllers.controller('LoginController', ['$rootScope', '$scope', '$location', 'User', function ($rootScope, $scope, $location, User) {
-    'use strict';
+appControllers.controller('LoginController', ['$rootScope', '$scope', '$location', 'User', ($rootScope, $scope, $location, User) => {
 
     $rootScope.$broadcast('connection:change', 'inactive');
 
@@ -66,8 +65,11 @@ appControllers.controller('LoginController', ['$rootScope', '$scope', '$location
         User.logOut();
     }
 
-    $scope.submitLogin = function (form) {
-        var errorCallback, promise, successCallback;
+    $scope.submitLogin = (form) => {
+        let errorCallback;
+        let promise;
+        let successCallback;
+
         if (form.$invalid) {
             $scope.message = 'All fields are required';
             return;
@@ -78,11 +80,11 @@ appControllers.controller('LoginController', ['$rootScope', '$scope', '$location
 
         promise = User.logIn(form);
 
-        successCallback = function () {
+        successCallback = () => {
             $location.path('/');
         };
 
-        errorCallback = function () {
+        errorCallback = () => {
             $scope.message = 'Please try again';
             $scope.progress = null;
         };
@@ -92,8 +94,7 @@ appControllers.controller('LoginController', ['$rootScope', '$scope', '$location
 
 }]);
 
-appControllers.controller('LogoutController', ['$rootScope', '$scope', '$location', 'User', 'MessageList', 'Faye', function ($rootScope, $scope, $location, User, MessageList, Faye) {
-    'use strict';
+appControllers.controller('LogoutController', ['$rootScope', '$scope', '$location', 'User', 'MessageList', 'Faye',  ($rootScope, $scope, $location, User, MessageList, Faye) => {
 
     $rootScope.$broadcast('connection:change', 'inactive');
 
@@ -103,22 +104,21 @@ appControllers.controller('LogoutController', ['$rootScope', '$scope', '$locatio
         MessageList.empty();
     }
 
-    $scope.visitLogin = function () {
+    $scope.visitLogin = () => {
         $location.path('/login');
     };
 
 }]);
 
 
-appControllers.controller('OnedriveController', ['$scope', '$window', '$location', 'User', function ($scope, $window, $location, User) {
-    'use strict';
+appControllers.controller('OnedriveController', ['$scope', '$window', '$location', 'User', ($scope, $window, $location, User) => {
 
     if (User.getTokenKey() === false) {
         $location.path('/login');
         return;
     }
 
-    User.authorize('onedrive', function (url) {
+    User.authorize('onedrive', (url) => {
         $window.location.href = url;
     });
 }]);

@@ -3,112 +3,111 @@ var appDirectives = angular.module('appDirectives', []);
 appDirectives.directive('notifierFocus', [function () {
         'use strict';
         return {
-            scope: {
-                notifierFocus: '=notifierFocus'
-            },
             link: function (scope, element) {
                 scope.$watch('notifierFocus', function (isFocused) {
                     if (isFocused === true) {
                         element[0].focus();
                     }
                 });
-            }
+            },
+            scope: {
+                notifierFocus: '=notifierFocus',
+            },
         };
     }]);
 appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$window', '$document', function (MessageList, $rootScope, $window, $document) {
         'use strict';
         var shortcutMap = {
             67: {
-                key: 'C',
-                label: '⇧  c',
-                shiftKey: true,
-                description: 'Clear all messages',
                 action: function () {
                     if (MessageList.messages.length > 0) {
                         MessageList.purge();
                     }
-                }
+                },
+                description: 'Clear all messages',
+                key: 'C',
+                label: '⇧  c',
+                shiftKey: true,
             },
             83: {
+                action: function () {
+                    $rootScope.$broadcast('settings:toggle');
+                },
+                description: 'Toggle settings',
                 key: 'S',
                 label: '⇧  s',
                 shiftKey: true,
-                description: 'Toggle settings',
-                action: function () {
-                    $rootScope.$broadcast('settings:toggle');
-                }
             },
             76: {
+                action: function () {
+                    $rootScope.$broadcast('settings:logout');
+                },
+                description: 'Log out',
                 key: 'L',
                 label: '⇧  l',
                 shiftKey: true,
-                description: 'Log out',
-                action: function () {
-                    $rootScope.$broadcast('settings:logout');
-                }
             },
             74: {
-                key: 'j',
-                shiftKey: false,
-                description: 'Move to next message',
                 action: function () {
                     MessageList.focusNext();
-                }
+                },
+                description: 'Move to next message',
+                key: 'j',
+                shiftKey: false,
             },
             75: {
-                key: 'k',
-                shiftKey: false,
-                description: 'Move to previous message',
                 action: function () {
                     MessageList.focusPrevious();
-                }
+                },
+                description: 'Move to previous message',
+                key: 'k',
+                shiftKey: false,
             },
             88: {
-                key: 'x',
-                shiftKey: false,
-                description: 'Clear active message',
                 action: function () {
                     MessageList.clearFocused();
-                }
+                },
+                description: 'Clear active message',
+                key: 'x',
+                shiftKey: false,
             },
             90: {
-                key: 'Z',
-                label: '⇧  z',
-                shiftKey: true,
-                description: 'Undo',
                 action: function () {
                     if (MessageList.canUnclear()) {
                         MessageList.unclear();
                     }
-                }
+                },
+                description: 'Undo',
+                key: 'Z',
+                label: '⇧  z',
+                shiftKey: true,
             },
             79: {
-                key: 'o',
-                shiftKey: false,
-                description: 'Visit the link of the active message',
                 action: function () {
                     MessageList.visitLink();
-                }
+                },
+                description: 'Visit the link of the active message',
+                key: 'o',
+                shiftKey: false,
             },
             191: {
-                key: '?',
-                shiftKey: true,
-                description: 'Toggle the shortcut list',
                 action: function () {
                     $rootScope.$broadcast('shortcuts:toggle');
-                }
+                },
+                description: 'Toggle the shortcut list',
+                key: '?',
+                shiftKey: true,
             },
             27: {
-                key: 'esc',
-                description: 'Hide the shortcut list; unfocus all messages',
                 action: function () {
                     MessageList.focusNone();
                     $rootScope.$broadcast('shortcuts:hide');
-                }
-            }
+                },
+                description: 'Hide the shortcut list; unfocus all messages',
+                key: 'esc',
+            },
         };
         return {
-            templateUrl: 'templates/shortcuts-summary.html',
             link: function (scope) {
                 scope.summaryVisible = false;
                 scope.$on('shortcuts:toggle', function () {
@@ -122,7 +121,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$win
                 scope.shortcuts = shortcutMap;
                 angular.element($document[0]).bind('keydown', function (e) {
                     var charCode = e.which || e.keyCode;
-                    if (!shortcutMap.hasOwnProperty(charCode)) {
+                    if (!shortcutMap.hasOwnProperty(charCode.toString())) {
                         return;
                     }
                     if (shortcutMap[charCode].shiftKey && !e.shiftKey) {
@@ -130,26 +129,26 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$win
                     }
                     shortcutMap[charCode].action();
                 });
-            }
+            },
+            templateUrl: 'templates/shortcuts-summary.html',
         };
     }]);
 appDirectives.directive('notifierOfflineEvent', ['$window', '$rootScope', function ($window, $rootScope) {
         'use strict';
         return {
-            restrict: 'A',
             link: function () {
                 var callback = function (event) {
                     $rootScope.$broadcast('connection:change', event.type);
                 };
                 $window.addEventListener('online', callback);
                 $window.addEventListener('offline', callback);
-            }
+            },
+            restrict: 'A',
         };
     }]);
 appDirectives.directive('notifierAppcacheReload', ['$window', '$interval', '$rootScope', '$log', function ($window, $interval, $rootScope, $log) {
         'use strict';
         return {
-            restrict: 'A',
             link: function (scope, element) {
                 if (!$window.hasOwnProperty('applicationCache')) {
                     element.addClass('appcache-nope');
@@ -171,14 +170,12 @@ appDirectives.directive('notifierAppcacheReload', ['$window', '$interval', '$roo
                         }
                     }, 1000, count, false);
                 });
-            }
+            },
+            restrict: 'A',
         };
     }]);
 appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList', function ($log, $timeout, MessageList) {
-        'use strict';
         return {
-            restrict: 'E',
-            template: '<div ng-class="{\'status-bar\': true, \'disconnected\': disconnected}">{{ message }}</div>',
             link: function (scope) {
                 scope.$on('connection:change', function (e, state, message) {
                     if (state === 'offline' || state === 'disconnected' || state === 'error') {
@@ -191,8 +188,8 @@ appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList',
                     scope.$apply();
                 });
                 scope.$on('queue:change', function () {
-                    var summary, tallys;
-                    tallys = MessageList.messages.reduce(function (accumulator, message) {
+                    var summary = [];
+                    var tallys = MessageList.messages.reduce(function (accumulator, message) {
                         if (!accumulator.hasOwnProperty(message.group)) {
                             accumulator[message.group] = 1;
                         }
@@ -201,10 +198,9 @@ appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList',
                         }
                         return accumulator;
                     }, {});
-                    summary = [];
                     Object.keys(tallys).forEach(function (group) {
                         var displayName = (group === 'default') ? 'ungrouped' : group;
-                        summary.push(tallys[group] + ' ' + displayName);
+                        summary.push(tallys[group] + " " + displayName);
                     });
                     if (summary.length > 3) {
                         scope.message = MessageList.messages.length;
@@ -218,29 +214,24 @@ appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList',
                     }
                     scope.disconnected = false;
                 });
-            }
+            },
+            restrict: 'E',
+            template: '<div ng-class="{\'status-bar\': true, \'disconnected\': disconnected}">{{ message }}</div>',
         };
     }]);
 appDirectives.directive('notifierSetScope', function () {
-    'use strict';
     return {
-        restrict: 'A',
         link: function (scope, element, attrs) {
             if (element[0].nodeName.toLowerCase() !== 'meta') {
                 return;
             }
             scope[attrs.notifierSetScope] = attrs.content;
-        }
+        },
+        restrict: 'A',
     };
 });
 appDirectives.directive('notifierMessageOptions', ['MessageList', function (MessageList) {
-        'use strict';
         return {
-            restrict: 'A',
-            template: '<a ng-href="#" ng-click="clear()" ng-hide="hidden"><span><svg role="img" aria-label="Close icon" class="icon icon-close"><use xlink:href="#icon-close"></use></svg></span></a>',
-            scope: {
-                'publicId': '@'
-            },
             link: function (scope) {
                 scope.hidden = false;
                 scope.$on('connection:change', function (e, state) {
@@ -249,15 +240,16 @@ appDirectives.directive('notifierMessageOptions', ['MessageList', function (Mess
                 scope.clear = function () {
                     MessageList.clear(scope.publicId);
                 };
-            }
+            },
+            restrict: 'A',
+            scope: {
+                publicId: '@',
+            },
+            template: '<a ng-href="#" ng-click="clear()" ng-hide="hidden"><span><svg role="img" aria-label="Close icon" class="icon icon-close"><use xlink:href="#icon-close"></use></svg></span></a>',
         };
     }]);
 appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNotification', 'MessageList', 'User', '$window', '$document', function (BrowserNotification, WebhookNotification, MessageList, User, $window, $document) {
-        'use strict';
         return {
-            restrict: 'A',
-            templateUrl: 'templates/bottomnav.html',
-            scope: {},
             link: function (scope) {
                 scope.queueSize = 0;
                 scope.hideClearAll = true;
@@ -291,7 +283,7 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNot
                 });
                 scope.state = {
                     bn: BrowserNotification.state,
-                    webhook: WebhookNotification.state
+                    webhook: WebhookNotification.state,
                 };
                 scope.serviceProps = {};
                 scope.enable = function (service) {
@@ -337,6 +329,9 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNot
                 scope.logOut = function () {
                     scope.$broadcast('settings:logout');
                 };
-            }
+            },
+            restrict: 'A',
+            scope: {},
+            templateUrl: 'templates/bottomnav.html',
         };
     }]);

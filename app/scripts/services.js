@@ -1,55 +1,53 @@
 "use strict";
 var appServices = angular.module('appServices', []);
 appServices.factory('User', ['$window', '$http', function ($window, $http) {
-        'use strict';
+        function getTokenKey() {
+            var value = $window.sessionStorage.getItem('tokenKey');
+            if (!value) {
+                value = $window.localStorage.getItem('tokenKey');
+            }
+            return value || false;
+        }
+        function getTokenValue() {
+            var value = $window.sessionStorage.getItem('tokenValue');
+            if (!value) {
+                value = $window.localStorage.getItem('tokenValue');
+            }
+            return value || false;
+        }
+        function getChannel() {
+            var value = $window.sessionStorage.getItem('channel');
+            if (!value) {
+                value = $window.localStorage.getItem('channel');
+            }
+            if (value) {
+                // This is not a URL. It must be an absolute path.
+                return '/messages/' + value;
+            }
+            return false;
+        }
+        function getAuthHeader() {
+            return 'Basic ' + $window.btoa(getTokenKey() + ":" + getTokenValue());
+        }
         return {
-            getAuthHeader: function () {
-                var tokenKey, tokenValue;
-                tokenKey = this.getTokenKey();
-                tokenValue = this.getTokenValue();
-                return 'Basic ' + $window.btoa(tokenKey + ':' + tokenValue);
-            },
-            getTokenKey: function () {
-                var value = sessionStorage.getItem('tokenKey');
-                if (!value) {
-                    value = localStorage.getItem('tokenKey');
-                }
-                return value || false;
-            },
-            getTokenValue: function () {
-                var value = sessionStorage.getItem('tokenValue');
-                if (!value) {
-                    value = localStorage.getItem('tokenValue');
-                }
-                return value || false;
-            },
-            getChannel: function () {
-                var value = sessionStorage.getItem('channel');
-                if (!value) {
-                    value = localStorage.getItem('channel');
-                }
-                if (value) {
-                    // This is not a URL. It must be an absolute path.
-                    return '/messages/' + value;
-                }
-                else {
-                    return false;
-                }
-            },
+            getAuthHeader: getAuthHeader,
+            getChannel: getChannel,
+            getTokenKey: getTokenKey,
+            getTokenValue: getTokenValue,
             replaceChannel: function (value) {
-                if (sessionStorage.getItem('channel')) {
-                    sessionStorage.setItem('channel', value);
+                if ($window.sessionStorage.getItem('channel')) {
+                    $window.sessionStorage.setItem('channel', value);
                 }
-                else if (localStorage.getItem('channel')) {
-                    localStorage.setItem('channel', value);
+                else if ($window.localStorage.getItem('channel')) {
+                    $window.localStorage.setItem('channel', value);
                 }
             },
             getServices: function (callback) {
-                var auth = this.getAuthHeader();
+                var auth = getAuthHeader();
                 $http({
+                    headers: { Authorization: auth },
                     method: 'GET',
                     url: 'services',
-                    headers: { 'Authorization': auth }
                 }).then(function (res) {
                     callback(res.data);
                 }).catch(function () {
@@ -57,12 +55,12 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                 });
             },
             setService: function (service, callback) {
-                var auth = this.getAuthHeader();
+                var auth = getAuthHeader();
                 $http({
+                    data: service,
+                    headers: { Authorization: auth },
                     method: 'POST',
                     url: 'services',
-                    headers: { 'Authorization': auth },
-                    data: service
                 }).then(function (res) {
                     callback(true);
                 }).catch(function () {
@@ -70,44 +68,37 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                 });
             },
             authorize: function (service, callback) {
-                var auth = this.getAuthHeader();
+                var auth = getAuthHeader();
                 $http({
+                    headers: { Authorization: auth },
                     method: 'GET',
                     params: {
-                        'protocol': $window.location.protocol,
-                        'host': $window.location.host
+                        host: $window.location.host,
+                        protocol: $window.location.protocol,
                     },
                     url: 'authorize/' + service + '/start',
-                    headers: {
-                        'Authorization': auth
-                    }
                 }).then(function (res) {
                     callback(res.data.url);
                 });
             },
             deauthorize: function (service, callback) {
-                var auth = this.getAuthHeader();
+                var auth = getAuthHeader();
                 $http({
+                    data: { service: service },
+                    headers: { Authorization: auth },
                     method: 'POST',
-                    data: {
-                        'service': service
-                    },
                     url: 'revoke',
-                    headers: {
-                        'Authorization': auth
-                    }
                 }).then(function () {
                     callback();
                 });
             },
             logIn: function (form) {
                 return $http({
-                    method: 'POST',
-                    url: 'auth',
                     data: {
-                        'username': form.username,
-                        'password': form.password
+                        password: form.password,
+                        username: form.username,
                     },
+                    method: 'POST',
                     transformResponse: function (res) {
                         var data;
                         try {
@@ -118,45 +109,43 @@ appServices.factory('User', ['$window', '$http', function ($window, $http) {
                         }
                         if (data.hasOwnProperty('value')) {
                             if (form.remember) {
-                                localStorage.setItem('tokenKey', data.key);
-                                localStorage.setItem('tokenValue', data.value);
-                                localStorage.setItem('channel', data.channel);
-                                sessionStorage.removeItem('tokenKey');
-                                sessionStorage.removeItem('tokenValue');
-                                sessionStorage.removeItem('channel');
+                                $window.localStorage.setItem('tokenKey', data.key);
+                                $window.localStorage.setItem('tokenValue', data.value);
+                                $window.localStorage.setItem('channel', data.channel);
+                                $window.sessionStorage.removeItem('tokenKey');
+                                $window.sessionStorage.removeItem('tokenValue');
+                                $window.sessionStorage.removeItem('channel');
                             }
                             else {
-                                sessionStorage.setItem('tokenKey', data.key);
-                                sessionStorage.setItem('tokenValue', data.value);
-                                sessionStorage.setItem('channel', data.channel);
-                                localStorage.removeItem('tokenKey');
-                                localStorage.removeItem('tokenValue');
-                                localStorage.removeItem('channel');
+                                $window.sessionStorage.setItem('tokenKey', data.key);
+                                $window.sessionStorage.setItem('tokenValue', data.value);
+                                $window.sessionStorage.setItem('channel', data.channel);
+                                $window.localStorage.removeItem('tokenKey');
+                                $window.localStorage.removeItem('tokenValue');
+                                $window.localStorage.removeItem('channel');
                             }
                         }
-                    }
+                    },
+                    url: 'auth',
                 });
             },
             logOut: function () {
-                var auth = this.getAuthHeader();
-                localStorage.removeItem('tokenKey');
-                localStorage.removeItem('tokenValue');
-                localStorage.removeItem('channel');
-                sessionStorage.removeItem('tokenKey');
-                sessionStorage.removeItem('tokenValue');
-                sessionStorage.removeItem('channel');
+                var auth = getAuthHeader();
+                $window.localStorage.removeItem('tokenKey');
+                $window.localStorage.removeItem('tokenValue');
+                $window.localStorage.removeItem('channel');
+                $window.sessionStorage.removeItem('tokenKey');
+                $window.sessionStorage.removeItem('tokenValue');
+                $window.sessionStorage.removeItem('channel');
                 $http({
+                    headers: { Authorization: auth },
                     method: 'POST',
                     url: 'deauth',
-                    headers: {
-                        'Authorization': auth
-                    }
                 });
-            }
+            },
         };
     }]);
 appServices.factory('Faye', ['$location', '$rootScope', '$log', '$filter', 'User', 'MessageList', function ($location, $rootScope, $log, $filter, User, MessageList) {
-        'use strict';
         var worker = new Worker('worker.min.js');
         return {
             init: function (port) {
@@ -166,14 +155,15 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', '$filter', 'User
                 }
                 $log.info('Websocket port is ' + port);
                 worker.onmessage = function (e) {
+                    var now;
                     var reply = e.data;
                     if (reply.event === 'disconnected') {
-                        var now = $filter('date')(new Date(), 'mediumTime');
+                        now = $filter('date')(new Date(), 'mediumTime');
                         $log.warn('Faye transport down at ' + now);
                         $rootScope.$broadcast('connection:change', 'disconnected');
                     }
                     if (reply.event === 'connected') {
-                        var now = $filter('date')(new Date(), 'mediumTime');
+                        now = $filter('date')(new Date(), 'mediumTime');
                         $log.info('Faye transport up at ' + now);
                         $rootScope.$broadcast('connection:change', 'connected');
                     }
@@ -188,50 +178,46 @@ appServices.factory('Faye', ['$location', '$rootScope', '$log', '$filter', 'User
                     }
                     $rootScope.$apply();
                 };
-                worker.postMessage({ 'action': 'init', 'token': User.getTokenValue() });
+                worker.postMessage({ action: 'init', token: User.getTokenValue() });
             },
             subscribe: function () {
                 var channel = User.getChannel();
-                worker.postMessage({ 'action': 'subscribe', 'channel': channel });
+                worker.postMessage({ action: 'subscribe', channel: channel });
             },
             unsubscribe: function (channel) {
-                worker.postMessage({ 'action': 'unsubscribe', 'channel': channel });
+                worker.postMessage({ action: 'unsubscribe', channel: channel });
             },
             disconnect: function () {
-                worker.postMessage({ 'action': 'disconnect' });
-            }
+                worker.postMessage({ action: 'disconnect' });
+            },
         };
-    }]);
+    },
+]);
 appServices.service('WebhookNotification', ['$window', '$rootScope', 'User', function ($window, $rootScope, User) {
-        'use strict';
-        var self = {
-            url: null
-        };
-        self.enable = function () {
-            var promptMessage = 'Url:';
-            var url = $window.prompt(promptMessage, self.url || '');
+        var url;
+        var state;
+        function enable() {
+            url = $window.prompt('Url:', url || '');
             if (url === null) {
                 return;
             }
             url = url.trim();
             if (url.length > 0 && url.indexOf('http') !== 0) {
-                alert('Invalid URL. Please try again.');
+                $window.alert('Invalid URL. Please try again.');
                 return;
             }
-            self.url = url;
             User.setService({
-                'webhook': self.url
+                webhook: url,
             }, function (result) {
-                self.state = (url && result === true) ? 'active' : 'inactive';
-                $rootScope.$broadcast('settings:webhookNotifications', self.state);
+                state = (url && result === true) ? 'active' : 'inactive';
+                $rootScope.$broadcast('settings:webhookNotifications', state);
             });
-        };
-        return self;
+        }
+        return { url: url, enable: enable };
     }]);
 appServices.service('BrowserNotification', ['$window', '$rootScope', function ($window, $rootScope) {
-        'use strict';
-        var self = {};
-        self.send = function (message, ignoreFocus) {
+        var state;
+        function send(message, ignoreFocus) {
             var messageBody;
             if ($window.document.hasFocus() && ignoreFocus !== true) {
                 return;
@@ -242,336 +228,319 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', function ($
                 messageBody = messageBody.substring(0, 75) + '…';
             }
             return new Notification(message.title, {
-                'body': messageBody,
-                'tag': message.publicId,
-                'icon': 'favicon/favicon.png'
+                body: messageBody,
+                icon: 'favicon/favicon.png',
+                tag: message.publicId,
             });
-        };
-        if (!$window.Notification) {
-            self.state = 'unavailable';
         }
-        else if ($window.Notification.permission === 'granted') {
-            self.state = 'active';
-        }
-        else {
-            self.state = 'inactive';
-        }
-        self.enable = function () {
-            if (self.state === 'active') {
-                $window.alert('Notifications are active. They can be turned off from the browser\'s Notification settings.');
+        function enable() {
+            if (state === 'active') {
+                $window.alert("Notifications are active.\nThey can be turned off from the browser's Notification settings");
                 return;
             }
             $window.Notification.requestPermission(function (permission) {
                 if (permission === 'denied') {
-                    $window.alert('Notifications are inactive, but they can be turned on via the browser\'s Notifications settings');
+                    $window.alert("Notifications are inactive, but they can be turned on\nvia the browser's Notifications settings");
                     return;
                 }
                 if (permission === 'granted') {
-                    self.send({
+                    send({
                         group: 'internal',
-                        title: 'Browser notifications enabled'
+                        title: 'Browser notifications enabled',
                     }, true);
-                    self.state = 'active';
-                    $rootScope.$broadcast('settings:browserNotifications', self.state);
+                    state = 'active';
+                    $rootScope.$broadcast('settings:browserNotifications', state);
                     $rootScope.$apply();
                 }
             });
-        };
-        return self;
+        }
+        if (!$window.Notification) {
+            state = 'unavailable';
+        }
+        else if ($window.Notification.permission === 'granted') {
+            state = 'active';
+        }
+        else {
+            state = 'inactive';
+        }
+        return { state: state, enable: enable, send: send };
     }]);
 appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$location', '$interval', 'User', 'BrowserNotification', function ($rootScope, $http, $log, $window, $location, $interval, User, BrowserNotification) {
-        'use strict';
-        var messages, methods, refreshTimer, removedIds;
-        messages = [];
-        removedIds = [];
-        refreshTimer = $interval(function () {
-            var now, today;
-            now = new Date();
-            today = new Date();
+        var messages = [];
+        var methods = [];
+        var removedIds = [];
+        var lastFetched;
+        var refreshTimer = $interval(function () {
+            var now = new Date();
+            var today = new Date();
             today.setHours(0, 0, 0, 0);
             messages.forEach(function (message) {
-                var expires, receivedDay;
-                receivedDay = message.received;
+                var receivedDay = message.received;
                 receivedDay.setHours(0, 0, 0, 0);
-                message.days_ago = Math.floor((today - receivedDay) / 86400000);
+                message.days_ago = Math.floor((today.getTime() - receivedDay.getTime()) / 86400000);
                 if (message.expired) {
-                    methods.clear(message.publicId);
+                    clear(message.publicId);
                 }
                 else if (message.expiresAt) {
-                    expires = new Date(message.expiresAt);
-                    message.expired = (expires < now);
+                    message.expired = new Date(message.expiresAt) < now;
                 }
             });
         }, 1000 * 60);
-        methods = {
-            messages: messages,
-            removedIds: removedIds,
-            visitLink: function () {
-                var focusedIndex;
-                this.messages.some(function (message, index) {
-                    if (message.focused) {
-                        focusedIndex = index;
+        function focusOne(step) {
+            var focusedIndex;
+            if (messages.length < 1) {
+                return;
+            }
+            messages.forEach(function (message, index) {
+                if (message.focused) {
+                    focusedIndex = index + step;
+                }
+            });
+            if (!messages[focusedIndex]) {
+                if (step < 0) {
+                    focusedIndex = messages.length - 1;
+                }
+                else {
+                    focusedIndex = 0;
+                }
+            }
+            focusNone();
+            messages[focusedIndex].focused = true;
+            $rootScope.$apply();
+        }
+        function clearFocused() {
+            messages.forEach(function (message, index) {
+                if (message.focused) {
+                    clear(message.publicId);
+                    focusNext();
+                }
+            });
+        }
+        function focusNone() {
+            messages = messages.map(function (message) {
+                message.focused = false;
+                return message;
+            });
+        }
+        function focusFirst() {
+            focusNone();
+            messages[0].focused = true;
+        }
+        function visitLink() {
+            messages.forEach(function (message, index) {
+                if (message.focused && message.url) {
+                    $window.open(message.url, '_blank');
+                }
+            });
+        }
+        function clear(ids) {
+            if (!(ids instanceof Array)) {
+                ids = [ids];
+            }
+            function success() {
+                removedIds.push(ids);
+                $rootScope.$broadcast('queue:change', messages.length);
+            }
+            function failure() {
+                $rootScope.$broadcast('connection:change', 'error', 'The message could not be cleared.');
+                messages.forEach(function (message) {
+                    if (ids.indexOf(message.publicId) > -1) {
+                        message.state = 'stuck';
                     }
                 });
-                if (focusedIndex !== undefined && this.messages[focusedIndex].url) {
-                    $window.open(this.messages[focusedIndex].url, '_blank');
+            }
+            messages.forEach(function (message) {
+                if (ids.indexOf(message.publicId) > -1) {
+                    message.state = 'clearing';
                 }
-            },
-            focusNone: function () {
-                this.messages = this.messages.map(function (message) {
-                    message.focused = false;
-                    return message;
-                });
-            },
-            focusFirst: function () {
-                this.focusNone();
-                this.messages[0].focused = true;
-            },
-            focusOne: function (step) {
-                var focusedIndex;
-                if (this.messages.length < 1) {
-                    return;
-                }
-                this.messages.some(function (message, index) {
-                    if (message.focused) {
-                        focusedIndex = index + step;
-                    }
-                });
-                if (!this.messages[focusedIndex]) {
-                    if (step < 0) {
-                        focusedIndex = this.messages.length - 1;
-                    }
-                    else {
-                        focusedIndex = 0;
-                    }
-                }
-                this.focusNone();
-                this.messages[focusedIndex].focused = true;
-                $rootScope.$apply();
-            },
-            focusNext: function () {
-                this.focusOne(1);
-            },
-            focusPrevious: function () {
-                this.focusOne(-1);
-            },
-            clearFocused: function () {
-                var focusedIndex = -1;
-                this.messages.some(function (message, index) {
-                    if (message.focused) {
-                        focusedIndex = index;
-                    }
-                });
-                if (focusedIndex === -1) {
-                    return;
-                }
-                this.clear(this.messages[focusedIndex].publicId);
-                this.focusNext();
-            },
-            clear: function (ids) {
-                var self = this;
-                if (!(ids instanceof Array)) {
-                    ids = [ids];
-                }
-                function success() {
-                    self.removedIds.push(ids);
-                    $rootScope.$broadcast('queue:change', self.messages.length);
-                }
-                function failure() {
-                    $rootScope.$broadcast('connection:change', 'error', 'The message could not be cleared.');
-                    self.messages.forEach(function (message) {
-                        if (ids.indexOf(message.publicId) > -1) {
-                            message.state = 'stuck';
+            });
+            $http({
+                data: { publicId: ids },
+                headers: { Authorization: User.getAuthHeader() },
+                method: 'POST',
+                url: 'message/clear',
+            }).then(success, failure);
+        }
+        function add(message, attitude) {
+            var age;
+            var messageExists = false;
+            var messageHasChanged = false;
+            var result;
+            var tmp;
+            var update;
+            message.received = new Date(message.received || new Date());
+            message.days_ago = (new Date().setHours(0, 0, 0, 0) - new Date(message.received).setHours(0, 0, 0, 0)) / 86400000;
+            message.expire_days = null;
+            if (message.expiresAt) {
+                message.expire_days = (new Date(message.expiresAt).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / 86400000;
+            }
+            if (typeof message.expiresAt === 'string') {
+                message.expiresAt = new Date(message.expiresAt);
+                message.expired = (message.expiresAt < new Date());
+            }
+            if (message.body) {
+                message.body = message.body.replace(/\n/g, '<br/>');
+            }
+            if (message.group) {
+                message.badge = message.group.split('.').pop();
+            }
+            if (message.group === 'phone' && message.body) {
+                // Format US phone numbers, dropping optional country code
+                message.body = message.body.replace(/(\+?1?)(\d\d\d)(\d\d\d)(\d\d\d\d)/g, '($2) $3-$4');
+            }
+            if (message.url) {
+                tmp = angular.element('<a></a>');
+                tmp.attr('href', message.url);
+                message.domain = tmp[0].hostname;
+            }
+            else {
+                message.domain = null;
+            }
+            // Update an existing message
+            update = messages.some(function (m) {
+                if (m.publicId === message.publicId) {
+                    messageExists = true;
+                    ['title', 'body', 'badge', 'domain'].forEach(function (property) {
+                        if (message[property] !== m[property]) {
+                            m[property] = message[property];
+                            messageHasChanged = true;
                         }
                     });
                 }
-                this.messages.forEach(function (message) {
-                    if (ids.indexOf(message.publicId) > -1) {
-                        message.state = 'clearing';
+                return messageExists && messageHasChanged;
+            });
+            if (messageHasChanged) {
+                $rootScope.$apply();
+            }
+            if (messageExists) {
+                return;
+            }
+            result = messages.some(function (m, index) {
+                if (m.received < message.received) {
+                    messages.splice(index, 0, message);
+                    return true;
+                }
+            });
+            if (result === false) {
+                messages.push(message);
+            }
+            $rootScope.$broadcast('queue:change', messages.length);
+            age = ((new Date()).getTime() - message.received.getTime()) / 1000;
+            if (attitude !== 'silent' && age < 120) {
+                message.browserNotification = BrowserNotification.send(message);
+            }
+        }
+        function focusNext() {
+            focusOne(1);
+        }
+        function focusPrevious() {
+            focusOne(-1);
+        }
+        function drop(ids) {
+            if (!(ids instanceof Array)) {
+                ids = [ids];
+            }
+            messages = messages.filter(function (message) {
+                if (ids.indexOf(message.publicId) === -1) {
+                    return true;
+                }
+                if (message.browserNotification) {
+                    message.browserNotification.close();
+                }
+                return false;
+            });
+            $rootScope.$broadcast('queue:change', messages.length);
+        }
+        function fetch() {
+            var url = 'archive/25';
+            var now = new Date();
+            // prevent aggressive refetching
+            if (lastFetched && now.getTime() - lastFetched.getTime() < 1000) {
+                $log.debug('Ignoring too-soon refetch request');
+                return;
+            }
+            $http({
+                headers: { Authorization: User.getAuthHeader() },
+                method: 'GET',
+                url: url,
+            }).then(function (res) {
+                var attitude;
+                var currentIds;
+                var staleIds = [];
+                if (res.data.messages instanceof Array) {
+                    // We've just received the current list of
+                    // uncleared messages, but we might be holding
+                    // other messages that were cleared by another
+                    // client while we were offline. They should be
+                    // dropped.
+                    currentIds = res.data.messages.map(function (message) {
+                        return message.publicId;
+                    });
+                    messages.forEach(function (message) {
+                        if (currentIds.indexOf(message.publicId) === -1) {
+                            staleIds.push(message.publicId);
+                        }
+                    });
+                    if (staleIds.length > 0) {
+                        drop(staleIds);
                     }
-                });
-                $http({
-                    method: 'POST',
-                    url: 'message/clear',
-                    headers: {
-                        'Authorization': User.getAuthHeader()
-                    },
-                    data: {
-                        publicId: ids
+                    // messages will be ordered newest first, but if they are added to the queue
+                    // sequentially they will end up oldest first
+                    res.data.messages.reverse();
+                    if (!lastFetched) {
+                        attitude = 'silent';
                     }
-                }).then(success, failure);
-            },
+                    else {
+                        attitude = 'normal';
+                    }
+                    res.data.messages.forEach(function (message) {
+                        add(message, attitude);
+                    });
+                    $rootScope.$broadcast('queue:change', messages.length);
+                    lastFetched = now;
+                }
+            }).catch(function (data) {
+                lastFetched = now;
+                if (data.status === 401) {
+                    $location.path('login');
+                }
+            });
+        }
+        return {
+            add: add,
             canUnclear: function () {
                 return removedIds.length > 0;
             },
+            clear: clear,
+            clearFocused: clearFocused,
+            drop: drop,
+            fetch: fetch,
+            focusFirst: focusFirst,
+            focusNext: focusNext,
+            focusNone: focusNone,
+            focusOne: focusOne,
+            focusPrevious: focusPrevious,
+            messages: messages,
+            visitLink: visitLink,
             unclear: function () {
-                var ids, self;
-                self = this;
-                ids = removedIds.pop();
                 $http({
+                    data: { publicId: removedIds.pop() },
+                    headers: { Authorization: User.getAuthHeader() },
                     method: 'POST',
                     url: 'message/unclear',
-                    headers: {
-                        'Authorization': User.getAuthHeader()
-                    },
-                    data: {
-                        publicId: ids
-                    }
                 }).then(function () {
-                    self.fetch();
+                    fetch();
                 });
             },
             purge: function () {
-                var ids = this.messages.map(function (message) {
+                var ids = messages.map(function (message) {
                     return message.publicId;
                 });
-                this.clear(ids);
-            },
-            drop: function (ids) {
-                var self = this;
-                if (!(ids instanceof Array)) {
-                    ids = [ids];
-                }
-                self.messages = self.messages.filter(function (message) {
-                    if (ids.indexOf(message.publicId) === -1) {
-                        return true;
-                    }
-                    if (message.browserNotification) {
-                        message.browserNotification.close();
-                    }
-                    return false;
-                });
-                $rootScope.$broadcast('queue:change', self.messages.length);
+                clear(ids);
             },
             empty: function () {
-                this.messages = [];
-                $rootScope.$broadcast('queue:change', this.messages.length);
+                messages = [];
+                $rootScope.$broadcast('queue:change', messages.length);
             },
-            fetch: function () {
-                var now, self, url;
-                now = new Date();
-                // prevent aggressive refetching
-                if (this.lastFetched && now.getTime() - this.lastFetched.getTime() < 1000) {
-                    $log.debug('Ignoring too-soon refetch request');
-                    return;
-                }
-                self = this;
-                url = 'archive/25';
-                $http({
-                    method: 'GET',
-                    url: url,
-                    headers: {
-                        'Authorization': User.getAuthHeader()
-                    }
-                }).then(function (res) {
-                    var attitude, currentIds, staleIds;
-                    staleIds = [];
-                    if (res.data.messages instanceof Array) {
-                        // We've just received the current list of
-                        // uncleared messages, but we might be holding
-                        // other messages that were cleared by another
-                        // client while we were offline. They should be
-                        // dropped.
-                        currentIds = res.data.messages.map(function (message) {
-                            return message.publicId;
-                        });
-                        self.messages.forEach(function (message) {
-                            if (currentIds.indexOf(message.publicId) === -1) {
-                                staleIds.push(message.publicId);
-                            }
-                        });
-                        if (staleIds.length > 0) {
-                            self.drop(staleIds);
-                        }
-                        // messages will be ordered newest first, but if they are added to the queue
-                        // sequentially they will end up oldest first
-                        res.data.messages.reverse();
-                        if (!self.lastFetched) {
-                            attitude = 'silent';
-                        }
-                        else {
-                            attitude = 'normal';
-                        }
-                        res.data.messages.forEach(function (message) {
-                            self.add(message, attitude);
-                        });
-                        $rootScope.$broadcast('queue:change', self.messages.length);
-                        self.lastFetched = now;
-                    }
-                }).catch(function (data) {
-                    self.lastFetched = now;
-                    if (data.status === 401) {
-                        $location.path('login');
-                    }
-                });
-            },
-            add: function (message, attitude) {
-                var age, messageExists, messageHasChanged, result, self, tmp, update;
-                self = this;
-                messageExists = false;
-                messageHasChanged = false;
-                message.received = new Date(message.received || new Date());
-                message.days_ago = (new Date().setHours(0, 0, 0, 0) - new Date(message.received).setHours(0, 0, 0, 0)) / 86400000;
-                message.expire_days = null;
-                if (message.expiresAt) {
-                    message.expire_days = (new Date(message.expiresAt).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / 86400000;
-                }
-                if (typeof message.expiresAt === 'string') {
-                    message.expiresAt = new Date(message.expiresAt);
-                    message.expired = (message.expiresAt < new Date());
-                }
-                if (message.body) {
-                    message.body = message.body.replace(/\n/g, '<br/>');
-                }
-                if (message.group) {
-                    message.badge = message.group.split('.').pop();
-                }
-                if (message.group === 'phone' && message.body) {
-                    // Format US phone numbers, dropping optional country code
-                    message.body = message.body.replace(/(\+?1?)(\d\d\d)(\d\d\d)(\d\d\d\d)/g, '($2) $3-$4');
-                }
-                if (message.url) {
-                    tmp = angular.element('<a></a>');
-                    tmp.attr('href', message.url);
-                    message.domain = tmp[0].hostname;
-                }
-                else {
-                    message.domain = null;
-                }
-                // Update an existing message
-                update = self.messages.some(function (m) {
-                    if (m.publicId === message.publicId) {
-                        messageExists = true;
-                        ['title', 'body', 'badge', 'domain'].forEach(function (property) {
-                            if (message[property] !== m[property]) {
-                                m[property] = message[property];
-                                messageHasChanged = true;
-                            }
-                        });
-                    }
-                    return messageExists && messageHasChanged;
-                });
-                if (messageHasChanged) {
-                    $rootScope.$apply();
-                }
-                if (messageExists) {
-                    return;
-                }
-                result = this.messages.some(function (m, index) {
-                    if (m.received < message.received) {
-                        self.messages.splice(index, 0, message);
-                        return true;
-                    }
-                });
-                if (result === false) {
-                    this.messages.push(message);
-                }
-                $rootScope.$broadcast('queue:change', this.messages.length);
-                age = (new Date() - new Date(message.received)) / 1000;
-                if (attitude !== 'silent' && age < 120) {
-                    message.browserNotification = BrowserNotification.send(message);
-                }
-            }
         };
-        return methods;
     }]);

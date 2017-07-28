@@ -1,12 +1,11 @@
-var appFilters = angular.module('appFilters', []);
+const appFilters = angular.module('appFilters', []);
 
-appFilters.filter('symbolize', function () {
-    'use strict';
-    var map = {
-        'active': '✓'
+appFilters.filter('symbolize', () => {
+    const map = {
+        active: '✓',
     };
 
-    return function (value) {
+    return (value) => {
         return map[value] || '';
     };
 });
