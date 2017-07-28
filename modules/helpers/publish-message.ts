@@ -1,4 +1,4 @@
-import * as needle from "needle";
+import * as needle from 'needle';
 
 function publishWebsocket(app, user, message) {
     app.locals.bayeuxClient.publish(`/messages/${ user.getChannel() }`, JSON.stringify(message));
@@ -9,15 +9,15 @@ function publishPushbullet(app, user, message, tokenValue) {
 
     if (message.hasOwnProperty('retracted')) {
         app.locals.Message.find({
-            where: { 'publicId': message.retracted },
-            attributes: ['pushbulletId']
-        }).then((message) => {
-            if (message.pushbulletId === '0') {
+            attributes: ['pushbulletId'],
+            where: { publicId: message.retracted },
+        }).then((foundMessage) => {
+            if (foundMessage.pushbulletId === '0') {
                 return;
             }
-            needle.delete('https://api.pushbullet.com/v2/pushes/' + message.pushbulletId, null, {
-                'username': tokenValue,
-                'password': ''
+            needle.delete('https://api.pushbullet.com/v2/pushes/' + foundMessage.pushbulletId, null, {
+                password: '',
+                username: tokenValue,
             });
         });
         return;
@@ -28,9 +28,9 @@ function publishPushbullet(app, user, message, tokenValue) {
     }
 
     params = {
-        'title': message.title,
-        'body': message.body,
-        'type': 'note',
+        body: message.body,
+        title: message.title,
+        type: 'note',
     };
 
     if (message.url) {
@@ -39,8 +39,8 @@ function publishPushbullet(app, user, message, tokenValue) {
     }
 
     needle.post('https://api.pushbullet.com/v2/pushes', params, {
-        'username': tokenValue,
-        'password': ''
+        password: '',
+        username: tokenValue,
     }, (err, res) => {
         if (res.body.error) {
             return false;
@@ -48,7 +48,7 @@ function publishPushbullet(app, user, message, tokenValue) {
 
         app.locals.Message.update(
             { pushbulletId: res.body.iden },
-            { where: { id: message.id } }
+            { where: { id: message.id } },
         );
     });
 }
@@ -57,9 +57,9 @@ function publishWebhook(user, message, tokenValue) {
     delete message.UserId;
     delete message.id;
 
-    let options = {
-        json: true
-    }
+    const options = {
+        json: true,
+    };
 
     needle.post(tokenValue, message, options, (err, res) => {
         if (err) {
@@ -74,7 +74,7 @@ function publishWebhook(user, message, tokenValue) {
     });
 }
 
-export default function (app, user, message) {
+export default function(app, user, message) {
 
 
     if (message.hasOwnProperty('dataValues')) {
@@ -85,9 +85,9 @@ export default function (app, user, message) {
 
     user.getServiceTokens(() => {
 
-        for (let token of user.serviceTokens) {
+        for (const token of user.serviceTokens) {
             if (token.key === 'pushbullet') {
-                publishPushbullet(app, user, message, token.value)
+                publishPushbullet(app, user, message, token.value);
             }
 
             if (token.key === 'webhook') {
