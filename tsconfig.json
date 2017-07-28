@@ -6,7 +6,7 @@
     "noImplicitAny": false,
     "target": "ES5",
     "lib": [
-      "webworker",
+      "dom",
       "es5"
     ]
   },
