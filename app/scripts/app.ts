@@ -42,43 +42,4 @@ app.config(['$routeProvider', '$locationProvider', ($routeProvider, $locationPro
     });
 }]);
 
-app.config(['$provide', ($provide) => {
-    'use strict';
-    $provide.decorator('$log', ['$window', '$delegate', ($window, $delegate) => {
-
-        const original = $delegate.debug;
-
-        $delegate.debug = (...args) => {
-            const argsArray = Array.prototype.slice.call(args);
-            let fayeMessage;
-
-            if (!$window.DEBUG) {
-                return;
-            }
-
-            if (argsArray[0].indexOf('faye') === 0) {
-                fayeMessage = argsArray.pop();
-                argsArray.push(fayeMessage.channel);
-
-                if (fayeMessage.hasOwnProperty('connectionType')) {
-                    argsArray.push(fayeMessage.connectionType);
-                }
-
-                if (fayeMessage.hasOwnProperty('successful')) {
-                    if (fayeMessage.successful === true) {
-                        argsArray.push('success');
-                    }
-                }
-
-            }
-
-            argsArray.unshift(new Date().toTimeString());
-            original.apply(null, argsArray);
-            original.call(null, fayeMessage);
-        };
-
-        return $delegate;
-    }]);
-}]);
-
 app.run(() => FastClick.attach(document.body));
