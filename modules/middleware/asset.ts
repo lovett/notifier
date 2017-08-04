@@ -1,13 +1,13 @@
-import * as express from "express";
+import * as express from 'express';
 
-export default function (public_dir) {
+export default (publicDir) => {
     return express.static(
-        public_dir,
+        publicDir,
         {
-            setHeaders: function (res) {
+            setHeaders(res) {
                 res.set('Cache-Control', 'no-cache, private');
             },
-            etag: false
-        }
+            etag: false,
+        },
     );
-}
+};

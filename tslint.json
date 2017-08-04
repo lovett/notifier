@@ -23,6 +23,13 @@
     "no-unused-new": true,
     "no-var-keyword": true,
     "one-variable-per-declaration": true,
+    "ordered-imports": [
+      true,
+      {
+        "import-sources-order": "any",
+        "named-imports-order": "lowercase-first"
+      }
+    ],
     "quotemark": [true, "single", "avoid-escape", "avoid-template"],
     "radix": true,
     "semicolon": [true, "always"],
