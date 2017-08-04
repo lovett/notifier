@@ -10,7 +10,6 @@ import * as path from 'path';
 import * as responseTime from 'response-time';
 import * as Sequelize from 'sequelize';
 import * as deflate from 'permessage-deflate';
-import * as faye from 'faye';
 
 import Message from './modules/models/Message';
 import Token from './modules/models/Token';
@@ -112,6 +111,8 @@ app.locals.appsecret = crypto.randomBytes(app.locals.config.get('NOTIFIER_PASSWO
 
 app.locals.protected = passport.authenticate('basic', { session: false });
 
+app.locals.pushClients = {};
+
 app.use(logger(nconf.get('NOTIFIER_ACCESS_LOG')));
 
 app.use(favicon(nconf.get('NOTIFIER_PUBLIC_DIR')));
@@ -152,64 +153,6 @@ app.locals.Token.belongsTo(app.locals.User);
 app.locals.User.hasMany(app.locals.Token);
 app.locals.User.hasMany(app.locals.Message);
 app.locals.Message.belongsTo(app.locals.User);
-
-/**
- * Websocket configuation
- *
- * Websocket clients must provide a token during subscription to
- * ensure the client is logged in. They must also provide a secret
- * known only by the server and its clients in order to publish
- * websocket messages.
- */
-bayeux = new faye.NodeAdapter({
-    mount: nconf.get('NOTIFIER_BASE_URL') + 'messages',
-});
-
-bayeux.addWebsocketExtension(deflate);
-
-bayeux.addExtension({
-    outgoing(message, callback) {
-        // the localId is not sent to clients
-        delete message.localId;
-
-        return callback(message);
-    },
-
-    incoming(message, callback) {
-        message.ext = message.ext || {};
-
-        // Subscriptions must be accompanied by a token
-        if (message.channel === '/meta/subscribe') {
-            return verifySubscription(app, message, callback);
-        }
-
-        // Other meta messages are allowed (handshake, etc)
-        if (message.channel.indexOf('/meta/') === 0) {
-            return callback(message);
-        }
-
-        // Anything else must have the application secret
-        if (message.ext.secret !== app.locals.appsecret) {
-            message.error = '403::Forbidden';
-        }
-
-        // The application secret should never be revealed
-        delete message.ext.secret;
-
-        return callback(message);
-    },
-});
-
-app.locals.bayeuxClient = bayeux.getClient();
-
-app.locals.bayeuxClient.addExtension({
-    outgoing(message, callback) {
-        message.ext = message.ext || {};
-        message.ext.secret = app.locals.appsecret;
-        callback(message);
-    },
-});
-
 
 /**
  * Routes
@@ -279,9 +222,6 @@ if (!module.parent) {
 
             server.on('listening', () => {
                 process.stdout.write(`Listening on ${nconf.get('NOTIFIER_HTTP_IP')}:${nconf.get('NOTIFIER_HTTP_PORT')}\n`);
-                // Attach to the express server returned by listen, rather than app itself.
-                // https://github.com/faye/faye/issues/256
-                bayeux.attach(server);
             });
         })
         .catch((err) => {

@@ -24,6 +24,7 @@
   "author": "Bill Lovett",
   "homepage": "https://github.com/lovett/notifier",
   "dependencies": {
+    "@types/uuid": "3.4.0",
     "angular-cookies": "1.6.5",
     "body-parser": "1.17.2",
     "compression": "1.7.0",
@@ -43,7 +44,8 @@
     "sequelize": "4.4.2",
     "serve-favicon": "2.4.3",
     "sqlite3": "3.1.8",
-    "useragent": "2.2.1"
+    "useragent": "2.2.1",
+    "uuid": "3.1.0"
   },
   "devDependencies": {
     "@types/angular": "1.6.27",

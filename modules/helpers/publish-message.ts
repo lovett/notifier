@@ -1,7 +1,11 @@
 import * as needle from 'needle';
 
-function publishWebsocket(app, user, message) {
-    app.locals.bayeuxClient.publish(`/messages/${ user.getChannel() }`, JSON.stringify(message));
+function publishServerEvent(app, user, message) {
+    for (const id of Object.keys(app.locals.pushClients)) {
+        const res = app.locals.pushClients[id];
+        res.write(`event: message\ndata: ${JSON.stringify(message)}\n\n`);
+        res.flush();
+    }
 }
 
 function publishPushbullet(app, user, message, tokenValue) {
@@ -81,7 +85,7 @@ export default function(app, user, message) {
         message = message.dataValues;
     }
 
-    publishWebsocket(app, user, message);
+    publishServerEvent(app, user, message);
 
     user.getServiceTokens(() => {
 
