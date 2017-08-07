@@ -30,18 +30,17 @@ import messageIndex from './modules/routes/message/index';
 import messageUnclear from './modules/routes/message/unclear';
 import onedriveFinish from './modules/routes/onedrive/finish';
 import onedriveStart from './modules/routes/onedrive/start';
+import push from './modules/routes/push';
 import pushbulletFinish from './modules/routes/pushbullet/finish';
 import pushbulletStart from './modules/routes/pushbullet/start';
 import revoke from './modules/routes/revoke';
 import security from './modules/middleware/security';
 import services from './modules/routes/services';
-import sse from './modules/routes/sse';
 import status from './modules/routes/status';
 import validateCount from './modules/validation/count';
 import verifySubscription from './modules/helpers/verify-subscription';
 
 let app;
-let bayeux;
 let router;
 let sequelize;
 
@@ -90,7 +89,6 @@ nconf.defaults({
     NOTIFIER_PUSHBULLET_CLIENT_SECRET: undefined,
     NOTIFIER_SSL_CERT: undefined,
     NOTIFIER_SSL_KEY: undefined,
-    NOTIFIER_WEBSOCKET_PORT: 8080,
     ONEDRIVE_AUTH_FILE: undefined,
     ONEDRIVE_CLIENT_ID: undefined,
     ONEDRIVE_CLIENT_SECRET: undefined,
@@ -197,7 +195,7 @@ router.use('/message/clear', app.locals.protected, messageClear);
 
 router.use('/message/unclear', app.locals.protected, messageUnclear);
 
-router.use('/sse', sse);
+router.use('/push', push);
 
 app.use(nconf.get('NOTIFIER_BASE_URL'), router);
 
