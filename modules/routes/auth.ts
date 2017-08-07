@@ -1,13 +1,18 @@
-import * as express from "express";
-import * as useragent from "useragent";
+import * as express from 'express';
+import * as useragent from 'useragent';
 
 const router = express.Router();
 
 router.post('/', (req: express.Request, res: express.Response) => {
-    let asJson, asRejection, asText, generateCallback, pruneCallback, sendFailure, sendResponse, token, tokenLabel, tokenPersist;
+    let generateCallback;
+    let pruneCallback;
+    let sendResponse;
+    let token;
+    let tokenPersist;
 
-    tokenLabel = req.body.label || '';
+    let tokenLabel = req.body.label || '';
     tokenLabel = tokenLabel.replace(/[^a-zA-Z0-9-\.\/ ]/, '');
+
     if (tokenLabel === '') {
         tokenLabel = useragent.parse(req.get('user-agent')).toString();
     }
@@ -16,14 +21,16 @@ router.post('/', (req: express.Request, res: express.Response) => {
 
     token = req.app.locals.Token.build({
         label: tokenLabel,
-        persist: tokenPersist
+        persist: tokenPersist,
     });
 
-    pruneCallback = (token) => {
-        token.save()
-            .then(() => token.setUser(req.user))
+    pruneCallback = (t) => {
+        t.save()
+            .then(() => t.setUser(req.user))
             .then(sendResponse)
-            .catch(sendFailure);
+            .catch((err) => {
+                res.status(400).json(err);
+            });
     };
 
     generateCallback = (key, value) => {
@@ -34,30 +41,15 @@ router.post('/', (req: express.Request, res: express.Response) => {
 
     req.app.locals.Token.generateKeyAndValue(generateCallback);
 
-
-
     sendResponse = () => {
+        const key = token.key;
+        const value = token.value;
+
         res.format({
-            'text/plain': asText,
-            'application/json': asJson,
-            'default': asRejection
+            'application/json': () => res.json({key, value}),
+            'default': () => res.status(406).send('Not Acceptable'),
+            'text/plain': () => res.send(`${key},${value}`),
         });
-    };
-
-    asText = () => res.send(`${token.key},${token.value},${req.user.getChannel()}`);
-
-    asRejection = () => res.status(406).send('Not Acceptable');
-
-    asJson = () => {
-        res.json({
-            key: token.key,
-            value: token.value,
-            channel: req.user.getChannel()
-        });
-    };
-
-    sendFailure = (error) => {
-        res.status(400).json(error);
     };
 
 });

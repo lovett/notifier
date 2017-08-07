@@ -195,7 +195,7 @@ router.use('/message/clear', app.locals.protected, messageClear);
 
 router.use('/message/unclear', app.locals.protected, messageUnclear);
 
-router.use('/push', push);
+router.use('/push', app.locals.protected, push);
 
 app.use(nconf.get('NOTIFIER_BASE_URL'), router);
 
