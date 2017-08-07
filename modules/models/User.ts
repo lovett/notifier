@@ -1,84 +1,90 @@
-import * as crypto from "crypto";
-import * as Sequelize from "sequelize";
+import * as crypto from 'crypto';
+import * as Sequelize from 'sequelize';
 
-export default function (sequelize, app) {
-    let fields, hasher, model;
-    hasher = (instance, options, done) => {
-        let iterations, keyLength, randBytes;
-        randBytes = app.locals.config.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
-        keyLength = app.locals.config.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
-        iterations = app.locals.config.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
+export default (sequelize, app) => {
+    const hasher = (instance, options, done) => {
+        const randBytes = app.locals.config.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
+        const keyLength = app.locals.config.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
+        const iterations = app.locals.config.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
+
         crypto.randomBytes(randBytes, (err, buf) => {
-            let salt;
-            if (err)
+            if (err) {
                 throw err;
-            salt = buf.toString('hex');
-            crypto.pbkdf2(instance.get('passwordHash'), salt, iterations, keyLength, 'sha1', (err, key) => {
-                if (err)
-                    throw err;
+            }
+
+            const salt = buf.toString('hex');
+
+            crypto.pbkdf2(instance.get('passwordHash'), salt, iterations, keyLength, 'sha1', (err2, key) => {
+                if (err2) {
+                    throw err2;
+                }
+
                 instance.set('passwordHash', `${salt}::${key.toString('hex')}`);
                 done();
             });
         });
     };
 
-    fields = {
-        username: {
-            type: Sequelize.STRING(20),
-            unique: true,
-            allowNull: false,
-            validate: {
-                len: {
-                    args: [1, 20],
-                    msg: 'should be between 1 and 20 characters'
-                }
-            }
-        },
+    const fields = {
         passwordHash: {
-            type: Sequelize.STRING(258),
             allowNull: false,
+            type: Sequelize.STRING(258),
             validate: {
                 len: {
                     args: [1, 258],
-                    msg: 'should be between 1 and 258 characters'
-                }
-            }
-        }
+                    msg: 'should be between 1 and 258 characters',
+                },
+            },
+        },
+        username: {
+            allowNull: false,
+            type: Sequelize.STRING(20),
+            unique: true,
+            validate: {
+                len: {
+                    args: [1, 20],
+                    msg: 'should be between 1 and 20 characters',
+                },
+            },
+        },
     };
 
-    model = sequelize.define('User', fields, {
-        'hooks': {
-            'beforeCreate': hasher,
-            'beforeUpdate': hasher
-        }
+    const model = sequelize.define('User', fields, {
+        hooks: {
+            beforeCreate: hasher,
+            beforeUpdate: hasher,
+        },
     });
 
     model.prototype.purgeServiceToken = function(service, callback) {
+        const user = this;
+
         if (!service) {
             callback(0);
         }
+
         app.locals.Token.destroy({
             where: {
-                'UserId': this.id,
-                'label': 'service',
-                'key': service
-            }
+                UserId: user.id,
+                key: service,
+                label: 'service',
+            },
         }).then((affectedRows) => callback(affectedRows));
     };
 
 
     model.prototype.getServiceTokens = function(callback) {
-        let user = this;
+        const user = this;
 
         user.serviceTokens = {};
         app.locals.Token.findAll({
+            attributes: ['key', 'value', 'label'],
             where: {
-                'UserId': user.id,
-                'label': {
-                    $in: ['service', 'userval']
-                }
+                UserId: user.id,
+                label: {
+                    $in: ['service', 'userval'],
+                },
             },
-            attributes: ['key', 'value', 'label']
         }).then((tokens) => {
             user.serviceTokens = tokens.map((token) => {
                 return token.dataValues;
@@ -87,23 +93,16 @@ export default function (sequelize, app) {
         });
     };
 
-    model.prototype.getChannel = function () {
-        let hmac = crypto.createHmac('sha256', app.locals.appsecret);
-        hmac.setEncoding('hex');
-        hmac.write(this.id.toString());
-        hmac.end();
-        return hmac.read();
-    };
-
     model.prototype.checkPassword = function(password, callback) {
-        let iterations, keyLength, segments;
-        segments = this.getDataValue('passwordHash').split('::');
-        keyLength = app.locals.config.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
-        iterations = app.locals.config.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
+        const user = this;
+
+        const segments = user.getDataValue('passwordHash').split('::');
+        const keyLength = app.locals.config.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
+        const iterations = app.locals.config.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
         crypto.pbkdf2(password, segments[0], iterations, keyLength, 'sha1', (err, key) => {
             callback(key.toString('hex') === segments[1]);
         });
     };
 
     return model;
-}
+};
