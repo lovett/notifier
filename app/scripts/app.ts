@@ -3,6 +3,7 @@ const app = angular.module('appModule', [
     'appDirectives',
     'appFilters',
     'appServices',
+    'ngCookies',
     'ngSanitize',
     'ngResource',
     'ngRoute',
@@ -10,9 +11,11 @@ const app = angular.module('appModule', [
     'ngAnimate',
 ]);
 
-app.config(['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) => {
-    'use strict';
+app.config(['$httpProvider', ($httpProvider) => {
+    $httpProvider.defaults.withCredentials = true;
+}]);
 
+app.config(['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) => {
     $routeProvider.when('/login', {
         controller: 'LoginController',
         templateUrl: 'templates/login.html',

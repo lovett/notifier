@@ -1,8 +1,8 @@
-import {Strategy as LocalStrategy} from "passport-local"
+import {Strategy as LocalStrategy} from 'passport-local';
 
-export default function (app) {
+export default (app) => {
     return new LocalStrategy((username, password, done) => {
-        app.locals.User.find({ where: { username: username } }).then((user) => {
+        app.locals.User.find({ where: { username } }).then((user) => {
             if (!user) {
                 return done(null, false);
             }
@@ -16,4 +16,4 @@ export default function (app) {
             });
         }).catch((error) => done(error));
     });
-}
+};

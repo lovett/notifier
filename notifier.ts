@@ -1,5 +1,6 @@
 import * as bodyParser from 'body-parser';
 import * as compression from 'compression';
+import * as cookieParser from 'cookie-parser';
 import * as crypto from 'crypto';
 import * as express from 'express';
 import * as fs from 'fs';
@@ -18,6 +19,7 @@ import appCache from './modules/routes/appcache';
 import archive from './modules/routes/archive';
 import asset from './modules/middleware/asset';
 import auth from './modules/routes/auth';
+import authCookie from './modules/auth/cookie';
 import authBasic from './modules/auth/basic';
 import authLocal from './modules/auth/local';
 import createUser from './modules/helpers/create-user';
@@ -107,7 +109,7 @@ app.locals.config = nconf;
 
 app.locals.appsecret = crypto.randomBytes(app.locals.config.get('NOTIFIER_PASSWORD_HASH_RANDBYTES')).toString('hex');
 
-app.locals.protected = passport.authenticate('basic', { session: false });
+app.locals.protected = passport.authenticate(['cookie', 'basic', 'local'], { session: false });
 
 app.locals.pushClients = {};
 
@@ -120,6 +122,8 @@ app.use(security);
 app.use(responseTime());
 
 app.use(compression());
+
+app.use(cookieParser());
 
 app.use(bodyParser.urlencoded({
     extended: true,
@@ -159,6 +163,8 @@ passport.use(authLocal(app));
 
 passport.use(authBasic(app));
 
+passport.use(authCookie(app));
+
 app.use(passport.initialize());
 
 router = express.Router();
@@ -171,7 +177,7 @@ router.use('/notifier.appcache', appCache);
 
 router.use('/status', status);
 
-router.use('/deauth', app.locals.protected, deauth);
+router.use('/deauth', deauth);
 
 router.use('/services', app.locals.protected, services);
 

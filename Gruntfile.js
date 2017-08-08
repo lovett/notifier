@@ -53,6 +53,7 @@ module.exports = function(grunt) {
                         flatten: true,
                         src: [
                             'node_modules/angular/angular.js',
+                            'node_modules/angular-cookies/angular-cookies.js',
                             'node_modules/angular-route/angular-route.js',
                             'node_modules/faye/client/faye-browser.js',
                             'node_modules/faye/client/faye-browser-min.js',
@@ -138,6 +139,7 @@ module.exports = function(grunt) {
                 files: {
                     'public/lib.min.js': [
                         'public/angular.js',
+                        'public/angular-cookies.js',
                         'public/angular-route.js',
                         'public/faye-browser.js',
                         'public/angular-sanitize.js',
