@@ -5,18 +5,13 @@
     "moduleResolution": "node",
     "noImplicitAny": false,
     "target": "ES5",
+    "types": [],
     "lib": [
-      "dom",
+      "webworker",
       "es5"
     ]
   },
   "include": [
-    "notifier.ts",
-    "modules/**/*",
-    "app/**/*.ts"
-  ],
-  "exclude": [
-    "test/*",
     "app/scripts/worker.ts"
   ]
 }
