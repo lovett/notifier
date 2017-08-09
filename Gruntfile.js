@@ -25,6 +25,34 @@ module.exports = function(grunt) {
             }
         },
 
+
+        browserify: {
+            app: {
+                files: {
+                    'public/app.js': [
+                        'public/scripts/app.js',
+                        'public/scripts/controllers.js',
+                        'public/scripts/directives.js',
+                        'public/scripts/filters.js',
+                        'public/scripts/services.js',
+                        'public/scripts/templates.js',
+                        'public/scripts/types.js'
+                    ]
+                }
+            },
+            worker: {
+                options: {
+                    sourceMap: true
+                },
+                files: {
+                    'public/worker.js': [
+                        'public/scripts/worker.js',
+                        'public/scripts/types/js'
+                    ]
+                }
+            }
+        },
+
         clean: {
             full: {
                 src: ['public']
@@ -123,12 +151,7 @@ module.exports = function(grunt) {
                 },
                 files: {
                     'public/app.min.js': [
-                        'public/scripts/app.js',
-                        'public/scripts/controllers.js',
-                        'public/scripts/directives.js',
-                        'public/scripts/filters.js',
-                        'public/scripts/services.js',
-                        'public/scripts/templates.js'
+                        'public/app.js',
                     ]
                 }
             },
@@ -156,7 +179,7 @@ module.exports = function(grunt) {
                 },
                 files: {
                     'public/worker.min.js': [
-                        'public/scripts/worker.js'
+                        'public/worker.js'
                     ]
                 }
             }
@@ -171,9 +194,9 @@ module.exports = function(grunt) {
         tasks = [];
 
         if (buildType === 'full') {
-            tasks = tasks.concat(['clean:full', 'copy', 'ngtemplates', 'uglify']);
+            tasks = tasks.concat(['clean:full', 'copy', 'ngtemplates', 'browserify', 'uglify']);
         } else {
-            tasks = tasks.concat(['clean:app', 'copy:app', 'ngtemplates', 'uglify:app', 'uglify:worker']);
+            tasks = tasks.concat(['clean:app', 'copy:app', 'ngtemplates', 'browserify:app', 'browserify:worker', 'uglify:app', 'uglify:worker']);
         }
 
         tasks = tasks.concat(['less', 'autoprefixer']);
@@ -191,6 +214,7 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-autoprefixer');
+    grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-less');
