@@ -1,55 +1,13 @@
-self.importScripts('faye-browser-min.js');
+/// <reference path="../../modules/types/sse.d.ts" />
+import * as types from './types';
 
-let client;
-
-const enum CommandAction {
-    'INIT' = 'init',
-    'SUBSCRIBE' = 'subscribe',
-    'UNSUBSCRIBE' = 'unsubscribe',
-    'DISCONNECT' = 'disconnect',
-}
-
-const enum WorkerEvent {
-    'ADD' = 'add',
-    'CONNECT' = 'connected',
-    'DISCONNECT' = 'disconnected',
-    'DROP' = 'drop',
-    'RESUB' = 'resubscribe',
-}
-
-interface IMessage {
-    localId?: string;
-    title: string;
-    body?: string;
-    source?: string;
-    url?: string;
-    group?: string;
-    deliveredAt?: string;
-    retracted?: string[];
-}
-
-interface ICommand {
-    action: CommandAction;
-    channel?: string;
-    token?: string;
-}
-
-interface IReply {
-    event: WorkerEvent;
-    message?: IMessage;
-    channel?: string;
-    retractions?: string[];
-}
+let receiver: Receiver;
 
 class WorkerMessage  {
-    private payload: IReply;
+    private payload: types.IReply;
 
-    constructor(event: WorkerEvent, message?: IMessage) {
+    constructor(event: types.WorkerEvent, message?: types.IMessage) {
         this.payload = {event, message};
-    }
-
-    public setChannel(value: string) {
-        this.payload.channel = value;
     }
 
     public setRetractions(ids: string[]) {
@@ -61,103 +19,105 @@ class WorkerMessage  {
     }
 }
 
-self.addEventListener('message', (e: MessageEvent) => {
-    const command: ICommand = e.data;
+class Receiver {
+    private eventSource: sse.IEventSourceStatic;
+    private watch: number;
+    private keepAliveTimer;
 
-    switch (command.action) {
-    case CommandAction.INIT:
-        init(command.token);
-        break;
-    case CommandAction.SUBSCRIBE:
-        subscribe(command.channel);
-        break;
-    case CommandAction.UNSUBSCRIBE:
-        unsubscribe(command.channel);
-        break;
-    case CommandAction.DISCONNECT:
-        disconnect();
-        break;
-    default:
-        return false;
+    public monitor() {
+        this.keepAliveTimer = setInterval(() => {
+            const delta = Date.now() - this.watch;
+
+            if (delta > 10000) {
+                console.log('Too long since last keepalive. Reconnecting');
+                this.watch = Date.now();
+                this.reconnect();
+                return;
+            }
+        }, 2000);
     }
 
-    return true;
-});
+    public unmonitor() {
+        clearInterval(this.keepAliveTimer);
+    }
 
-function init(token: string) {
-    client = new Faye.Client('messages');
+    public connect() {
+        this.eventSource = new EventSource('push');
 
-    client.addExtension({
-        incoming:  (message, callback) => {
-            let code: number;
-            let segments: string[];
+        this.eventSource.addEventListener('connection', (e: MessageEvent) => {
+            console.log('Worker received connection confirmation');
+            this.watch = Date.now();
 
-            if (message.error) {
-                segments = message.error.split('::');
-                code = parseInt(segments[0], 10);
+            const reply = new WorkerMessage(types.WorkerEvent.CONNECTED);
+            return reply.send();
+        });
 
-                if (code === 301) {
-                    const workerMessage = new WorkerMessage(WorkerEvent.RESUB);
-                    workerMessage.setChannel(segments[1]);
-                    return workerMessage.send();
-                }
-            }
+        this.eventSource.addEventListener('keepalive', (e: MessageEvent) => {
+            console.log('got a keepalive');
+            this.watch = Date.now();
+        });
 
-            return callback(message);
-        },
+        this.eventSource.addEventListener('message', (e: MessageEvent) => {
+            this.relay(e.data);
+        });
 
-        outgoing: (message, callback) => {
-            if (message.channel !== '/meta/subscribe') {
-                return callback(message);
-            }
+        this.eventSource.addEventListener('error', (e: sse.IOnMessageEvent) => {
+            const reply = new WorkerMessage(types.WorkerEvent.DISCONNECTED);
+            return reply.send();
+        });
 
-            if (!message.ext) {
-                message.ext = {};
-            }
-            message.ext.authToken = token;
+        //this.monitor();
+    }
 
-            return callback(message);
-        },
-    });
+    public reconnect() {
+        console.log('Attempting to reconnect');
+        // this.unmonitor();
+        // this.eventSource.close();
+    }
 
-    client.on('transport:down', () => {
-        const message = new WorkerMessage(WorkerEvent.DISCONNECT);
-        message.send();
-    });
+    public disconnect() {
+        this.unmonitor();
+        this.eventSource.close();
+    }
 
-    client.on('transport:up', () => {
-        const message = new WorkerMessage(WorkerEvent.CONNECT);
-        message.send();
-    });
-}
-
-function disconnect() {
-    client.disconnect();
-}
-
-function subscribe(channel: string) {
-    client.subscribe(channel, (channelMessage: string) => {
-        let message: IMessage;
-        let workerMessage: WorkerMessage;
+    public relay(data: string) {
+        let reply: WorkerMessage;
+        let message: types.IMessage;
 
         try {
-            message = JSON.parse(channelMessage);
-        } catch (exception) {
-            console.error('JSON parse failed', exception);
-            return false;
+            message = JSON.parse(data);
+        } catch (ex) {
+            reply = new WorkerMessage(types.WorkerEvent.PARSEFAIL);
+            return reply.send();
         }
 
         if (message.retracted) {
-            workerMessage = new WorkerMessage(WorkerEvent.DROP);
-            workerMessage.setRetractions(message.retracted);
-            return workerMessage.send();
+            reply = new WorkerMessage(types.WorkerEvent.DROPPED);
+            reply.setRetractions(message.retracted);
+            return reply.send();
         }
 
-        workerMessage = new WorkerMessage(WorkerEvent.ADD, message);
-        return workerMessage.send();
-    });
+        reply = new WorkerMessage(types.WorkerEvent.ADD, message);
+        return reply.send();
+    }
 }
 
-function unsubscribe(channel: string) {
-    client.unsubscribe(channel);
-}
+self.addEventListener('message', (e: MessageEvent) => {
+    const command: types.ICommand = e.data;
+
+    if (!receiver) {
+        receiver = new Receiver();
+    }
+
+    if (command.action === types.WorkerCommand.CONNECT) {
+        receiver.connect();
+        return true;
+    }
+
+    if (command.action === types.WorkerCommand.DISCONNECT) {
+        receiver.disconnect();
+        return true;
+    }
+
+    return false;
+});
