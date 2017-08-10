@@ -9,7 +9,7 @@ router.get('/', (req: express.Request, res: express.Response) => {
     const timer = setInterval(() => {
         const d = new Date();
         res.write('event:keepalive\ndata:\n\n');
-    }, 2000);
+    }, 30000);
 
     req.socket.setKeepAlive(true);
     req.socket.setTimeout(0);
