@@ -1,67 +1,19 @@
+import * as types from './types';
+
+declare var angular;
+
 const appServices = angular.module('appServices', []);
 
-appServices.factory('User', ['$window', '$http', ($window, $http) => {
+appServices.factory('User', ['$window', '$http', '$cookies', ($window, $http, $cookies) => {
+    const loginCookieName = 'token';
 
-    function getTokenKey() {
-        let value = $window.sessionStorage.getItem('tokenKey');
-
-        if (!value) {
-            value = $window.localStorage.getItem('tokenKey');
-        }
-
-        return value || false;
-    }
-
-    function getTokenValue() {
-        let value = $window.sessionStorage.getItem('tokenValue');
-
-        if (!value) {
-            value = $window.localStorage.getItem('tokenValue');
-        }
-
-        return value || false;
-    }
-
-    function getChannel() {
-        let value = $window.sessionStorage.getItem('channel');
-
-        if (!value) {
-            value = $window.localStorage.getItem('channel');
-        }
-
-        if (value) {
-            // This is not a URL. It must be an absolute path.
-            return '/messages/' + value;
-        }
-
-        return false;
-    }
-
-    function getAuthHeader() {
-        return 'Basic ' + $window.btoa(`${getTokenKey()}:${getTokenValue()}`);
+    function isLoggedIn() {
+        return $cookies.get(loginCookieName) !== undefined;
     }
 
     return {
-        getAuthHeader,
-
-        getChannel,
-
-        getTokenKey,
-
-        getTokenValue,
-
-        replaceChannel(value) {
-            if ($window.sessionStorage.getItem('channel')) {
-                $window.sessionStorage.setItem('channel', value);
-            } else if ($window.localStorage.getItem('channel')) {
-                $window.localStorage.setItem('channel', value);
-            }
-        },
-
         getServices(callback) {
-            const auth = getAuthHeader();
             $http({
-                headers: {Authorization: auth},
                 method: 'GET',
                 url: 'services',
             }).then((res) => {
@@ -71,11 +23,11 @@ appServices.factory('User', ['$window', '$http', ($window, $http) => {
             });
         },
 
+        isLoggedIn,
+
         setService(service, callback) {
-            const auth = getAuthHeader();
             $http({
                 data: service,
-                headers: {Authorization: auth},
                 method: 'POST',
                 url: 'services',
             }).then((res) => {
@@ -86,10 +38,7 @@ appServices.factory('User', ['$window', '$http', ($window, $http) => {
         },
 
         authorize(service, callback) {
-            const auth = getAuthHeader();
-
             $http({
-                headers: {Authorization: auth},
                 method: 'GET',
                 params: {
                     host: $window.location.host,
@@ -102,65 +51,27 @@ appServices.factory('User', ['$window', '$http', ($window, $http) => {
         },
 
         deauthorize(service, callback) {
-            const auth = getAuthHeader();
             $http({
                 data: {service},
-                headers: {Authorization: auth},
                 method: 'POST',
                 url: 'revoke',
-            }).then(() => {
-                callback();
-            });
+            }).then(callback);
         },
 
         logIn(form) {
             return $http({
                 data: {
                     password: form.password,
+                    persist: form.remember,
                     username: form.username,
                 },
                 method: 'POST',
-                transformResponse(res) {
-                    let data;
-                    try {
-                        data = JSON.parse(res);
-                    } catch (e) {
-                        data = {};
-                    }
-
-                    if (data.hasOwnProperty('value')) {
-                        if (form.remember) {
-                            $window.localStorage.setItem('tokenKey', data.key);
-                            $window.localStorage.setItem('tokenValue', data.value);
-                            $window.localStorage.setItem('channel', data.channel);
-                            $window.sessionStorage.removeItem('tokenKey');
-                            $window.sessionStorage.removeItem('tokenValue');
-                            $window.sessionStorage.removeItem('channel');
-                        } else {
-                            $window.sessionStorage.setItem('tokenKey', data.key);
-                            $window.sessionStorage.setItem('tokenValue', data.value);
-                            $window.sessionStorage.setItem('channel', data.channel);
-                            $window.localStorage.removeItem('tokenKey');
-                            $window.localStorage.removeItem('tokenValue');
-                            $window.localStorage.removeItem('channel');
-                        }
-                    }
-                },
                 url: 'auth',
             });
         },
 
         logOut() {
-            const auth = getAuthHeader();
-            $window.localStorage.removeItem('tokenKey');
-            $window.localStorage.removeItem('tokenValue');
-            $window.localStorage.removeItem('channel');
-            $window.sessionStorage.removeItem('tokenKey');
-            $window.sessionStorage.removeItem('tokenValue');
-            $window.sessionStorage.removeItem('channel');
-
             $http({
-                headers: {Authorization: auth},
                 method: 'POST',
                 url: 'deauth',
             });
@@ -168,71 +79,47 @@ appServices.factory('User', ['$window', '$http', ($window, $http) => {
     };
 }]);
 
-appServices.factory('Faye', ['$location', '$rootScope', '$log', '$filter', 'User', 'MessageList', ($location, $rootScope, $log, $filter, User, MessageList) => {
+appServices.factory('PushClient', ['$rootScope', '$log', '$filter', 'User', 'MessageList', ($rootScope, $log, $filter, User, MessageList) => {
 
     const worker = new Worker('worker.min.js');
 
+    worker.addEventListener('message', (e: MessageEvent) => {
+        const now = $filter('date')(new Date(), 'mediumTime');
+        const reply = e.data;
+
+        if (reply.event === types.WorkerEvent.DISCONNECTED) {
+            $log.warn('Disconnected as of ' + now);
+            $rootScope.$broadcast('connection:change', 'disconnected');
+        }
+
+        if (reply.event === types.WorkerEvent.CONNECTED) {
+            $log.info('Connected as of ' + now);
+            $rootScope.$broadcast('connection:change', 'connected');
+        }
+
+        if (reply.event === types.WorkerEvent.DROPPED) {
+            MessageList.drop(reply.retractions);
+        }
+
+        if (reply.event === types.WorkerEvent.ADD) {
+            MessageList.add(reply.message);
+        }
+
+        if (reply.event === types.WorkerEvent.PARSEFAIL) {
+            $log.error('Failed to parse message');
+        }
+    });
+
     return {
-
-        init(port) {
-            port = parseInt(port, 10) || 0;
-
-            if (port === 0) {
-                port = $location.port();
-            }
-
-            $log.info('Websocket port is ' + port);
-
-            worker.onmessage = (e) => {
-                let now;
-                const reply = e.data;
-
-                if (reply.event === 'disconnected') {
-                    now = $filter('date')(new Date(), 'mediumTime');
-                    $log.warn('Faye transport down at ' + now);
-                    $rootScope.$broadcast('connection:change', 'disconnected');
-                }
-
-                if (reply.event === 'connected') {
-                    now = $filter('date')(new Date(), 'mediumTime');
-                    $log.info('Faye transport up at ' + now);
-                    $rootScope.$broadcast('connection:change', 'connected');
-                }
-
-                if (reply.event === 'resubscribe') {
-                    $rootScope.$broadcast('connection:resubscribe', reply.channel);
-                }
-
-                if (reply.event === 'drop') {
-                    MessageList.drop(reply.retractions);
-                }
-
-                if (reply.event === 'add') {
-                    MessageList.add(reply.message);
-                }
-
-                $rootScope.$apply();
-            };
-
-            worker.postMessage({action: 'init', token: User.getTokenValue()});
-        },
-
-        subscribe() {
-            const channel = User.getChannel();
-            worker.postMessage({action: 'subscribe', channel});
-        },
-
-        unsubscribe(channel) {
-            worker.postMessage({action: 'unsubscribe', channel});
+        connect() {
+            worker.postMessage({action: types.WorkerCommand.CONNECT});
         },
 
         disconnect() {
-            worker.postMessage({action: 'disconnect'});
+            worker.postMessage({action: types.WorkerCommand.DISCONNECT});
         },
     };
-},
-                            ],
-                   );
+}]);
 
 appServices.service('WebhookNotification', ['$window', '$rootScope', 'User', ($window, $rootScope, User) => {
     let url: string;
@@ -325,11 +212,12 @@ via the browser's Notifications settings`);
     return {state, enable, send};
 }]);
 
-appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$location', '$interval', 'User', 'BrowserNotification', ($rootScope, $http, $log, $window, $location, $interval, User, BrowserNotification) => {
+appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$location', '$interval', '$timeout', 'User', 'BrowserNotification', ($rootScope, $http, $log, $window, $location, $interval, $timeout, User, BrowserNotification) => {
 
-    let messages = [];
-    const methods = [];
+    const messages = {};
+    const oneDayMilliseconds = 86400000;
     const removedIds = [];
+
     let lastFetched: Date;
 
     const refreshTimer = $interval(() => {
@@ -337,10 +225,11 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        messages.forEach((message) => {
+        for (const key of messageKeys()) {
+            const message = messages[key];
             const receivedDay = message.received;
             receivedDay.setHours(0, 0, 0, 0);
-            message.days_ago = Math.floor((today.getTime() - receivedDay.getTime()) / 86400000);
+            message.days_ago = Math.floor((today.getTime() - receivedDay.getTime()) / oneDayMilliseconds);
 
             if (message.expired) {
                 clear(message.publicId);
@@ -348,128 +237,165 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                 message.expired = new Date(message.expiresAt) < now;
             }
 
-        });
+        }
     }, 1000 * 60);
 
-    function focusOne(step) {
-        let focusedIndex: number;
+    function count() {
+        const keys = messageKeys();
+        return keys.length;
+    }
 
-        if (messages.length < 1) {
+    function find(publicId: string) {
+        if (messages.hasOwnProperty(publicId)) {
+            return messages[publicId];
+        }
+
+        return false;
+    }
+
+
+    function messageKeys() {
+        return Object.keys(messages);
+    }
+
+    function focusOne(step) {
+        const keys = messageKeys();
+        const maxIndex = keys.length - 1;
+
+        let focusIndex = 0;
+
+        if (keys.length === 0) {
             return;
         }
 
-        messages.forEach((message, index) => {
+        keys.forEach((key, index) => {
+            const message = messages[key];
             if (message.focused) {
-                focusedIndex = index + step;
+                focusIndex = index + step;
             }
         });
 
-        if (!messages[focusedIndex]) {
-            if (step < 0) {
-                focusedIndex = messages.length - 1;
-            } else {
-                focusedIndex = 0;
-            }
+        if (focusIndex > maxIndex) {
+            focusIndex %= keys.length;
+        }
+
+        if (focusIndex < 0) {
+            focusIndex = keys.length - maxIndex;
         }
 
         focusNone();
-        messages[focusedIndex].focused = true;
+        messages[keys[focusIndex]].focused = true;
         $rootScope.$apply();
     }
 
-    function clearFocused() {
-        messages.forEach((message, index) => {
-            if (message.focused) {
-                clear(message.publicId);
-                focusNext();
-            }
+    function filterKeysByMessage(callback: (message) => boolean) {
+        return messageKeys().filter((key: string) => {
+            return callback(messages[key]);
         });
+    }
+
+    function map(callback: (message) => any) {
+        return messageKeys().forEach((key) => {
+            const message = messages[key];
+            return callback(message);
+        });
+    }
+
+    function focusedKey(): string {
+        const focusedKeys = filterKeysByMessage((message) => message.focused);
+        if (focusedKeys.length === 0) {
+            return null;
+        }
+
+        return focusedKeys[0];
+    }
+
+    function focusedMessage() {
+        const key = focusedKey();
+        return messages[key];
+    }
+
+    function clearFocused() {
+        focusNext();
+        clear(focusedKey());
     }
 
     function focusNone() {
-        messages = messages.map((message) => {
-            message.focused = false;
-            return message;
-        });
+        map((message) => message.focused = false);
     }
 
-    function focusFirst() {
-        focusNone();
-        messages[0].focused = true;
-    }
-
+    /**
+     * If the currently-focused message has a URL, open it in a new window
+     */
     function visitLink() {
-        messages.forEach((message, index) => {
-            if (message.focused && message.url) {
-                $window.open(message.url, '_blank');
-            }
-        });
+        const targetMessage = focusedMessage();
+
+        if (targetMessage && targetMessage.url ) {
+            $window.open(targetMessage.url, '_blank');
+        }
     }
 
-    function clear(ids) {
-        if (!(ids instanceof Array)) {
-            ids = [ids];
+    function clear(publicIds: string | string[]) {
+        if (typeof publicIds === 'string') {
+            publicIds = [publicIds];
         }
 
-        function success() {
-            removedIds.push(ids);
-            $rootScope.$broadcast('queue:change', messages.length);
+        for (const publicId of publicIds) {
+            messages[publicId].state = 'clearing';
         }
-
-        function failure() {
-            $rootScope.$broadcast('connection:change', 'error', 'The message could not be cleared.');
-            messages.forEach((message) => {
-                if (ids.indexOf(message.publicId) > -1) {
-                    message.state = 'stuck';
-                }
-            });
-        }
-
-        messages.forEach((message) => {
-            if (ids.indexOf(message.publicId) > -1) {
-                message.state = 'clearing';
-            }
-        });
 
         $http({
-            data: { publicId: ids },
-            headers: {Authorization: User.getAuthHeader()},
+            data: { publicId: publicIds },
             method: 'POST',
             url: 'message/clear',
-        }).then(success, failure);
+        }).then(() => {
+            removedIds.push(publicIds);
+            $rootScope.$broadcast('queue:change', count());
+        }).catch(() => {
+            for (const publicId of publicIds) {
+                messages[publicId].state = 'stuck';
+            }
+            $rootScope.$broadcast('connection:change', 'error', 'The message could not be cleared.');
+        });
     }
 
-    function add(message, attitude) {
-        let age: number;
-        let messageExists = false;
-        let messageHasChanged = false;
-        let result;
-        let tmp;
-        let update;
+    function add(message) {
+        const startOfToday: number = (new Date()).setHours(0, 0, 0, 0);
+        const now = new Date();
 
-        message.received = new Date(message.received || new Date());
-
-        message.days_ago = (
-            new Date().setHours(0, 0, 0, 0) - new Date(message.received).setHours(0, 0, 0, 0)
-        ) / 86400000;
+        message.domain = null;
+        if (message.url) {
+            const el = angular.element('<a></a>');
+            el.attr('href', message.url);
+            message.domain = el[0].hostname;
+        }
 
         message.expire_days = null;
-
+        message.expired = false;
         if (message.expiresAt) {
-            message.expire_days = (
-                new Date(message.expiresAt).setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)
-            ) / 86400000;
+            message.expiresAt = new Date(message.expiresAt);
+
+            message.expired = (message.expiresAt < now);
+
+            message.expire_days = (new Date(message.expiresAt)).setHours(0, 0, 0, 0);
+            message.expire_days -= startOfToday;
+            message.expire_days /= oneDayMilliseconds;
         }
 
-        if (typeof message.expiresAt === 'string') {
-            message.expiresAt = new Date(message.expiresAt);
-            message.expired = (message.expiresAt < new Date());
+        message.received = new Date(message.received);
+        if (isNaN(message.received)) {
+            message.received = now;
         }
+
+        message.days_ago = startOfToday;
+        message.days_ago -= (new Date(message.received)).setHours(0, 0, 0, 0);
+        message.days_ago /= oneDayMilliseconds;
 
         if (message.body) {
             message.body = message.body.replace(/\n/g, '<br/>');
         }
 
+        message.badge = null;
         if (message.group) {
             message.badge = message.group.split('.').pop();
         }
@@ -479,54 +405,12 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             message.body = message.body.replace(/(\+?1?)(\d\d\d)(\d\d\d)(\d\d\d\d)/g, '($2) $3-$4');
         }
 
-        if (message.url) {
-            tmp = angular.element('<a></a>');
-            tmp.attr('href', message.url);
-            message.domain = tmp[0].hostname;
-        } else {
-            message.domain = null;
-        }
+        message.browserNotification = BrowserNotification.send(message);
 
-        // Update an existing message
-        update = messages.some((m) => {
-            if (m.publicId === message.publicId) {
-                messageExists = true;
-                ['title', 'body', 'badge', 'domain'].forEach((property) => {
-                    if (message[property] !== m[property]) {
-                        m[property] = message[property];
-                        messageHasChanged = true;
-                    }
-                });
-            }
-            return messageExists && messageHasChanged;
+        $rootScope.$evalAsync(() => {
+            messages[message.publicId] = message;
+            $rootScope.$broadcast('queue:change', Object.keys(messages).length);
         });
-
-        if (messageHasChanged) {
-            $rootScope.$apply();
-        }
-
-        if (messageExists) {
-            return;
-        }
-
-        result = messages.some((m, index) => {
-            if (m.received < message.received) {
-                messages.splice(index, 0, message);
-                return true;
-            }
-        });
-
-        if (result === false) {
-            messages.push(message);
-        }
-
-        $rootScope.$broadcast('queue:change', messages.length);
-
-        age = ((new Date()).getTime() - message.received.getTime()) / 1000;
-
-        if (attitude !== 'silent' && age < 120) {
-            message.browserNotification = BrowserNotification.send(message);
-        }
     }
 
     function focusNext() {
@@ -537,42 +421,45 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
         focusOne(-1);
     }
 
-    function drop(ids) {
-        if (!(ids instanceof Array)) {
-            ids = [ids];
+    function drop(publicIds: string | string[]) {
+        if (typeof publicIds === 'string') {
+            publicIds = [publicIds];
         }
 
-        messages = messages.filter((message) => {
-            if (ids.indexOf(message.publicId) === -1) {
-                return true;
+        for (const publicId of publicIds) {
+            const message = find(publicId);
+
+            if (message === false) {
+                continue;
             }
 
             if (message.browserNotification) {
                 message.browserNotification.close();
             }
-            return false;
-        });
 
-        $rootScope.$broadcast('queue:change', messages.length);
+            delete messages[publicId];
+        }
+
+        $rootScope.$broadcast('queue:change', count());
     }
 
     function fetch() {
+        console.log('fetching the archive');
         const url = 'archive/25';
         const now = new Date();
 
         // prevent aggressive refetching
         if (lastFetched && now.getTime() - lastFetched.getTime() < 1000) {
-            $log.debug('Ignoring too-soon refetch request');
+            $log.info('Ignoring too-soon refetch request');
             return;
         }
 
         $http({
-            headers: {Authorization: User.getAuthHeader()},
             method: 'GET',
             url,
         }).then((res) => {
-            let attitude;
             let currentIds;
+
             const staleIds = [];
 
             if (res.data.messages instanceof Array) {
@@ -586,7 +473,8 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                     return message.publicId;
                 });
 
-                messages.forEach((message) => {
+                messageKeys().forEach((publicId) => {
+                    const message = messages[publicId];
                     if (currentIds.indexOf(message.publicId) === -1) {
                         staleIds.push(message.publicId);
                     }
@@ -600,19 +488,14 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                 // sequentially they will end up oldest first
                 res.data.messages.reverse();
 
-                if (!lastFetched) {
-                    attitude = 'silent';
-                } else {
-                    attitude = 'normal';
-                }
-
                 res.data.messages.forEach((message) => {
-                    add(message, attitude);
+                    add(message);
                 });
 
-                $rootScope.$broadcast('queue:change', messages.length);
-
                 lastFetched = now;
+
+                $timeout(() => $rootScope.$broadcast('queue:change', count()));
+
             }
         }).catch((data) => {
             lastFetched = now;
@@ -622,11 +505,51 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
         });
     }
 
+    function purge() {
+        clear(messageKeys());
+    }
+
+    function empty() {
+        messageKeys().forEach((key) => {
+            delete messages[key];
+        });
+
+        $rootScope.$broadcast('queue:change', count());
+    }
+
+
+    function tallyByGroup() {
+        return messageKeys().reduce((accumulator, key) => {
+            const message = messages[key];
+
+            if (accumulator.hasOwnProperty(message.group) === false) {
+                accumulator[message.group] = 0;
+            }
+
+            accumulator[message.group]++;
+
+            return accumulator;
+        }, {});
+    }
+
+    function canUnclear() {
+        return removedIds.length > 0;
+    }
+
+    function unclear() {
+        $http({
+            data: {publicId: removedIds.pop()},
+            method: 'POST',
+            url: 'message/unclear',
+        }).then(() => {
+            fetch();
+        });
+    }
+
     return {
         add,
-        canUnclear() {
-            return removedIds.length > 0;
-        },
+
+        canUnclear,
 
         clear,
 
@@ -634,9 +557,9 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
         drop,
 
-        fetch,
+        empty,
 
-        focusFirst,
+        fetch,
 
         focusNext,
 
@@ -648,31 +571,12 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
         messages,
 
+        purge,
+
+        tallyByGroup,
+
+        unclear,
+
         visitLink,
-
-        unclear() {
-            $http({
-                data: {publicId: removedIds.pop()},
-                headers: {Authorization: User.getAuthHeader()},
-                method: 'POST',
-                url: 'message/unclear',
-            }).then(() => {
-                fetch();
-            });
-        },
-
-        purge() {
-            const ids = messages.map((message) => {
-                return message.publicId;
-            });
-
-            clear(ids);
-        },
-
-        empty() {
-            messages = [];
-            $rootScope.$broadcast('queue:change', messages.length);
-        },
-
     };
 }]);

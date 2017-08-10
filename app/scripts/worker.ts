@@ -21,84 +21,49 @@ class WorkerMessage  {
 
 class Receiver {
     private eventSource: sse.IEventSourceStatic;
-    private watch: number;
-    private keepAliveTimer;
-
-    public monitor() {
-        this.keepAliveTimer = setInterval(() => {
-            const delta = Date.now() - this.watch;
-
-            if (delta > 10000) {
-                console.log('Too long since last keepalive. Reconnecting');
-                this.watch = Date.now();
-                this.reconnect();
-                return;
-            }
-        }, 2000);
-    }
-
-    public unmonitor() {
-        clearInterval(this.keepAliveTimer);
-    }
 
     public connect() {
         this.eventSource = new EventSource('push');
 
         this.eventSource.addEventListener('connection', (e: MessageEvent) => {
-            console.log('Worker received connection confirmation');
-            this.watch = Date.now();
-
             const reply = new WorkerMessage(types.WorkerEvent.CONNECTED);
             return reply.send();
         });
 
-        this.eventSource.addEventListener('keepalive', (e: MessageEvent) => {
-            console.log('got a keepalive');
-            this.watch = Date.now();
-        });
+        this.eventSource.addEventListener('keepalive', (e: MessageEvent) => {});
 
         this.eventSource.addEventListener('message', (e: MessageEvent) => {
-            this.relay(e.data);
+            const reply: WorkerMessage = this.parseMessage(e.data);
+            return reply.send();
         });
 
         this.eventSource.addEventListener('error', (e: sse.IOnMessageEvent) => {
             const reply = new WorkerMessage(types.WorkerEvent.DISCONNECTED);
             return reply.send();
         });
-
-        //this.monitor();
-    }
-
-    public reconnect() {
-        console.log('Attempting to reconnect');
-        // this.unmonitor();
-        // this.eventSource.close();
     }
 
     public disconnect() {
-        this.unmonitor();
         this.eventSource.close();
     }
 
-    public relay(data: string) {
+    public parseMessage(data: string) {
         let reply: WorkerMessage;
         let message: types.IMessage;
 
         try {
             message = JSON.parse(data);
         } catch (ex) {
-            reply = new WorkerMessage(types.WorkerEvent.PARSEFAIL);
-            return reply.send();
+            return new WorkerMessage(types.WorkerEvent.PARSEFAIL);
         }
 
         if (message.retracted) {
             reply = new WorkerMessage(types.WorkerEvent.DROPPED);
             reply.setRetractions(message.retracted);
-            return reply.send();
+            return reply;
         }
 
-        reply = new WorkerMessage(types.WorkerEvent.ADD, message);
-        return reply.send();
+        return new WorkerMessage(types.WorkerEvent.ADD, message);
     }
 }
 

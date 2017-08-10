@@ -163,18 +163,21 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$win
             scope.summaryVisible = false;
             scope.$on('shortcuts:toggle', () => {
                 scope.summaryVisible = !scope.summaryVisible;
-                scope.$apply();
             });
 
             scope.$on('shortcuts:hide', () => {
                 scope.summaryVisible = false;
-                scope.$apply();
             });
 
             scope.shortcuts = shortcutMap;
 
             angular.element($document[0]).bind('keydown', (e) => {
                 const charCode: number = e.which || e.keyCode;
+
+                // Safari triggers a keyless keydown event during login autofill
+                if (!charCode) {
+                    return;
+                }
 
                 if (!shortcutMap.hasOwnProperty(charCode.toString())) {
                     return;
@@ -247,26 +250,22 @@ appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList',
     return {
         link(scope: IStatusBarScope) {
             scope.$on('connection:change', (e, state, message) => {
-                if (state === 'offline' || state === 'disconnected' || state === 'error') {
+                scope.$evalAsync(() => {
                     scope.message = message || state;
-                    scope.disconnected = true;
-                } else {
-                    scope.disconnected = false;
-                }
-                scope.$apply();
+
+                    if (state === 'offline' || state === 'disconnected' || state === 'error') {
+                        scope.disconnected = true;
+                    } else {
+                        scope.disconnected = false;
+                    }
+                });
             });
 
             scope.$on('queue:change', () => {
                 const summary = [];
+                const tallys = MessageList.tallyByGroup();
 
-                const tallys = MessageList.messages.reduce((accumulator, message) => {
-                    if (!accumulator.hasOwnProperty(message.group)) {
-                        accumulator[message.group] = 1;
-                    } else {
-                        accumulator[message.group] += 1;
-                    }
-                    return accumulator;
-                }, {});
+                let message: string;
 
                 Object.keys(tallys).forEach((group) => {
                     const displayName = (group === 'default') ? 'ungrouped' : group;
@@ -274,18 +273,17 @@ appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList',
                 });
 
                 if (summary.length > 3) {
-                    scope.message = MessageList.messages.length;
-                    scope.message += (MessageList.messages.length === 1) ? ' message' : ' messages';
-                    scope.message += ' in ';
-                    scope.message += ' ' + summary.length;
-                    scope.message += (summary.length === 1) ? ' group' : ' groups';
+                    message = `${MessageList.count()} messages in ${summary.length} groups`;
                 } else {
-                    scope.message = summary.sort().join(', ');
+                    message = summary.sort().join(', ');
                 }
 
-                scope.disconnected = false;
+                scope.$evalAsync(() => {
+                    scope.message = message;
+                });
             });
         },
+
         restrict: 'E',
         template: '<div ng-class="{\'status-bar\': true, \'disconnected\': disconnected}">{{ message }}</div>',
 
