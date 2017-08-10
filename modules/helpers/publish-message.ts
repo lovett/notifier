@@ -4,7 +4,6 @@ function publishServerEvent(app, user, message) {
     for (const id of Object.keys(app.locals.pushClients)) {
         const res = app.locals.pushClients[id];
         res.write(`event: message\ndata: ${JSON.stringify(message)}\n\n`);
-        res.flush();
     }
 }
 
