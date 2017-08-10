@@ -10,7 +10,6 @@ import * as passport from 'passport';
 import * as path from 'path';
 import * as responseTime from 'response-time';
 import * as Sequelize from 'sequelize';
-import * as deflate from 'permessage-deflate';
 
 import Message from './modules/models/Message';
 import Token from './modules/models/Token';
