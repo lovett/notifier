@@ -1,4 +1,4 @@
-import * as express from "express";
+import * as express from 'express';
 
 const router = express.Router();
 
@@ -12,9 +12,9 @@ const router = express.Router();
  * push notifications.
  */
 router.get('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    let callback = () => {
+    req.user.getServiceTokens(() => {
 
-        let services = req.user.serviceTokens.map((token) => {
+        const services = req.user.serviceTokens.map((token) => {
             if (token.label === 'service') {
                 delete token.value;
             }
@@ -23,17 +23,15 @@ router.get('/', (req: express.Request, res: express.Response, next: express.Next
         });
 
         res.json(services);
-    };
-
-    req.user.getServiceTokens(callback);
+    });
 });
 
 router.post('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    let additions = [];
-    let removals = [];
-    let whitelist = ['webhook'];
+    const additions = [];
+    const removals = [];
+    const whitelist = ['webhook'];
 
-    for (let name in req.body) {
+    for (const name in req.body) {
         if (whitelist.indexOf(name) === -1) {
             continue;
         }
@@ -45,16 +43,13 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
         }
 
         additions.push({
+            UserId: req.user.id,
             key: name,
-            value: req.body[name],
             label: 'userval',
             persist: true,
-            UserId: req.user.id
+            value: req.body[name],
         });
     }
-
-    console.log('removals', removals);
-    console.log('additions', additions);
 
     if (removals.length === 0 && additions.length === 0) {
         res.status(400).send('Nothing to be done');
@@ -63,17 +58,16 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
 
     req.app.locals.Token.destroy({
         where: {
+            UserId: req.user.id,
             key: {
-                $in: removals
+                $in: removals,
             },
-            UserId: req.user.id
-        }
-    }).then(affectedRows => {
+        },
+    }).then((affectedRows) => {
         return req.app.locals.Token.bulkCreate(additions);
     }).then(() => {
         res.sendStatus(200);
-    }).catch(error => {
-        console.log(error);
+    }).catch((error) => {
         res.status(500).json(error);
     });
 });

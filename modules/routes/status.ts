@@ -1,11 +1,11 @@
-import * as express from "express";
+import * as express from 'express';
 
 const router = express.Router();
 
 /**
- * A static are-you-alive endpoint for monitoring and keep-alive
+ * A monitoring endpoint to confirm the server is running.
  */
-router.get('/', function(req: express.Request, res: express.Response, next: express.NextFunction) {
+router.get('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.type('txt');
     res.send('OK');
 });

@@ -3,7 +3,7 @@ import * as express from 'express';
 const router = express.Router();
 
 /**
- * Remove a access token
+ * Remove an access token
  *
  * This is the destructive counterpart to /auth
  */
