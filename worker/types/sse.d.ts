@@ -2,7 +2,7 @@
 // Specification: http://dev.w3.org/html5/eventsource/
 // Definitions by: Yannik Hampe <https://github.com/yankee42>
 
-declare var EventSource : sse.IEventSourceStatic;
+declare var EventSource: sse.IEventSourceStatic;
 
 declare module sse {
 
@@ -16,7 +16,7 @@ declare module sse {
         OPEN = 1,
 
         /** The connection is not open, and the user agent is not trying to reconnect. Either there was a fatal error or the close() method was invoked. */
-        CLOSED = 2
+        CLOSED = 2,
     }
 
     interface IEventSourceStatic {

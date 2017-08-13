@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "../public/worker",
+    "sourceMap": false,
+    "target": "ES5",
+    "typeRoots": [],
+    "lib": [
+      "webworker",
+      "es5"
+    ]
+  },
+  "include": [
+    "**/*.ts",
+    "../types/*.d.ts"
+  ]
+
+}
