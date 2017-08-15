@@ -1,374 +1,88 @@
-HTML {
-  background-color: #333;
-  color: #fff;
-  font-family: 'Geneva', Arial, sans-serif;
-}
-MAIN {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-MAIN.stacked {
-  justify-content: flex-start;
-  flex-direction: column;
-  align-items: stretch;
-}
-MAIN .growable {
-  flex: 1 0 auto;
-}
-A {
-  color: #2D8E5E;
-  text-decoration: none;
-}
-.page-jacket.connected {
-  background-color: #2D8E5E;
-}
-.page-jacket.connected NAV {
-  visibility: visible;
-  background-color: #2D8E5E;
-}
-A:hover {
-  text-decoration: underline;
-  cursor: pointer;
-}
-.svg-defs {
-  display: none;
-}
-.reset {
-  margin: 0;
-  padding: 0;
-}
-.box-reset {
-  margin: 0;
-  padding: 0;
-}
-.left {
-  float: left;
-}
-.right {
-  float: right;
-}
-.status-bar {
-  text-transform: uppercase;
-  color: #fff;
-  font-size: 0.6em;
-  letter-spacing: 1px;
-  white-space: nowrap;
-  line-height: 3;
-  height: 3em;
-  text-align: center;
-  overflow: hidden;
-  padding: 0 1em;
-}
-FOOTER {
-  font-size: 0.85em;
-}
-FOOTER A {
-  color: white;
-  display: inline-block;
-  line-height: 1;
-  margin: 1em;
-}
-FOOTER NAV {
-  visibility: hidden;
-  display: inline-block;
-  width: 100%;
-}
-FOOTER NAV A:last-of-type {
-  position: absolute;
-  right: 0;
-}
-FOOTER .app-settings {
-  margin: 0;
-  padding: 0;
-  background-color: #39b578;
-  clear: both;
-  color: black;
-}
-FOOTER .app-settings LI {
-  margin: 0;
-  display: inline-block;
-}
-.message.extended {
-  padding-right: 8em;
-}
-.message.stuck {
-  opacity: 0.3;
-}
-.message.stuck .options {
-  display: none;
-}
-.message.linked:hover {
-  cursor: pointer;
-}
-.message:hover {
-  cursor: default;
-  text-decoration: none;
-}
-.message {
-  min-height: 6em;
-  box-sizing: border-box;
-  border: 0.25em solid transparent;
-  background-color: #ffffff;
-  margin-bottom: 0.5em;
-  overflow: hidden;
-  position: relative;
-  padding: 1em 6em;
-  display: block;
-  color: black;
-  column-break-inside: avoid;
-  page-break-inside: avoid;
-  break-inside: avoid;
-  vertical-align: top;
-}
-.message H1 {
-  color: inherit;
-}
-.message .options {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 101%;
-  width: 8em;
-  display: none;
-  transition: opacity 0.1s 0.2s;
-}
-.message .options A {
-  height: 100%;
-  float: right;
-  font-size: 0.75em;
-  text-transform: uppercase;
-  margin-left: 0.25em;
-  padding: 0 1.5em;
-  display: table;
-}
-.message .options A SPAN {
-  display: table-cell;
-  vertical-align: middle;
-}
-.message .options A .icon {
-  width: 4em;
-  height: 4em;
-  fill: black;
-}
-.message H1 {
-  font-size: 1.1em;
-  font-weight: bold;
-  margin: 0;
-  padding: 0;
-}
-.message H1 A {
-  color: black;
-}
-.message P {
-  margin: 0;
-  padding: 0;
-  line-height: 1.4;
-}
-.message TIME {
-  font-size: 0.7em;
-  display: block;
-}
-.message .domain,
-.message .expiration {
-  font-size: 0.7em;
-}
-.message .expiration {
-  font-style: italic;
-}
-.message .right {
-  margin-right: -0.5em;
-  margin-top: -0.5em;
-}
-.message:hover .options {
-  display: block;
-}
-.message.expired {
-  background-color: #ccc;
-  color: #666;
-}
-.message.focused,
-.message:focus {
-  border-color: #F08551;
-  outline: 0;
-}
-.message.focused .options,
-.message:focus .options {
-  opacity: 1;
-}
-.message.ng-enter,
-.message.ng-leave {
-  transition: all linear 0.5s;
-}
-.message.ng-enter {
-  opacity: 0;
-}
-.message.ng-enter.ng-enter-active {
-  opacity: 1;
-}
-/*
- * Clearfix: contain floats
- * from h5bp.com
- *
- * For modern browsers
- * 1. The space content is one way to avoid an Opera bug when the
- *    `contenteditable` attribute is included anywhere else in the document.
- *    Otherwise it causes space to appear at the top and bottom of elements
- *    that receive the `clearfix` class.
- * 2. The use of `table` rather than `block` is only necessary if using
- *    `:before` to contain the top-margins of child elements.
- */
-.clearfix:before,
-.clearfix:after {
-  content: ' ';
-  /* 1 */
-  display: table;
-  /* 2 */
-}
-.clearfix:after {
-  clear: both;
-}
-/*
- * Hide visually and from screen readers: h5bp.com/u
- */
-.hidden {
-  opacity: 0;
-  display: none;
-}
-/*
- * Hide visually and from screen readers, but maintain layout
- * from h5bp.com
- */
-.invisible {
-  visibility: hidden;
-}
-H1 {
-  line-height: 1;
-  font-size: 2em;
-  margin-bottom: 1em;
-}
-P {
-  padding: 0;
-  margin: 1em 0;
-}
-BUTTON {
-  padding: 0.5em 1em;
-  border: 0;
-  background-color: #2D8E5E;
-  color: white;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  font-size: 0.85em;
-}
-BUTTON:hover {
-  background-color: #216744;
-}
-.disabled {
-  background-color: #216744;
-}
-.centered {
-  text-align: center;
-}
-FORM[name='loginForm'] .field {
-  margin-bottom: 1.5em;
-}
-FORM[name='loginForm'] .error {
-  background-color: salmon;
-  color: white;
-  padding: 1em;
-  margin-top: -1em;
-  margin-left: -1em;
-  margin-right: -1em;
-}
-FORM[name='loginForm'] .field:last-of-type {
-  margin-bottom: 0;
-}
-FORM[name='loginForm'] FIELDSET {
-  border: 0;
-}
-FORM[name='loginForm'] LABEL {
-  display: inline-block;
-  min-width: 6em;
-}
-FORM[name='loginForm'] LABEL:after {
-  content: ': ';
-}
-FORM[name='loginForm'] .inline-label:after {
-  content: none;
-}
-FORM[name='loginForm'] INPUT[type='text'],
-FORM[name='loginForm'] INPUT[type='password'] {
-  font-family: monospace;
-  font-size: 1.3em;
-  border-radius: 0;
-  padding: 0.25em;
-}
-.app-message {
-  text-align: center;
-  color: white;
-  font-size: 2em;
-}
-.fade-in.ng-enter,
-.fade-in.ng-leave {
-  transition: all linear 0.25s;
-}
-.fade-in.ng-enter,
-.fade-in.ng-leave.ng-leave-active {
-  opacity: 1;
-}
-.fade-in.ng-leave,
-.fade-in.ng-enter.ng-enter-active {
-  opacity: 0;
-}
-.fade-out.ng-enter,
-.fade-out.ng-leave {
-  transition: all linear 0.25s;
-}
-.fade-out.ng-enter,
-.fade-out.ng-leave.ng-leave-active {
-  opacity: 0;
-}
-.fade-out.ng-leave,
-.fade-out.ng-enter.ng-enter-active {
-  opacity: 1;
-}
-.shortcut-summary {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-.shortcut-summary .background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #1b5438;
-}
-.shortcut-summary .foreground {
-  position: absolute;
-  color: white;
-  top: 0;
-  left: 0;
-  width: 100%;
-  text-align: center;
-}
-.shortcut-summary TABLE {
-  margin: auto;
-}
-.shortcut-summary TD {
-  text-align: left;
-  padding: 0.5em;
-}
-.shortcut-summary KBD {
-  display: inline-block;
-  color: #fff;
-  background-color: #333;
-  border-radius: 5px;
-  border: 2px ridge white;
-  text-align: center;
-  padding: 0.75em 1.25em;
+.badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 6em;
+    float: left;
+    background: transparent data-uri('svg/starburst-outline.svg') no-repeat center;
+    background-size: 80%;
+    display: block;
+}
+
+.badgeGroup(@backgroundColor; @svgPath) {
+    background-color: @backgroundColor;
+
+    .badge {
+        background-image: data-uri(@svgPath);
+    }
+}
+
+.dark-bg {
+    color: white;
+
+    .options A .icon {
+	fill: white;
+    }
+
+}
+
+.message.email {
+    .dark-bg;
+    .badgeGroup(rgb(56,101,120), 'svg/mail.svg');
+}
+
+.message.phone {
+    .badgeGroup(rgb(253, 255, 196), 'svg/phone-outline.svg');
+}
+
+.message.web {
+    .dark-bg;
+    .badgeGroup(rgb(142,116,113), 'svg/globe-outline.svg');
+}
+
+.message.reminder {
+    .badgeGroup(#e5e5e5, 'svg/pin-outline.svg');
+}
+
+.message.calendar {
+    .badgeGroup(Cornsilk, 'svg/calendar-outline.svg');
+}
+
+.message.sysdown {
+    .dark-bg;
+    .badgeGroup(#ef4747, 'svg/weather-stormy.svg');
+}
+
+.message.sysup {
+    .badgeGroup(rgb(135, 227, 243), 'svg/thumbs-ok.svg');
+}
+
+.message.git {
+    .badgeGroup(#d1f4f8, 'svg/social-github.svg');
+}
+
+.message.debian {
+    .badgeGroup(white, 'svg/debian.svg');
+
+    .badge {
+        background-size: 60%;
+    }
+}
+
+.message.azure {
+    .dark-bg;
+    .badgeGroup(#16aaea, 'svg/azure-web.svg');
+}
+
+.message.chore {
+    .badgeGroup(LightGreen, 'svg/spanner.svg');
+}
+
+.message.education {
+    .badgeGroup(Moccasin, 'svg/book.svg');
+}
+
+.message.jenkins {
+    .badgeGroup(white, 'svg/jenkins.svg');
 }
