@@ -35,6 +35,7 @@ import push from './routes/push';
 import pushbulletFinish from './routes/pushbullet/finish';
 import pushbulletStart from './routes/pushbullet/start';
 import revoke from './routes/revoke';
+import robots from './routes/robots';
 import security from './middleware/security';
 import services from './routes/services';
 import status from './routes/status';
@@ -111,7 +112,6 @@ app.disable('x-powered-by');
 app.locals.config = nconf;
 
 app.locals.appsecret = crypto.randomBytes(app.locals.config.get('NOTIFIER_PASSWORD_HASH_RANDBYTES')).toString('hex');
-
 app.locals.protected = passport.authenticate(['cookie', 'basic', 'local'], { session: false });
 
 app.locals.pushClients = {};
@@ -177,6 +177,8 @@ router.use(asset(nconf.get('NOTIFIER_PUBLIC_DIR')));
 router.use(/^\/(login|logout|onedrive)?$/, index);
 
 router.use('/notifier.appcache', appCache);
+
+router.use('/robots.txt', robots);
 
 router.use('/status', status);
 
