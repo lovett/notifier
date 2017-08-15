@@ -80,7 +80,7 @@ module.exports = function(grunt) {
         },
     });
 
-    grunt.registerTask('build', 'Build the application', () => {
+    grunt.registerTask('build', 'Build the browser UI', () => {
         let tasks;
 
         tasks = ['copy:svg', 'less:app', 'autoprefixer:app'];
