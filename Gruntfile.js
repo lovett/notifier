@@ -16,15 +16,6 @@ module.exports = function(grunt) {
     grunt.initConfig({
         nconf: nconf,
 
-        autoprefixer: {
-            app: {
-                expand: true,
-                flatten: true,
-                src: 'public/app/app.min.css',
-                dest: 'public/app'
-            }
-        },
-
         clean: {
             full: {
                 src: ['public']
@@ -83,7 +74,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', 'Build the browser UI', () => {
         let tasks;
 
-        tasks = ['copy:svg', 'less:app', 'autoprefixer:app'];
+        tasks = ['copy:svg', 'less:app'];
 
         grunt.task.run(tasks);
 
@@ -91,7 +82,6 @@ module.exports = function(grunt) {
 
     });
 
-    grunt.loadNpmTasks('grunt-autoprefixer');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-less');
