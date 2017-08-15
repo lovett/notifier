@@ -43,7 +43,7 @@ module.exports = function(grunt) {
                         src: [
                             'app/svg/*.svg',
                         ],
-                        dest: 'public/app/svg'
+                        dest: 'public/svg'
                     }
                 ]
             }
@@ -83,7 +83,7 @@ module.exports = function(grunt) {
     grunt.registerTask('build', 'Build the application', () => {
         let tasks;
 
-        tasks = ['less:app', 'autoprefixer:app'];
+        tasks = ['copy:svg', 'less:app', 'autoprefixer:app'];
 
         grunt.task.run(tasks);
 
