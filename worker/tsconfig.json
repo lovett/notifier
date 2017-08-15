@@ -9,7 +9,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "outDir": "../public/worker",
-    "sourceMap": false,
+    "sourceMap": true,
     "target": "ES5",
     "typeRoots": [],
     "lib": [

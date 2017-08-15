@@ -1,6 +1,6 @@
 {
-  "verbose": false,
-  "ignore": ["test", "flycheck_*", "#*", "public", "clients"],
-  "ext": "js,ejs",
-  "delay": 1000
+  "verbose": true,
+  "watch": ["app", "server"],
+  "ext": "ts,ejs",
+  "exec": "ts-node server/server.ts"
 }

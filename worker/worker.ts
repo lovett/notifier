@@ -1,5 +1,7 @@
 import {Receiver} from './classes/receiver';
 
+import * as worker from '../types/worker';
+
 let receiver: Receiver;
 
 self.addEventListener('message', (e: MessageEvent) => {

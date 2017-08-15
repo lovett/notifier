@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "module": "commonJS",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "noEmit": true,
+    "target": "ES5",
+    "lib": [
+      "dom",
+      "es5"
+    ]
+  },
+  "include": [
+    "notifier.ts",
+    "modules/**/*",
+    "app/**/*.ts"
+  ],
+  "exclude": [
+    "test/*",
+    "app/scripts/worker.ts"
+  ]
+}

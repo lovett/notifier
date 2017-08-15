@@ -1,5 +1,7 @@
 import {WorkerMessage} from './workermessage';
 
+import * as worker from '../../types/worker';
+
 export class Receiver {
     private eventSource: sse.IEventSourceStatic;
 

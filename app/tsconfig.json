@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "outDir": "../public/app",
+    "sourceMap": false,
+    "target": "ES5",
+    "lib": [
+      "dom",
+      "es5"
+    ]
+  },
+  "include": [
+    "**/*.ts",
+    "../types/*.d.ts"
+  ]
+
+}

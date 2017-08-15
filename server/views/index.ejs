@@ -1,0 +1,42 @@
+<!doctype html>
+<html x-manifest="notifier.appcache" ng-app="appModule" lang="en" ng-csp notifier-appcache-reload notifier-offline-event>
+    <head>
+        <title><%= title %></title>
+        <base href="<%= base_href %>" />
+
+        <link rel="shortcut icon" href="favicon/favicon.ico" />
+        <link rel="apple-touch-icon" href="favicon/app-icon-180.png"/>
+        <link rel="mask-icon" href="svg/starburst-outline.svg" color="#2D8E5E" />
+        <meta name="msapplication-TileColor" content="#2D8E5E" />
+        <meta name="msapplication-TileImage" content="favicon/app-icon-180.png" />
+        <meta name="description" content="A notification service"/>
+        <meta name="robots" content="noindex, nofollow, noarchive"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+        <link rel="stylesheet" href="app.min.css" />
+    </head>
+    <body>
+        <svg class="svg-defs">
+            <symbol id="icon-close" viewBox="0 0 24 24">
+                <path d="M16 19c-.802 0-1.555-.312-2.122-.879l-1.878-1.879-1.879 1.879c-1.133 1.133-3.109 1.133-4.243 0-.566-.566-.878-1.32-.878-2.121s.312-1.555.879-2.122l1.878-1.878-1.878-1.879c-.567-.566-.879-1.32-.879-2.121s.312-1.555.879-2.122c1.133-1.132 3.109-1.133 4.243.001l1.878 1.879 1.879-1.879c1.133-1.133 3.109-1.133 4.243 0 .566.566.878 1.32.878 2.121s-.312 1.555-.879 2.122l-1.878 1.878 1.878 1.879c.567.566.879 1.32.879 2.121s-.312 1.555-.879 2.122c-.566.566-1.319.878-2.121.878zm-4-5.586l3.293 3.293c.378.378 1.037.377 1.414 0 .189-.189.293-.439.293-.707s-.104-.518-.293-.707l-3.292-3.293 3.292-3.293c.189-.189.293-.44.293-.707s-.104-.518-.293-.707c-.378-.379-1.037-.378-1.414-.001l-3.293 3.294-3.293-3.293c-.378-.378-1.037-.377-1.414 0-.189.189-.293.44-.293.707s.104.518.293.707l3.292 3.293-3.292 3.293c-.189.189-.293.439-.293.707s.104.518.293.707c.378.379 1.037.378 1.414.001l3.293-3.294z"/>
+            </symbol>
+        </svg>
+
+        <div class="page-jacket" ng-view ng-class="connectionState">
+            <p class="app-message"></p>
+            <noscript>
+                <p class="app-message">JavaScript is not enabled. This application cannot run.<br/>😦</p>
+            </noscript>
+        </div>
+
+        <notifier-shortcuts></notifier-shortcuts>
+
+        <script src="app.js"></script>
+
+        <% if (livereload_url) { %>
+        <!--<script src="<%= livereload_url %>"></script>-->
+        <% } else { %>
+        <!-- livereload disabled -->
+        <% } %>
+
+    </body>
+</html>

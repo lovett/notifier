@@ -1,3 +1,5 @@
+import * as worker from '../../types/worker';
+
 export class WorkerMessage  {
     private payload: worker.IReply;
 
