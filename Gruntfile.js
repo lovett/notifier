@@ -20,36 +20,8 @@ module.exports = function(grunt) {
             app: {
                 expand: true,
                 flatten: true,
-                src: 'public/all.min.css',
-                dest: 'public/'
-            }
-        },
-
-
-        browserify: {
-            app: {
-                files: {
-                    'public/app.js': [
-                        'public/scripts/app.js',
-                        'public/scripts/controllers.js',
-                        'public/scripts/directives.js',
-                        'public/scripts/filters.js',
-                        'public/scripts/services.js',
-                        'public/scripts/templates.js',
-                        'public/scripts/types.js'
-                    ]
-                }
-            },
-            worker: {
-                options: {
-                    sourceMap: true
-                },
-                files: {
-                    'public/worker.js': [
-                        'public/scripts/worker.js',
-                        'public/scripts/types/js'
-                    ]
-                }
+                src: 'public/app/app.min.css',
+                dest: 'public/app'
             }
         },
 
@@ -58,71 +30,37 @@ module.exports = function(grunt) {
                 src: ['public']
             },
             app: {
-                src: ['public/app*', 'public/all*', 'public/templates']
+                src: ['public/app*', 'public/all*']
             }
         },
 
         copy: {
-            app: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: 'app/',
-                        src: ['**', '!**/*.psd'],
-                        dest: 'public/'
-                    }
-                ]
-            },
-
-            lib: {
+            svg: {
                 files: [
                     {
                         expand: true,
                         flatten: true,
                         src: [
-                            'node_modules/angular/angular.js',
-                            'node_modules/angular-cookies/angular-cookies.js',
-                            'node_modules/angular-route/angular-route.js',
-                            'node_modules/angular-sanitize/angular-sanitize.js',
-                            'node_modules/angular-resource/angular-resource.js',
-                            'node_modules/angular-touch/angular-touch.js',
-                            'node_modules/angular-animate/angular-animate.js',
-                            'node_modules/fastclick/lib/fastclick.js'
+                            'app/svg/*.svg',
                         ],
-                        dest: 'public/'
+                        dest: 'public/app/svg'
                     }
                 ]
             }
         },
 
         less: {
-            main: {
+            app: {
                 options: {
                     cleancss: true
                 },
 
                 files: {
-                    'public/all.min.css': [
+                    'public/app.min.css': [
                         'node_modules/normalize.css/normalize.css',
                         'node_modules/angular/angular-csp.css',
                         'app/less/*'
                     ]
-                }
-            }
-        },
-
-        ngtemplates: {
-            app: {
-                cwd: 'app',
-                src: 'templates/*.html',
-                dest: 'public/scripts/templates.js',
-                options: {
-                    module: 'appModule',
-                    htmlmin: {
-                        collapseWhitespace: true,
-                        collapseBooleanAttributes: true,
-                        removeAttributeQuotes: true
-                    }
                 }
             }
         },
@@ -140,67 +78,12 @@ module.exports = function(grunt) {
                 tasks: ['build']
             }
         },
-
-        uglify: {
-            app: {
-                options: {
-                    sourceMap: true
-                },
-                files: {
-                    'public/app.min.js': [
-                        'public/app.js',
-                    ]
-                }
-            },
-            lib: {
-                options: {
-                    sourceMap: true
-                },
-                files: {
-                    'public/lib.min.js': [
-                        'public/angular.js',
-                        'public/angular-cookies.js',
-                        'public/angular-route.js',
-                        'public/angular-sanitize.js',
-                        'public/angular-resource.js',
-                        'public/angular-touch.js',
-                        'public/angular-animate.js',
-                        'public/fastclick.js'
-                    ]
-                }
-            },
-            worker: {
-                options: {
-                    sourceMap: true
-                },
-                files: {
-                    'public/worker.min.js': [
-                        'public/worker.js'
-                    ]
-                }
-            }
-        },
     });
 
-    grunt.registerTask('build', 'Build the application', (buildType) => {
-        let environment, tasks;
+    grunt.registerTask('build', 'Build the application', () => {
+        let tasks;
 
-        environment = grunt.template.process('<%= nconf.get("NODE_ENV") %>');
-
-        tasks = [];
-
-        if (buildType === 'full') {
-            tasks = tasks.concat(['clean:full', 'copy', 'ngtemplates', 'browserify', 'uglify']);
-        } else {
-            tasks = tasks.concat(['clean:app', 'copy:app', 'ngtemplates', 'browserify:app', 'browserify:worker', 'uglify:app', 'uglify:worker']);
-        }
-
-        tasks = tasks.concat(['less', 'autoprefixer']);
-
-        if (environment !== 'dev') {
-            grunt.config.set('uglify.app.options.sourceMap', false);
-            grunt.config.set('uglify.lib.options.sourceMap', false);
-        }
+        tasks = ['less:app', 'autoprefixer:app'];
 
         grunt.task.run(tasks);
 
@@ -208,13 +91,10 @@ module.exports = function(grunt) {
 
     });
 
-    grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-autoprefixer');
-    grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-less');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
 
     if (process.env.NODE_ENV === 'dev') {
         grunt.loadNpmTasks('grunt-contrib-watch');
