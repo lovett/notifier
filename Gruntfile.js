@@ -25,37 +25,6 @@ module.exports = function(grunt) {
             }
         },
 
-        copy: {
-            svg: {
-                files: [
-                    {
-                        expand: true,
-                        flatten: true,
-                        src: [
-                            'app/svg/*.svg',
-                        ],
-                        dest: 'public/svg'
-                    }
-                ]
-            }
-        },
-
-        less: {
-            app: {
-                options: {
-                    cleancss: true
-                },
-
-                files: {
-                    'public/app.min.css': [
-                        'node_modules/normalize.css/normalize.css',
-                        'node_modules/angular/angular-csp.css',
-                        'app/less/*'
-                    ]
-                }
-            }
-        },
-
         watch: {
             options: {
                 livereload: {
@@ -74,8 +43,6 @@ module.exports = function(grunt) {
     grunt.registerTask('build', 'Build the browser UI', () => {
         let tasks;
 
-        tasks = ['copy:svg', 'less:app'];
-
         grunt.task.run(tasks);
 
         grunt.file.write('build.txt', new Date());
@@ -83,18 +50,7 @@ module.exports = function(grunt) {
     });
 
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
-    if (process.env.NODE_ENV === 'dev') {
-        grunt.loadNpmTasks('grunt-contrib-watch');
-        grunt.registerTask('default', ['build:full', 'watch']);
-
-        return;
-    }
-
-    grunt.registerTask(
-        'default',
-        () => grunt.log.error('There is no default task unless NODE_ENV is set to dev.')
-    );
+    grunt.registerTask('default', ['build', 'watch']);
 };

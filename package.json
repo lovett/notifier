@@ -19,7 +19,8 @@
     "test:client": "karma start app/test/karma.conf.js --single-run",
     "coverage:server": "istanbul cover --dir coverage/server _mocha -- -R min test",
     "coverage:client": "echo 'Nope. Client coverage is automatically written by test:client'",
-    "resetdb": "rm notifier.sqlite; touch notifier.js"
+    "resetdb": "rm notifier.sqlite; touch notifier.js",
+    "watch": "livereload public -p 35740 -d -u 1"
   },
   "repository": {
     "type": "git",
@@ -77,14 +78,15 @@
     "angular-touch": "1.6.5",
     "chai": "4.1.0",
     "chance": "1.0.10",
+    "css-loader": "^0.28.4",
     "eslint": "4.3.0",
     "eslint-plugin-mocha": "4.11.0",
+    "extract-text-webpack-plugin": "^3.0.0",
     "fastclick": "1.0.6",
+    "file-loader": "^0.11.2",
     "grunt": "1.0.1",
     "grunt-cli": "1.2.0",
     "grunt-contrib-clean": "1.1.0",
-    "grunt-contrib-copy": "1.0.0",
-    "grunt-contrib-less": "1.4.1",
     "grunt-contrib-watch": "1.0.0",
     "istanbul": "0.4.5",
     "jsdoc": "3.5.3",
@@ -98,7 +100,9 @@
     "karma-safari-launcher": "1.0.0",
     "karma-sinon": "1.0.5",
     "less": "2.7.2",
+    "less-loader": "^4.0.5",
     "lesshint": "4.1.1",
+    "livereload": "^0.6.2",
     "mocha": "3.5.0",
     "ng-cache-loader": "0.0.25",
     "nodemon": "1.11.0",
@@ -109,6 +113,6 @@
     "ts-node": "3.3.0",
     "tslint": "5.5.0",
     "typescript": "2.4.2",
-    "webpack": "^3.5.4"
+    "webpack": "^3.5.5"
   }
 }

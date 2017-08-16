@@ -15,6 +15,10 @@ import './templates/login.html';
 import './templates/logout.html';
 import './templates/messages.html';
 
+import './less/app.less';
+import './less/badges.less';
+import './less/mediaqueries.less';
+
 const app = angular.module('appModule', [
     'appControllers',
     'appDirectives',
