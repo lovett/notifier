@@ -16,6 +16,10 @@ module.exports = {
     module: {
         rules: [
             {
+                test: /\.png$/,
+                loader: 'file-loader?name=[name].[ext]'
+            },
+            {
                 test: /\.css$/,
                 use: ExtractTextPlugin.extract({
                     use: 'css-loader'

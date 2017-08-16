@@ -19,6 +19,9 @@ import './less/app.less';
 import './less/badges.less';
 import './less/mediaqueries.less';
 
+import './favicon/app-icon.png';
+import './favicon/favicon.png';
+
 const app = angular.module('appModule', [
     'appControllers',
     'appDirectives',
