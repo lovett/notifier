@@ -24,8 +24,8 @@ module.exports = {
                 test: /\.less$/,
                 use: extractLess.extract({
                     use: [
-                        { loader: 'css-loader' },
-                        { loader: 'less-loader' }
+                        { loader: 'css-loader?sourceMap=false&minimize=true' },
+                        { loader: 'less-loader?sourceMap=false' }
                     ]
                 })
             },
