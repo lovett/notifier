@@ -1,6 +1,6 @@
 {
-  "verbose": true,
-  "watch": ["app", "server"],
-  "ext": "ts,ejs",
+  "verbose": false,
+  "watch": ["server"],
+  "ext": "ts",
   "exec": "ts-node server/server.ts"
 }

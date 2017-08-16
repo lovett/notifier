@@ -65,7 +65,7 @@ module.exports = function(grunt) {
             },
 
             app: {
-                files: ['app/**', 'Gruntfile.js', '!app/**/.*', 'views/*.ejs', '!app/**/flycheck_*'],
+                files: ['app/**', 'Gruntfile.js', '!app/**/.*', 'server/views/*.ejs', '!app/**/flycheck_*'],
                 tasks: ['build']
             }
         },
