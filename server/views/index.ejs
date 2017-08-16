@@ -1,5 +1,5 @@
 <!doctype html>
-<html x-manifest="notifier.appcache" ng-app="appModule" lang="en" ng-csp notifier-appcache-reload notifier-offline-event>
+<html manifest="notifier.appcache" ng-app="appModule" lang="en" ng-csp notifier-appcache-reload notifier-offline-event>
     <head>
         <title><%= title %></title>
         <base href="<%= base_href %>" />
@@ -33,7 +33,7 @@
         <script src="app.js"></script>
 
         <% if (livereload_url) { %>
-        <!--<script src="<%= livereload_url %>"></script>-->
+        <script src="<%= livereload_url %>"></script>
         <% } else { %>
         <!-- livereload disabled -->
         <% } %>

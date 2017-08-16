@@ -224,13 +224,9 @@ appDirectives.directive('notifierAppcacheReload', ['$window', '$interval', '$roo
                 return;
             }
 
-            scope.fullReload = () => {
-                console.log('full reload requested');
-                //$window.location.reload();
-            };
-
             $window.applicationCache.addEventListener('updateready', () => {
                 $log.info('An appcache update is ready, requesting full reload');
+                $window.location.reload();
                 scope.fullReload();
             });
 
