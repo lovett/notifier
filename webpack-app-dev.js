@@ -3,6 +3,7 @@
 const {resolve} = require('path');
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 const extractLess = new ExtractTextPlugin({
     filename: 'app.min.css'
@@ -55,6 +56,7 @@ module.exports = {
         path: resolve(__dirname, 'public')
     },
     plugins: [
+        new CleanWebpackPlugin(['public']),
         extractLess
     ]
 };

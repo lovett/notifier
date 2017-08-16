@@ -78,6 +78,7 @@
     "angular-touch": "1.6.5",
     "chai": "4.1.0",
     "chance": "1.0.10",
+    "clean-webpack-plugin": "^0.1.16",
     "css-loader": "^0.28.4",
     "eslint": "4.3.0",
     "eslint-plugin-mocha": "4.11.0",
