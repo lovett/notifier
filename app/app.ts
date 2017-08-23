@@ -4,7 +4,6 @@ import 'angular-sanitize';
 import 'angular-resource';
 import 'angular-route';
 import 'angular-touch';
-import 'angular-animate';
 //import 'fastclick';
 import './controllers';
 import './directives';
@@ -32,7 +31,6 @@ const app = angular.module('appModule', [
     'ngResource',
     'ngRoute',
     'ngTouch',
-    'ngAnimate',
 ]);
 
 app.config(['$httpProvider', ($httpProvider) => {
