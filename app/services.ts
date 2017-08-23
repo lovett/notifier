@@ -363,9 +363,9 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
         message.domain = null;
         if (message.url) {
-            const el = angular.element('<a></a>');
+            const el: JQLite = angular.element('<a></a>');
             el.attr('href', message.url);
-            message.domain = el[0].hostname;
+            message.domain = (el[0] as HTMLAnchorElement).hostname;
         }
 
         message.expire_days = null;
