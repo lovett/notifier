@@ -2,5 +2,5 @@
   "verbose": false,
   "watch": ["server"],
   "ext": "ts",
-  "exec": "ts-node server/server.ts"
+  "exec": "ts-node --project server server/server.ts"
 }
