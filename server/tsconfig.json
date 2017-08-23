@@ -5,10 +5,10 @@
     "moduleResolution": "node",
     "noImplicitAny": false,
     "noEmit": true,
-    "target": "ES5",
+    "target": "ES6",
+    "downlevelIteration": true,
     "lib": [
-      "dom",
-      "es5"
+      "es6"
     ]
   },
   "include": [

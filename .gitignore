@@ -22,7 +22,6 @@ ansible/*.retry
 ansible/inventory
 ansible/vars.yml
 .vscode
-build.txt
 modules/**/*.js
 app/scripts/**/*.js
 notifier.js
