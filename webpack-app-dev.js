@@ -49,12 +49,6 @@ module.exports = {
             }
         ]
     },
-    resolve: {
-        extensions: ['.ts', '.js', '.html']
-    },
-    stats: {
-        children: false
-    },
     output: {
         filename: 'app.js',
         path: resolve(__dirname, 'public')
@@ -62,5 +56,13 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(['public']),
         extractLess
-    ]
+    ],
+    resolve: {
+        extensions: ['.ts', '.js', '.html']
+    },
+    stats: {
+        children: false
+    },
+    watch: true,
+
 };

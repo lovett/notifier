@@ -15,11 +15,13 @@ module.exports = {
             }
         ]
     },
-    resolve: {
-        extensions: ['.ts']
-    },
     output: {
         filename: 'worker.js',
         path: resolve(__dirname, 'public')
-    }
+    },
+    resolve: {
+        extensions: ['.ts']
+    },
+    target: 'webworker',
+    watch: true,
 };

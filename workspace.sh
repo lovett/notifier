@@ -24,13 +24,19 @@ tmux attach-session -d -t "$PROJECT_NAME" || {
     ## 1: Shell
     tmux new-window -a -t "$PROJECT_NAME" bash
 
-    ## 2: Grunt
-    tmux new-window -a -t "$PROJECT_NAME" -n "grunt" "NODE_ENV=dev ./node_modules/.bin/grunt"
+    ## 2: Webpack, app
+    tmux new-window -a -t "$PROJECT_NAME" -n "app" "npm run-script build:app:dev"
 
-    ## 3: Dev server
+    ## 3: Webpack, worker
+    tmux new-window -a -t "$PROJECT_NAME" -n "worker" "npm run-script build:worker:dev"
+
+    ## 4: Watch
+    tmux new-window -a -t "$PROJECT_NAME" -n "watch" "npm run-script watch"
+
+    ## 5: Dev server
     tmux new-window -a -t "$PROJECT_NAME" -n "devserver" "npm run-script devserver"
 
-    ## 4: Log
+    ## 6: Log
     rm -f "$LOG"
     touch "$LOG" 2> /dev/null
     tmux new-window -a -n "log" -t "$PROJECT_NAME" "tail -f notifier.log"
