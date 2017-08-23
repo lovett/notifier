@@ -4,7 +4,6 @@ import 'angular-sanitize';
 import 'angular-resource';
 import 'angular-route';
 import 'angular-touch';
-//import 'fastclick';
 import './controllers';
 import './directives';
 import './filters';
@@ -66,5 +65,3 @@ app.config(['$routeProvider', '$locationProvider', ($routeProvider, $locationPro
         enabled: true,
     });
 }]);
-
-//app.run(() => FastClick.attach(document.body));
