@@ -25,16 +25,16 @@ tmux attach-session -d -t "$PROJECT_NAME" || {
     tmux new-window -a -t "$PROJECT_NAME" bash
 
     ## 2: Webpack, app
-    tmux new-window -a -t "$PROJECT_NAME" -n "app" "npm run-script build:app:dev"
+    tmux new-window -a -t "$PROJECT_NAME" -n "app" "make appdev"
 
     ## 3: Webpack, worker
-    tmux new-window -a -t "$PROJECT_NAME" -n "worker" "npm run-script build:worker:dev"
+    tmux new-window -a -t "$PROJECT_NAME" -n "worker" "make workerdev"
 
-    ## 4: Watch
-    tmux new-window -a -t "$PROJECT_NAME" -n "watch" "npm run-script watch"
+    ## 4: Livereload
+    tmux new-window -a -t "$PROJECT_NAME" -n "livereload" "make livereload"
 
     ## 5: Dev server
-    tmux new-window -a -t "$PROJECT_NAME" -n "devserver" "npm run-script devserver"
+    tmux new-window -a -t "$PROJECT_NAME" -n "devserver" "make devserver"
 
     ## 6: Log
     rm -f "$LOG"

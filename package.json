@@ -5,22 +5,14 @@
   "description": "A notification service for user-generated events",
   "main": "notifier.js",
   "scripts": {
-    "build:worker": "webpack --config webpack-worker.ts",
-    "build:worker:dev": "NODE_ENV=dev webpack --config webpack-worker.ts",
-    "build:app": "webpack --config webpack-app.ts",
-    "build:app:dev": "NODE_ENV=dev webpack --config webpack-app.ts",
-    "build": "npm run build:app && npm run build:worker",
     "start": "node notifier.js",
-    "devserver": "NODE_ENV=dev nodemon server",
     "hooks": "cp hooks/* .git/hooks/",
-    "onemessage": "clients/send-notification -s $NOTIFIER_DEV -p 0 -t test -e '5 hours' -u 'http://example.com'",
     "retract": "clients/send-notification -c -l test",
     "test:server": "mocha --bail --reporter min test",
     "test:client": "karma start app/test/karma.conf.js --single-run",
     "coverage:server": "istanbul cover --dir coverage/server _mocha -- -R min test",
     "coverage:client": "echo 'Nope. Client coverage is automatically written by test:client'",
-    "resetdb": "rm notifier.sqlite; touch notifier.js",
-    "watch": "livereload public -p 35740 -d -u 1"
+    "resetdb": "rm notifier.sqlite; touch notifier.js"
   },
   "repository": {
     "type": "git",
