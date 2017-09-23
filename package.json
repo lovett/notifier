@@ -7,8 +7,8 @@
   "scripts": {
     "build:worker": "webpack --config webpack-worker.ts",
     "build:worker:dev": "NODE_ENV=dev webpack --config webpack-worker.ts",
-    "build:app": "webpack --config webpack-app.js",
-    "build:app:dev": "webpack --config webpack-app-dev.js",
+    "build:app": "webpack --config webpack-app.ts",
+    "build:app:dev": "NODE_ENV=dev webpack --config webpack-app.ts",
     "build": "npm run build:app && npm run build:worker",
     "start": "node notifier.js",
     "devserver": "NODE_ENV=dev nodemon server",
