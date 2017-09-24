@@ -18,6 +18,7 @@ function publishPushbullet(app, user, message, tokenValue) {
             if (foundMessage.pushbulletId === '0') {
                 return;
             }
+
             needle.delete('https://api.pushbullet.com/v2/pushes/' + foundMessage.pushbulletId, null, {
                 password: '',
                 username: tokenValue,
@@ -32,6 +33,7 @@ function publishPushbullet(app, user, message, tokenValue) {
 
     params = {
         body: message.body,
+        guid: message.publicId,
         title: message.title,
         type: 'note',
     };
@@ -51,7 +53,7 @@ function publishPushbullet(app, user, message, tokenValue) {
 
         app.locals.Message.update(
             { pushbulletId: res.body.iden },
-            { where: { id: message.id } },
+            { where: { publicId: message.publicId } },
         );
     });
 }
