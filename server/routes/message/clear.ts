@@ -1,14 +1,14 @@
-import * as express from "express";
-import publishMessage from "../../helpers/publish-message";
+import * as express from 'express';
+import publishMessage from '../../helpers/publish-message';
 
 const router = express.Router();
 
 router.post('/', (req: express.Request, res: express.Response) => {
 
-    let update = function (id) {
+    const update = (id) => {
         req.app.locals.Message.update(
             {unread: false},
-            {where: {publicId: id}}
+            {where: {publicId: id}},
         ).then((affectedRows) => {
             if (affectedRows[0] === 0) {
                 res.sendStatus(304);
@@ -17,7 +17,7 @@ router.post('/', (req: express.Request, res: express.Response) => {
             }
 
             publishMessage(req.app, req.user, {
-                'retracted': id
+                retracted: id,
             });
             res.sendStatus(204);
 
@@ -29,11 +29,11 @@ router.post('/', (req: express.Request, res: express.Response) => {
         update(req.body.publicId);
     } else if (req.body.hasOwnProperty('localId')) {
         req.app.locals.Message.find({
+            limit: 1,
             where: {
                 localId: req.body.localId,
-                unread: true
+                unread: true,
             },
-            limit: 1
         }).then((message) => {
             if (!message) {
                 res.sendStatus(404);
