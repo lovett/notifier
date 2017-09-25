@@ -1,20 +1,11 @@
 {
   "compilerOptions": {
-    "alwaysStrict": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noImplicitAny": false,
-    "noImplicitReturns": false,
-    "noImplicitThis": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "outDir": "../public/app",
-    "sourceMap": false,
-    "target": "ES5",
+    "extends": "../tsconfig.json",
     "lib": [
       "dom",
       "es5"
-    ]
+    ],
+    "outDir": "../public/app"
   },
   "include": [
     "**/*.ts",

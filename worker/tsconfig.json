@@ -1,21 +1,12 @@
 {
   "compilerOptions": {
-    "alwaysStrict": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "outDir": "../public/worker",
-    "sourceMap": true,
-    "target": "ES5",
-    "typeRoots": [],
+    "extends": "../tsconfig.json",
     "lib": [
+      "es5",
       "webworker",
-      "es5"
-    ]
+    ],
+    "outDir": "../public/worker",
+    "typeRoots": []
   },
   "include": [
     "**/*.ts",

@@ -1,15 +1,13 @@
 {
   "compilerOptions": {
-    "alwaysStrict": true,
-    "module": "commonJS",
-    "moduleResolution": "node",
-    "noImplicitAny": false,
-    "noEmit": true,
-    "target": "ES6",
-    "downlevelIteration": true,
+    "extends": "../tsconfig.json",
     "lib": [
       "es6"
-    ]
+    ],
+    "noEmit": true,
+    "outDir": "",
+    "sourceMap": false,
+    "target": "ES6"
   },
   "include": [
     "notifier.ts",
