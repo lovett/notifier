@@ -1,6 +1,5 @@
 import * as webpack from 'webpack';
 import {resolve} from 'path';
-import * as UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 
 const config: webpack.Configuration = {
     context: resolve(__dirname, 'worker'),
@@ -18,7 +17,7 @@ const config: webpack.Configuration = {
         path: resolve(__dirname, 'public'),
     },
     plugins: [
-        new UglifyJSPlugin(),
+        new webpack.optimize.UglifyJsPlugin(),
     ],
     resolve: {
         extensions: ['.ts'],

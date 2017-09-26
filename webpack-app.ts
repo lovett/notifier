@@ -1,6 +1,5 @@
 import * as webpack from 'webpack';
 import {resolve} from 'path';
-import * as UglifyJSPlugin from 'uglifyjs-webpack-plugin';
 import * as ExtractTextPlugin from 'extract-text-webpack-plugin';
 
 const config: webpack.Configuration = {
@@ -64,10 +63,7 @@ if (process.env.NODE_ENV === 'dev') {
     config.devtool = 'inline-source-map';
     config.watch = true;
 } else {
-    config.plugins.push(new UglifyJSPlugin());
+    config.plugins!.push(new webpack.optimize.UglifyJsPlugin());
 }
-
-
-
 
 export default config;
