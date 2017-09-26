@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "extends": "../tsconfig.json",
     "lib": [
       "dom",
       "es5"
     ],
     "outDir": "../public/app"
   },
+  "extends": "../tsconfig.json",
   "include": [
     "**/*.ts",
     "../types/*.d.ts"

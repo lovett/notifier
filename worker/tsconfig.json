@@ -1,16 +1,15 @@
 {
   "compilerOptions": {
-    "extends": "../tsconfig.json",
     "lib": [
       "es5",
-      "webworker",
+      "webworker"
     ],
     "outDir": "../public/worker",
     "typeRoots": []
   },
+  "extends": "../tsconfig.json",
   "include": [
     "**/*.ts",
     "../types/*.d.ts"
   ]
-
 }

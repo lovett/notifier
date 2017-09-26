@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "extends": "../tsconfig.json",
     "lib": [
       "es6"
     ],
@@ -9,6 +8,7 @@
     "sourceMap": false,
     "target": "ES6"
   },
+  "extends": "../tsconfig.json",
   "include": [
     "notifier.ts",
     "modules/**/*",
