@@ -32,11 +32,11 @@ const app = angular.module('appModule', [
     'ngTouch',
 ]);
 
-app.config(['$httpProvider', ($httpProvider) => {
+app.config(['$httpProvider', ($httpProvider: angular.IHttpProvider) => {
     $httpProvider.defaults.withCredentials = true;
 }]);
 
-app.config(['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) => {
+app.config(['$routeProvider', '$locationProvider', ($routeProvider: angular.route.IRouteProvider, $locationProvider: angular.ILocationProvider) => {
     $routeProvider.when('/login', {
         controller: 'LoginController',
         templateUrl: 'templates/login.html',
@@ -57,7 +57,7 @@ app.config(['$routeProvider', '$locationProvider', ($routeProvider, $locationPro
         templateUrl: 'templates/messages.html',
     });
 
-    $routeProvider.otherwise('/', {
+    $routeProvider.otherwise({
         redirectTo: '/',
     });
 

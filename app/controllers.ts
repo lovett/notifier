@@ -19,11 +19,11 @@ appControllers.controller('MessageController', ['$scope', '$location', 'User', '
         $scope.$apply(() => $scope.messageListVisible = true);
     });
 
-    $scope.$on('queue:change', (e, size) => {
+    $scope.$on('queue:change', (_: angular.IAngularEvent, size: number) => {
         $scope.appMessage = (size === 0) ? 'No new messages.' : null;
     });
 
-    $scope.$on('connection:change', (e, state) => {
+    $scope.$on('connection:change', (_: angular.IAngularEvent, state: string) => {
         $scope.connectionState = state;
     });
 
@@ -40,7 +40,7 @@ appControllers.controller('LoginController', ['$scope', '$location', 'User', ($s
         User.logOut();
     }
 
-    $scope.submitLogin = (form) => {
+    $scope.submitLogin = (form: angular.IFormController) => {
         if (form.$invalid) {
             $scope.message = 'All fields are required';
             return;
@@ -73,14 +73,14 @@ appControllers.controller('LogoutController', ['$scope', '$location', 'User',  (
 }]);
 
 
-appControllers.controller('OnedriveController', ['$scope', '$window', '$location', 'User', ($scope, $window, $location, User) => {
+appControllers.controller('OnedriveController', ['$window', '$location', 'User', ($window, $location, User) => {
 
     if (!User.isLoggedIn()) {
         $location.path('/login');
         return;
     }
 
-    User.authorize('onedrive', (url) => {
+    User.authorize('onedrive', (url: string) => {
         $window.location.href = url;
     });
 }]);
