@@ -7,37 +7,53 @@ interface INavScope extends ng.IScope {
     hideClearAll: boolean;
     hideUndo: boolean;
     queueSize: number;
-    serviceProps;
+    serviceProps: object;
     settingsVisible: boolean;
-    state;
+    state: IStringMap;
 
-    enable(service: string);
+    enable(service: string): void;
+    clearAll(): void;
+    logOut(): void;
+    settings(state: boolean): void;
+    toggle(service: string): void;
+    undo(): void;
+}
 
-    clearAll();
-    logOut();
-    settings(state: boolean);
-    toggle(service: string);
-    undo();
+interface IService {
+    key: string;
+    value: string;
 }
 
 interface IMessageOptionsScope extends ng.IScope {
     hidden: boolean;
     publicId: string;
-    clear();
+    clear(): void;
 }
 
 interface IStatusBarScope extends ng.IScope {
     disconnected: boolean;
-    message;
+    message: string;
 }
 
 interface IAppcacheReloadScope extends ng.IScope {
-    fullReload();
+    fullReload(): void;
 }
 
 interface IShortcutScope extends ng.IScope {
     summaryVisible: boolean;
-    shortcuts;
+    shortcuts: IShortcutMap;
+}
+
+interface IShortcutMap {
+    [index: number]: IShortcut;
+}
+
+interface IShortcut {
+    description: string;
+    key: string | number;
+    label?: string;
+    shiftKey: boolean;
+    action(): void;
 }
 
 appDirectives.directive('notifierFocus', [() => {
@@ -58,107 +74,108 @@ appDirectives.directive('notifierFocus', [() => {
     };
 }]);
 
-appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$window', '$document', (MessageList, $rootScope, $window, $document) => {
+appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$document', (MessageList, $rootScope, $document) => {
     'use strict';
 
-    const shortcutMap = {
-        67: {
-            action() {
-                if (MessageList.messages.length > 0) {
-                    MessageList.purge();
-                }
-            },
-            description: 'Clear all messages',
-            key: 'C',
-            label: '⇧  c',
-            shiftKey: true,
-        },
+    const shortcutMap: IShortcutMap = [];
 
-        83: {
-            action() {
-                $rootScope.$broadcast('settings:toggle');
-            },
-            description: 'Toggle settings',
-            key: 'S',
-            label: '⇧  s',
-            shiftKey: true,
+    shortcutMap[67] = {
+        action() {
+            if (MessageList.messages.length > 0) {
+                MessageList.purge();
+            }
         },
+        description: 'Clear all messages',
+        key: 'C',
+        label: '⇧  c',
+        shiftKey: true,
+    };
 
-        76: {
-            action() {
-                $rootScope.$broadcast('settings:logout');
-            },
-            description: 'Log out',
-            key: 'L',
-            label: '⇧  l',
-            shiftKey: true,
+    shortcutMap[83] = {
+        action() {
+            $rootScope.$broadcast('settings:toggle');
         },
+        description: 'Toggle settings',
+        key: 'S',
+        label: '⇧  s',
+        shiftKey: true,
+    };
 
-        74: {
-            action() {
-                MessageList.focusNext();
-            },
-            description: 'Move to next message',
-            key: 'j',
-            shiftKey: false,
+    shortcutMap[76] = {
+        action() {
+            $rootScope.$broadcast('settings:logout');
         },
+        description: 'Log out',
+        key: 'L',
+        label: '⇧  l',
+        shiftKey: true,
+    };
 
-        75: {
-            action() {
-                MessageList.focusPrevious();
-            },
-            description: 'Move to previous message',
-            key: 'k',
-            shiftKey: false,
+    shortcutMap[74] = {
+        action() {
+            MessageList.focusNext();
         },
+        description: 'Move to next message',
+        key: 'j',
+        shiftKey: false,
+    };
 
-        88: {
-            action() {
-                MessageList.clearFocused();
-            },
-            description: 'Clear active message',
-            key: 'x',
-            shiftKey: false,
+    shortcutMap[75] = {
+        action() {
+            MessageList.focusPrevious();
         },
+        description: 'Move to previous message',
+        key: 'k',
+        shiftKey: false,
+    };
 
-        90: {
-            action() {
-                if (MessageList.canUnclear()) {
-                    MessageList.unclear();
-                }
-            },
-            description: 'Undo',
-            key: 'Z',
-            label: '⇧  z',
-            shiftKey: true,
+    shortcutMap[88] = {
+        action() {
+            MessageList.clearFocused();
         },
+        description: 'Clear active message',
+        key: 'x',
+        shiftKey: false,
+    };
 
-        79: {
-            action() {
-                MessageList.visitLink();
-            },
-            description: 'Visit the link of the active message',
-            key: 'o',
-            shiftKey: false,
+    shortcutMap[90] = {
+        action() {
+            if (MessageList.canUnclear()) {
+                MessageList.unclear();
+            }
         },
+        description: 'Undo',
+        key: 'Z',
+        label: '⇧  z',
+        shiftKey: true,
+    };
 
-        191: {
-            action() {
-                $rootScope.$broadcast('shortcuts:toggle');
-            },
-            description: 'Toggle the shortcut list',
-            key: '?',
-            shiftKey: true,
+    shortcutMap[79] = {
+        action() {
+            MessageList.visitLink();
         },
+        description: 'Visit the link of the active message',
+        key: 'o',
+        shiftKey: false,
+    };
 
-        27: {
-            action() {
-                MessageList.focusNone();
-                $rootScope.$broadcast('shortcuts:hide');
-            },
-            description: 'Hide the shortcut list; unfocus all messages',
-            key: 'esc',
+    shortcutMap[191] = {
+        action() {
+            $rootScope.$broadcast('shortcuts:toggle');
         },
+        description: 'Toggle the shortcut list',
+        key: '?',
+        shiftKey: true,
+    };
+
+    shortcutMap[27] = {
+        action() {
+            MessageList.focusNone();
+            $rootScope.$broadcast('shortcuts:hide');
+        },
+        description: 'Hide the shortcut list; unfocus all messages',
+        key: 'esc',
+        shiftKey: false,
     };
 
     return {
@@ -182,7 +199,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$win
                     return;
                 }
 
-                if (!shortcutMap.hasOwnProperty(charCode.toString())) {
+                if (!shortcutMap[charCode]) {
                     return;
                 }
 
@@ -202,7 +219,7 @@ appDirectives.directive('notifierOfflineEvent', ['$window', '$rootScope', ($wind
 
     return {
         link() {
-            const callback = (event) => {
+            const callback = (event: Event) => {
                 $rootScope.$broadcast('connection:change', event.type);
             };
 
@@ -230,13 +247,13 @@ appDirectives.directive('notifierAppcacheReload', ['$window', '$interval', '$roo
                 scope.fullReload();
             });
 
-            $window.applicationCache.addEventListener('error', (e) => {
+            $window.applicationCache.addEventListener('error', () => {
                 const count = 5;
 
-                $interval((iteration) => {
+                $interval((iteration: number) => {
                     $rootScope.$broadcast('connection:change', 'disconnected', 'The server is unavailable, retrying in ' + (count - iteration));
                     if (iteration + 1 === count) {
-                        //scope.fullReload();
+                        // scope.fullReload();
                     }
                 }, 1000, count, false);
             });
@@ -246,10 +263,10 @@ appDirectives.directive('notifierAppcacheReload', ['$window', '$interval', '$roo
     };
 }]);
 
-appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList', ($log, $timeout, MessageList) => {
+appDirectives.directive('notifierStatusBar', ['MessageList', ( MessageList) => {
     return {
         link(scope: IStatusBarScope) {
-            scope.$on('connection:change', (e, state, message) => {
+            scope.$on('connection:change', (_, state, message) => {
                 scope.$evalAsync(() => {
                     scope.message = message || state;
 
@@ -262,7 +279,7 @@ appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList',
             });
 
             scope.$on('queue:change', () => {
-                const summary = [];
+                const summary: string[] = [];
                 const tallys = MessageList.tallyByGroup();
 
                 let message: string;
@@ -290,25 +307,12 @@ appDirectives.directive('notifierStatusBar', ['$log', '$timeout', 'MessageList',
     };
 }]);
 
-
-appDirectives.directive('notifierSetScope', () => {
-    return {
-        link(scope, element, attrs) {
-            if (element[0].nodeName.toLowerCase() !== 'meta') {
-                return;
-            }
-            scope[attrs.notifierSetScope] = attrs.content;
-        },
-        restrict: 'A',
-    };
-});
-
 appDirectives.directive('notifierMessageOptions', ['MessageList', (MessageList) => {
 
     return {
         link(scope: IMessageOptionsScope) {
             scope.hidden = false;
-            scope.$on('connection:change', (e, state) => {
+            scope.$on('connection:change', (_, state) => {
                 scope.hidden = (state === 'offline' || state === 'disconnected');
             });
 
@@ -342,11 +346,11 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNot
                 MessageList.unclear();
             };
 
-            scope.$on('connection:change', (e, state) => {
+            scope.$on('connection:change', (_, state) => {
                 scope.hideClearAll = scope.queueSize === 0 || state === 'offline' || state === 'disconnected';
             });
 
-            scope.$on('queue:change', (e, size) => {
+            scope.$on('queue:change', (_, size) => {
                 scope.queueSize = size;
                 scope.hideClearAll = (size === 0);
                 scope.hideUndo = (MessageList.canUnclear() === false);
@@ -361,11 +365,11 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNot
                 $window.location = 'logout';
             });
 
-            scope.$on('settings:browserNotifications', (e, state) => {
+            scope.$on('settings:browserNotifications', (_, state) => {
                 scope.state.bn = state;
             });
 
-            scope.$on('settings:webhookNotifications', (e, state) => {
+            scope.$on('settings:webhookNotifications', (_, state) => {
                 scope.state.webhook = state;
             });
 
@@ -392,7 +396,7 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNot
                         delete scope.state[service];
                     });
                 } else {
-                    User.authorize(service, (url) => {
+                    User.authorize(service, (url: string) => {
                         $window.location.href = url;
                     });
                 }
@@ -409,13 +413,13 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNot
                     return;
                 }
 
-                User.getServices((services) => {
-                    services.forEach((service) => {
+                User.getServices((services: IService[]) => {
+                    for (const service of services) {
                         scope.state[service.key] = 'active';
                         if (service.key === 'webhook') {
                             WebhookNotification.url = service.value;
                         }
-                    });
+                    }
                     $window.scrollTo(0, $document[0].body.clientHeight);
                 });
             };
@@ -430,4 +434,4 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNot
     };
 }]);
 
-export default appDirectives
+export default appDirectives;

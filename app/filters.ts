@@ -1,11 +1,11 @@
 const appFilters = angular.module('appFilters', []);
 
 appFilters.filter('symbolize', () => {
-    const map = {
+    const map: IStringMap = {
         active: '✓',
     };
 
-    return (value) => {
+    return (value: string) => {
         return map[value] || '';
     };
 });
