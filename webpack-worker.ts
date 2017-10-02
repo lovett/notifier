@@ -3,8 +3,11 @@ import {resolve} from 'path';
 
 const config: webpack.Configuration = {
     context: resolve(__dirname, 'worker'),
+
     devtool: false,
+
     entry: './worker.ts',
+
     module: {
         rules: [{
             exclude: /node_modules/,
@@ -12,16 +15,20 @@ const config: webpack.Configuration = {
             use: 'ts-loader',
         }],
     },
+
     output: {
         filename: 'worker.js',
         path: resolve(__dirname, 'public'),
     },
+
     plugins: [
         new webpack.optimize.UglifyJsPlugin(),
     ],
+
     resolve: {
         extensions: ['.ts'],
     },
+
     target: 'webworker',
 };
 

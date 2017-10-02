@@ -11,5 +11,8 @@
   "include": [
     "**/*.ts",
     "../types/*.d.ts"
+  ],
+  "exclude": [
+    "../types/app.d.ts"
   ]
 }
