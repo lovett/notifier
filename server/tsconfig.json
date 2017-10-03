@@ -10,9 +10,8 @@
   },
   "extends": "../tsconfig.json",
   "include": [
-    "notifier.ts",
-    "modules/**/*",
-    "app/**/*.ts"
+    "**/*.ts",
+    "../types/server.d.ts"
   ],
   "exclude": [
     "test/*",

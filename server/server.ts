@@ -40,11 +40,10 @@ import security from './middleware/security';
 import services from './routes/services';
 import status from './routes/status';
 import validateCount from './validation/count';
-import verifySubscription from './helpers/verify-subscription';
 
-let app;
-let router;
-let sequelize;
+let app: express.Application;
+let router: express.Router;
+let sequelize: Sequelize.Sequelize;
 
 /**
  * Application configuration
@@ -69,6 +68,7 @@ nconf.file('host', '/etc/notifier.json');
 
 nconf.defaults({
     NOTIFIER_ACCESS_LOG: 'notifier.log',
+    NOTIFIER_APP_DIR: path.resolve('./app'),
     NOTIFIER_BASE_URL: '/',
     NOTIFIER_DB: path.resolve('./notifier.sqlite'),
     NOTIFIER_DB_BACKUP_DIR: undefined,
@@ -80,6 +80,7 @@ nconf.defaults({
     NOTIFIER_FORCE_HTTPS: 0,
     NOTIFIER_HTTP_IP: '127.0.0.1',
     NOTIFIER_HTTP_PORT: 8080,
+    NOTIFIER_LESS_DIR: path.resolve('./app/less'),
     NOTIFIER_LIVERELOAD_HOST: undefined,
     NOTIFIER_LIVERELOAD_PORT: 35729,
     NOTIFIER_LOG_QUERIES: 0,
@@ -87,8 +88,6 @@ nconf.defaults({
     NOTIFIER_PASSWORD_HASH_KEYLENGTH: 64,
     NOTIFIER_PASSWORD_HASH_RANDBYTES: 64,
     NOTIFIER_PUBLIC_DIR: path.resolve('./public'),
-    NOTIFIER_APP_DIR: path.resolve('./app'),
-    NOTIFIER_LESS_DIR: path.resolve('./app/less'),
     NOTIFIER_PUSHBULLET_CLIENT_ID: undefined,
     NOTIFIER_PUSHBULLET_CLIENT_SECRET: undefined,
     NOTIFIER_SSL_CERT: undefined,
@@ -142,13 +141,16 @@ app.param('count', validateCount);
 /**
  * Database configuration
  */
-if (nconf.get('NOTIFIER_DB_DIALECT') === 'sqlite') {
-    sequelize = new Sequelize(null, null, null, {
-        dialect: nconf.get('NOTIFIER_DB_DIALECT'),
-        logging: () => { return; },
-        storage: nconf.get('NOTIFIER_DB'),
-    });
+if (nconf.get('NOTIFIER_DB_DIALECT') !== 'sqlite') {
+    process.stderr.write('Non-sqlite databases are not supported\\n');
+    process.exit();
 }
+
+sequelize = new Sequelize('', '', '', {
+    dialect: nconf.get('NOTIFIER_DB_DIALECT'),
+    logging: () => { return; },
+    storage: nconf.get('NOTIFIER_DB'),
+});
 
 app.locals.Token = Token(sequelize, app);
 app.locals.User = User(sequelize, app);

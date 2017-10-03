@@ -16,7 +16,7 @@
     "no-console": [true, "log"],
     "no-construct": true,
     "no-extra-semi": true,
-    "no-invalid-this": true,
+    "no-invalid-this": false,
     "no-multi-spaces": true,
     "no-script-url": true,
     "no-unused-expression": true,

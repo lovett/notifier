@@ -1,0 +1,4 @@
+interface MessageModel {
+    body?: string;
+
+}
