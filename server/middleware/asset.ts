@@ -1,6 +1,6 @@
 import * as express from 'express';
 
-export default (publicDir) => {
+export default (publicDir: string) => {
     return express.static(
         publicDir,
         {

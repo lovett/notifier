@@ -1,4 +1,5 @@
 import * as express from 'express';
+import {MessageInstance} from '../../types/server';
 
 const router = express.Router();
 
@@ -35,15 +36,15 @@ router.get('/:count', (req: express.Request, res: express.Response) => {
         }
     }
 
-    req.app.locals.Message.findAll(filters).then((messages) => {
+    req.app.locals.Message.findAll(filters).then((messages: MessageInstance[]) => {
         const now = new Date();
 
-        messages = messages.filter((message) => {
+        const filteredMessages = messages.filter((message: MessageInstance) => {
             if (message.expiresAt === null) {
                 return true;
             }
 
-            if (message.expiresAt < now) {
+            if (message.expiresAt! < now) {
                 message.update({unread: false});
 
                 return false;
@@ -52,7 +53,7 @@ router.get('/:count', (req: express.Request, res: express.Response) => {
             return true;
         });
 
-        messages = messages.map((message) => {
+        const mappedMessages = filteredMessages.map((message: MessageInstance) => {
             const messageValues = message.get({plain: true});
 
             delete messageValues.id;
@@ -62,7 +63,7 @@ router.get('/:count', (req: express.Request, res: express.Response) => {
 
         res.send({
             limit: req.params.count,
-            messages,
+            mappedMessages,
         });
     });
 });

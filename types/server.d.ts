@@ -1,12 +1,15 @@
 import * as Sequelize from 'sequelize';
 
 interface Message {
+    id: number;
     body?: string;
+    expiresAt?: Date;
 }
 
 interface MessageInstance extends Sequelize.Instance<Message> {
-    id: number,
+    id: number;
     serviceTokens: any;
+    expiresAt?: Date;
     purgeServiceToken(service: string, callback: (affectedRows: number) => void): void;
 }
 
@@ -16,7 +19,7 @@ interface User {
 }
 
 interface UserInstance extends Sequelize.Instance<User> {
-    id: number,
+    id: number;
     serviceTokens: any;
     purgeServiceToken(service: string, callback: (affectedRows: number) => void): void;
 }

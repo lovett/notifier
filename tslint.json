@@ -4,6 +4,7 @@
     "eofline": true,
     "forin": true,
     "indent": [true, "spaces"],
+    "interface-name": [true, "never-prefix"],
     "linebreak-style": [true, "LF"],
     "max-line-length": {
       "options": [300]

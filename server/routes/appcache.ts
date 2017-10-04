@@ -6,7 +6,7 @@ import * as path from 'path';
 
 const router = express.Router();
 
-function hashOneFile(filePath, algorithm) {
+function hashOneFile(filePath: string, algorithm: string) {
     const hash = crypto.createHash(algorithm);
     const rs = fs.createReadStream(filePath);
 
@@ -17,7 +17,7 @@ function hashOneFile(filePath, algorithm) {
     });
 }
 
-function errorHandler(res, err) {
+function errorHandler(res: express.Response, err: Error) {
     console.error(err);
     res.status(500).send('Unable to generate cache manifest');
 }
@@ -47,7 +47,7 @@ router.get('/', (req: express.Request, res: express.Response) => {
                 res.type('appcache');
                 res.render('appCache', { digest: hashOfHashes.digest('hex') });
             })
-            .catch((promiseError) => errorHandler(res, promiseError));
+            .catch((promiseError: Error) => errorHandler(res, promiseError));
     });
 });
 
