@@ -10,11 +10,8 @@
   },
   "extends": "../tsconfig.json",
   "include": [
-    "**/*.ts",
-    "../types/server.d.ts"
+    "**/*.ts"
   ],
   "exclude": [
-    "test/*",
-    "app/scripts/worker.ts"
   ]
 }

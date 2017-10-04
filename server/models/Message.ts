@@ -1,11 +1,12 @@
 import * as Sequelize from 'sequelize';
 import * as sanitize from '../validation/sanitize';
+import { MessageInstance } from '../../types/server';
 
 export default function(sequelize: Sequelize.Sequelize) {
     const fields: Sequelize.DefineAttributes = {
         body: {
             allowNull: true,
-            set(this: Sequelize.Instance<MessageModel>, value: string) {
+            set(this: MessageInstance, value: string) {
                 this.setDataValue('body', sanitize.tolerantSanitize(value));
             },
             type: Sequelize.STRING(500),
@@ -24,7 +25,7 @@ export default function(sequelize: Sequelize.Sequelize) {
 
         expiresAt: {
             allowNull: true,
-            get(this: Sequelize.Instance<MessageModel>): Date|null {
+            get(this: MessageInstance): Date|null {
                 const value = this.getDataValue('expiresAt');
 
                 if (!value) {
@@ -39,7 +40,7 @@ export default function(sequelize: Sequelize.Sequelize) {
         group: {
             allowNull: true,
             defaultValue: 'default',
-            set(this: Sequelize.Instance<MessageModel>, value: string) {
+            set(this: MessageInstance, value: string) {
                 return this.setDataValue('group', sanitize.strictSanitize(value));
             },
             type: Sequelize.STRING(50),
@@ -53,7 +54,7 @@ export default function(sequelize: Sequelize.Sequelize) {
 
         localId: {
             allowNull: true,
-            set(this: Sequelize.Instance<MessageModel>, value: string) {
+            set(this: MessageInstance, value: string) {
                 this.setDataValue('localId', sanitize.strictSanitize(value));
             },
             type: Sequelize.STRING(255),
@@ -73,7 +74,7 @@ export default function(sequelize: Sequelize.Sequelize) {
 
         source: {
             allowNull: true,
-            set(this: Sequelize.Instance<MessageModel>, value: string) {
+            set(this: MessageInstance, value: string) {
                 this.setDataValue('source', sanitize.strictSanitize(value));
             },
             type: Sequelize.STRING(100),
@@ -94,7 +95,7 @@ export default function(sequelize: Sequelize.Sequelize) {
                     msg: 'should be 1-255 characters long',
                 },
             },
-            set(this: Sequelize.Instance<MessageModel>, value: string) {
+            set(this: MessageInstance, value: string) {
                 this.setDataValue('title', sanitize.strictSanitize(value));
             },
         },
@@ -107,7 +108,7 @@ export default function(sequelize: Sequelize.Sequelize) {
 
         url: {
             allowNull: true,
-            set(this: Sequelize.Instance<MessageModel>, value: string) {
+            set(this: MessageInstance, value: string) {
                 this.setDataValue('url', sanitize.strictSanitize(value));
             },
             type: Sequelize.STRING(255),

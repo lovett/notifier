@@ -1,24 +1,10 @@
 import * as crypto from 'crypto';
 import * as express from 'express';
 import * as Sequelize from 'sequelize';
+import { GenerateCallback, PruneCallback, Token, TokenInstance } from '../../types/server';
 
-export type PruneCallback = () => void;
 
-export type GenerateCallback = (key: string|null, value: string|null) => void;
-
-export interface ITokenAttributes {
-    key: string;
-    label?: string;
-    persist: boolean;
-    value: string;
-}
-
-export interface ITokenInstance extends Sequelize.Instance<ITokenAttributes> {
-    prune: PruneCallback;
-    generateKeyAndValue: GenerateCallback;
-}
-
-export default function(sequelize: Sequelize.Sequelize, app: express.Application): Sequelize.Model<ITokenInstance, ITokenAttributes> {
+export default function(sequelize: Sequelize.Sequelize, app: express.Application): Sequelize.Model<TokenInstance, Token> {
 
     const fields: Sequelize.DefineAttributes = {
         key: {
@@ -56,7 +42,7 @@ export default function(sequelize: Sequelize.Sequelize, app: express.Application
 
     };
 
-    const options: Sequelize.DefineOptions<ITokenInstance> = {
+    const options: Sequelize.DefineOptions<TokenInstance> = {
         classMethods: {
             prune(callback: PruneCallback) {
                 app.locals.Token.destroy({
@@ -87,7 +73,7 @@ export default function(sequelize: Sequelize.Sequelize, app: express.Application
 
                     callback(
                         result.substring(0, numBytes / 2),
-                        result.substring(numBytes / 2)
+                        result.substring(numBytes / 2),
                     );
 
                 });
