@@ -7,7 +7,7 @@ const router = express.Router();
  * The application homepage
  */
 router.get('/', (req: express.Request, res: express.Response) => {
-    let livereloadUrl: string;
+    let livereloadUrl: string = '';
 
     const config = req.app.locals.config;
 

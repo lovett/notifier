@@ -10,7 +10,9 @@
   },
   "extends": "../tsconfig.json",
   "include": [
-    "**/*.ts"
+    "**/*.ts",
+    "../types/server.d.ts",
+    "../types/passport-cookie.d.ts"
   ],
   "exclude": [
   ]

@@ -1,15 +1,16 @@
 import * as express from 'express';
 import publishMessage from '../../helpers/publish-message';
+import { Message } from '../../../types/server';
 
 const router = express.Router();
 
 router.post('/', (req: express.Request, res: express.Response) => {
 
-    const update = (id) => {
+    const update = (id: string) => {
         req.app.locals.Message.update(
             {unread: false},
             {where: {publicId: id}},
-        ).then((affectedRows) => {
+        ).then((affectedRows: number[]) => {
             if (affectedRows[0] === 0) {
                 res.sendStatus(304);
 
@@ -34,7 +35,7 @@ router.post('/', (req: express.Request, res: express.Response) => {
                 localId: req.body.localId,
                 unread: true,
             },
-        }).then((message) => {
+        }).then((message: Message) => {
             if (!message) {
                 res.sendStatus(404);
             } else {

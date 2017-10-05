@@ -1,5 +1,6 @@
 import * as express from 'express';
 import * as useragent from 'useragent';
+import {TokenInstance} from '../../types/server';
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.post('/', (req: express.Request, res: express.Response) => {
         persist: [true, '1', 'true'].indexOf(req.body.persist) > -1,
     });
 
-    const pruneCallback = (t) => {
+    const pruneCallback = (t: TokenInstance) => {
         t.save()
             .then(() => t.setUser(req.user))
             .then(sendResponse)
@@ -25,7 +26,7 @@ router.post('/', (req: express.Request, res: express.Response) => {
             });
     };
 
-    const generateCallback = (key, value) => {
+    const generateCallback = (key: string, value: string) => {
         token.key = key;
         token.value = value;
         req.app.locals.Token.prune(pruneCallback(token));
@@ -37,16 +38,15 @@ router.post('/', (req: express.Request, res: express.Response) => {
         const key = token.key;
         const value = token.value;
 
-        let expires: Date;
+        const cookieOptions: express.CookieOptions = {
+            path: req.app.locals.config.get('NOTIFIER_BASE_URL'),
+        };
 
         if (token.persist) {
-            expires = new Date(Date.now() + (86400000 * 30));
+            cookieOptions.expires = new Date(Date.now() + (86400000 * 30));
         }
 
-        res.cookie('token', `${key},${value}`, {
-            expires,
-            path: req.app.locals.config.get('NOTIFIER_BASE_URL'),
-        });
+        res.cookie('token', `${key},${value}`, cookieOptions);
 
         res.format({
             'application/json': () => res.json({key, value}),
