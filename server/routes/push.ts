@@ -7,7 +7,6 @@ router.get('/', (req: express.Request, res: express.Response) => {
     const id = uuid.v4();
 
     const timer = setInterval(() => {
-        const d = new Date();
         res.write('event:keepalive\ndata:\n\n');
     }, 30000);
 

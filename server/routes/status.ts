@@ -5,7 +5,7 @@ const router = express.Router();
 /**
  * A monitoring endpoint to confirm the server is running.
  */
-router.get('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.get('/', (_: express.Request, res: express.Response) => {
     res.type('txt');
     res.send('OK');
 });

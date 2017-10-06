@@ -1,20 +1,37 @@
+import * as express from 'express';
 import * as needle from 'needle';
+import { Message, MessageInstance, UserInstance } from '../../types/server';
 
-function publishServerEvent(app, user, message) {
+enum PushbulletType {
+    note = 'note',
+    link = 'link',
+}
+
+
+interface PushbulletParams {
+    body: string;
+    guid: string;
+    title: string;
+    type: PushbulletType;
+    url?: string;
+}
+
+
+function publishServerEvent(app: express.Application, _: UserInstance, message: Message) {
     for (const id of Object.keys(app.locals.pushClients)) {
         const res = app.locals.pushClients[id];
         res.write(`event: message\ndata: ${JSON.stringify(message)}\n\n`);
     }
 }
 
-function publishPushbullet(app, user, message, tokenValue) {
+function publishPushbullet(app: express.Application, _: UserInstance, message: Message, tokenValue: string) {
     let params;
 
     if (message.hasOwnProperty('retracted')) {
         app.locals.Message.find({
             attributes: ['pushbulletId'],
             where: { publicId: message.retracted },
-        }).then((foundMessage) => {
+        }).then((foundMessage: MessageInstance) => {
             if (foundMessage.pushbulletId === '0') {
                 return;
             }
@@ -31,23 +48,23 @@ function publishPushbullet(app, user, message, tokenValue) {
         return;
     }
 
-    params = {
+    params = <PushbulletParams>{
         body: message.body,
         guid: message.publicId,
         title: message.title,
-        type: 'note',
+        type: PushbulletType.note,
     };
 
     if (message.url) {
-        params.type = 'link';
+        params.type = PushbulletType.link;
         params.url  = message.url;
     }
 
     needle.post('https://api.pushbullet.com/v2/pushes', params, {
         password: '',
         username: tokenValue,
-    }, (err, res) => {
-        if (res.body.error) {
+    }, (err: Error, res) => {
+        if (err || res.body.error) {
             return false;
         }
 
@@ -55,10 +72,12 @@ function publishPushbullet(app, user, message, tokenValue) {
             { pushbulletId: res.body.iden },
             { where: { publicId: message.publicId } },
         );
+
+        return true;
     });
 }
 
-function publishWebhook(user, message, tokenValue) {
+function publishWebhook(_: UserInstance, message: Message, tokenValue: string) {
     delete message.UserId;
     delete message.id;
 
@@ -79,24 +98,21 @@ function publishWebhook(user, message, tokenValue) {
     });
 }
 
-export default function(app, user, message) {
+export default function(app: express.Application, user: UserInstance, message: MessageInstance) {
 
+    const messageValues = message.dataValues;
 
-    if (message.hasOwnProperty('dataValues')) {
-        message = message.dataValues;
-    }
-
-    publishServerEvent(app, user, message);
+    publishServerEvent(app, user, messageValues);
 
     user.getServiceTokens(() => {
 
         for (const token of user.serviceTokens) {
             if (token.key === 'pushbullet') {
-                publishPushbullet(app, user, message, token.value);
+                publishPushbullet(app, user, messageValues, token.value);
             }
 
             if (token.key === 'webhook') {
-                publishWebhook(user, message, token.value);
+                publishWebhook(user, messageValues, token.value);
             }
         }
     });

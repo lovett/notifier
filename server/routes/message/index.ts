@@ -1,11 +1,12 @@
-import * as express from "express";
-import publishMessage from "../../helpers/publish-message";
+import * as express from 'express';
+import publishMessage from '../../helpers/publish-message';
+import { Message, MessageInstance } from '../../../types/server';
 
 const dateparser = require('dateparser');
 const router = express.Router();
 
 router.post('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    let err, message;
+    let err: Error;
 
     if (Object.keys(req.body).length === 0) {
         err = new Error('Message is blank');
@@ -14,11 +15,11 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
         return next(err);
     }
 
-    message = req.app.locals.Message.build({
+    const message: MessageInstance = req.app.locals.Message.build({
         received: new Date()
     });
 
-    message.attributes.forEach((key) => {
+    Object.keys(message.dataValues).forEach((key: string) => {
         let fieldName, parseResult;
 
         if (key === 'id' || key === 'publicId') {
@@ -42,13 +43,13 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
         if (fieldName === 'expiration') {
             parseResult = dateparser.parse(req.body[fieldName]);
             if (parseResult !== null) {
-                message[key] = new Date(Date.now() + parseResult.value);
+                message.setDataValue(key, new Date(Date.now() + parseResult.value));
             }
 
             return;
         }
 
-        message[key] = req.body[key].trim();
+        message.setDataValue(key, req.body[key].trim());
     });
 
     // Retract unread messages with the same local id as the incoming
@@ -66,14 +67,12 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
                     $ne: message.publicId
                 }
             }
-        }).then((existingMessages) => {
-            let ids;
-
+        }).then((existingMessages: MessageInstance[]) => {
             if (existingMessages.length == 0) {
                 return;
             }
 
-            ids = existingMessages.map((existingMessage) => {
+            const ids = existingMessages.map((existingMessage) => {
                 return existingMessage.publicId;
             });
 
@@ -85,11 +84,11 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
                         $in: ids
                     }
                 }
-            }).then((updatedRows) => {
+            }).then((updatedRows: number[]) => {
                 if (updatedRows[0] > 0) {
                     ids.forEach((id) => {
                         publishMessage(req.app, req.user, {
-                            'retracted': id
+                            retracted: id,
                         });
                     });
                 }
@@ -107,7 +106,7 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
     }).catch((error) => {
         let err, message = '';
 
-        error.errors.forEach((err) => {
+        error.errors.forEach((err: Error) => {
             message += err.message + ';';
         });
 
@@ -118,22 +117,22 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
 });
 
 router.patch('/', (req, res) => {
-    let fields;
+    const acceptedFields = ['title', 'url', 'body', 'source', 'group', 'deliveredAt'];
 
-    fields = ['title', 'url', 'body', 'source', 'group', 'deliveredAt'].reduce((acc, field) => {
+    const fieldObject: Message = acceptedFields.reduce((acc, field) => {
         if (req.body.hasOwnProperty(field)) {
             acc[field] = req.body[field];
         }
 
         return acc;
-    }, {});
+    }, {} as Message);
 
-    req.app.locals.Message.update(fields, {
+    req.app.locals.Message.update(fieldObject, {
         where: {
             'publicId': req.body.publicId,
             'UserId': req.user.id
         }
-    }).then((affectedRows) => {
+    }).then((affectedRows: number[]) => {
         if (affectedRows[0] !== 1) {
             res.sendStatus(400);
         }
@@ -143,7 +142,7 @@ router.patch('/', (req, res) => {
                 'publicId': req.body.publicId,
                 'UserId': req.user.id
             }
-        }).then((message) => {
+        }).then((message: MessageInstance) => {
             publishMessage(req.app, req.user, message);
             res.sendStatus(204);
         });
