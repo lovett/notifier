@@ -1,4 +1,5 @@
 import * as express from 'express';
+import {Token} from '../../types/server';
 
 const router = express.Router();
 
@@ -11,10 +12,10 @@ const router = express.Router();
  * Client-specific functionality is not included, specifically browser
  * push notifications.
  */
-router.get('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
+router.get('/', (req: express.Request, res: express.Response) => {
     req.user.getServiceTokens(() => {
 
-        const services = req.user.serviceTokens.map((token) => {
+        const services = req.user.serviceTokens.map((token: Token) => {
             if (token.label === 'service') {
                 delete token.value;
             }
@@ -26,9 +27,9 @@ router.get('/', (req: express.Request, res: express.Response, next: express.Next
     });
 });
 
-router.post('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const additions = [];
-    const removals = [];
+router.post('/', (req: express.Request, res: express.Response) => {
+    const additions: Token[] = [];
+    const removals: string[] = [];
     const whitelist = ['webhook'];
 
     for (const name in req.body) {
@@ -63,11 +64,11 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
                 $in: removals,
             },
         },
-    }).then((affectedRows) => {
+    }).then(() => {
         return req.app.locals.Token.bulkCreate(additions);
     }).then(() => {
         res.sendStatus(200);
-    }).catch((error) => {
+    }).catch((error: Error) => {
         res.status(500).json(error);
     });
 });

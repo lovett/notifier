@@ -55,6 +55,7 @@ interface Token {
     label?: string;
     persist?: boolean;
     value: string;
+    UserId: number;
 }
 
 interface TokenInstance extends Sequelize.Instance<Token> {
