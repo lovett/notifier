@@ -149,6 +149,7 @@ if (nconf.get('NOTIFIER_DB_DIALECT') !== 'sqlite') {
 sequelize = new Sequelize('', '', '', {
     dialect: nconf.get('NOTIFIER_DB_DIALECT'),
     logging: () => { return; },
+    operatorsAliases: false,
     storage: nconf.get('NOTIFIER_DB'),
 });
 

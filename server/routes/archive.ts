@@ -1,18 +1,14 @@
 import * as express from 'express';
+import * as Sequelize from 'sequelize';
 import {MessageInstance} from '../../types/server';
 
 const router = express.Router();
 
-interface IWhereDate {
-    $lte?: Date;
-    $gt?: Date;
-}
-
-interface IWhereFilter {
+interface WhereFilter {
     UserId: number;
     unread: boolean;
-    deliveredAt: IWhereDate;
-    received?: IWhereDate;
+    deliveredAt: any;
+    received?: any;
 }
 
 router.get('/:count', (req: express.Request, res: express.Response) => {
@@ -22,16 +18,16 @@ router.get('/:count', (req: express.Request, res: express.Response) => {
         order: [['deliveredAt', 'DESC']],
         where: {
             UserId: req.user.id,
-            deliveredAt: { $lte: new Date() },
+            deliveredAt: { [Sequelize.Op.lte]: new Date() },
             unread: true,
-        } as IWhereFilter,
+        } as WhereFilter,
     };
 
     if (req.query.since) {
         req.query.since = parseInt(req.query.since, 10) || 0;
         if (req.query.since > 0) {
             filters.where.received = {
-                $gt: new Date(req.query.since),
+                [Sequelize.Op.gt]: new Date(req.query.since),
             };
         }
     }
