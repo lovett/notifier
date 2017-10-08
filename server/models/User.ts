@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import * as express from 'express';
 import * as Sequelize from 'sequelize';
-import { Token, UserInstance } from '../../types/server';
+import { TokenInstance, UserInstance } from '../../types/server';
 
 export default function(sequelize: Sequelize.Sequelize, app: express.Application) {
 
@@ -81,7 +81,7 @@ export default function(sequelize: Sequelize.Sequelize, app: express.Application
                             $in: ['service', 'userval'],
                         },
                     },
-                }).then((tokens: Token[]) => {
+                }).then((tokens: TokenInstance[]) => {
                     user.serviceTokens = tokens.map((token) => {
                         return token.dataValues;
                     });

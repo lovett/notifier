@@ -98,9 +98,19 @@ function publishWebhook(_: UserInstance, message: Message, tokenValue: string) {
     });
 }
 
-export default function(app: express.Application, user: UserInstance, message: MessageInstance) {
 
-    const messageValues = message.dataValues;
+
+export default (app: express.Application, user: UserInstance, message: MessageInstance|null, retractionId?: string) => {
+
+    let messageValues: Message;
+
+    if (message) {
+        messageValues = message.dataValues;
+    } else {
+        messageValues = {
+            retracted: retractionId,
+        };
+    }
 
     publishServerEvent(app, user, messageValues);
 
@@ -116,4 +126,4 @@ export default function(app: express.Application, user: UserInstance, message: M
             }
         }
     });
-}
+};

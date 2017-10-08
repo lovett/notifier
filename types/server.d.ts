@@ -1,12 +1,17 @@
 import * as Sequelize from 'sequelize';
+import * as Promise from 'bluebird';
 
-interface Message {
-    id: number;
-    title: string;
+interface IndexSignature {
+  [key: string]: any;
+}
+
+interface Message extends IndexSignature {
+    id?: number;
+    title?: string;
     body?: string;
     url?: string;
     expiresAt?: Date;
-    publicId: string;
+    publicId?: string;
     retracted?: string;
     localId?: string;
     pushbulletId?: string;
@@ -23,7 +28,7 @@ interface MessageInstance extends Sequelize.Instance<Message> {
     publicId: string;
     pushbulletId?: string;
     purgeServiceToken(service: string, callback: (affectedRows: number) => void): void;
-    setUser(user: User): void;
+    setUser(user: User): Promise<MessageInstance>;
 }
 
 interface User {

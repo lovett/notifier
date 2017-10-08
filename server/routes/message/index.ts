@@ -2,7 +2,6 @@ import * as express from 'express';
 import publishMessage from '../../helpers/publish-message';
 import { Message, MessageInstance } from '../../../types/server';
 
-const dateparser = require('dateparser');
 const router = express.Router();
 
 router.post('/', (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -16,11 +15,11 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
     }
 
     const message: MessageInstance = req.app.locals.Message.build({
-        received: new Date()
+        received: new Date(),
     });
 
     Object.keys(message.dataValues).forEach((key: string) => {
-        let fieldName, parseResult;
+        let fieldName;
 
         if (key === 'id' || key === 'publicId') {
             return;
@@ -40,14 +39,14 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
             return;
         }
 
-        if (fieldName === 'expiration') {
+        /*if (fieldName === 'expiration') {
             parseResult = dateparser.parse(req.body[fieldName]);
             if (parseResult !== null) {
                 message.setDataValue(key, new Date(Date.now() + parseResult.value));
             }
 
             return;
-        }
+        }*/
 
         message.setDataValue(key, req.body[key].trim());
     });
@@ -60,15 +59,15 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
         req.app.locals.Message.findAll({
             attributes: ['publicId'],
             where: {
-                localId: req.body.localId,
-                unread: true,
                 UserId: req.user.id,
+                localId: req.body.localId,
                 publicId: {
-                    $ne: message.publicId
-                }
-            }
+                    $ne: message.publicId,
+                },
+                unread: true,
+            },
         }).then((existingMessages: MessageInstance[]) => {
-            if (existingMessages.length == 0) {
+            if (existingMessages.length === 0) {
                 return;
             }
 
@@ -77,19 +76,17 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
             });
 
             req.app.locals.Message.update({
-                unread: false
+                unread: false,
             }, {
                 where: {
                     publicId: {
-                        $in: ids
-                    }
-                }
+                        $in: ids,
+                    },
+                },
             }).then((updatedRows: number[]) => {
                 if (updatedRows[0] > 0) {
                     ids.forEach((id) => {
-                        publishMessage(req.app, req.user, {
-                            retracted: id,
-                        });
+                        publishMessage(req.app, req.user, null, id);
                     });
                 }
             });
@@ -103,23 +100,16 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
             publishMessage(req.app, req.user, message);
             res.sendStatus(204);
         });
-    }).catch((error) => {
-        let err, message = '';
-
-        error.errors.forEach((err: Error) => {
-            message += err.message + ';';
-        });
-
-        err = new Error(message);
+    }).catch((error: Error) => {
         res.status(400);
-        next(err);
+        next(error);
     });
 });
 
 router.patch('/', (req, res) => {
     const acceptedFields = ['title', 'url', 'body', 'source', 'group', 'deliveredAt'];
 
-    const fieldObject: Message = acceptedFields.reduce((acc, field) => {
+    const fieldObject: Message = acceptedFields.reduce((acc: Message, field) => {
         if (req.body.hasOwnProperty(field)) {
             acc[field] = req.body[field];
         }
@@ -129,9 +119,9 @@ router.patch('/', (req, res) => {
 
     req.app.locals.Message.update(fieldObject, {
         where: {
-            'publicId': req.body.publicId,
-            'UserId': req.user.id
-        }
+            UserId: req.user.id,
+            publicId: req.body.publicId,
+        },
     }).then((affectedRows: number[]) => {
         if (affectedRows[0] !== 1) {
             res.sendStatus(400);
@@ -139,9 +129,9 @@ router.patch('/', (req, res) => {
 
         req.app.locals.Message.findOne({
             where: {
-                'publicId': req.body.publicId,
-                'UserId': req.user.id
-            }
+                UserId: req.user.id,
+                publicId: req.body.publicId,
+            },
         }).then((message: MessageInstance) => {
             publishMessage(req.app, req.user, message);
             res.sendStatus(204);

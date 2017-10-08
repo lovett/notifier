@@ -1,6 +1,6 @@
 import * as express from 'express';
 import publishMessage from '../../helpers/publish-message';
-import { Message } from '../../../types/server';
+import { MessageInstance } from '../../../types/server';
 
 const router = express.Router();
 
@@ -17,9 +17,7 @@ router.post('/', (req: express.Request, res: express.Response) => {
                 return;
             }
 
-            publishMessage(req.app, req.user, {
-                retracted: id,
-            });
+            publishMessage(req.app, req.user, null, id);
             res.sendStatus(204);
 
             return true;
@@ -35,7 +33,7 @@ router.post('/', (req: express.Request, res: express.Response) => {
                 localId: req.body.localId,
                 unread: true,
             },
-        }).then((message: Message) => {
+        }).then((message: MessageInstance) => {
             if (!message) {
                 res.sendStatus(404);
             } else {
