@@ -59,9 +59,11 @@ interface Token {
 
 interface TokenInstance extends Sequelize.Instance<Token> {
     dataValues: any;
+    id: number;
     prune: PruneCallback;
     generateKeyAndValue: GenerateCallback;
-    key?: string;
-    User: User;
-    setUser(user: User): void;
+    key: string;
+    value: string;
+    User: UserInstance;
+    setUser(user: User): Promise<UserInstance>;
 }

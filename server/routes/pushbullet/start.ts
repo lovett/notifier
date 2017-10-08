@@ -1,12 +1,11 @@
 import * as express from "express";
 import * as url from "url";
+import { TokenInstance } from '../../../types/server';
 
 const router = express.Router();
 
 router.get('/', (req: express.Request, res: express.Response) => {
-    let token;
-
-    function sendUrl (tokenValue) {
+    function sendUrl (tokenValue: string) {
         let config, redirectUri;
 
         config = req.app.locals.config;
@@ -35,12 +34,12 @@ router.get('/', (req: express.Request, res: express.Response) => {
         });
     }
 
-    token = req.app.locals.Token.build({
+    const token: TokenInstance = req.app.locals.Token.build({
         key: 'pushbullet',
         label: 'service'
     });
 
-    req.app.locals.Token.generateKeyAndValue((key, value) => {
+    req.app.locals.Token.generateKeyAndValue((_: string, value: string) => {
         token.value = value;
         token.save().then((token) => {
             token.setUser(req.user).then(() => {
