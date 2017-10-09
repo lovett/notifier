@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as needle from 'needle';
-import { Message, MessageInstance, UserInstance } from '../../types/server';
+import getServiceTokens from '../helpers/service-tokens';
+import { Message, MessageInstance, TokenInstance, UserInstance } from '../../types/server';
 
 enum PushbulletType {
     note = 'note',
@@ -114,9 +115,9 @@ export default (app: express.Application, user: UserInstance, message: MessageIn
 
     publishServerEvent(app, user, messageValues);
 
-    user.getServiceTokens(() => {
+    getServiceTokens(app, user, (tokens: TokenInstance[]) => {
 
-        for (const token of user.serviceTokens) {
+        for (const token of tokens) {
             if (token.key === 'pushbullet') {
                 publishPushbullet(app, user, messageValues, token.value);
             }

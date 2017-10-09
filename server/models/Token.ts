@@ -1,10 +1,7 @@
-import * as crypto from 'crypto';
-import * as express from 'express';
 import * as Sequelize from 'sequelize';
-import { GenerateCallback, PruneCallback, Token, TokenInstance } from '../../types/server';
+import { Token, TokenInstance } from '../../types/server';
 
-
-export default function(sequelize: Sequelize.Sequelize, app: express.Application): Sequelize.Model<TokenInstance, Token> {
+export default function(sequelize: Sequelize.Sequelize): Sequelize.Model<TokenInstance, Token> {
 
     const fields: Sequelize.DefineAttributes = {
         key: {
@@ -42,44 +39,5 @@ export default function(sequelize: Sequelize.Sequelize, app: express.Application
 
     };
 
-    const options: Sequelize.DefineOptions<TokenInstance> = {
-        classMethods: {
-            prune(callback: PruneCallback) {
-                app.locals.Token.destroy({
-                    where: {
-                        persist: false,
-                        updatedAt: {
-                            lt: new Date(new Date().getTime() - (60 * 60 * 24 * 7 * 1000)),
-                        },
-                    },
-                }).then(callback);
-            },
-
-            generateKeyAndValue(callback: GenerateCallback) {
-                const numBytes = 64;
-
-                crypto.randomBytes(numBytes, (err, buf) => {
-                    if (err) {
-                        process.stderr.write('Error while generating random bytes\n');
-                        callback(null, null);
-                    }
-
-                    const bag = 'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789';
-
-                    let result = '';
-                    for (let i = 0; i < numBytes; i = i + 1) {
-                        result += bag[buf[i] % bag.length];
-                    }
-
-                    callback(
-                        result.substring(0, numBytes / 2),
-                        result.substring(numBytes / 2),
-                    );
-
-                });
-            },
-        },
-    };
-
-    return sequelize.define('Token', fields, options);
+    return sequelize.define('Token', fields);
 }

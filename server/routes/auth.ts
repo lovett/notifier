@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as useragent from 'useragent';
-import {TokenInstance} from '../../types/server';
+import generateTokenKeyValue from '../helpers/token-keyvalue';
+import {GenerateCallback} from '../../types/server';
 
 const router = express.Router();
 
@@ -17,22 +18,28 @@ router.post('/', (req: express.Request, res: express.Response) => {
         persist: [true, '1', 'true'].indexOf(req.body.persist) > -1,
     });
 
-    const pruneCallback = (t: TokenInstance) => {
-        t.save()
-            .then(() => t.setUser(req.user))
-            .then(sendResponse)
-            .catch((err) => {
-                res.status(400).json(err);
-            });
-    };
-
-    const generateCallback = (key: string, value: string) => {
+    const generateCallback: GenerateCallback = (key: string, value: string) => {
         token.key = key;
         token.value = value;
-        req.app.locals.Token.prune(pruneCallback(token));
+
+        req.app.locals.Token.destroy({
+            where: {
+                persist: false,
+                updatedAt: {
+                    lt: new Date(new Date().getTime() - (60 * 60 * 24 * 7 * 1000)),
+                },
+            },
+        }).then(() => {
+            token.save()
+                .then(() => token.setUser(req.user))
+                .then(sendResponse)
+                .catch((err: Error) => {
+                    res.status(400).json(err);
+            });
+        });
     };
 
-    req.app.locals.Token.generateKeyAndValue(generateCallback);
+    generateTokenKeyValue(generateCallback);
 
     const sendResponse = () => {
         const key = token.key;

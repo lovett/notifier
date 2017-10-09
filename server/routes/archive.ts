@@ -59,7 +59,7 @@ router.get('/:count', (req: express.Request, res: express.Response) => {
 
         res.send({
             limit: req.params.count,
-            mappedMessages,
+            messages: mappedMessages,
         });
     });
 });

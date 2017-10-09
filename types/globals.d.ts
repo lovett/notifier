@@ -5,9 +5,10 @@ interface IMessage {
     body?: string;
     url?: string;
     publicId: string;
-    group?: string;
-    received: Date;
-    expiresAt?: Date;
+    group: string;
+    received: string;
+    expiresAt?: string;
+    stage: string;
 }
 
 interface IExtendedMessage extends IMessage {

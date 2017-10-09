@@ -153,7 +153,7 @@ sequelize = new Sequelize('', '', '', {
     storage: nconf.get('NOTIFIER_DB'),
 });
 
-app.locals.Token = Token(sequelize, app);
+app.locals.Token = Token(sequelize);
 app.locals.User = User(sequelize, app);
 app.locals.Message = Message(sequelize);
 

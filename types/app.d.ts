@@ -19,6 +19,7 @@ interface IUserService {
 }
 
 interface IBrowserNotificationService {
+    send: any;
 }
 
 interface IMessageList {

@@ -18,7 +18,7 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
         received: new Date(),
     });
 
-    Object.keys(message.dataValues).forEach((key: string) => {
+    Object.keys(req.app.locals.Message.rawAttributes).forEach((key: string) => {
         let fieldName;
 
         if (key === 'id' || key === 'publicId') {
@@ -35,7 +35,15 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
             return;
         }
 
+        if (!req.body[fieldName]) {
+            return;
+        }
+
         if (req.body[fieldName].trim() === '') {
+            return;
+        }
+
+        if (fieldName === 'expiration') {
             return;
         }
 
@@ -55,7 +63,7 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
     // message. This enforces uniqueness from the client's
     // perspective. From the perspective of the database, localIds are
     // not unique.
-    if (message.localId) {
+    /*if (message.localId) {
         req.app.locals.Message.findAll({
             attributes: ['publicId'],
             where: {
@@ -93,7 +101,7 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
 
             return null;
         });
-    }
+    }*/
 
     message.save().then(() => {
         message.setUser(req.user).then(() => {

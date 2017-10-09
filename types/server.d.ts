@@ -20,6 +20,7 @@ interface Message extends IndexSignature {
 }
 
 interface MessageInstance extends Sequelize.Instance<Message> {
+    body?: string;
     dataValues: any;
     id: number;
     serviceTokens: any;
@@ -29,26 +30,27 @@ interface MessageInstance extends Sequelize.Instance<Message> {
     pushbulletId?: string;
     purgeServiceToken(service: string, callback: (affectedRows: number) => void): void;
     setUser(user: User): Promise<MessageInstance>;
+    title: string;
 }
 
 interface User {
     passwordHash: string;
     username: string;
-    token: Token;
+    token: any;
 }
+
+type GenerateCallback = (key: string|null, value: string|null) => void;
 
 interface UserInstance extends Sequelize.Instance<User> {
     id: number;
-    username: string;
+    passwordHash: string;
     serviceTokens: any;
-    getServiceTokens(callback: () => void): void;
+    token?: any;
+    username: string;
     purgeServiceToken(service: string, callback: (affectedRows: number) => void): void;
-    checkPassword(password: string, callback: (result: boolean) => void): void;
 }
 
 type PruneCallback = () => void;
-
-type GenerateCallback = (key: string|null, value: string|null) => void;
 
 interface Token {
     key: string;
@@ -62,8 +64,9 @@ interface TokenInstance extends Sequelize.Instance<Token> {
     dataValues: any;
     id: number;
     prune: PruneCallback;
-    generateKeyAndValue: GenerateCallback;
     key: string;
+    label?: string;
+    persist?: boolean;
     value: string;
     User: UserInstance;
     setUser(user: User): Promise<UserInstance>;

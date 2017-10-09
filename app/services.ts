@@ -79,7 +79,7 @@ appServices.factory('User', ['$window', '$http', '$cookies', ($window: angular.I
     };
 }]);
 
-appServices.factory('PushClient', ['$rootScope', '$log', '$filter', 'User', 'MessageList', ($rootScope: angular.IRootScopeService, $log: angular.ILogService, $filter: angular.IFilterService, MessageList: IMessageList) => {
+appServices.factory('PushClient', ['$rootScope', '$log', '$filter', 'MessageList', ($rootScope: angular.IRootScopeService, $log: angular.ILogService, $filter: angular.IFilterService, MessageList: IMessageList) => {
 
     const pushWorker = new Worker('worker.js');
 
@@ -124,7 +124,7 @@ appServices.factory('PushClient', ['$rootScope', '$log', '$filter', 'User', 'Mes
 appServices.service('WebhookNotification', ['$window', '$rootScope', 'User', ($window: angular.IWindowService, $rootScope: angular.IRootScopeService, User: IUserService) => {
     const enum States {
         active,
-        inactive
+        inactive,
     }
 
     let url: string;
@@ -151,8 +151,8 @@ appServices.service('WebhookNotification', ['$window', '$rootScope', 'User', ($w
                 state = (url && result === true) ? States.active : States.inactive;
                 $rootScope.$broadcast('settings:webhookNotifications', state);
             });
-        }
-    }
+        },
+    };
 }]);
 
 appServices.service('BrowserNotification', ['$window', '$rootScope', ($window: angular.IWindowService, $rootScope: angular.IRootScopeService) => {
@@ -199,7 +199,7 @@ via the browser's Notifications settings`);
                 message.group = 'internal';
                 message.title = 'Browser notifications enabled';
 
-                send(message, true);
+                // send(message, true);
                 state = 'active';
                 $rootScope.$broadcast('settings:browserNotifications', state);
                 $rootScope.$apply();
@@ -219,10 +219,24 @@ via the browser's Notifications settings`);
     return {state, enable, send};
 }]);
 
-appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$interval', '$location', '$timeout', ($rootScope: angular.IRootScopeService, $http: angular.IHttpService, $log: angular.ILogService, $window: angular.IWindowService, $interval: angular.IIntervalService, $location: angular.ILocationService,  $timeout: angular.ITimeoutService) => {
+appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$interval', '$location', 'BrowserNotification', ($rootScope: angular.IRootScopeService, $http: angular.IHttpService, $log: angular.ILogService, $window: angular.IWindowService, $interval: angular.IIntervalService, $location: angular.ILocationService, BrowserNotification: IBrowserNotificationService) => {
 
     const store = new Store();
-    // const removedIds: string[] = [];
+
+    store.onAdd((id: string) => {
+        const message = store.message(id);
+        message.browserNotification = BrowserNotification.send(message);
+
+        $rootScope.$evalAsync(() => {
+            $rootScope.$broadcast('queue:change', store.size());
+        });
+    });
+
+    store.onRemove((_: string) => {
+        $rootScope.$broadcast('queue:change', store.size());
+    });
+
+    const removedIds: string[] = [];
 
     let lastFetched: Date = new Date(0);
 
@@ -265,6 +279,12 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             store.activateByStep(step);
             $rootScope.$apply();
         },
+
+
+        add(message: IMessage) {
+            store.add(Message.fromJson(message));
+        },
+
 
 
     //     filterKeysByMessage(callback: (message: IMessage) => boolean) {
@@ -317,84 +337,32 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             }
         },
 
+        clear(publicIds: string | string[]) {
+            let idList: string[] = [];
 
-    //     clear(publicIds: string | string[]) {
-    //         let idList: string[] = [];
+            if (typeof publicIds === 'string') {
+                idList = [publicIds];
+            } else {
+                idList = publicIds;
+            }
 
-    //         if (typeof publicIds === 'string') {
-    //             idList = [publicIds];
-    //         } else {
-    //             idList = publicIds;
-    //         }
+            for (const publicId of idList) {
+                store.items[publicId].state = 'clearing';
+            }
 
-    //         for (const publicId of publicIds) {
-    //             messages[publicId].state = 'clearing';
-    //         }
-
-    //         $http({
-    //             data: { publicId: publicIds },
-    //             method: 'POST',
-    //             url: 'message/clear',
-    //         }).then(() => {
-    //             removedIds.concat(idList);
-    //             $rootScope.$broadcast('queue:change', count());
-    //         }).catch(() => {
-    //             for (const publicId of publicIds) {
-    //                 messages[publicId].state = 'stuck';
-    //             }
-    //             $rootScope.$broadcast('connection:change', 'error', 'The message could not be cleared.');
-    //         });
-    //     },
-
-    //     add(message: Message) {
-    //         const startOfToday = (new Date()).setHours(0, 0, 0, 0);
-    //         const now = new Date();
-
-    //         if (message.url) {
-    //             const el: JQLite = angular.element('<a></a>');
-    //             el.attr('href', message.url);
-    //             message.domain = (el[0] as HTMLAnchorElement).hostname;
-    //         }
-
-    //         message.expired = false;
-    //         if (message.expiresAt) {
-    //             message.expired = (message.expiresAt < now);
-
-    //             message.expire_days = (new Date(message.expiresAt)).setHours(0, 0, 0, 0);
-    //             message.expire_days -= startOfToday;
-    //             message.expire_days /= oneDayMilliseconds;
-    //         }
-
-    //         message.received = new Date(message.received);
-    //         if (isNaN(message.received)) {
-    //             message.received = now;
-    //         }
-
-    //         message.days_ago = startOfToday;
-    //         message.days_ago -= (new Date(message.received)).setHours(0, 0, 0, 0);
-    //         message.days_ago /= oneDayMilliseconds;
-
-    //         if (message.body) {
-    //             message.body = message.body.replace(/\n/g, '<br/>');
-    //         }
-
-    //         message.badge = null;
-    //         if (message.group) {
-    //             message.badge = message.group.split('.').pop();
-    //         }
-
-    //         if (message.group === 'phone' && message.body) {
-    //             // Format US phone numbers, dropping optional country code
-    //             message.body = message.body.replace(/(\+?1?)(\d\d\d)(\d\d\d)(\d\d\d\d)/g, '($2) $3-$4');
-    //         }
-
-    //         message.browserNotification = BrowserNotification.send(message);
-
-    //         $rootScope.$evalAsync(() => {
-    //             messages[message.publicId] = message;
-    //             $rootScope.$broadcast('queue:change', Object.keys(messages).length);
-    //         });
-    //     },
+            $http({
+                data: { publicId: publicIds },
+                method: 'POST',
+                url: 'message/clear',
+            }).then(() => {
+                removedIds.concat(idList);
+            }).catch(() => {
+                for (const publicId of publicIds) {
+                    store.items[publicId].state = 'stuck';
+                }
+                $rootScope.$broadcast('connection:change', 'error', 'The message could not be cleared.');
+            });
+        },
 
         focusNext() {
             store.activateByStep(1);
@@ -404,27 +372,21 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             store.activateByStep(-1);
         },
 
-    //     drop(publicIds: string | string[]) {
-    //         if (typeof publicIds === 'string') {
-    //             publicIds = [publicIds];
-    //         }
+        messages: store.items,
 
-    //         for (const publicId of publicIds) {
-    //             const message = find(publicId);
+        drop(publicIds: string | string[]) {
+            let idList: string[] = [];
 
-    //             if (message === false) {
-    //                 continue;
-    //             }
+            if (typeof publicIds === 'string') {
+                idList = [publicIds];
+            } else {
+                idList = publicIds;
+            }
 
-    //             if (message.browserNotification) {
-    //                 message.browserNotification.close();
-    //             }
-
-    //             delete messages[publicId];
-    //         }
-
-    //         $rootScope.$broadcast('queue:change', count());
-    //     },
+            for (const publicId of idList) {
+                store.removeKey(publicId);
+            }
+        },
 
 
         fetch() {
@@ -463,9 +425,10 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
                 // messages will be ordered newest first, but if they are added to the queue
                 // sequentially they will end up oldest first
-                receivedMessages.forEach(message => store.add(message));
 
-                $timeout(() => $rootScope.$broadcast('queue:change', store.size()));
+                receivedMessages.forEach((message) => store.add(message));
+
+                //$timeout(() => $rootScope.$broadcast('queue:change', store.size()));
             }).catch((res) => {
                 if (res.status === 401) {
                     $location.path('login');
@@ -477,44 +440,27 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             store.clear();
         },
 
+        empty() {
+            store.clear();
+        },
 
-    //     empty() {
-    //         messageKeys().forEach((key) => {
-    //             delete messages[key];
-    //         });
+        tallyByGroup() {
+            return store.tallyByGroup();
+        },
 
-    //         $rootScope.$broadcast('queue:change', count());
+        canUnclear() {
+            return removedIds.length > 0;
+        },
 
-    //         tallyByGroup() {
-    //             return messageKeys().reduce((accumulator, key) => {
-    //                 const message = messages[key];
-
-    //                 if (accumulator.hasOwnProperty(message.group) === false) {
-    //                     accumulator[message.group] = 0;
-    //                 }
-
-    //                 accumulator[message.group]++;
-
-    //                 return accumulator;
-    //             }, {});
-    //         },
-
-    //     },
-
-
-    //     canUnclear() {
-    //         return removedIds.length > 0;
-    //     },
-
-    //     unclear() {
-    //         $http({
-    //             data: {publicId: removedIds.pop()},
-    //             method: 'POST',
-    //             url: 'message/unclear',
-    //         }).then(() => {
-    //             fetch();
-    //         });
-    //     },
+        unclear() {
+            $http({
+                data: {publicId: removedIds.pop()},
+                method: 'POST',
+                url: 'message/unclear',
+            }).then(() => {
+                this.fetch();
+            });
+        },
     };
 }]);
 

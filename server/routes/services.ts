@@ -1,5 +1,6 @@
 import * as express from 'express';
-import {Token} from '../../types/server';
+import {Token, TokenInstance} from '../../types/server';
+import getServiceTokens from '../helpers/service-tokens';
 
 const router = express.Router();
 
@@ -13,9 +14,8 @@ const router = express.Router();
  * push notifications.
  */
 router.get('/', (req: express.Request, res: express.Response) => {
-    req.user.getServiceTokens(() => {
-
-        const services = req.user.serviceTokens.map((token: Token) => {
+    getServiceTokens(req.app, req.user, (tokens: TokenInstance[]) => {
+        const services = tokens.map((token) => {
             if (token.label === 'service') {
                 delete token.value;
             }

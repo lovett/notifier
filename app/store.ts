@@ -7,7 +7,7 @@ enum Listenable {
 type ListenerCallback = (id: string) => void;
 
 export default class Items {
-    private items: { [index: string]: Message } = {};
+    public items: { [index: string]: Message } = {};
 
     private listeners: Array<[Listenable, (id: string) => void]> = [];
 
@@ -99,6 +99,12 @@ export default class Items {
     }
 
     public removeKey(key: string) {
+        if (!this.hasKey(key)) {
+            return;
+        }
+
+        const item = this.items[key];
+        item.prepareForRemoval();
         delete this.items[key];
         this.broadcast(Listenable.remove, key);
     }
@@ -142,7 +148,18 @@ export default class Items {
         });
     }
 
-    protected itemList(): Message[] {
+    public tallyByGroup() {
+        return Object.keys(this.items).reduce((accumulator: { [key: string]: number; }, key) => {
+            const group = this.items[key].group;
+            if (group in accumulator === false) {
+                accumulator[group] = 0;
+            }
+            accumulator[group] += 1;
+            return accumulator;
+        }, {});
+    }
+
+    public itemList(): Message[] {
         const messages = Object.keys(this.items).map((k: string) => this.items[k]);
 
         return messages.sort((a, b) => {
