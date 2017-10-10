@@ -58,19 +58,6 @@ A:hover {
     padding: 0;
 }
 
-.box-reset {
-    margin: 0;
-    padding: 0;
-}
-
-.left {
-    float: left;
-}
-
-.right {
-    float: right;
-}
-
 .status-bar {
     text-transform: uppercase;
     color: #fff;
@@ -90,7 +77,6 @@ FOOTER {
     A {
         color: white;
         display: inline-block;
-        line-height: 1;
         margin: 1em;
     }
 
@@ -121,27 +107,6 @@ FOOTER {
     }
 }
 
-.message.extended {
-    padding-right: 8em;
-}
-
-.message.stuck {
-    opacity: 0.3;
-
-    .options {
-        display: none;
-    }
-}
-
-.message.linked:hover {
-    cursor: pointer;
-}
-
-.message:hover {
-    cursor: default;
-    text-decoration: none;
-}
-
 .message {
     min-height: 6em;
     box-sizing: border-box;
@@ -157,9 +122,27 @@ FOOTER {
     page-break-inside: avoid;
     break-inside: avoid;
     vertical-align: top;
+    line-height: 1.5;
 
-    H1 {
-        color: inherit;
+    &:hover {
+        cursor: default;
+        text-decoration: none;
+    }
+
+    &.extended {
+        padding-right: 8em;
+    }
+
+    &.stuck {
+        opacity: 0.3;
+
+        .options {
+            display: none;
+        }
+    }
+
+    &.linked:hover {
+        cursor: pointer;
     }
 
     .options {
@@ -195,9 +178,11 @@ FOOTER {
     }
 
     H1 {
+        color: inherit;
         font-size: 1.1em;
         font-weight: bold;
-        .box-reset;
+        margin: 0;
+        padding: 0;
 
         A {
             color: black;
@@ -205,8 +190,8 @@ FOOTER {
     }
 
     P {
-        .box-reset;
-        line-height: 1.4;
+        margin: 0;
+        padding: 0;
     }
 
     TIME {
@@ -287,7 +272,6 @@ FOOTER {
 }
 
 H1 {
-    line-height: 1;
     font-size: 2em;
     margin-bottom: 1em;
 }
