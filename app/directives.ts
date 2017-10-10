@@ -3,7 +3,7 @@ import './templates/bottomnav.html';
 
 const appDirectives = angular.module('appDirectives', []);
 
-interface INavScope extends ng.IScope {
+interface NavScope extends ng.IScope {
     hideClearAll: boolean;
     hideUndo: boolean;
     queueSize: number;
@@ -19,32 +19,32 @@ interface INavScope extends ng.IScope {
     undo(): void;
 }
 
-interface IService {
+interface Service {
     key: string;
     value: string;
 }
 
-interface IMessageOptionsScope extends ng.IScope {
+interface MessageOptionsScope extends ng.IScope {
     hidden: boolean;
     publicId: string;
     clear(): void;
 }
 
-interface IStatusBarScope extends ng.IScope {
+interface StatusBarScope extends ng.IScope {
     disconnected: boolean;
     message: string;
 }
 
-interface IShortcutScope extends ng.IScope {
+interface ShortcutScope extends ng.IScope {
     summaryVisible: boolean;
-    shortcuts: IShortcutMap;
+    shortcuts: ShortcutMap;
 }
 
-interface IShortcutMap {
-    [index: number]: IShortcut;
+interface ShortcutMap {
+    [index: number]: Shortcut;
 }
 
-interface IShortcut {
+interface Shortcut {
     description: string;
     key: string | number;
     label: string;
@@ -73,7 +73,7 @@ appDirectives.directive('notifierFocus', [() => {
 appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$document', (MessageList, $rootScope, $document) => {
     'use strict';
 
-    const shortcutMap: IShortcutMap = [];
+    const shortcutMap: ShortcutMap = [];
 
     shortcutMap[67] = {
         action() {
@@ -181,7 +181,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
     };
 
     return {
-        link: (scope: IShortcutScope) => {
+        link: (scope: ShortcutScope) => {
             scope.summaryVisible = false;
             scope.$on('shortcuts:toggle', () => {
                 scope.summaryVisible = !scope.summaryVisible;
@@ -254,7 +254,7 @@ appDirectives.directive('notifierAppcacheReload', ['$window', ($window) => {
 
 appDirectives.directive('notifierStatusBar', ['MessageList', ( MessageList) => {
     return {
-        link(scope: IStatusBarScope) {
+        link(scope: StatusBarScope) {
             scope.$on('connection:change', (_, state, message) => {
                 scope.$evalAsync(() => {
                     scope.message = message || state;
@@ -299,7 +299,7 @@ appDirectives.directive('notifierStatusBar', ['MessageList', ( MessageList) => {
 appDirectives.directive('notifierMessageOptions', ['MessageList', (MessageList) => {
 
     return {
-        link(scope: IMessageOptionsScope) {
+        link(scope: MessageOptionsScope) {
             scope.hidden = false;
             scope.$on('connection:change', (_, state) => {
                 scope.hidden = (state === 'offline' || state === 'disconnected');
@@ -321,7 +321,7 @@ appDirectives.directive('notifierMessageOptions', ['MessageList', (MessageList) 
 appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNotification', 'MessageList', 'User', '$window', '$document', (BrowserNotification, WebhookNotification, MessageList, User, $window, $document) => {
 
     return {
-        link(scope: INavScope) {
+        link(scope: NavScope) {
             scope.queueSize = 0;
 
             scope.hideClearAll = true;
@@ -402,7 +402,7 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNot
                     return;
                 }
 
-                User.getServices((services: IService[]) => {
+                User.getServices((services: Service[]) => {
                     for (const service of services) {
                         scope.state[service.key] = 'active';
                         if (service.key === 'webhook') {
