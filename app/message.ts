@@ -14,6 +14,7 @@ export default class Message {
             const el: JQLite = angular.element('<a></a>');
             el.attr('href', message.url);
             m.domain = (el[0] as HTMLAnchorElement).hostname;
+            m.url = message.url;
         }
 
 

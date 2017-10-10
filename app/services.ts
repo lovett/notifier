@@ -321,7 +321,6 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
         activateNone() {
             store.deactivate();
-            console.log(store.items);
         },
 
         visitLink() {
