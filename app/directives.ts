@@ -110,9 +110,9 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
 
     shortcutMap[191] = {
         action() {
-            $rootScope.$broadcast('shortcuts:toggle');
+            $rootScope.$broadcast('shortcuts', true);
         },
-        description: 'Toggle the shortcut list',
+        description: 'Show the shortcut list',
         key: '?',
         label: '?',
         shiftKey: true,
@@ -121,7 +121,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
     shortcutMap[27] = {
         action() {
             MessageList.focusNone();
-            $rootScope.$broadcast('shortcuts:hide');
+            $rootScope.$broadcast('shortcuts', false);
         },
         description: 'Hide the shortcut list; unfocus all messages',
         key: 'esc',
@@ -132,12 +132,8 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
     return {
         link: (scope: ShortcutScope) => {
             scope.summaryVisible = false;
-            scope.$on('shortcuts:toggle', () => {
-                scope.summaryVisible = !scope.summaryVisible;
-            });
-
-            scope.$on('shortcuts:hide', () => {
-                scope.summaryVisible = false;
+            scope.$on('shortcuts', (_: ng.IAngularEvent, visibility) => {
+                scope.summaryVisible = visibility as boolean;
             });
 
             scope.shortcuts = shortcutMap;

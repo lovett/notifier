@@ -11,12 +11,8 @@ appControllers.controller('MessageController', ['$scope', '$location', 'User', '
     // that the height of the body stays true to the visible content.
     $scope.messageListVisible = true;
 
-    $scope.$on('shortcuts:toggle', () => {
-        $scope.$apply(() => $scope.messageListVisible = !$scope.messageListVisible);
-    });
-
-    $scope.$on('shortcuts:hide', () => {
-        $scope.$apply(() => $scope.messageListVisible = true);
+    $scope.$on('shortcuts', (visibility: boolean) => {
+        $scope.$apply(() => $scope.messageListVisible = visibility);
     });
 
     $scope.$on('queue:change', (_: angular.IAngularEvent, size: number) => {
