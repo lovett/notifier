@@ -279,40 +279,6 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             store.add(Message.fromJson(message));
         },
 
-
-
-    //     filterKeysByMessage(callback: (message: IMessage) => boolean) {
-    //         return messageKeys().filter((key: string) => {
-    //             return callback(messages[key]);
-    //         });
-    //     },
-
-
-    //     map(callback: (message: IMessage) => any) {
-    //         return messageKeys().forEach((key) => {
-    //             const message = messages[key];
-    //             return callback(message);
-    //         });
-    //     },
-
-
-    //     focusedKey(): string|null {
-    //         const focusedKeys = filterKeysByMessage((message) => message.focused);
-    //         if (focusedKeys.length === 0) {
-    //             return null;
-    //         }
-
-    //         return focusedKeys[0];
-    //     },
-
-    //     focusedMessage(): IMessage|null {
-    //         const key = focusedKey();
-    //         if (key) {
-    //             return messages[key];
-    //         }
-    //         return null;
-    //     },
-
         clearFocused() {
             const key = store.activeKey();
             store.activateByStep(1);
