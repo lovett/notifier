@@ -4,8 +4,6 @@ import './templates/bottomnav.html';
 const appDirectives = angular.module('appDirectives', []);
 
 appDirectives.directive('notifierFocus', [() => {
-    'use strict';
-
     return {
         link: (scope, element) => {
             scope.$watch('notifierFocus', (isFocused) => {
@@ -22,8 +20,6 @@ appDirectives.directive('notifierFocus', [() => {
 }]);
 
 appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$document', (MessageList, $rootScope, $document) => {
-    'use strict';
-
     const shortcutMap: ShortcutMap = [];
 
     shortcutMap[67] = {
@@ -168,8 +164,6 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
 }]);
 
 appDirectives.directive('notifierOfflineEvent', ['$window', '$rootScope', ($window, $rootScope) => {
-    'use strict';
-
     return {
         link() {
             const callback = (event: Event) => {
@@ -185,8 +179,6 @@ appDirectives.directive('notifierOfflineEvent', ['$window', '$rootScope', ($wind
 }]);
 
 appDirectives.directive('notifierAppcacheReload', ['$window', ($window) => {
-    'use strict';
-
     return {
         link(_: ng.IScope, element) {
             if (!$window.hasOwnProperty('applicationCache')) {
