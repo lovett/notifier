@@ -78,10 +78,9 @@ interface IMessageList {
     drop(publicIds: string | string[]): void;
     empty(): void;
     fetch(): void;
-    focusNext(): void;
-    focusNone(): void;
-    focusOne(step: number): void;
-    focusPrevious(): void;
+    activateNext(): void;
+    activateNone(): void;
+    activatePrevious(): void;
     purge(): void;
     tallyByGroup(): void;
     unclear(): void;

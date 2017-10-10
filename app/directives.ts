@@ -11,6 +11,8 @@ appDirectives.directive('notifierFocus', [() => {
             scope.$watch('notifierFocus', (isFocused) => {
                 if (isFocused === true) {
                     element[0].focus();
+                } else {
+                    element[0].blur();
                 }
             });
         },
@@ -55,7 +57,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
 
     shortcutMap[74] = {
         action() {
-            MessageList.focusNext();
+            MessageList.activateNext();
         },
         description: 'Move to next message',
         key: 'j',
@@ -64,7 +66,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
 
     shortcutMap[75] = {
         action() {
-            MessageList.focusPrevious();
+            MessageList.activatePrevious();
         },
         description: 'Move to previous message',
         key: 'k',
@@ -111,7 +113,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
 
     shortcutMap[27] = {
         action() {
-            MessageList.focusNone();
+            MessageList.activateNone();
             $rootScope.$broadcast('shortcuts', false);
         },
         description: 'Hide the shortcut list; unfocus all messages',

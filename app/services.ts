@@ -275,12 +275,6 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             return store.keys();
         },
 
-        focusOne(step: number) {
-            store.activateByStep(step);
-            $rootScope.$apply();
-        },
-
-
         add(message: IMessage) {
             store.add(Message.fromJson(message));
         },
@@ -325,8 +319,9 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             store.removeKey(key);
         },
 
-        focusNone() {
+        activateNone() {
             store.deactivate();
+            console.log(store.items);
         },
 
         visitLink() {
@@ -364,12 +359,12 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             });
         },
 
-        focusNext() {
+        activateNext() {
             store.activateByStep(1);
             $rootScope.$apply();
         },
 
-        focusPrevious() {
+        activatePrevious() {
             store.activateByStep(-1);
             $rootScope.$apply();
         },
