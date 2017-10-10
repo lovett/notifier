@@ -32,7 +32,6 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
         },
         description: 'Clear all messages',
         key: 'C',
-        label: '⇧  c',
         shiftKey: true,
     };
 
@@ -42,7 +41,6 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
         },
         description: 'Toggle settings',
         key: 'S',
-        label: '⇧  s',
         shiftKey: true,
     };
 
@@ -52,7 +50,6 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
         },
         description: 'Log out',
         key: 'L',
-        label: '⇧  l',
         shiftKey: true,
     };
 
@@ -62,7 +59,6 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
         },
         description: 'Move to next message',
         key: 'j',
-        label: 'j',
         shiftKey: false,
     };
 
@@ -72,7 +68,6 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
         },
         description: 'Move to previous message',
         key: 'k',
-        label: 'k',
         shiftKey: false,
     };
 
@@ -82,7 +77,6 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
         },
         description: 'Clear active message',
         key: 'x',
-        label: 'x',
         shiftKey: false,
     };
 
@@ -94,7 +88,6 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
         },
         description: 'Undo',
         key: 'Z',
-        label: '⇧  z',
         shiftKey: true,
     };
 
@@ -104,7 +97,6 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
         },
         description: 'Visit the link of the active message',
         key: 'o',
-        label: 'o',
         shiftKey: false,
     };
 
@@ -114,7 +106,6 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
         },
         description: 'Show the shortcut list',
         key: '?',
-        label: '?',
         shiftKey: true,
     };
 
@@ -125,7 +116,6 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
         },
         description: 'Hide the shortcut list; unfocus all messages',
         key: 'esc',
-        label: 'esc',
         shiftKey: false,
     };
 

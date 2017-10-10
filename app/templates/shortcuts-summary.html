@@ -4,8 +4,13 @@
         <h1>Keyboard Shortcuts</h1>
         <table>
             <tbody>
-                <tr ng-repeat="shortcut in shortcuts track by $index" ng-if="shortcut.label">
-                    <td><kbd>{{ ::shortcut.label }}</kbd></td>
+                <tr ng-repeat="shortcut in shortcuts track by $index" ng-if="shortcut.key">
+                    <td>
+                        <kbd>
+                            <span ng-if="shortcut.shiftKey">⇧</span>
+                            {{ ::shortcut.key }}
+                        </kbd>
+                    </td>
                     <td>{{ ::shortcut.description }}</td>
                 </tr>
             </tbody>

@@ -42,7 +42,6 @@ interface ShortcutMap {
 interface Shortcut {
     description: string;
     key: string | number;
-    label: string;
     shiftKey: boolean;
     action(): void;
 }
