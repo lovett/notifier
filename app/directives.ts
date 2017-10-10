@@ -276,7 +276,13 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNot
             };
 
             scope.$on('connection:change', (_, state) => {
-                scope.hideClearAll = scope.queueSize === 0 || state === 'offline' || state === 'disconnected';
+                const hideConditions = [
+                    scope.queueSize === 0,
+                    state === 'offline',
+                    state === 'disconnected',
+                ];
+
+                scope.hideClearAll = hideConditions.indexOf(true) > -1;
             });
 
             scope.$on('queue:change', (_, size) => {
