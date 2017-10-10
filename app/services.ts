@@ -366,10 +366,12 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
         focusNext() {
             store.activateByStep(1);
+            $rootScope.$apply();
         },
 
         focusPrevious() {
             store.activateByStep(-1);
+            $rootScope.$apply();
         },
 
         messages: store.items,
@@ -422,9 +424,6 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                 staleMessages.forEach((message) => {
                     store.remove(message);
                 });
-
-                // messages will be ordered newest first, but if they are added to the queue
-                // sequentially they will end up oldest first
 
                 receivedMessages.forEach((message) => store.add(message));
 

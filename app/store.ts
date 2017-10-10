@@ -21,9 +21,8 @@ export default class Items {
 
     public activate(message: Message) {
         Object.keys(this.items).forEach((key: string) => {
-            this.items[key].active = false;
+            this.items[key].active = (key === message.publicId);
         });
-        message.active = true;
     }
 
     public active(): Message {
@@ -45,30 +44,28 @@ export default class Items {
 
     public activateByStep(step: number) {
         const currentIndex = this.activeIndex();
-        const itemCount = this.size();
+        const lastIndex = this.size() - 1;
         let targetIndex = currentIndex + step;
 
-        if (targetIndex > itemCount) {
-            targetIndex %= itemCount;
+        if (targetIndex > lastIndex) {
+            targetIndex %= this.size();
         }
 
         if (targetIndex < 0) {
-            targetIndex = itemCount - targetIndex;
+            targetIndex = this.size() - Math.abs(targetIndex);
         }
 
         this.activateByIndex(targetIndex);
     }
 
     public activeIndex() {
-        let activeIndex = 0;
-
         for (const key of Object.keys(this.items)) {
             if (this.items[key].active) {
-                activeIndex = this.indexOfKey(key);
+                return this.indexOfKey(key);
             }
         }
 
-        return activeIndex;
+        return -1;
     }
 
     public activeKey() {
@@ -82,11 +79,9 @@ export default class Items {
     }
 
     public deactivate() {
-        const messages = this.itemList();
-
-        messages.forEach((message) => {
-            message.active = false;
-        });
+        for (const key of Object.keys(this.items)) {
+            this.items[key].active = false;
+        }
     }
 
     public remove(message: Message) {
@@ -163,7 +158,7 @@ export default class Items {
         const messages = Object.keys(this.items).map((k: string) => this.items[k]);
 
         return messages.sort((a, b) => {
-            return a.received.getTime() - b.received.getTime();
+            return b.received.getTime() - a.received.getTime();
         });
     }
 
