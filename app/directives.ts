@@ -35,10 +35,6 @@ interface IStatusBarScope extends ng.IScope {
     message: string;
 }
 
-interface IAppcacheReloadScope extends ng.IScope {
-    fullReload(): void;
-}
-
 interface IShortcutScope extends ng.IScope {
     summaryVisible: boolean;
     shortcuts: IShortcutMap;
@@ -237,31 +233,18 @@ appDirectives.directive('notifierOfflineEvent', ['$window', '$rootScope', ($wind
     };
 }]);
 
-appDirectives.directive('notifierAppcacheReload', ['$window', '$interval', '$rootScope', '$log', ($window, $interval, $rootScope, $log) => {
+appDirectives.directive('notifierAppcacheReload', ['$window', ($window) => {
     'use strict';
 
     return {
-        link(scope: IAppcacheReloadScope, element) {
+        link(_: ng.IScope, element) {
             if (!$window.hasOwnProperty('applicationCache')) {
                 element.addClass('appcache-nope');
                 return;
             }
 
             $window.applicationCache.addEventListener('updateready', () => {
-                $log.info('An appcache update is ready, requesting full reload');
                 $window.location.reload();
-                scope.fullReload();
-            });
-
-            $window.applicationCache.addEventListener('error', () => {
-                const count = 5;
-
-                $interval((iteration: number) => {
-                    $rootScope.$broadcast('connection:change', 'disconnected', 'The server is unavailable, retrying in ' + (count - iteration));
-                    if (iteration + 1 === count) {
-                        // scope.fullReload();
-                    }
-                }, 1000, count, false);
             });
         },
 
