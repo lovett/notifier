@@ -1,5 +1,7 @@
-import './templates/shortcuts-summary.html';
 import './templates/bottomnav.html';
+import './templates/messageoptions.html';
+import './templates/shortcuts-summary.html';
+import './templates/statusbar.html';
 
 const appDirectives = angular.module('appDirectives', []);
 
@@ -234,8 +236,7 @@ appDirectives.directive('notifierStatusBar', ['MessageList', ( MessageList) => {
         },
 
         restrict: 'E',
-        template: '<div ng-class="{\'status-bar\': true, \'disconnected\': disconnected}">{{ message }}</div>',
-
+        templateUrl: 'templates/statusbar.html',
     };
 }]);
 
@@ -256,7 +257,7 @@ appDirectives.directive('notifierMessageOptions', ['MessageList', (MessageList) 
         scope: {
             publicId: '@',
         },
-        template: '<a ng-href="#" ng-click="clear()" ng-hide="hidden"><span><svg role="img" aria-label="Close icon" class="icon icon-close"><use xlink:href="#icon-close"></use></svg></span></a>',
+        templateUrl: 'templates/messageoptions.html',
     };
 }]);
 
