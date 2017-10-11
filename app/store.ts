@@ -104,8 +104,9 @@ export default class Items {
         this.broadcast(Listenable.remove, key);
     }
 
-    public clear() {
+    public reset() {
         this.items = {};
+        this.listeners = [];
     }
 
     public keys() {

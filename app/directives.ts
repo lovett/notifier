@@ -29,7 +29,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
     shortcutMap[67] = {
         action() {
             if (MessageList.messages.length > 0) {
-                MessageList.purge();
+                MessageList.clearAll();
             }
         },
         description: 'Clear all messages',
@@ -238,7 +238,7 @@ appDirectives.directive('notifierMessageOptions', ['MessageList', (MessageList) 
             });
 
             scope.clear = () => {
-                MessageList.clear(scope.publicId);
+                MessageList.clearById(scope.publicId);
             };
         },
         restrict: 'A',
@@ -260,7 +260,7 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNot
             scope.hideUndo = true;
 
             scope.clearAll = () => {
-                MessageList.purge();
+                MessageList.clearAll();
             };
 
             scope.undo = () => {

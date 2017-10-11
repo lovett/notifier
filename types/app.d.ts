@@ -1,3 +1,5 @@
+import Message from '../app/message';
+
 interface NavScope extends ng.IScope {
     hideClearAll: boolean;
     hideUndo: boolean;
@@ -71,19 +73,19 @@ interface IBrowserNotificationService {
 }
 
 interface IMessageList {
-    add(message: IMessage): void;
-    canUnclear(): boolean;
-    clear(publicIds: string | string[]): void;
-    clearFocused(): void;
-    drop(publicIds: string | string[]): void;
-    empty(): void;
-    fetch(): void;
     activateNext(): void;
     activateNone(): void;
     activatePrevious(): void;
+    add(message: IMessage): void;
+    canUnclear(): boolean;
+    clear(messages: Message[]): void;
+    clearById(id: string): void;
+    clearFocused(): void;
+    drop(publicIds: string | string[]): void;
+    fetch(): void;
     purge(): void;
+    reset(): void;
     tallyByGroup(): void;
     unclear(): void;
     visitLink(): void;
-
 }

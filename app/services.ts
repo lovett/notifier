@@ -297,31 +297,39 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             }
         },
 
-        clear(publicIds: string | string[]) {
-            let idList: string[] = [];
-
-            if (typeof publicIds === 'string') {
-                idList = [publicIds];
-            } else {
-                idList = publicIds;
+        clear(messages: Message[]) {
+            for (const message of messages) {
+                message.state = 'clearing';
             }
 
-            for (const publicId of idList) {
-                store.items[publicId].state = 'clearing';
-            }
+            const publicIds = messages.map((message) => message.publicId);
 
             $http({
                 data: { publicId: publicIds },
                 method: 'POST',
                 url: 'message/clear',
             }).then(() => {
-                removedIds.concat(idList);
+                removedIds.concat(publicIds);
             }).catch(() => {
-                for (const publicId of publicIds) {
-                    store.items[publicId].state = 'stuck';
+                for (const message of messages) {
+                    message.state = 'stuck';
                 }
+
                 $rootScope.$broadcast('connection:change', 'error', 'The message could not be cleared.');
             });
+        },
+
+        clearAll() {
+            this.clear(store.itemList());
+        },
+
+        clearById(publicId: string) {
+            const message = store.message(publicId);
+            this.clear([message]);
+        },
+
+        reset() {
+            store.reset();
         },
 
         activateNext() {
@@ -393,14 +401,6 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                     $location.path('login');
                 }
             }).finally(() => lastFetched = now);
-        },
-
-        purge() {
-            store.clear();
-        },
-
-        empty() {
-            store.clear();
         },
 
         tallyByGroup() {
