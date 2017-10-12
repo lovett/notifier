@@ -19,6 +19,7 @@
     "no-extra-semi": true,
     "no-invalid-this": false,
     "no-multi-spaces": true,
+    "no-namespace": [true, "allow-declarations"],
     "no-script-url": true,
     "no-unused-expression": true,
     "no-unused-new": true,

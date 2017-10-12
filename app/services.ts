@@ -12,7 +12,7 @@ appServices.factory('User', ['$window', '$http', '$cookies', ($window: angular.I
     }
 
     return {
-        getServices(callback: IServiceCallback) {
+        getServices(callback: app.ServiceCallback) {
             $http({
                 method: 'GET',
                 url: 'services',
@@ -25,9 +25,11 @@ appServices.factory('User', ['$window', '$http', '$cookies', ($window: angular.I
 
         isLoggedIn,
 
-        setService(service: IService, callback: IServiceCallback) {
+        setWebhook(webhook: string, callback: app.WebhookSubmissionCallback) {
             $http({
-                data: service,
+                data: {
+                    webhook,
+                },
                 method: 'POST',
                 url: 'services',
             }).then(() => {
@@ -37,7 +39,7 @@ appServices.factory('User', ['$window', '$http', '$cookies', ($window: angular.I
             });
         },
 
-        authorize(service: IService, callback: IServiceCallback) {
+        authorize(service: app.Service, callback: app.ServiceCallback) {
             $http({
                 method: 'GET',
                 params: {
@@ -45,12 +47,12 @@ appServices.factory('User', ['$window', '$http', '$cookies', ($window: angular.I
                     protocol: $window.location.protocol,
                 },
                 url: 'authorize/' + service + '/start',
-            }).then((res: angular.IHttpResponse<IService>) => {
+            }).then((res: angular.IHttpResponse<app.AuthRedirect>) => {
                 callback(res.data.url);
             });
         },
 
-        deauthorize(service: IService, callback: IServiceCallback) {
+        deauthorize(service: app.Service, callback: app.ServiceCallback) {
             $http({
                 data: {service},
                 method: 'POST',
@@ -79,7 +81,7 @@ appServices.factory('User', ['$window', '$http', '$cookies', ($window: angular.I
     };
 }]);
 
-appServices.factory('PushClient', ['$rootScope', '$log', '$filter', 'MessageList', ($rootScope: angular.IRootScopeService, $log: angular.ILogService, $filter: angular.IFilterService, MessageList: IMessageList) => {
+appServices.factory('PushClient', ['$rootScope', '$log', '$filter', 'MessageList', ($rootScope: angular.IRootScopeService, $log: angular.ILogService, $filter: angular.IFilterService, MessageList: app.MessageList) => {
 
     const pushWorker = new Worker('worker.js');
 
@@ -121,18 +123,17 @@ appServices.factory('PushClient', ['$rootScope', '$log', '$filter', 'MessageList
     };
 }]);
 
-appServices.service('WebhookNotification', ['$window', '$rootScope', 'User', ($window: angular.IWindowService, $rootScope: angular.IRootScopeService, User: IUserService) => {
+appServices.service('WebhookNotification', ['$window', '$rootScope', 'User', ($window: angular.IWindowService, $rootScope: angular.IRootScopeService, User: app.UserService) => {
     const enum States {
         active,
         inactive,
     }
 
-    let url: string;
     let state: States;
 
     return {
-        enable() {
-            let hookUrl: string|null = $window.prompt('URL:', url || '');
+        enable(currentUrl: string|null) {
+            let hookUrl: string|null = $window.prompt('URL:', currentUrl || '');
 
             if (hookUrl === null) {
                 return;
@@ -145,10 +146,8 @@ appServices.service('WebhookNotification', ['$window', '$rootScope', 'User', ($w
                 return;
             }
 
-            const webhookService: IService = {webhook: hookUrl};
-
-            User.setService(webhookService, (result) => {
-                state = (url && result === true) ? States.active : States.inactive;
+            User.setWebhook(hookUrl, (successful: boolean) => {
+                state = (successful === true) ? States.active : States.inactive;
                 $rootScope.$broadcast('settings:webhookNotifications', state);
             });
         },
@@ -158,7 +157,7 @@ appServices.service('WebhookNotification', ['$window', '$rootScope', 'User', ($w
 appServices.service('BrowserNotification', ['$window', '$rootScope', ($window: angular.IWindowService, $rootScope: angular.IRootScopeService) => {
     let state: string;
 
-    function send(message: IMessage, ignoreFocus: boolean) {
+    function send(message: app.Message, ignoreFocus: boolean) {
         let messageBody;
 
         if ($window.document.hasFocus() && ignoreFocus !== true) {
@@ -219,7 +218,12 @@ via the browser's Notifications settings`);
     return {state, enable, send};
 }]);
 
-appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$interval', '$location', 'BrowserNotification', ($rootScope: angular.IRootScopeService, $http: angular.IHttpService, $log: angular.ILogService, $window: angular.IWindowService, $interval: angular.IIntervalService, $location: angular.ILocationService, BrowserNotification: IBrowserNotificationService) => {
+appServices.factory(
+    'MessageList',
+    ['$rootScope', '$http', '$log', '$window', '$interval', '$location', 'BrowserNotification',
+     ($rootScope: angular.IRootScopeService, $http: angular.IHttpService, $log: angular.ILogService,
+      $window: angular.IWindowService, $interval: angular.IIntervalService, $location: angular.ILocationService,
+      BrowserNotification: app.BrowserNotificationService) => {
 
     const store = new Store();
 
@@ -275,7 +279,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             return store.keys();
         },
 
-        add(message: IMessage) {
+        add(message: app.Message) {
             store.add(Message.fromJson(message));
         },
 
@@ -369,7 +373,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
                 return;
             }
 
-            $http({method: 'GET', url}).then((res: angular.IHttpResponse<IArchiveResponse>) => {
+            $http({method: 'GET', url}).then((res: angular.IHttpResponse<app.ArchiveResponse>) => {
                 let receivedMessages: Message[] = [];
                 let staleMessages: Message[] = [];
 
@@ -395,7 +399,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
                 receivedMessages.forEach((message) => store.add(message));
 
-                //$timeout(() => $rootScope.$broadcast('queue:change', store.size()));
+                // $timeout(() => $rootScope.$broadcast('queue:change', store.size()));
             }).catch((res) => {
                 if (res.status === 401) {
                     $location.path('login');

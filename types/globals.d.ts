@@ -19,8 +19,3 @@ interface IExtendedMessage extends IMessage {
     days_ago?: number;
     focused?: boolean;
 }
-
-
-interface IArchiveResponse {
-    messages: IMessage[];
-}

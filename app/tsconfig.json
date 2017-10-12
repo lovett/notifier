@@ -6,10 +6,5 @@
     ],
     "outDir": "../public/app"
   },
-  "extends": "../tsconfig.json",
-  "include": [
-    "**/*.ts",
-    "../types/*.d.ts"
-  ]
-
+  "extends": "../tsconfig.json"
 }

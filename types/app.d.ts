@@ -16,11 +16,6 @@ interface NavScope extends ng.IScope {
     undo(): void;
 }
 
-interface Service {
-    key: string;
-    value: string;
-}
-
 interface MessageOptionsScope extends ng.IScope {
     hidden: boolean;
     publicId: string;
@@ -52,40 +47,7 @@ interface IStringMap {
     [index: string]: string;
 }
 
-interface IService {
-    webhook?: string;
-    url?: string;
-}
-
-type IServiceCallback = (services: any) => void;
-
-interface IUserService {
-    getServices(callback: IServiceCallback): void;
-    setService(service: IService, callback: IServiceCallback): void;
-    authorize(service: string, callback: IServiceCallback): void;
-    deauthorize(service: string, callback: IServiceCallback): void;
-    logIn(form: angular.IFormController): void;
-    logOut(): void;
-}
 
 interface IBrowserNotificationService {
     send: any;
-}
-
-interface IMessageList {
-    activateNext(): void;
-    activateNone(): void;
-    activatePrevious(): void;
-    add(message: IMessage): void;
-    canUnclear(): boolean;
-    clear(messages: Message[]): void;
-    clearById(id: string): void;
-    clearFocused(): void;
-    drop(publicIds: string | string[]): void;
-    fetch(): void;
-    purge(): void;
-    reset(): void;
-    tallyByGroup(): void;
-    unclear(): void;
-    visitLink(): void;
 }
