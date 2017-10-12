@@ -1,5 +1,5 @@
 export default class Message {
-    public static fromJson(message: app.RawMessage) {
+    public static fromRaw(message: app.RawMessage) {
         const m = new Message();
         const startOfToday = (new Date()).setHours(0, 0, 0, 0);
         const now = new Date();
@@ -70,5 +70,22 @@ export default class Message {
         if (this.browserNotification) {
             this.browserNotification.close();
         }
+    }
+
+    public asBrowserNotification(): Notification {
+        let body: string = this.body || '';
+
+        // Truncation avoids unwanted whitespace in Chrome
+        if (body.length > 75) {
+            body = body.substring(0, 75) + '…';
+        }
+
+        const opts: NotificationOptions = {
+            body,
+            icon: 'favicon/favicon.png',
+            tag: this.publicId,
+        };
+
+        return new Notification(this.title, opts);
     }
 }

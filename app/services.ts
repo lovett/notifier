@@ -158,24 +158,11 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', ($window: a
     let state: string;
 
     function send(message: app.Message, ignoreFocus: boolean) {
-        let messageBody;
-
         if ($window.document.hasFocus() && ignoreFocus !== true) {
             return;
         }
 
-        // Truncating the message body avoids unwanted whitespace in Chrome
-        messageBody = message.body || '';
-
-        if (messageBody.length > 75) {
-            messageBody = messageBody.substring(0, 75) + '…';
-        }
-
-        return new Notification(message.title, {
-            body: messageBody,
-            icon: 'favicon/favicon.png',
-            tag: message.publicId,
-        });
+        return message.asBrowserNotification();
     }
 
     function enable() {
@@ -280,7 +267,7 @@ appServices.factory(
         },
 
         add(message: app.RawMessage) {
-            store.add(Message.fromJson(message));
+            store.add(Message.fromRaw(message));
         },
 
         clearFocused() {
@@ -388,7 +375,7 @@ appServices.factory(
                 }
 
                 receivedMessages = res.data.messages.map((message) => {
-                    return Message.fromJson(message);
+                    return Message.fromRaw(message);
                 });
 
                 staleMessages = store.allExcept(receivedMessages);

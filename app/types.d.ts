@@ -15,7 +15,7 @@ declare namespace app {
     }
 
     class Message {
-        public static fromJson(message: app.RawMessage): Message;
+        public static fromRaw(message: app.RawMessage): Message;
         public active: boolean;
         public title: string;
         public body?: string;
@@ -33,6 +33,7 @@ declare namespace app {
         public state?: string;
         constructor();
         public prepareForRemoval(): void;
+        public asBrowserNotification(): Notification;
     }
 
     interface Service {
