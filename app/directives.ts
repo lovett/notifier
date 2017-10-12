@@ -24,7 +24,7 @@ appDirectives.directive('notifierFocus', [() => {
 }]);
 
 appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$document', (MessageList, $rootScope, $document) => {
-    const shortcutMap: ShortcutMap = [];
+    const shortcutMap: app.ShortcutMap = [];
 
     shortcutMap[67] = {
         action() {
@@ -122,7 +122,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
     };
 
     return {
-        link: (scope: ShortcutScope) => {
+        link: (scope: app.ShortcutScope) => {
             scope.summaryVisible = false;
             scope.$on('shortcuts', (_: ng.IAngularEvent, visibility) => {
                 scope.summaryVisible = visibility as boolean;
@@ -187,7 +187,7 @@ appDirectives.directive('notifierAppcacheReload', ['$window', ($window) => {
 
 appDirectives.directive('notifierStatusBar', ['MessageList', ( MessageList) => {
     return {
-        link(scope: StatusBarScope) {
+        link(scope: app.StatusBarScope) {
             scope.$on('connection:change', (_, state, message) => {
                 scope.$evalAsync(() => {
                     scope.message = message || state;
@@ -231,7 +231,7 @@ appDirectives.directive('notifierStatusBar', ['MessageList', ( MessageList) => {
 appDirectives.directive('notifierMessageOptions', ['MessageList', (MessageList) => {
 
     return {
-        link(scope: MessageOptionsScope) {
+        link(scope: app.MessageOptionsScope) {
             scope.hidden = false;
             scope.$on('connection:change', (_, state) => {
                 scope.hidden = (state === 'offline' || state === 'disconnected');
@@ -253,7 +253,7 @@ appDirectives.directive('notifierMessageOptions', ['MessageList', (MessageList) 
 appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNotification', 'MessageList', 'User', '$window', '$document', (BrowserNotification, WebhookNotification, MessageList, User, $window, $document) => {
 
     return {
-        link(scope: NavScope) {
+        link(scope: app.NavScope) {
             scope.queueSize = 0;
 
             scope.hideClearAll = true;
@@ -313,7 +313,7 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNot
                 }
 
                 if (service === 'webhook') {
-                    WebhookNotification.enable();
+                    WebhookNotification.enable(scope.webhookUrl);
                 }
             };
 
@@ -340,16 +340,18 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNot
                     return;
                 }
 
-                User.getServices((services: Service[]) => {
+                User.getServices((services: app.Service[]) => {
                     for (const service of services) {
                         scope.state[service.key] = 'active';
                         if (service.key === 'webhook') {
-                            WebhookNotification.url = service.value;
+                            scope.webhookUrl = service.value;
                         }
                     }
                     $window.scrollTo(0, $document[0].body.clientHeight);
                 });
             };
+
+            scope.webhookUrl = '';
 
             scope.logOut = () => {
                 scope.$broadcast('settings:logout');

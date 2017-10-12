@@ -1,12 +1,11 @@
 export default class Message {
-    public static fromJson(message: IMessage) {
+    public static fromJson(message: app.RawMessage) {
         const m = new Message();
         const startOfToday = (new Date()).setHours(0, 0, 0, 0);
         const now = new Date();
         const oneDayMilliseconds = 86400000;
 
         m.title = message.title;
-        m.active = false;
         m.group = message.group;
         m.publicId = message.publicId;
 
@@ -17,24 +16,20 @@ export default class Message {
             m.url = message.url;
         }
 
-
-        m.expired = false;
-        m.expire_days = 0;
-
         if (message.expiresAt) {
             const expiresAtDate: Date = new Date(message.expiresAt);
 
             m.expired = (expiresAtDate < now);
-            m.expire_days = (new Date(message.expiresAt)).setHours(0, 0, 0, 0);
-            m.expire_days -= startOfToday;
-            m.expire_days /= oneDayMilliseconds;
+            m.expireDays = (new Date(message.expiresAt)).setHours(0, 0, 0, 0);
+            m.expireDays -= startOfToday;
+            m.expireDays /= oneDayMilliseconds;
         }
 
         m.received = new Date(message.received);
 
-        m.days_ago = startOfToday;
-        m.days_ago -= (new Date(m.received.valueOf())).setHours(0, 0, 0, 0);
-        m.days_ago /= oneDayMilliseconds;
+        m.daysAgo = startOfToday;
+        m.daysAgo -= (new Date(m.received.valueOf())).setHours(0, 0, 0, 0);
+        m.daysAgo /= oneDayMilliseconds;
 
         if (message.body) {
             m.body = message.body.replace(/\n/g, '<br/>');
@@ -59,16 +54,21 @@ export default class Message {
     public url?: string;
     public domain?: string;
     public expired: boolean;
-    public expire_days: number;
-    public days_ago: number;
+    public expireDays: number;
+    public daysAgo: number;
     public badge?: string;
     public browserNotification: any;
     public state?: string;
+
+    constructor() {
+        this.expired = false;
+        this.expireDays = 0;
+        this.active = false;
+    }
 
     public prepareForRemoval() {
         if (this.browserNotification) {
             this.browserNotification.close();
         }
     }
-
 }

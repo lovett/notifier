@@ -279,7 +279,7 @@ appServices.factory(
             return store.keys();
         },
 
-        add(message: app.Message) {
+        add(message: app.RawMessage) {
             store.add(Message.fromJson(message));
         },
 

@@ -3,16 +3,36 @@ declare namespace app {
 
     type WebhookSubmissionCallback = (successfuly: boolean) => void;
 
+    interface RawMessage {
+        title: string;
+        body?: string;
+        url?: string;
+        publicId: string;
+        group: string;
+        received: string;
+        expiresAt?: string;
+        stage: string;
+    }
+
     class Message {
+        public static fromJson(message: app.RawMessage): Message;
+        public active: boolean;
+        public title: string;
         public body?: string;
-        public expiresAt?: string;
         public group: string;
         public publicId: string;
-        public received: string;
-        public stage: string;
-        public title: string;
+        public received: Date;
         public url?: string;
+        public domain?: string;
+        public expired: boolean;
+        public expireDays: number;
+        public expiresAt?: string;
+        public daysAgo: number;
+        public badge?: string;
+        public browserNotification: any;
+        public state?: string;
         constructor();
+        public prepareForRemoval(): void;
     }
 
     interface Service {
@@ -57,6 +77,55 @@ declare namespace app {
     }
 
     interface ArchiveResponse {
-        messages: Message[];
+        messages: RawMessage[];
     }
+
+    interface ShortcutMap {
+        [index: number]: Shortcut;
+    }
+
+    interface Shortcut {
+        description: string;
+        key: string | number;
+        shiftKey: boolean;
+        action(): void;
+    }
+
+    interface MessageOptionsScope extends ng.IScope {
+        hidden: boolean;
+        publicId: string;
+        clear(): void;
+    }
+
+    interface StatusBarScope extends ng.IScope {
+        disconnected: boolean;
+        message: string;
+    }
+
+    interface ShortcutScope extends ng.IScope {
+        summaryVisible: boolean;
+        shortcuts: ShortcutMap;
+    }
+
+    interface NavScope extends ng.IScope {
+        hideClearAll: boolean;
+        hideUndo: boolean;
+        queueSize: number;
+        serviceProps: object;
+        settingsVisible: boolean;
+        state: StringMap;
+        enable(service: string): void;
+        clearAll(): void;
+        logOut(): void;
+        settings(state: boolean): void;
+        toggle(service: string): void;
+        undo(): void;
+        webhookUrl?: string;
+    }
+
+    interface StringMap {
+        [index: string]: string;
+    }
+
+
 }
