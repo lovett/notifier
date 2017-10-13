@@ -205,12 +205,7 @@ via the browser's Notifications settings`);
     return {state, enable, send};
 }]);
 
-appServices.factory(
-    'MessageList',
-    ['$rootScope', '$http', '$log', '$window', '$interval', '$location', 'BrowserNotification',
-     ($rootScope: angular.IRootScopeService, $http: angular.IHttpService, $log: angular.ILogService,
-      $window: angular.IWindowService, $interval: angular.IIntervalService, $location: angular.ILocationService,
-      BrowserNotification: app.BrowserNotificationService) => {
+appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$location', 'BrowserNotification', ($rootScope: angular.IRootScopeService, $http: angular.IHttpService, $log: angular.ILogService, $window: angular.IWindowService, $location: angular.ILocationService, BrowserNotification: app.BrowserNotificationService) => {
 
     const store = new Store();
 
@@ -223,6 +218,11 @@ appServices.factory(
         });
     });
 
+    store.onRefresh((_) => {
+        $rootScope.$apply();
+        console.log('applied refresh');
+    });
+
     store.onRemove((_: string) => {
         $rootScope.$broadcast('queue:change', store.size());
     });
@@ -230,28 +230,6 @@ appServices.factory(
     const removedIds: string[] = [];
 
     let lastFetched: Date = new Date(0);
-
-    $interval(() => {
-
-        // const now = new Date();
-        // const today = new Date();
-        // today.setHours(0, 0, 0, 0);
-
-        // for (let message of store.itemList()) {
-        //     const oneDayMilliseconds = 86400000;
-        //     const message = messages[key];
-        //     const receivedDay = message.received;
-        //     receivedDay.setHours(0, 0, 0, 0);
-        //     message.days_ago = Math.floor((today.getTime() - receivedDay.getTime()) / oneDayMilliseconds);
-
-        //     if (message.expired) {
-        //         clear(message.publicId);
-        //     } else if (message.expiresAt) {
-        //         message.expired = new Date(message.expiresAt) < now;
-        //     }
-
-        // }
-    }, 1000 * 60);
 
     return {
         count() {
@@ -385,8 +363,6 @@ appServices.factory(
                 });
 
                 receivedMessages.forEach((message) => store.add(message));
-
-                // $timeout(() => $rootScope.$broadcast('queue:change', store.size()));
             }).catch((res) => {
                 if (res.status === 401) {
                     $location.path('login');

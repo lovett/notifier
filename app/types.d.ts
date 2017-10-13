@@ -24,16 +24,20 @@ declare namespace app {
         public received: Date;
         public url?: string;
         public domain?: string;
-        public expired: boolean;
-        public expireDays: number;
-        public expiresAt?: string;
-        public daysAgo: number;
+        public expiresAt?: Date;
+        public minutesRemaining?: number;
         public badge?: string;
         public browserNotification: any;
         public state?: string;
         constructor();
         public prepareForRemoval(): void;
         public asBrowserNotification(): Notification;
+        public isExpired(): boolean;
+        public isExtended(): boolean;
+        public refresh(): boolean;
+        public setUrl(value?: string): void;
+        public setExpiration(value?: string): void;
+        protected calculateMinutesRemaining(): void;
     }
 
     interface Service {

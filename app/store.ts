@@ -1,15 +1,23 @@
 import Message from './message';
 
 enum Listenable {
-    add, remove,
+    add, remove, refresh,
 }
 
-type ListenerCallback = (id: string) => void;
+type ListenerCallback = (id?: string) => void;
 
-export default class Items {
+export default class Store {
     public items: { [index: string]: Message } = {};
 
-    private listeners: Array<[Listenable, (id: string) => void]> = [];
+    private listeners: Array<[Listenable, (id?: string) => void]> = [];
+
+    private timer: number;
+
+    public constructor() {
+        this.timer = window.setInterval(() => {
+            this.refresh();
+        }, 1000 * 60);
+    }
 
     public onAdd(callback: ListenerCallback) {
         this.on(Listenable.add, callback);
@@ -17,6 +25,10 @@ export default class Items {
 
     public onRemove(callback: ListenerCallback) {
         this.on(Listenable.remove, callback);
+    }
+
+    public onRefresh(callback: ListenerCallback) {
+        this.on(Listenable.refresh, callback);
     }
 
     public activate(message: Message) {
@@ -185,11 +197,26 @@ export default class Items {
         this.listeners.push([event, callback]);
     }
 
-    protected broadcast(event: Listenable, id: string) {
+    protected broadcast(event: Listenable, id?: string) {
         this.listeners.forEach((listener) => {
             if (listener[0] === event) {
                 listener[1](id);
             }
         });
+    }
+
+    protected refresh() {
+        let changed: boolean = false;
+        Object.keys(this.items).forEach((key: string) => {
+            const result = this.items[key].refresh();
+
+            if (changed === false && result === true) {
+                changed = true;
+            }
+        });
+
+        if (changed) {
+            this.broadcast(Listenable.refresh);
+        }
     }
 }

@@ -6,7 +6,16 @@
 
     <div class="growable">
         <div ng-show="messageListVisible" ng-class="{columns: queue.messages.length > 1}">
-            <a ng-href="{{message.url}}" rel="noreferrer" target="_blank" class="message {{message.badge}}" ng-class="{linked: message.url, expired: message.expired, focused: message.active, extended: message.extended, stuck: message.state == 'stuck', hidden: message.state == 'clearing'}" ng-repeat="message in queue.messages" ng-swipe-left="message.extended = true" ng-swipe-right="message.extended = false" notifier-focus="message.active" tabindex="0">
+            <a ng-href="{{message.url}}"
+               rel="noreferrer"
+               target="_blank"
+               class="message {{message.badge}}"
+               ng-class="{linked: message.url, expired: message.isExpired(), focused: message.active, extended: message.extended, stuck: message.state == 'stuck', hidden: message.state == 'clearing'}"
+               ng-repeat="message in queue.messages"
+               ng-swipe-left="message.extended = true"
+               ng-swipe-right="message.extended = false"
+               notifier-focus="message.active"
+               tabindex="0">
 
                 <div class="badge"></div>
 
@@ -15,19 +24,10 @@
                         <span>{{message.title}}</span>
                     </h1>
                     <time datetime="{{::message.received | date:'yyyy-MM-ddTHH:mmZ'}}">
-                        {{::message.received | date:'h:mm a'}}
-                        <span ng-if="message.days_ago == 0">today</span>
-                        <span ng-if="message.days_ago == 1">yesterday</span>
-                        <span ng-if="message.days_ago == -1">tomorrow</span>
-                        <span ng-if="message.days_ago > 1 || message.days_ago < -1">{{ message.received | date: 'EEEE MMMM d' }}</span>
+                        {{ message.received | reldate }}
                     </time>
                     <p class="expiration" ng-if="message.expiresAt">
-                        Expires: {{ message.expiresAt | date: 'h:mm a' }}
-                        <span ng-if="message.expire_days == 0">today</span>
-                        <span ng-if="message.expire_days == 1">tomorrow</span>
-                        <span ng-if="message.expire_days == -1">yesterday</span>
-                        <span ng-if="message.expire_days > 1 || message.expire_days < -1">{{ message.received | date: 'EEEE MMMM d' }}</span>
-
+                        Expires {{ message.expiresAt | reldate: message.minutesRemaining }}
                     </p>
 		    <p class="domain" ng-if="message.domain">{{message.domain}}</p>
                 </header>

@@ -1,35 +1,15 @@
 export default class Message {
     public static fromRaw(message: app.RawMessage) {
         const m = new Message();
-        const startOfToday = (new Date()).setHours(0, 0, 0, 0);
-        const now = new Date();
-        const oneDayMilliseconds = 86400000;
 
         m.title = message.title;
         m.group = message.group;
         m.publicId = message.publicId;
 
-        if (message.url) {
-            const el: JQLite = angular.element('<a></a>');
-            el.attr('href', message.url);
-            m.domain = (el[0] as HTMLAnchorElement).hostname;
-            m.url = message.url;
-        }
-
-        if (message.expiresAt) {
-            const expiresAtDate: Date = new Date(message.expiresAt);
-
-            m.expired = (expiresAtDate < now);
-            m.expireDays = (new Date(message.expiresAt)).setHours(0, 0, 0, 0);
-            m.expireDays -= startOfToday;
-            m.expireDays /= oneDayMilliseconds;
-        }
+        m.setUrl(message.url);
+        m.setExpiration(message.expiresAt);
 
         m.received = new Date(message.received);
-
-        m.daysAgo = startOfToday;
-        m.daysAgo -= (new Date(m.received.valueOf())).setHours(0, 0, 0, 0);
-        m.daysAgo /= oneDayMilliseconds;
 
         if (message.body) {
             m.body = message.body.replace(/\n/g, '<br/>');
@@ -46,6 +26,7 @@ export default class Message {
     }
 
     public active: boolean;
+    public extended: boolean;
     public title: string;
     public body?: string;
     public group: string;
@@ -53,17 +34,20 @@ export default class Message {
     public received: Date;
     public url?: string;
     public domain?: string;
-    public expired: boolean;
-    public expireDays: number;
-    public daysAgo: number;
+    public expiresAt?: Date;
+    public minutesRemaining: number;
     public badge?: string;
     public browserNotification: any;
     public state?: string;
 
     constructor() {
-        this.expired = false;
-        this.expireDays = 0;
         this.active = false;
+    }
+
+    public refresh() {
+        const initialValue = this.minutesRemaining;
+        this.calculateMinutesRemaining();
+        return (this.minutesRemaining !== initialValue);
     }
 
     public prepareForRemoval() {
@@ -87,5 +71,48 @@ export default class Message {
         };
 
         return new Notification(this.title, opts);
+    }
+
+    public isExpired(): boolean {
+        if (this.expiresAt) {
+            return this.expiresAt < new Date();
+        }
+
+        return false;
+    }
+
+    public isExtended(): boolean {
+        return this.extended;
+    }
+
+    public setUrl(value?: string): void {
+        if (!value) {
+            return;
+        }
+
+        const el: JQLite = angular.element('<a></a>');
+        el.attr('href', value);
+        this.domain = (el[0] as HTMLAnchorElement).hostname;
+        this.url = value;
+    }
+
+    public setExpiration(value?: string): void {
+        if (!value) {
+            return;
+        }
+
+        const expirationDate = new Date(value);
+        this.expiresAt = expirationDate;
+        this.calculateMinutesRemaining();
+    }
+
+    protected calculateMinutesRemaining(): void {
+        if (!this.expiresAt) {
+            return;
+        }
+
+        const remaining = this.expiresAt.getTime() - Date.now();
+
+        this.minutesRemaining = Math.ceil(remaining / 1000 / 60);
     }
 }
