@@ -2,6 +2,10 @@ const appControllers = angular.module('appControllers', []);
 
 appControllers.controller('MessageController', ['$scope', '$location', 'User', 'PushClient', 'MessageList', ($scope, $location, User, PushClient, MessageList) => {
 
+    const noMessages = 'No new messages';
+
+    $scope.appMessage = noMessages;
+
     if (!User.isLoggedIn()) {
         $location.path('login');
         return;
@@ -16,7 +20,7 @@ appControllers.controller('MessageController', ['$scope', '$location', 'User', '
     });
 
     $scope.$on('queue:change', (_: angular.IAngularEvent, size: number) => {
-        $scope.appMessage = (size === 0) ? 'No new messages.' : null;
+        $scope.appMessage = (size === 0) ? noMessages : null;
     });
 
     $scope.$on('connection:change', (_: angular.IAngularEvent, state: string) => {
