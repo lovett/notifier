@@ -177,7 +177,7 @@ until [ "$RETRIES" -lt 1 ]; do
                     --data-urlencode "url=$URL"  \
                     --data-urlencode "pushbulletId=$PUSHBULLET_ID" \
                     --data-urlencode "localId=$LOCAL_ID" \
-		    --data-urlencode "expiration=$EXPIRATION" \
+		    --data-urlencode "expiresAt=$EXPIRATION" \
                     "$SERVER/$ENDPOINT" 2>&1 )
     HTTP_CODE=${CURL_OUT##*,}
 

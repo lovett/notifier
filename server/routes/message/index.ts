@@ -1,4 +1,5 @@
 import * as express from 'express';
+import * as dateparser from 'dateparser';
 import publishMessage from '../../helpers/publish-message';
 import { Message, MessageInstance } from '../../../types/server';
 
@@ -19,42 +20,30 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
     });
 
     Object.keys(req.app.locals.Message.rawAttributes).forEach((key: string) => {
-        let fieldName;
-
         if (key === 'id' || key === 'publicId') {
             return;
         }
 
+        if (req.body.hasOwnProperty(key) === false) {
+            return;
+        }
+
+        if (!req.body[key]) {
+            return;
+        }
+
+        if (req.body[key].trim() === '') {
+            return;
+        }
+
         if (key === 'expiresAt') {
-            fieldName = 'expiration';
-        } else {
-            fieldName = key;
-        }
-
-        if (req.body.hasOwnProperty(fieldName) === false) {
-            return;
-        }
-
-        if (!req.body[fieldName]) {
-            return;
-        }
-
-        if (req.body[fieldName].trim() === '') {
-            return;
-        }
-
-        if (fieldName === 'expiration') {
-            return;
-        }
-
-        /*if (fieldName === 'expiration') {
-            parseResult = dateparser.parse(req.body[fieldName]);
+            const parseResult = dateparser.parse(req.body[key]);
             if (parseResult !== null) {
                 message.setDataValue(key, new Date(Date.now() + parseResult.value));
             }
 
             return;
-        }*/
+        }
 
         message.setDataValue(key, req.body[key].trim());
     });

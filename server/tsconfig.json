@@ -12,8 +12,13 @@
   "include": [
     "**/*.ts",
     "../types/server.d.ts",
-    "../types/passport-cookie.d.ts"
+    "../types/passport-cookie.d.ts",
+    "../types/dateparser.d.ts"
   ],
   "exclude": [
+  ],
+  "typeRoots": [
+    "@types",
+    "./types"
   ]
 }
