@@ -23,7 +23,7 @@
     "cookie-parser": "1.4.3",
     "dateparser": "1.0.6",
     "ejs": "2.5.7",
-    "express": "4.16.1",
+    "express": "4.16.2",
     "glob": "7.1.2",
     "morgan": "1.9.0",
     "nconf": "0.8.5",
@@ -34,7 +34,7 @@
     "passport-local": "1.0.0",
     "response-time": "2.3.2",
     "sanitize-html": "1.14.1",
-    "sequelize": "4.13.5",
+    "sequelize": "4.13.10",
     "serve-favicon": "2.4.5",
     "sqlite3": "3.1.13",
     "useragent": "2.2.1",
@@ -53,12 +53,12 @@
     "@types/morgan": "^1.7.33",
     "@types/nconf": "0.0.34",
     "@types/needle": "2.0.2",
-    "@types/node": "8.0.32",
+    "@types/node": "8.0.34",
     "@types/passport": "0.3.4",
     "@types/passport-http": "0.3.2",
     "@types/passport-local": "1.0.31",
     "@types/response-time": "2.3.1",
-    "@types/sanitize-html": "1.13.31",
+    "@types/sanitize-html": "1.14.0",
     "@types/sequelize": "4.0.76",
     "@types/serve-favicon": "2.2.29",
     "@types/useragent": "2.1.1",
@@ -101,6 +101,6 @@
     "ts-node": "3.3.0",
     "tslint": "5.7.0",
     "typescript": "2.5.3",
-    "webpack": "3.6.0"
+    "webpack": "3.7.1"
   }
 }
