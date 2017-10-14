@@ -213,6 +213,11 @@ export default class Store {
             if (changed === false && result === true) {
                 changed = true;
             }
+
+            if (this.items[key].minutesRemaining < 0) {
+                this.removeKey(key);
+            }
+
         });
 
         if (changed) {
