@@ -113,6 +113,6 @@ export default class Message {
 
         const remaining = this.expiresAt.getTime() - Date.now();
 
-        this.minutesRemaining = Math.ceil(remaining / 1000 / 60);
+        this.minutesRemaining = remaining / 1000 / 60;
     }
 }

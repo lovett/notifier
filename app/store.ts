@@ -16,7 +16,7 @@ export default class Store {
     public constructor() {
         this.timer = window.setInterval(() => {
             this.refresh();
-        }, 1000 * 60);
+        }, 1000);
     }
 
     public onAdd(callback: ListenerCallback) {
@@ -207,6 +207,7 @@ export default class Store {
 
     protected refresh() {
         let changed: boolean = false;
+
         Object.keys(this.items).forEach((key: string) => {
             const result = this.items[key].refresh();
 
@@ -214,10 +215,9 @@ export default class Store {
                 changed = true;
             }
 
-            if (this.items[key].minutesRemaining < 0) {
+            if (this.items[key].isExpired()) {
                 this.removeKey(key);
             }
-
         });
 
         if (changed) {

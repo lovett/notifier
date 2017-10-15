@@ -220,16 +220,39 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
     store.onRefresh((_) => {
         $rootScope.$apply();
-        console.log('applied refresh');
     });
 
-    store.onRemove((_: string) => {
-        $rootScope.$broadcast('queue:change', store.size());
+    store.onRemove((id: string) => {
+        $rootScope.$evalAsync(() => {
+            $rootScope.$broadcast('queue:change', store.size());
+        });
     });
 
     const removedIds: string[] = [];
 
     let lastFetched: Date = new Date(0);
+
+    const clear = (messages: Message[]) => {
+        for (const message of messages) {
+            message.state = 'clearing';
+        }
+
+        const publicIds = messages.map((message) => message.publicId);
+
+        $http({
+            data: { publicId: publicIds },
+            method: 'POST',
+            url: 'message/clear',
+        }).then(() => {
+            removedIds.concat(publicIds);
+        }).catch(() => {
+            for (const message of messages) {
+                message.state = 'stuck';
+            }
+
+            $rootScope.$broadcast('connection:change', 'error', 'The message could not be cleared.');
+        });
+    };
 
     return {
         count() {
@@ -266,27 +289,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             }
         },
 
-        clear(messages: Message[]) {
-            for (const message of messages) {
-                message.state = 'clearing';
-            }
-
-            const publicIds = messages.map((message) => message.publicId);
-
-            $http({
-                data: { publicId: publicIds },
-                method: 'POST',
-                url: 'message/clear',
-            }).then(() => {
-                removedIds.concat(publicIds);
-            }).catch(() => {
-                for (const message of messages) {
-                    message.state = 'stuck';
-                }
-
-                $rootScope.$broadcast('connection:change', 'error', 'The message could not be cleared.');
-            });
-        },
+        clear,
 
         clearAll() {
             this.clear(store.itemList());
