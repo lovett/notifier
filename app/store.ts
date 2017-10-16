@@ -190,6 +190,10 @@ export default class Store {
     protected keyOfIndex(index: number) {
         const messages = this.itemList();
 
+        if (!messages[index]) {
+            return -1;
+        }
+
         return messages[index].publicId;
     }
 
