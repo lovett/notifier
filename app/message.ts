@@ -44,6 +44,10 @@ export default class Message {
         this.active = false;
     }
 
+    public age() {
+        return Math.ceil((Date.now() - this.received.getTime()) / 1000);
+    }
+
     public refresh() {
         const initialValue = this.timeRemaining;
         this.calculateTimeRemaining();

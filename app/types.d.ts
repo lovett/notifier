@@ -30,6 +30,7 @@ declare namespace app {
         public browserNotification: any;
         public state?: string;
         constructor();
+        public age(): number;
         public prepareForRemoval(): void;
         public asBrowserNotification(): Notification;
         public isExpired(): boolean;

@@ -162,6 +162,10 @@ appServices.service('BrowserNotification', ['$window', '$rootScope', ($window: a
             return;
         }
 
+        if (message.age() > 5) {
+            return;
+        }
+
         return message.asBrowserNotification();
     }
 
