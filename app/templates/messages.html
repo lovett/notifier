@@ -27,7 +27,7 @@
                         {{ message.received | reldate }}
                     </time>
                     <p class="expiration" ng-if="message.expiresAt">
-                        Expires {{ message.expiresAt | reldate: message.minutesRemaining }}
+                        Expires {{ message.expiresAt | reldate: message.timeRemaining }}
                     </p>
 		    <p class="domain" ng-if="message.domain">{{message.domain}}</p>
                 </header>

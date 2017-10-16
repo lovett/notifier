@@ -24,7 +24,7 @@ appFilters.filter('reldate', (dateFilter: angular.IFilterDate) => {
         return `${t} ${label}`;
     }
 
-    return (value: Date, minutesRemaining?: number) => {
+    return (value: Date, remaining?: number) => {
         const now = new Date();
         const referenceDate = startOfDay(value);
         const currentDate = startOfDay(now);
@@ -34,8 +34,32 @@ appFilters.filter('reldate', (dateFilter: angular.IFilterDate) => {
         const days = delta / 86400000;
 
         if (days === 0) {
-            if (minutesRemaining && minutesRemaining > 1 && minutesRemaining < 60) {
-                return `in ${minutesRemaining} minutes`;
+            if (remaining) {
+                if (remaining === 1) {
+                    return 'in 1 second';
+                }
+
+                if (remaining < 11) {
+                    return `in ${remaining} seconds`;
+                }
+
+                const minutes = Math.ceil(remaining / 60);
+
+                if (minutes === 1) {
+                    return 'in 1 minutes';
+                }
+
+                if (minutes < 60) {
+                    return `in ${minutes} minutes`;
+                }
+
+                const hours = Math.ceil(remaining / 3600);
+
+                if (hours === 1) {
+                    return 'in 1 hour';
+                }
+
+                return `in ${hours} hours`;
             }
 
             return labelAndTime('today', value);

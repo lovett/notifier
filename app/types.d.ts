@@ -25,7 +25,7 @@ declare namespace app {
         public url?: string;
         public domain?: string;
         public expiresAt?: Date;
-        public minutesRemaining?: number;
+        public timeRemaining?: number;
         public badge?: string;
         public browserNotification: any;
         public state?: string;

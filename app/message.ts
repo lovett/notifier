@@ -35,7 +35,7 @@ export default class Message {
     public url?: string;
     public domain?: string;
     public expiresAt?: Date;
-    public minutesRemaining: number;
+    public timeRemaining: number;
     public badge?: string;
     public browserNotification: any;
     public state?: string;
@@ -45,9 +45,9 @@ export default class Message {
     }
 
     public refresh() {
-        const initialValue = this.minutesRemaining;
-        this.calculateMinutesRemaining();
-        return (this.minutesRemaining !== initialValue);
+        const initialValue = this.timeRemaining;
+        this.calculateTimeRemaining();
+        return (this.timeRemaining !== initialValue);
     }
 
     public prepareForRemoval() {
@@ -101,18 +101,17 @@ export default class Message {
             return;
         }
 
-        const expirationDate = new Date(value);
-        this.expiresAt = expirationDate;
-        this.calculateMinutesRemaining();
+        this.expiresAt = new Date(value);
+        this.calculateTimeRemaining();
     }
 
-    protected calculateMinutesRemaining(): void {
+    protected calculateTimeRemaining(): void {
         if (!this.expiresAt) {
             return;
         }
 
         const remaining = this.expiresAt.getTime() - Date.now();
 
-        this.minutesRemaining = remaining / 1000 / 60;
+        this.timeRemaining = Math.ceil(remaining / 1000);
     }
 }
