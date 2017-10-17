@@ -51,7 +51,9 @@ export default class Store {
 
     public activateByIndex(index: number) {
         const key = this.keyOfIndex(index);
-        this.activate(this.items[key]);
+        if (key) {
+            this.activate(this.items[key]);
+        }
     }
 
     public activateByStep(step: number) {
@@ -70,7 +72,7 @@ export default class Store {
         this.activateByIndex(targetIndex);
     }
 
-    public activeIndex() {
+    public activeIndex(): number {
         for (const key of Object.keys(this.items)) {
             if (this.items[key].active) {
                 return this.indexOfKey(key);
@@ -102,7 +104,9 @@ export default class Store {
 
     public removeIndex(index: number) {
         const key = this.keyOfIndex(index);
-        this.removeKey(key);
+        if (key) {
+            this.removeKey(key);
+        }
     }
 
     public removeKey(key: string) {
@@ -187,11 +191,11 @@ export default class Store {
         return -1;
     }
 
-    protected keyOfIndex(index: number) {
+    protected keyOfIndex(index: number): string|null {
         const messages = this.itemList();
 
         if (!messages[index]) {
-            return -1;
+            return null;
         }
 
         return messages[index].publicId;

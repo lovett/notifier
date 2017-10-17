@@ -209,7 +209,21 @@ via the browser's Notifications settings`);
     return {state, enable, send};
 }]);
 
-appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$location', 'BrowserNotification', ($rootScope: angular.IRootScopeService, $http: angular.IHttpService, $log: angular.ILogService, $window: angular.IWindowService, $location: angular.ILocationService, BrowserNotification: app.BrowserNotificationService) => {
+appServices.factory(
+    'MessageList',
+    ['$rootScope',
+     '$http',
+     '$log',
+     '$window',
+     '$location',
+     'BrowserNotification', (
+         $rootScope: angular.IRootScopeService,
+         $http: angular.IHttpService,
+         $log: angular.ILogService,
+         $window: angular.IWindowService,
+         $location: angular.ILocationService,
+         BrowserNotification: app.BrowserNotificationService,
+     ) => {
 
     const store = new Store();
 
@@ -226,7 +240,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
         $rootScope.$apply();
     });
 
-    store.onRemove((id: string) => {
+    store.onRemove((_: string) => {
         $rootScope.$evalAsync(() => {
             $rootScope.$broadcast('queue:change', store.size());
         });
@@ -277,6 +291,10 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
         clearFocused() {
             const key = store.activeKey();
+            if (!key) {
+                return;
+            }
+
             store.activateByStep(1);
             store.removeKey(key);
         },
