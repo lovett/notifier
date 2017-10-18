@@ -28,9 +28,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
 
     shortcutMap[67] = {
         action() {
-            if (MessageList.messages.length > 0) {
-                MessageList.clearAll();
-            }
+            MessageList.clearAll();
         },
         description: 'Clear all messages',
         key: 'C',

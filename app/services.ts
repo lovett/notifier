@@ -257,6 +257,10 @@ appServices.factory(
 
         const publicIds = messages.map((message) => message.publicId);
 
+        if (publicIds.length === 0) {
+            return;
+        }
+
         $http({
             data: { publicId: publicIds },
             method: 'POST',
