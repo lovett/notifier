@@ -6,9 +6,7 @@
     "indent": [true, "spaces"],
     "interface-name": [true, "never-prefix"],
     "linebreak-style": [true, "LF"],
-    "max-line-length": {
-      "options": [300]
-    },
+    "max-line-length": false,
     "new-parens": true,
     "no-arg": true,
     "no-bitwise": true,
