@@ -280,13 +280,14 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
         },
 
         clearFocused() {
-            const key = store.activeKey();
-            if (!key) {
+            const activeMessage = store.active();
+
+            if (!activeMessage) {
                 return;
             }
 
             store.activateByStep(1);
-            store.removeKey(key);
+            clear([activeMessage]);
         },
 
         activateNone() {
@@ -295,6 +296,10 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
 
         visitLink() {
             const activeMessage = store.active();
+
+            if (!activeMessage) {
+                return;
+            }
 
             if (activeMessage.url) {
                 $window.open(activeMessage.url, '_blank');

@@ -37,7 +37,7 @@ export default class Store {
         });
     }
 
-    public active(): Message {
+    public active(): Message|null {
         const items = this.itemList();
 
         for (const item of items) {
@@ -46,7 +46,7 @@ export default class Store {
             }
         }
 
-        return items[0];
+        return null;
     }
 
     public activateByIndex(index: number) {
