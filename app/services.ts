@@ -232,7 +232,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
         });
     });
 
-    const removedIds: string[] = [];
+    let removedIds: string[] = [];
 
     let lastFetched: Date = new Date(0);
 
@@ -252,7 +252,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             method: 'POST',
             url: 'message/clear',
         }).then(() => {
-            removedIds.concat(publicIds);
+            removedIds = removedIds.concat(publicIds);
         }).catch(() => {
             for (const message of messages) {
                 message.state = 'stuck';
