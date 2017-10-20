@@ -104,7 +104,7 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
 });
 
 router.patch('/', (req, res) => {
-    const acceptedFields = ['title', 'url', 'body', 'source', 'group', 'deliveredAt'];
+    const acceptedFields = ['title', 'url', 'body', 'source', 'group', 'received'];
 
     const fieldObject: Message = acceptedFields.reduce((acc: Message, field) => {
         if (req.body.hasOwnProperty(field)) {

@@ -23,7 +23,7 @@ export interface IMessage {
     source?: string;
     url?: string;
     group?: string;
-    deliveredAt?: string;
+    received?: string;
     retracted?: string[];
 }
 

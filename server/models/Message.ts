@@ -18,11 +18,6 @@ export default function(sequelize: Sequelize.Sequelize) {
             },
         },
 
-        deliveredAt: {
-            defaultValue: Sequelize.NOW,
-            type: Sequelize.DATE,
-        },
-
         expiresAt: {
             allowNull: true,
             get(this: MessageInstance): Date|null {

@@ -7,7 +7,6 @@ const router = express.Router();
 interface WhereFilter {
     UserId: number;
     unread: boolean;
-    deliveredAt: any;
     received?: any;
 }
 
@@ -15,10 +14,10 @@ router.get('/:count', (req: express.Request, res: express.Response) => {
     const filters = {
         attributes: ['id', 'publicId', 'title', 'url', 'body', 'source', 'group', 'received', 'expiresAt'],
         limit: req.params.count,
-        order: [['deliveredAt', 'DESC']],
+        order: [['received', 'DESC']],
         where: {
             UserId: req.user.id,
-            deliveredAt: { [Sequelize.Op.lte]: new Date() },
+            received: { [Sequelize.Op.lte]: new Date() },
             unread: true,
         } as WhereFilter,
     };
