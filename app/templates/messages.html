@@ -11,7 +11,7 @@
                target="_blank"
                class="message {{message.badge}}"
                ng-class="{linked: message.url, expired: message.isExpired(), focused: message.active, extended: message.extended, stuck: message.state == 'stuck', hidden: message.state == 'clearing'}"
-               ng-repeat="message in queue.messages"
+               ng-repeat="message in queue.messages | toArray | orderBy: 'received': true"
                ng-swipe-left="message.extended = true"
                ng-swipe-right="message.extended = false"
                notifier-focus="message.active"

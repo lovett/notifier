@@ -4,6 +4,7 @@ import 'angular-sanitize';
 import 'angular-resource';
 import 'angular-route';
 import 'angular-touch';
+import 'angular-toarrayfilter';
 import './controllers';
 import './directives';
 import './filters';
@@ -21,6 +22,7 @@ import './favicon/app-icon.png';
 import './favicon/favicon.png';
 
 const app = angular.module('appModule', [
+    'angular-toArrayFilter',
     'appControllers',
     'appDirectives',
     'appFilters',
