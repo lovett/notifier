@@ -1,16 +1,16 @@
 @import (inline) "~normalize.css/normalize.css";
 @import (inline) "~angular/angular-csp.css";
 
-@palettePrimary: #2D8E5E;
-@paletteAccent: #F08551;
+@palettePrimary: #2d8e5e;
+@paletteAccent: #f08551;
 
-HTML {
+html {
     background-color: #333;
     color: #fff;
     font-family: 'Geneva', Arial, sans-serif;
 }
 
-MAIN {
+main {
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -27,7 +27,7 @@ MAIN {
     }
 }
 
-A {
+a {
     color: @palettePrimary;
     text-decoration: none;
 }
@@ -36,15 +36,14 @@ A {
     &.connected {
         background-color: @palettePrimary;
 
-        NAV {
+        nav {
             visibility: visible;
             background-color: @palettePrimary;
         }
-
     }
 }
 
-A:hover {
+a:hover {
     text-decoration: underline;
     cursor: pointer;
 }
@@ -71,22 +70,21 @@ A:hover {
     padding: 0 1em;
 }
 
-FOOTER {
+footer {
     font-size: 0.85em;
 
-    A {
+    a {
         color: white;
         display: inline-block;
         margin: 1em;
     }
 
-
-    NAV {
+    nav {
         visibility: hidden;
         display: inline-block;
         width: 100%;
 
-        A:last-of-type {
+        a:last-of-type {
             position: absolute;
             right: 0;
         }
@@ -94,16 +92,15 @@ FOOTER {
 
     .app-settings {
         .reset;
+
         background-color: lighten(@palettePrimary, 10%);
         clear: both;
         color: black;
 
-        LI {
+        li {
             margin: 0;
             display: inline-block;
         }
-
-
     }
 }
 
@@ -118,9 +115,8 @@ FOOTER {
     padding: 1em 6em;
     display: block;
     color: black;
-    column-break-inside: avoid;
-    page-break-inside: avoid;
     break-inside: avoid;
+    page-break-inside: avoid;
     vertical-align: top;
     line-height: 1.5;
 
@@ -154,7 +150,7 @@ FOOTER {
         display: none;
         transition: opacity 0.1s 0.2s;
 
-        A {
+        a {
             height: 100%;
             float: right;
             font-size: 0.75em;
@@ -163,7 +159,7 @@ FOOTER {
             padding: 0 1.5em;
             display: table;
 
-            SPAN {
+            span {
                 display: table-cell;
                 vertical-align: middle;
             }
@@ -173,33 +169,33 @@ FOOTER {
                 height: 4em;
                 fill: black;
             }
-
         }
     }
 
-    H1 {
+    h1 {
         color: inherit;
         font-size: 1.1em;
         font-weight: bold;
         margin: 0;
         padding: 0;
 
-        A {
+        a {
             color: black;
         }
     }
 
-    P {
+    p {
         margin: 0;
         padding: 0;
     }
 
-    TIME {
+    time {
         font-size: 0.7em;
         display: block;
     }
 
-    .domain, .expiration {
+    .domain,
+    .expiration {
         font-size: 0.7em;
     }
 
@@ -222,7 +218,8 @@ FOOTER {
     color: #666;
 }
 
-.message.focused, .message:focus {
+.message.focused,
+.message:focus {
     border-color: @paletteAccent;
     outline: 0;
 
@@ -231,57 +228,23 @@ FOOTER {
     }
 }
 
-/*
- * Clearfix: contain floats
- * from h5bp.com
- *
- * For modern browsers
- * 1. The space content is one way to avoid an Opera bug when the
- *    `contenteditable` attribute is included anywhere else in the document.
- *    Otherwise it causes space to appear at the top and bottom of elements
- *    that receive the `clearfix` class.
- * 2. The use of `table` rather than `block` is only necessary if using
- *    `:before` to contain the top-margins of child elements.
- */
-
-.clearfix:before,
-.clearfix:after {
-    content: ' '; /* 1 */
-    display: table; /* 2 */
-}
-
-.clearfix:after {
-    clear: both;
-}
-
-/*
- * Hide visually and from screen readers: h5bp.com/u
- */
+// Hide visually and from screen readers: h5bp.com/u
 .hidden {
     opacity: 0;
     display: none;
 }
 
- /*
- * Hide visually and from screen readers, but maintain layout
- * from h5bp.com
- */
-
-.invisible {
-    visibility: hidden;
-}
-
-H1 {
+h1 {
     font-size: 2em;
     margin-bottom: 1em;
 }
 
-P {
+p {
     padding: 0;
     margin: 1em 0;
 }
 
-BUTTON {
+button {
     padding: 0.5em 1em;
     border: 0;
     background-color: @palettePrimary;
@@ -291,10 +254,9 @@ BUTTON {
     font-size: 0.85em;
 }
 
-BUTTON:hover {
+button:hover {
     background-color: darken(@palettePrimary, 10%);
 }
-
 
 .disabled {
     background-color: darken(@palettePrimary, 10%);
@@ -304,7 +266,7 @@ BUTTON:hover {
     text-align: center;
 }
 
-FORM[name='loginForm'] {
+form[name='loginForm'] {
     .field {
         margin-bottom: 1.5em;
     }
@@ -322,24 +284,25 @@ FORM[name='loginForm'] {
         margin-bottom: 0;
     }
 
-    FIELDSET {
+    fieldset {
         border: 0;
     }
 
-    LABEL {
+    label {
         display: inline-block;
         min-width: 6em;
     }
 
-    LABEL:after {
+    label::after {
         content: ': ';
     }
 
-    .inline-label:after {
+    .inline-label::after {
         content: none;
     }
 
-    INPUT[type='text'], INPUT[type='password'] {
+    input[type='text'],
+    input[type='password'] {
         font-family: monospace;
         font-size: 1.3em;
         border-radius: 0;
@@ -378,16 +341,16 @@ FORM[name='loginForm'] {
         text-align: center;
     }
 
-    TABLE {
+    table {
         margin: auto;
     }
 
-    TD {
+    td {
         text-align: left;
         padding: 0.5em;
     }
 
-    KBD {
+    kbd {
         display: inline-block;
         color: #fff;
         background-color: #333;

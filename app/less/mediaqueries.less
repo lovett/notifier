@@ -11,8 +11,8 @@
     }
 }
 
-@media only screen and (min-width: 320px) and (max-device-width : 1024px) {
-    .page-header NAV {
+@media only screen and (min-width: 320px) and (max-device-width: 1024px) {
+    .page-header nav {
         text-align: right;
     }
 
@@ -28,18 +28,17 @@
         display: none;
     }
 
-    .message.extended, .message.extended:hover {
+    .message.extended,
+    .message.extended:hover {
         margin-left: -2.25em;
 
         .options {
             display: block;
         }
     }
-
-
 }
 
-@media only screen and (min-width: 320px) and (max-device-width : 1024px) and (orientation: landscape) {
+@media only screen and (min-width: 320px) and (max-device-width: 1024px) and (orientation: landscape) {
     .app-message {
         top: 1em;
     }
@@ -48,13 +47,13 @@
         padding-right: 0;
     }
 
-    .message.extended, .message.extended:hover {
+    .message.extended,
+    .message.extended:hover {
         margin-left: 0;
     }
-
 }
 
-@media only screen and (min-width: 320px) and (max-device-width : 568px)  and (orientation: portrait) {
+@media only screen and (min-width: 320px) and (max-device-width: 568px)  and (orientation: portrait) {
     .app-message {
         top: 2em;
     }
@@ -63,12 +62,13 @@
         padding-right: 1em;
     }
 
-    FORM[name='loginForm'] {
-        LABEL {
+    form[name='loginForm'] {
+        label {
             margin-bottom: 0.25em;
         }
 
-        INPUT[type='text'], INPUT[type='password'] {
+        input[type='text'],
+        input[type='password'] {
             display: block;
         }
     }

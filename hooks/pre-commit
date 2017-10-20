@@ -20,27 +20,9 @@ if staged "package.json"; then
     echo "...ok"
 fi
 
-# if staged "Gruntfile.js"; then
-#     echo "Checking Gruntfile.js..."
-#     node_modules/.bin/eslint "$ROOT/Gruntfile.js"
-#     echo "...ok"
-# fi
-
-if staged "app"; then
-    echo "Checking app files..."
-    node_modules/.bin/eslint "$ROOT/app"
-    echo "...ok"
-fi
-
-if staged "server"; then
-    echo "Checking server files..."
-    node_modules/.bin/eslint "$ROOT/server"
-    echo "...ok"
-fi
-
 if staged "less"; then
     echo "Checking less files..."
-    node_modules/.bin/lesshint app/less -e badges.less
+    node_modules/.bin/stylelint app/less/*.less
     echo "...ok"
 fi
 
