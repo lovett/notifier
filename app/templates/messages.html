@@ -5,7 +5,7 @@
     </div>
 
     <div class="growable">
-        <div ng-show="messageListVisible" ng-class="{columns: queue.messages.length > 1}">
+        <div ng-show="messageListVisible" ng-class="{columns: (queue.messages |toArray).length > 1}">
             <a ng-href="{{message.url}}"
                rel="noreferrer"
                target="_blank"
