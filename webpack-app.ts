@@ -9,8 +9,8 @@ const config: webpack.Configuration = {
     module: {
         rules: [
             {
-            test: /\.png$/,
             loader: 'file-loader?name=[name].[ext]',
+            test: /\.png$/,
         },
             {
             test: /\.css$/,
@@ -28,9 +28,9 @@ const config: webpack.Configuration = {
             }),
         },
             {
+            exclude: /node_modules/,
             test: /\.ts?$/,
             use: 'ts-loader',
-            exclude: /node_modules/,
         },
             {
             test: /\.html$/,
