@@ -352,12 +352,6 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$
             const url = 'archive/25';
             const now = new Date();
 
-            // prevent aggressive re-fetching
-            if (now.getTime() - lastFetched.getTime() < 1000) {
-                $log.info('Ignoring too-soon re-fetch');
-                return;
-            }
-
             $http({method: 'GET', url}).then((res: angular.IHttpResponse<app.ArchiveResponse>) => {
                 let receivedMessages: Message[] = [];
                 let staleMessages: Message[] = [];
