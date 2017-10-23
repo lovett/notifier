@@ -209,7 +209,7 @@ via the browser's Notifications settings`);
     return {state, enable, send};
 }]);
 
-appServices.factory('MessageList', ['$rootScope', '$http', '$log', '$window', '$location', 'BrowserNotification', ($rootScope: angular.IRootScopeService, $http: angular.IHttpService, $log: angular.ILogService, $window: angular.IWindowService, $location: angular.ILocationService, BrowserNotification: app.BrowserNotificationService) => {
+appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location', 'BrowserNotification', ($rootScope: angular.IRootScopeService, $http: angular.IHttpService, $window: angular.IWindowService, $location: angular.ILocationService, BrowserNotification: app.BrowserNotificationService) => {
 
     const store = new Store();
 
