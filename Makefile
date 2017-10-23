@@ -1,12 +1,51 @@
 .PHONY: dummy
 
-build: app worker
+build: export NPM_CONFIG_PROGRESS = false
+build: packages app worker
+	rsync -ar \
+	--exclude='***/.bin' \
+	--exclude='***/test' \
+	--exclude='***/tests' \
+	--exclude='***/doc' \
+	--exclude='***/docs' \
+	--exclude='***/*.md' \
+	--exclude='***/Makefile' \
+	--exclude='***/CHANGES' \
+	--exclude='***/AUTHORS' \
+	--exclude='***/bower.json' \
+	--exclude='***/*.ts' \
+	--exclude='***/.coverage' \
+	--exclude='***/.travis.yml' \
+	--exclude='***/.eslintrc' \
+	--exclude='***/.grunt' \
+	--exclude='***/.sass-cache' \
+	--exclude='***/.idea' \
+	--exclude='***/docs-build' \
+	--exclude='config-*.json' \
+	--include='package.json' \
+	--include='README.md' \
+	--include='notifier.js' \
+	--include='public/***' \
+	--include='node_modules/***' \
+	--include='modules/***' \
+	--include='views/***' \
+	--exclude='*' \
+	--delete \
+	--delete-excluded \
+	. notifier
+	cd notifier; npm prune --production
+	rm -f "notifier.tar.gz"
+	tar --create --gzip --file="notifier.tar.gz" notifier
 
 app: dummy
 	npm run build:app
 
 hooks: dummy
 	cp hooks/* .git/hooks/
+
+packages: export NPM_CONFIG_PROGRESS = false
+packages:
+	npm install --no-optional
 
 worker: dummy
 	npm run build:worker
