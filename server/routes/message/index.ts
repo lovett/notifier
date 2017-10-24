@@ -1,4 +1,5 @@
 import * as express from 'express';
+import * as Sequelize from 'sequelize';
 import * as dateparser from 'dateparser';
 import publishMessage from '../../helpers/publish-message';
 import { Message, MessageInstance } from '../../../types/server';
@@ -52,14 +53,14 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
     // message. This enforces uniqueness from the client's
     // perspective. From the perspective of the database, localIds are
     // not unique.
-    /*if (message.localId) {
+    if (message.localId) {
         req.app.locals.Message.findAll({
             attributes: ['publicId'],
             where: {
                 UserId: req.user.id,
                 localId: req.body.localId,
                 publicId: {
-                    $ne: message.publicId,
+                    [Sequelize.Op.ne]: message.publicId,
                 },
                 unread: true,
             },
@@ -77,7 +78,7 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
             }, {
                 where: {
                     publicId: {
-                        $in: ids,
+                        [Sequelize.Op.in]: ids,
                     },
                 },
             }).then((updatedRows: number[]) => {
@@ -90,7 +91,7 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
 
             return null;
         });
-    }*/
+    }
 
     message.save().then(() => {
         message.setUser(req.user).then(() => {
