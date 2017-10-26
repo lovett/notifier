@@ -1,9 +1,7 @@
-import * as worker from '../../types/worker';
-
 export class WorkerMessage  {
-    private payload: worker.IReply;
+    private payload: worker.Reply;
 
-    constructor(event: worker.WorkerEvent, message?: worker.IMessage) {
+    constructor(event: worker.WorkerEvent, message?: worker.Message) {
         this.payload = {event, message};
     }
 

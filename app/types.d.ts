@@ -1,7 +1,7 @@
 declare namespace app {
     type ServiceCallback = (services: any) => void;
 
-    type WebhookSubmissionCallback = (successfuly: boolean) => void;
+    type WebhookSubmissionCallback = (successfully: boolean) => void;
 
     interface RawMessage {
         title: string;
@@ -120,13 +120,13 @@ declare namespace app {
         serviceProps: object;
         settingsVisible: boolean;
         state: StringMap;
+        webhookUrl?: string;
         enable(service: string): void;
         clearAll(): void;
         logOut(): void;
         settings(state: boolean): void;
         toggle(service: string): void;
         undo(): void;
-        webhookUrl?: string;
     }
 
     interface StringMap {

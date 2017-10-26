@@ -1,11 +1,9 @@
 import {Receiver} from './classes/receiver';
 
-import * as worker from '../types/worker';
-
 let receiver: Receiver;
 
 self.addEventListener('message', (e: MessageEvent) => {
-    const command: worker.ICommand = e.data;
+    const command: worker.Command = e.data;
 
     if (!receiver) {
         receiver = new Receiver();

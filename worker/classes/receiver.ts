@@ -1,7 +1,5 @@
 import {WorkerMessage} from './workermessage';
 
-import * as worker from '../../types/worker';
-
 export class Receiver {
     private eventSource: sse.IEventSourceStatic;
 
@@ -35,7 +33,7 @@ export class Receiver {
 
     public parseMessage(data: string) {
         let reply: WorkerMessage;
-        let message: worker.IMessage;
+        let message: worker.Message;
 
         try {
             message = JSON.parse(data);
