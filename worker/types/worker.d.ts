@@ -1,20 +1,7 @@
 declare namespace worker {
     interface Command {
-        action: WorkerCommand;
+        action: 'CONNECT' | 'DISCONNECT';
         token?: string;
-    }
-
-    enum WorkerCommand {
-        CONNECT,
-        DISCONNECT,
-    }
-
-    enum WorkerEvent {
-        ADD,
-        CONNECTED,
-        DISCONNECTED,
-        DROPPED,
-        PARSEFAIL,
     }
 
     interface Message {
@@ -29,8 +16,8 @@ declare namespace worker {
     }
 
     interface Reply {
-        event: WorkerEvent;
-        message?: IMessage;
+        event: 'ADD' | 'CONNECTED' | 'DISCONNECTED' | 'DROPPED' | 'PARSEFAIL';
+        message?: Message;
         retractions?: string[];
     }
 }

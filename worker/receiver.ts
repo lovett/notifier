@@ -1,4 +1,5 @@
 import {WorkerMessage} from './workermessage';
+import {WorkerEvent} from '../worker/events';
 
 export class Receiver {
     private eventSource: sse.IEventSourceStatic;
@@ -7,7 +8,7 @@ export class Receiver {
         this.eventSource = new EventSource('push');
 
         this.eventSource.addEventListener('connection', () => {
-            const reply = new WorkerMessage(worker.WorkerEvent.CONNECTED);
+            const reply = new WorkerMessage(WorkerEvent.connected);
             return reply.send();
         });
 
@@ -22,7 +23,7 @@ export class Receiver {
         });
 
         this.eventSource.addEventListener('error', () => {
-            const reply = new WorkerMessage(worker.WorkerEvent.DISCONNECTED);
+            const reply = new WorkerMessage(WorkerEvent.disconnected);
             return reply.send();
         });
     }
@@ -38,15 +39,15 @@ export class Receiver {
         try {
             message = JSON.parse(data);
         } catch (ex) {
-            return new WorkerMessage(worker.WorkerEvent.PARSEFAIL);
+            return new WorkerMessage(WorkerEvent.parsefail);
         }
 
         if (message.retracted) {
-            reply = new WorkerMessage(worker.WorkerEvent.DROPPED);
+            reply = new WorkerMessage(WorkerEvent.dropped);
             reply.setRetractions(message.retracted);
             return reply;
         }
 
-        return new WorkerMessage(worker.WorkerEvent.ADD, message);
+        return new WorkerMessage(WorkerEvent.add, message);
     }
 }

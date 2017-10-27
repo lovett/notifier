@@ -1,4 +1,6 @@
-import {Receiver} from './classes/receiver';
+import {Receiver} from './receiver';
+import {WorkerCommand} from './events';
+
 
 let receiver: Receiver;
 
@@ -9,12 +11,12 @@ self.addEventListener('message', (e: MessageEvent) => {
         receiver = new Receiver();
     }
 
-    if (command.action === worker.WorkerCommand.CONNECT) {
+    if (command.action === WorkerCommand.connect) {
         receiver.connect();
         return true;
     }
 
-    if (command.action === worker.WorkerCommand.DISCONNECT) {
+    if (command.action === WorkerCommand.disconnect) {
         receiver.disconnect();
         return true;
     }
