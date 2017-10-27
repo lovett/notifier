@@ -1,6 +1,6 @@
-import * as worker from '../types/worker';
 import Message from './message';
 import Store from './store';
+import {WorkerCommand, WorkerEvent} from '../worker/events';
 
 const appServices = angular.module('appServices', []);
 
@@ -89,36 +89,36 @@ appServices.factory('PushClient', ['$rootScope', '$log', '$filter', 'MessageList
         const now = $filter('date')(new Date(), 'mediumTime');
         const reply = e.data;
 
-        if (reply.event === worker.WorkerEvent.DISCONNECTED) {
+        if (reply.event === WorkerEvent.disconnected) {
             $log.warn('Disconnected as of ' + now);
             $rootScope.$broadcast('connection:change', 'disconnected');
         }
 
-        if (reply.event === worker.WorkerEvent.CONNECTED) {
+        if (reply.event === WorkerEvent.connected) {
             $log.info('Connected as of ' + now);
             $rootScope.$broadcast('connection:change', 'connected');
         }
 
-        if (reply.event === worker.WorkerEvent.DROPPED) {
+        if (reply.event === WorkerEvent.dropped) {
             MessageList.drop(reply.retractions);
         }
 
-        if (reply.event === worker.WorkerEvent.ADD) {
+        if (reply.event === WorkerEvent.add) {
             MessageList.add(reply.message);
         }
 
-        if (reply.event === worker.WorkerEvent.PARSEFAIL) {
+        if (reply.event === WorkerEvent.parsefail) {
             $log.error('Failed to parse message');
         }
     });
 
     return {
         connect() {
-            pushWorker.postMessage({action: worker.WorkerCommand.CONNECT});
+            pushWorker.postMessage({action: WorkerCommand.connect});
         },
 
         disconnect() {
-            pushWorker.postMessage({action: worker.WorkerCommand.DISCONNECT});
+            pushWorker.postMessage({action: WorkerCommand.disconnect});
         },
     };
 }]);
