@@ -26,6 +26,25 @@ appDirectives.directive('notifierFocus', [() => {
 appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$document', (MessageList, $rootScope, $document) => {
     const shortcutMap: app.ShortcutMap = [];
 
+    shortcutMap[49] = {
+        action(charCode) {
+            const index = charCode - 49;
+            MessageList.activateByIndex(index);
+        },
+        description: 'Select a message by index',
+        key: '1..9',
+        shiftKey: false,
+    };
+
+    shortcutMap[50] = {charCode: 49};
+    shortcutMap[51] = {charCode: 49};
+    shortcutMap[52] = {charCode: 49};
+    shortcutMap[53] = {charCode: 49};
+    shortcutMap[54] = {charCode: 49};
+    shortcutMap[55] = {charCode: 49};
+    shortcutMap[56] = {charCode: 49};
+    shortcutMap[57] = {charCode: 49};
+
     shortcutMap[67] = {
         action() {
             MessageList.clearAll();
@@ -119,6 +138,10 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
         shiftKey: false,
     };
 
+    function isAlias(shortcut: app.Shortcut | app.ShortcutAlias): shortcut is app.ShortcutAlias {
+        return (shortcut as app.ShortcutAlias).charCode !== undefined;
+    }
+
     return {
         link: (scope: app.ShortcutScope) => {
             scope.summaryVisible = false;
@@ -136,15 +159,17 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
                     return;
                 }
 
-                if (!shortcutMap[charCode]) {
+                const mapValue = shortcutMap[charCode];
+
+                if (!mapValue) {
                     return;
                 }
 
-                if (shortcutMap[charCode].shiftKey && !e.shiftKey) {
-                    return;
+                if (isAlias(mapValue)) {
+                    (shortcutMap[mapValue.charCode] as app.Shortcut).action(charCode);
+                } else {
+                    (mapValue as app.Shortcut).action(charCode);
                 }
-
-                shortcutMap[charCode].action();
             });
         },
         templateUrl: 'templates/shortcuts-summary.html',

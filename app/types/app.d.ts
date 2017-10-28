@@ -87,14 +87,18 @@ declare namespace app {
     }
 
     interface ShortcutMap {
-        [index: number]: Shortcut;
+        [index: number]: Shortcut | ShortcutAlias;
     }
 
     interface Shortcut {
         description: string;
         key: string | number;
         shiftKey: boolean;
-        action(): void;
+        action(charCode: number): void;
+    }
+
+    interface ShortcutAlias {
+        charCode: number;
     }
 
     interface MessageOptionsScope extends ng.IScope {

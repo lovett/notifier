@@ -321,6 +321,11 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location
             store.reset();
         },
 
+        activateByIndex(index: number) {
+            store.activateByIndex(index);
+            $rootScope.$apply();
+        },
+
         activateNext() {
             store.activateByStep(1);
             $rootScope.$apply();
