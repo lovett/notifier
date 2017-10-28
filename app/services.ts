@@ -349,10 +349,12 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location
 
 
         fetch() {
-            const url = 'archive/25';
             const now = new Date();
 
-            $http({method: 'GET', url}).then((res: angular.IHttpResponse<app.ArchiveResponse>) => {
+            $http({
+                method: 'GET',
+                url: 'archive',
+            }).then((res: angular.IHttpResponse<app.ArchiveResponse>) => {
                 let receivedMessages: Message[] = [];
                 let staleMessages: Message[] = [];
 

@@ -10,10 +10,14 @@ interface WhereFilter {
     received?: any;
 }
 
-router.get('/:count', (req: express.Request, res: express.Response) => {
+router.get('/:count?', (req: express.Request, res: express.Response) => {
+    const maxCount = 50;
+
+    const count = Math.min(parseInt(req.params.count || maxCount, 10), maxCount);
+
     const filters = {
         attributes: ['id', 'publicId', 'title', 'url', 'body', 'source', 'group', 'received', 'expiresAt'],
-        limit: req.params.count,
+        limit: count,
         order: [['received', 'DESC']],
         where: {
             UserId: req.user.id,
