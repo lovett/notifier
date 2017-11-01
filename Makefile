@@ -29,6 +29,7 @@ build: packages app worker
 	--include='node_modules/***' \
 	--include='modules/***' \
 	--include='views/***' \
+	--include='server/***' \
 	--exclude='*' \
 	--delete \
 	--delete-excluded \
