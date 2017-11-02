@@ -35,7 +35,6 @@ const config: webpack.Configuration = {
 if (process.env.NODE_ENV === 'dev') {
     config.devtool = 'inline-source-map';
     config.watch = true;
-    config.plugins = [];
 }
 
 export default config;
