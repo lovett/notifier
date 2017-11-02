@@ -36,6 +36,8 @@ build: packages app worker server
 
 app: dummy
 	npm run build:app
+	./node_modules/.bin/uglifyjs -o build/public/app-minified.js build/public/app.js
+	mv build/public/app-minified.js build/public/app.js
 
 hooks: dummy
 	cp hooks/* .git/hooks/
