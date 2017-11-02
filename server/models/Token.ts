@@ -1,5 +1,5 @@
 import * as Sequelize from 'sequelize';
-import { Token, TokenInstance } from '../../types/server';
+import { Token, TokenInstance } from '../types/server';
 
 export default function(sequelize: Sequelize.Sequelize): Sequelize.Model<TokenInstance, Token> {
 

@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as crypto from 'crypto';
-import { UserInstance } from '../../types/server';
+import { UserInstance } from '../types/server';
 
 function randomString(len: number) {
     let randomBytes;

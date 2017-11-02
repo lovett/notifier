@@ -28,6 +28,9 @@ tmux attach-session -d -t "$PROJECT_NAME" || {
     ## 3: Webpack, worker
     tmux new-window -a -t "$PROJECT_NAME" -n "worker" "NODE_ENV=dev npm run build:worker"
 
+    ## 3: Typescript, server
+    tmux new-window -a -t "$PROJECT_NAME" -n "server" "NODE_ENV=dev npm run build:server -- -w"
+
     ## 4: Livereload
     tmux new-window -a -t "$PROJECT_NAME" -n "watch" "NODE_ENV=dev npm run watch"
 

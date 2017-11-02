@@ -1,5 +1,5 @@
 import * as express from 'express';
-import {Token, TokenInstance} from '../../types/server';
+import {Token, TokenInstance} from '../types/server';
 import getServiceTokens from '../helpers/service-tokens';
 
 const router = express.Router();

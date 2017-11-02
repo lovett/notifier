@@ -1,6 +1,6 @@
 import * as Sequelize from 'sequelize';
 import * as sanitize from '../validation/sanitize';
-import { MessageInstance } from '../../types/server';
+import { MessageInstance } from '../types/server';
 
 export default function(sequelize: Sequelize.Sequelize) {
     const fields: Sequelize.DefineAttributes = {

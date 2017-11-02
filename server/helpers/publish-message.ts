@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as needle from 'needle';
 import getServiceTokens from '../helpers/service-tokens';
-import { Message, MessageInstance, TokenInstance, UserInstance } from '../../types/server';
+import { Message, MessageInstance, TokenInstance, UserInstance } from '../types/server';
 
 enum PushbulletType {
     note = 'note',

@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as url from 'url';
 import generateTokenKeyValue from '../../helpers/token-keyvalue';
 
-import { GenerateCallback, TokenInstance } from '../../../types/server';
+import { GenerateCallback, TokenInstance } from '../../types/server';
 
 const router = express.Router();
 

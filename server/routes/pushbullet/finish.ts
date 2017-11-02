@@ -1,7 +1,7 @@
-import * as express from "express";
-import * as url from "url";
-import * as needle from "needle";
-import { TokenInstance } from '../../../types/server';
+import * as express from 'express';
+import * as url from 'url';
+import * as needle from 'needle';
+import { TokenInstance } from '../../types/server';
 
 const router = express.Router();
 
@@ -17,10 +17,10 @@ router.get('/', (req: express.Request, res: express.Response) => {
     const config = req.app.locals.config;
 
     const tokenUrl = url.format({
+        host: 'api.pushbullet.com',
+        pathname: '/oauth2/token',
         protocol: 'https',
         slashes: true,
-        host: 'api.pushbullet.com',
-        pathname: '/oauth2/token'
     });
 
     // If access has been denied, Pushbullet incorrectly formats
@@ -31,8 +31,8 @@ router.get('/', (req: express.Request, res: express.Response) => {
     req.app.locals.Token.find({
         include: [ req.app.locals.User],
         where: {
-            value: querystringToken
-        }
+            value: querystringToken,
+        },
     }).then((token: TokenInstance) => {
         if (!token || !token.User) {
             res.redirect(config.get('NOTIFIER_BASE_URL'));
@@ -43,34 +43,34 @@ router.get('/', (req: express.Request, res: express.Response) => {
         if (!req.query.code) {
             req.app.locals.Token.destroy({
                 where: {
+                    UserId: token.User.id,
                     key: 'pushbullet',
-                    UserId: token.User.id
-                }
+                },
             }).then(() => res.redirect(config.get('NOTIFIER_BASE_URL')));
 
             return;
         }
 
         const postParams: PushbulletPostParams = {
-            grant_type: 'authorization_code',
             client_id: config.get('NOTIFIER_PUSHBULLET_CLIENT_ID'),
             client_secret: config.get('NOTIFIER_PUSHBULLET_CLIENT_SECRET'),
             code: req.query.code,
-        }
+            grant_type: 'authorization_code',
+        };
 
-        needle.post(tokenUrl, postParams, (_err: Error, _resp: any, body: any) => {
+        needle.post(tokenUrl, postParams, (_err: Error, _res: any, body: any) => {
             req.app.locals.Token.destroy({
                 where: {
                     UserId: token.User.id,
                     id: {
-                        $ne: token.id
+                        $ne: token.id,
                     },
                     key: 'pushbullet',
-                }
+                },
             }).then(() => {
                 token.updateAttributes({
+                    persist: true,
                     value: body.access_token,
-                    persist: true
                 }).then(() => res.redirect(config.get('NOTIFIER_BASE_URL')));
             });
         });

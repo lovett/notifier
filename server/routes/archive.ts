@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as Sequelize from 'sequelize';
-import {MessageInstance} from '../../types/server';
+import {MessageInstance} from '../types/server';
 
 const router = express.Router();
 

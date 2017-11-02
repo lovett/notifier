@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { GenerateCallback } from '../../types/server';
+import { GenerateCallback } from '../types/server';
 
 export default function(callback: GenerateCallback) {
     const numBytes = 64;

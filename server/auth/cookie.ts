@@ -1,6 +1,6 @@
 import * as express from 'express';
 import {Strategy as CookieStrategy} from 'passport-cookie';
-import { TokenInstance } from '../../types/server';
+import { TokenInstance } from '../types/server';
 
 export default (app: express.Application) => {
     return new CookieStrategy((cookieValue, next) => {

@@ -44,7 +44,7 @@ const config: webpack.Configuration = {
     },
     output: {
         filename: 'app.js',
-        path: resolve(__dirname, 'public'),
+        path: resolve(__dirname, 'build/public'),
     },
     plugins: [
         new ExtractTextPlugin({

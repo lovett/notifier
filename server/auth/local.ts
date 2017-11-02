@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import * as express from 'express';
 import {Strategy as LocalStrategy} from 'passport-local';
-import { UserInstance } from '../../types/server';
+import { UserInstance } from '../types/server';
 
 export default (app: express.Application) => {
     return new LocalStrategy((username, password, done) => {

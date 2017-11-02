@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import * as express from 'express';
 import * as Sequelize from 'sequelize';
-import { UserInstance } from '../../types/server';
+import { UserInstance } from '../types/server';
 
 export default function(sequelize: Sequelize.Sequelize, app: express.Application) {
 

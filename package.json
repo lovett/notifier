@@ -7,8 +7,9 @@
   "scripts": {
     "build:worker": "webpack --config webpack-worker.ts",
     "build:app": "webpack --config webpack-app.ts",
+    "build:server": "tsc -p server",
     "devserver": "nodemon server",
-    "watch": "livereload public -p 35740 -d -u 1"
+    "watch": "livereload build/public -p 35740 -d -u 1"
   },
   "repository": {
     "type": "git",
@@ -17,8 +18,6 @@
   "author": "Bill Lovett",
   "homepage": "https://github.com/lovett/notifier",
   "dependencies": {
-    "angular-cookies": "1.6.6",
-    "angular-toarrayfilter": "1.0.2",
     "body-parser": "1.18.2",
     "compression": "1.7.1",
     "cookie-parser": "1.4.3",
@@ -67,10 +66,12 @@
     "@types/uuid": "3.4.3",
     "@types/webpack": "3.0.14",
     "angular": "1.6.6",
+    "angular-cookies": "1.6.6",
     "angular-mocks": "1.6.6",
     "angular-resource": "1.6.6",
     "angular-route": "1.6.6",
     "angular-sanitize": "1.6.6",
+    "angular-toarrayfilter": "1.0.2",
     "angular-touch": "1.6.6",
     "chai": "4.1.2",
     "chance": "1.0.12",

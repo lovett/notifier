@@ -1,6 +1,6 @@
 import * as express from 'express';
 import {BasicStrategy} from 'passport-http';
-import { TokenInstance } from '../../types/server';
+import { TokenInstance } from '../types/server';
 
 export default function(app: express.Application) {
     return new BasicStrategy((key, value, next) => {

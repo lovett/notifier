@@ -60,14 +60,14 @@ let sequelize: Sequelize.Sequelize;
 
 nconf.env();
 
-nconf.file('environment', path.join(__dirname, '../', 'config-' + process.env.NODE_ENV + '.json'));
+nconf.file('environment', path.join(__dirname, '../../', 'config-' + process.env.NODE_ENV + '.json'));
 
-nconf.file('application', path.join(__dirname, '../', 'config.json'));
+nconf.file('application', path.join(__dirname, '../../', 'config.json'));
 
 nconf.file('host', '/etc/notifier.json');
 
 nconf.defaults({
-    NOTIFIER_ACCESS_LOG: 'notifier.log',
+    NOTIFIER_ACCESS_LOG: path.resolve('./notifier.log'),
     NOTIFIER_APP_DIR: path.resolve('./app'),
     NOTIFIER_BASE_URL: '/',
     NOTIFIER_DB: path.resolve('./notifier.sqlite'),
@@ -87,7 +87,7 @@ nconf.defaults({
     NOTIFIER_PASSWORD_HASH_ITERATIONS: 20000,
     NOTIFIER_PASSWORD_HASH_KEYLENGTH: 64,
     NOTIFIER_PASSWORD_HASH_RANDBYTES: 64,
-    NOTIFIER_PUBLIC_DIR: path.resolve('./public'),
+    NOTIFIER_PUBLIC_DIR: path.resolve('./build/public'),
     NOTIFIER_PUSHBULLET_CLIENT_ID: undefined,
     NOTIFIER_PUSHBULLET_CLIENT_SECRET: undefined,
     NOTIFIER_SSL_CERT: undefined,
@@ -102,7 +102,7 @@ nconf.defaults({
 
 app = express();
 
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.resolve('./build/views'));
 
 app.set('view engine', 'ejs');
 
@@ -222,7 +222,6 @@ if (!module.parent) {
         .then(() => createUser(app))
         .then(() => {
             let server;
-
             if (app.locals.config.get('NOTIFIER_SSL_CERT')) {
                 server = https.createServer({
                     cert: fs.readFileSync(nconf.get('NOTIFIER_SSL_CERT')),

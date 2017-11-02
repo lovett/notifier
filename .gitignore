@@ -25,3 +25,5 @@ ansible/vars.yml
 modules/**/*.js
 app/scripts/**/*.js
 notifier.js
+build/public
+build/server

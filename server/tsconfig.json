@@ -3,22 +3,10 @@
     "lib": [
       "es6"
     ],
-    "noEmit": true,
-    "outDir": "",
     "sourceMap": false,
-    "target": "ES6"
+    "outDir": "../build/server",
+    "target": "ES6",
+    "types": []
   },
-  "extends": "../tsconfig.json",
-  "include": [
-    "**/*.ts",
-    "../types/server.d.ts",
-    "../types/passport-cookie.d.ts",
-    "../types/dateparser.d.ts"
-  ],
-  "exclude": [
-  ],
-  "typeRoots": [
-    "@types",
-    "./types"
-  ]
+  "extends": "../tsconfig.json"
 }

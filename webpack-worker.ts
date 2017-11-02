@@ -18,7 +18,7 @@ const config: webpack.Configuration = {
 
     output: {
         filename: 'worker.js',
-        path: resolve(__dirname, 'public'),
+        path: resolve(__dirname, 'build/public'),
     },
 
     plugins: [

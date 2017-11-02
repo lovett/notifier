@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as useragent from 'useragent';
 import generateTokenKeyValue from '../helpers/token-keyvalue';
-import {GenerateCallback} from '../../types/server';
+import {GenerateCallback} from '../types/server';
 
 const router = express.Router();
 

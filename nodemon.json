@@ -1,6 +1,6 @@
 {
   "verbose": false,
-  "watch": ["server"],
-  "ext": "ts",
-  "exec": "ts-node --project server server/server.ts"
+  "watch": ["build/server"],
+  "ext": "js",
+  "exec": "node build/server/server.js"
 }

@@ -1,7 +1,7 @@
 .PHONY: dummy
 
 build: export NPM_CONFIG_PROGRESS = false
-build: packages app worker
+build: packages app worker server
 	rsync -ar \
 	--exclude='***/.bin' \
 	--exclude='***/test' \
@@ -24,12 +24,8 @@ build: packages app worker
 	--exclude='config-*.json' \
 	--include='package.json' \
 	--include='README.md' \
-	--include='notifier.js' \
-	--include='public/***' \
 	--include='node_modules/***' \
-	--include='modules/***' \
-	--include='views/***' \
-	--include='server/***' \
+	--include='build/***' \
 	--exclude='*' \
 	--delete \
 	--delete-excluded \
@@ -46,10 +42,14 @@ hooks: dummy
 
 packages: export NPM_CONFIG_PROGRESS = false
 packages:
-	npm install --no-optional
+	npm install -D --no-optional
 
 worker: dummy
 	npm run build:worker
+
+server: dummy
+	rm -rf build/server
+	npm run build:server
 
 migrate: dummy
 	sqlite3 notifier.sqlite < migrations/01-message-drop-deliveredat.sql
