@@ -26,6 +26,7 @@ build: packages app worker server
 	--include='README.md' \
 	--include='node_modules/***' \
 	--include='build/***' \
+	--include='migrations/***' \
 	--exclude='*' \
 	--delete \
 	--delete-excluded \
