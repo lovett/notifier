@@ -11,10 +11,8 @@ export default class Store {
 
     private listeners: Array<[Listenable, (id?: string) => void]> = [];
 
-    private timer: number;
-
     public constructor() {
-        this.timer = window.setInterval(() => {
+        window.setInterval(() => {
             this.refresh();
         }, 1000);
     }
