@@ -32,6 +32,8 @@
     "passport-cookie": "1.0.4",
     "passport-http": "0.3.0",
     "passport-local": "1.0.0",
+    "pg": "7.4.0",
+    "pg-hstore": "2.3.2",
     "response-time": "2.3.2",
     "sanitize-html": "1.15.0",
     "sequelize": "4.22.7",
