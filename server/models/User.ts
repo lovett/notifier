@@ -5,25 +5,28 @@ import { UserInstance } from '../types/server';
 
 export default function(sequelize: Sequelize.Sequelize, app: express.Application) {
 
-    const hasher = (instance: UserInstance, _: any, done: () => void) => {
+    const hasher = (instance: UserInstance, _: any) => {
         const randBytes = app.locals.config.get('NOTIFIER_PASSWORD_HASH_RANDBYTES');
         const keyLength = app.locals.config.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
         const iterations = app.locals.config.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
 
-        crypto.randomBytes(randBytes, (err, buf) => {
-            if (err) {
-                throw err;
-            }
-
-            const salt = buf.toString('hex');
-
-            crypto.pbkdf2(instance.get('passwordHash'), salt, iterations, keyLength, 'sha1', (err2, key) => {
-                if (err2) {
-                    throw err2;
+        return new Promise((resolve, reject) => {
+            crypto.randomBytes(randBytes, (err, buf) => {
+                if (err) {
+                    reject();
                 }
 
-                instance.set('passwordHash', `${salt}::${key.toString('hex')}`);
-                done();
+                const salt = buf.toString('hex');
+
+                crypto.pbkdf2(instance.get('passwordHash'), salt, iterations, keyLength, 'sha1', (err2, key) => {
+                    if (err2) {
+                        reject();
+                    }
+
+                    instance.set('passwordHash', `${salt}::${key.toString('hex')}`);
+
+                    resolve();
+                });
             });
         });
     };
