@@ -33,20 +33,16 @@ declare module sse {
         /** The ready state of the underlying connection. */
         readyState: ReadyState;
         onopen: (event: Event) => any;
-        onmessage: (event: IOnMessageEvent) => void;
+        onmessage: (event: MessageEvent) => void;
         onerror: (event: Event) => any;
         /** The close() method must abort any instances of the fetch algorithm started for this EventSource object, and must set the readyState attribute to CLOSED. */
         close: () => void;
-        addEventListener: (type: string, h: (event: IOnMessageEvent) => void) => void;
-        removeEventListener: (type: string, h: (event: IOnMessageEvent) => void) => void;
+        addEventListener: (type: string, h: (event: MessageEvent) => void) => void;
+        removeEventListener: (type: string, h: (event: MessageEvent) => void) => void;
     }
 
     interface IEventSourceInit {
         /** Defines if request should set corsAttributeState to true.  */
         withCredentials?: boolean;
-    }
-
-    interface IOnMessageEvent {
-        data: string;
     }
 }

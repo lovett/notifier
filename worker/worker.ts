@@ -4,8 +4,8 @@ import {WorkerCommand} from './events';
 
 let receiver: Receiver;
 
-self.addEventListener('message', (e: MessageEvent) => {
-    const command: worker.Command = e.data;
+self.addEventListener('message', (e: Event) => {
+    const command: worker.Command = (e as MessageEvent).data;
 
     if (!receiver) {
         receiver = new Receiver();
@@ -13,13 +13,9 @@ self.addEventListener('message', (e: MessageEvent) => {
 
     if (command.action === WorkerCommand.connect) {
         receiver.connect();
-        return true;
     }
 
     if (command.action === WorkerCommand.disconnect) {
         receiver.disconnect();
-        return true;
     }
-
-    return false;
 });
