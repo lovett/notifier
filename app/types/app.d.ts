@@ -48,7 +48,7 @@ declare namespace app {
     }
 
     interface AuthRedirect {
-        url: string;
+        url?: string;
     }
 
     interface MessageList {
@@ -83,7 +83,7 @@ declare namespace app {
     }
 
     interface ArchiveResponse {
-        messages: RawMessage[];
+        messages?: RawMessage[];
     }
 
     interface ShortcutMap {
@@ -136,6 +136,4 @@ declare namespace app {
     interface StringMap {
         [index: string]: string;
     }
-
-
 }

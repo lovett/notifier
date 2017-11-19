@@ -9,7 +9,7 @@ type ListenerCallback = (id?: string) => void;
 export default class Store {
     public items: { [index: string]: Message } = {};
 
-    private listeners: Array<[Listenable, (id?: string) => void]> = [];
+    private listeners: Array<[Listenable, ListenerCallback]> = [];
 
     public constructor() {
         window.setInterval(() => {

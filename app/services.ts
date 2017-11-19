@@ -213,7 +213,10 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location
 
     const store = new Store();
 
-    store.onAdd((id: string) => {
+    store.onAdd((id?: string) => {
+        if (!id) {
+            return;
+        }
         const message = store.message(id);
         message.browserNotification = BrowserNotification.send(message);
 
@@ -222,11 +225,11 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location
         });
     });
 
-    store.onRefresh((_) => {
+    store.onRefresh((_?: string) => {
         $rootScope.$apply();
     });
 
-    store.onRemove((_: string) => {
+    store.onRemove((_?: string) => {
         $rootScope.$evalAsync(() => {
             $rootScope.$broadcast('queue:change', store.size());
         });
@@ -369,7 +372,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location
                 // client while we were offline. They should be
                 // dropped.
 
-                if (!res.data) {
+                if (!res.data || !res.data.messages) {
                     return;
                 }
 
@@ -384,7 +387,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location
                 });
 
                 receivedMessages.forEach((message) => store.add(message));
-            }).catch((res) => {
+            }).catch((res: angular.IHttpResponse<app.ArchiveResponse>) => {
                 if (res.status === 401) {
                     $location.path('login');
                 }
