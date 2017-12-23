@@ -1,4 +1,5 @@
 {
+  "delay": "2500",
   "verbose": false,
   "watch": ["build/server"],
   "ext": "js",
