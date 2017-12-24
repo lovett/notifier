@@ -70,11 +70,7 @@ nconf.defaults({
     NOTIFIER_ACCESS_LOG: path.resolve('./notifier.log'),
     NOTIFIER_APP_DIR: path.resolve('./app'),
     NOTIFIER_BASE_URL: '/',
-    NOTIFIER_DB: path.resolve('./notifier.sqlite'),
-    NOTIFIER_DB_BACKUP_DIR: undefined,
-    NOTIFIER_DB_DIALECT: 'sqlite',
-    NOTIFIER_DB_PASS: undefined,
-    NOTIFIER_DB_USER: undefined,
+    NOTIFIER_DB_DSN: "postgres://notifier:notifier@localhost:5432/notifier",
     NOTIFIER_DEFAULT_PASSWORD: undefined,
     NOTIFIER_DEFAULT_USER: undefined,
     NOTIFIER_FORCE_HTTPS: 0,
@@ -141,16 +137,10 @@ app.param('count', validateCount);
 /**
  * Database configuration
  */
-if (nconf.get('NOTIFIER_DB_DIALECT') !== 'sqlite') {
-    process.stderr.write('Non-sqlite databases are not supported\\n');
-    process.exit();
-}
-
-sequelize = new Sequelize('', '', '', {
-    dialect: nconf.get('NOTIFIER_DB_DIALECT'),
-    logging: () => { return; },
+sequelize = new Sequelize(nconf.get('NOTIFIER_DB_DSN'), {
+    // This silences a deprecation warning at startup about string based operators
+    // even if they aren't actually any being used.
     operatorsAliases: false,
-    storage: nconf.get('NOTIFIER_DB'),
 });
 
 app.locals.Token = Token(sequelize);
