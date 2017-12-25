@@ -29,8 +29,6 @@ import logger from './middleware/logger';
 import messageClear from './routes/message/clear';
 import messageIndex from './routes/message/index';
 import messageUnclear from './routes/message/unclear';
-import onedriveFinish from './routes/onedrive/finish';
-import onedriveStart from './routes/onedrive/start';
 import push from './routes/push';
 import pushbulletFinish from './routes/pushbullet/finish';
 import pushbulletStart from './routes/pushbullet/start';
@@ -70,7 +68,7 @@ nconf.defaults({
     NOTIFIER_ACCESS_LOG: path.resolve('./notifier.log'),
     NOTIFIER_APP_DIR: path.resolve('./app'),
     NOTIFIER_BASE_URL: '/',
-    NOTIFIER_DB_DSN: "postgres://notifier:notifier@localhost:5432/notifier",
+    NOTIFIER_DB_DSN: 'postgres://notifier:notifier@localhost:5432/notifier',
     NOTIFIER_DEFAULT_PASSWORD: undefined,
     NOTIFIER_DEFAULT_USER: undefined,
     NOTIFIER_FORCE_HTTPS: 0,
@@ -88,12 +86,6 @@ nconf.defaults({
     NOTIFIER_PUSHBULLET_CLIENT_SECRET: undefined,
     NOTIFIER_SSL_CERT: undefined,
     NOTIFIER_SSL_KEY: undefined,
-    ONEDRIVE_AUTH_FILE: undefined,
-    ONEDRIVE_CLIENT_ID: undefined,
-    ONEDRIVE_CLIENT_SECRET: undefined,
-    ONEDRIVE_PATH: undefined,
-    ONEDRIVE_REDIRECT: undefined,
-    ONEDRIVE_RETAIN_DAYS: 3,
 });
 
 app = express();
@@ -167,7 +159,7 @@ router = express.Router();
 
 router.use(asset(nconf.get('NOTIFIER_PUBLIC_DIR')));
 
-router.use(/^\/(login|logout|onedrive)?$/, index);
+router.use(/^\/(login|logout)?$/, index);
 
 router.use('/notifier.appcache', appCache);
 
@@ -180,10 +172,6 @@ router.use('/deauth', deauth);
 router.use('/services', app.locals.protected, services);
 
 router.use('/revoke', app.locals.protected, revoke);
-
-router.use('/authorize/onedrive/start', app.locals.protected, onedriveStart);
-
-router.use('/authorize/onedrive/finish', onedriveFinish);
 
 router.use('/authorize/pushbullet/start', app.locals.protected, pushbulletStart);
 

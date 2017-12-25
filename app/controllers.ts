@@ -72,17 +72,4 @@ appControllers.controller('LogoutController', ['$scope', '$location', 'User',  (
 
 }]);
 
-
-appControllers.controller('OnedriveController', ['$window', '$location', 'User', ($window, $location, User) => {
-
-    if (!User.isLoggedIn()) {
-        $location.path('/login');
-        return;
-    }
-
-    User.authorize('onedrive', (url: string) => {
-        $window.location.href = url;
-    });
-}]);
-
 export default appControllers;

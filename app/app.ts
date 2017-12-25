@@ -49,11 +49,6 @@ app.config(['$routeProvider', '$locationProvider', ($routeProvider: angular.rout
         templateUrl: 'templates/logout.html',
     });
 
-    $routeProvider.when('/onedrive', {
-        controller: 'OnedriveController',
-        template: '',
-    });
-
     $routeProvider.when('/', {
         controller: 'MessageController',
         templateUrl: 'templates/messages.html',
