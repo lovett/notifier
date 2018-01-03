@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as url from 'url';
 import * as needle from 'needle';
+import * as Sequelize from 'sequelize';
 import { TokenInstance } from '../../types/server';
 
 const router = express.Router();
@@ -63,7 +64,7 @@ router.get('/', (req: express.Request, res: express.Response) => {
                 where: {
                     UserId: token.User.id,
                     id: {
-                        $ne: token.id,
+                        [Sequelize.Op.ne]: token.id,
                     },
                     key: 'pushbullet',
                 },
