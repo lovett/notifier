@@ -29,7 +29,7 @@ export default function(sequelize: Sequelize.Sequelize) {
 
                 return new Date(value);
             },
-            type: Sequelize.TIME,
+            type: Sequelize.DATE,
         },
 
         group: {
