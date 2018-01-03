@@ -24,7 +24,7 @@ appFilters.filter('reldate', (dateFilter: angular.IFilterDate) => {
         return `${t} ${label}`;
     }
 
-    return (value: Date, remaining?: number) => {
+    return (value: Date, secondsRemaining?: number) => {
         const now = new Date();
         const referenceDate = startOfDay(value);
         const currentDate = startOfDay(now);
@@ -34,32 +34,38 @@ appFilters.filter('reldate', (dateFilter: angular.IFilterDate) => {
         const days = delta / 86400000;
 
         if (days === 0) {
-            if (remaining) {
-                if (remaining === 1) {
+            if (secondsRemaining) {
+                // Round down so that minutesRemaining is accurate
+                const hoursRemaining = Math.floor(secondsRemaining / 3600);
+
+                // Round up because seconds are not displayed
+                const minutesRemaining = Math.ceil((secondsRemaining % 3600) / 60);
+
+                if (secondsRemaining === 1) {
                     return 'in 1 second';
                 }
 
-                if (remaining < 11) {
-                    return `in ${remaining} seconds`;
+                if (secondsRemaining < 11) {
+                    return `in ${secondsRemaining} seconds`;
                 }
 
-                const minutes = Math.ceil(remaining / 60);
-
-                if (minutes === 1) {
-                    return 'in 1 minutes';
+                if (secondsRemaining < 60) {
+                    return 'in less than 1 minute';
                 }
 
-                if (minutes < 60) {
-                    return `in ${minutes} minutes`;
+                if (secondsRemaining === 60) {
+                    return 'in 1 minute';
                 }
 
-                const hours = Math.ceil(remaining / 3600);
+                if (secondsRemaining < 3600) {
+                    return `in ${minutesRemaining} minutes`;
+                }
 
-                if (hours === 1) {
+                if (secondsRemaining === 3600) {
                     return 'in 1 hour';
                 }
 
-                return `in ${hours} hours`;
+                return `in ${hoursRemaining} hours, ${minutesRemaining} minutes`;
             }
 
             return labelAndTime('today', value);
