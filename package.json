@@ -82,7 +82,6 @@
     "extract-text-webpack-plugin": "3.0.2",
     "file-loader": "1.1.6",
     "istanbul": "0.4.5",
-    "jsdoc": "3.5.5",
     "karma": "2.0.0",
     "karma-chai": "0.1.0",
     "karma-chrome-launcher": "2.2.0",
