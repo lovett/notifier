@@ -1,0 +1,8 @@
+--ignore-dir=coverage
+--ignore-file=is:package-lock.json
+--ignore-file=ext:log
+--ignore-file=is:app.js
+--type-add=html:ext:ejs,html
+--type-add=worker:match:/worker/
+--type-add=server:match:/server/
+--type-add=app:match:/app/
