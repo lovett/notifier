@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
 pipeline {
-    agent { node { label 'notifier' } }
+    agent any
 
     options {
         disableConcurrentBuilds()
@@ -23,10 +23,11 @@ pipeline {
 
         stage("Deploy") {
             steps {
-                sh "rm -rf /srv/notifier.old"
-                sh "mv /srv/notifier /srv/notifier.old"
-                sh "tar -x -f notifier.tar.gz -C /srv"
-                sh "sudo systemctl restart notifier"
+                ansiblePlaybook(
+                    playbook: "ansible/install.yml",
+                    credentialsId: "f4f6a0a8-c2ae-4f7e-9bf1-869831034fad",
+                    limit: "notifier"
+                )
             }
         }
     }

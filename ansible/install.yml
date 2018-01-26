@@ -1,7 +1,8 @@
 ---
 - hosts: all
-  vars_files:
-    - vars.yml
+  vars:
+    installation_directory: /srv/notifier-prod
+    nodejs_path: /usr/local/bin/node
   tasks:
   - name: Create the application user
     become: true
@@ -23,33 +24,34 @@
       group: notifier
       mode: 0700
     with_items:
-      - /var/notifier
       - /var/log/notifier
 
-  - name: Populate the application config
+  - name: Rsync
     become: true
-    template:
-      owner: "notifier"
-      group: "notifier"
-      src: "notifier.json.j2"
-      dest: "/etc/notifier.json"
-      mode: 0600
+    synchronize:
+    src: "../notifier"
+    dest: "{{ installation_directory }}"
+    delete: true
+    recursive: true
 
   - name: Populate the systemd unit
     become: true
     template:
       src: "notifer.service.j2"
       dest: "/etc/systemd/system/notifier.service"
+    notify: Reload systemd
 
   - name: Enable systemd service
     become: true
     command: systemctl enable notifier
 
-  - name: Reload systemd
-    become: true
-    command: systemctl daemon-reload
-
   - name: Restart the application
     become: true
-    command: systemctl reload-or-restart notifier
+    command: systemctl restart notifier
+
+  handlers:
+    - name: Reload systemd
+      become: true
+      command: systemctl daemon-reload
+
 ...
