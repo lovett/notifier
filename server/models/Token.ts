@@ -39,5 +39,9 @@ export default function(sequelize: Sequelize.Sequelize): Sequelize.Model<TokenIn
 
     };
 
-    return sequelize.define('Token', fields);
+    return sequelize.define('Token', fields, {
+        indexes: [
+            { unique: true, fields: ['key', 'value']},
+        ],
+    });
 }

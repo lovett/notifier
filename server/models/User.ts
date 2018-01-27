@@ -55,15 +55,15 @@ export default function(sequelize: Sequelize.Sequelize, app: express.Application
         },
     };
 
-    const options: Sequelize.DefineOptions<UserInstance> = {
+    const UserModel = sequelize.define('User', fields, {
         hooks: {
             beforeCreate: hasher,
             beforeUpdate: hasher,
         },
-    };
-
-
-    const UserModel = sequelize.define('User', fields, options);
+        indexes: [
+            {unique: true, fields: ['username']},
+        ],
+    });
 
     return UserModel;
 }

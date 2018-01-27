@@ -119,6 +119,9 @@ export default function(sequelize: Sequelize.Sequelize) {
 
     return sequelize.define('Message', fields, {
         createdAt: 'received',
+        indexes: [
+            {fields: ['unread']},
+        ],
         timestamps: true,
         updatedAt: false,
     });
