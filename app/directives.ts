@@ -154,6 +154,12 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
             angular.element($document[0]).bind('keydown', (e) => {
                 const charCode: number = e.which || e.keyCode;
 
+                // To avoid conflict with browser UI shortcuts, ignore
+                // anything involving the alt or control keys
+                if (e.altKey === true || e.ctrlKey === true) {
+                    return;
+                }
+
                 // Safari triggers a keyless keydown event during login autofill
                 if (!charCode) {
                     return;
@@ -161,7 +167,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
 
                 const mapValue = shortcutMap[charCode];
 
-                if (!mapValue) {
+                if (!mapValue || (mapValue.shiftKey !== e.shiftKey)) {
                     return;
                 }
 
