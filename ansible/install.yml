@@ -32,7 +32,7 @@
     become: true
     become_user: "{{ application_user }}"
     synchronize:
-      src: "../notifier"
+      src: "../notifier/"
       dest: "{{ installation_directory }}"
       delete: true
       recursive: true

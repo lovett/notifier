@@ -6,7 +6,7 @@ After=network.target
 User=notifier
 Group=notifier
 WorkingDirectory={{ installation_directory }}
-ExecStart={{ nodejs_path }} notifier.js
+ExecStart={{ nodejs_path }} build/server/server.js
 Environment=NODE_ENV=production
 
 [Install]
