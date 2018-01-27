@@ -165,17 +165,21 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
                     return;
                 }
 
-                const mapValue = shortcutMap[charCode];
+                let mapValue = shortcutMap[charCode];
 
-                if (!mapValue || (mapValue.shiftKey !== e.shiftKey)) {
+                if (!mapValue) {
                     return;
                 }
 
                 if (isAlias(mapValue)) {
-                    (shortcutMap[mapValue.charCode] as app.Shortcut).action(charCode);
-                } else {
-                    (mapValue as app.Shortcut).action(charCode);
+                    mapValue = shortcutMap[mapValue.charCode] as app.Shortcut;
                 }
+
+                if (mapValue.shiftKey !== e.shiftKey) {
+                    return;
+                }
+
+                mapValue.action(charCode);
             });
         },
         templateUrl: 'templates/shortcuts-summary.html',
