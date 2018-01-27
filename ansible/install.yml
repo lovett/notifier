@@ -29,10 +29,10 @@
   - name: Rsync
     become: true
     synchronize:
-    src: "../notifier"
-    dest: "{{ installation_directory }}"
-    delete: true
-    recursive: true
+      src: "../notifier"
+      dest: "{{ installation_directory }}"
+      delete: true
+      recursive: true
 
   - name: Populate the systemd unit
     become: true
