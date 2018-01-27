@@ -28,6 +28,7 @@ router.get('/', (req: express.Request, res: express.Response) => {
         'Cache-Control': 'no-cache, no-transform',
         'Connection': 'keep-alive',
         'Content-Type': 'text/event-stream',
+        'X-Accel-Buffering': 'no',
     });
 
     res.write('event:connection\ndata:\n\n');
