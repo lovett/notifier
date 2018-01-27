@@ -1,6 +1,7 @@
 ---
 - hosts: all
   vars:
+    application_user: notifier
     installation_directory: /srv/notifier-prod
     nodejs_path: /usr/local/bin/node
   tasks:
@@ -9,7 +10,7 @@
     user:
       state=present
       groups=""
-      name="notifier"
+      name="{{ application_user }}"
       createhome=no
       home="{{ installation_directory }}"
       shell="/usr/sbin/nologin"
@@ -20,14 +21,16 @@
     file:
       path: "{{ item }}"
       state: directory
-      owner: notifier
-      group: notifier
+      owner: "{{ application_user }}"
+      group: "{{ application_user }}"
       mode: 0700
     with_items:
+      - "{{ installation_directory }}"
       - /var/log/notifier
 
   - name: Rsync
     become: true
+    become_user: "{{ application_user }}"
     synchronize:
       src: "../notifier"
       dest: "{{ installation_directory }}"
