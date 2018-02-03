@@ -2,9 +2,10 @@ import {WorkerMessage} from './workermessage';
 import {WorkerEvent} from '../worker/events';
 
 export class Receiver {
-    private eventSource: sse.IEventSourceStatic;
+    private eventSource: any;
 
     public connect() {
+
         this.eventSource = new EventSource('push');
 
         this.eventSource.addEventListener('connection', () => {
