@@ -77,7 +77,6 @@ nconf.defaults({
     NOTIFIER_LESS_DIR: path.resolve('./app/less'),
     NOTIFIER_LIVERELOAD_HOST: undefined,
     NOTIFIER_LIVERELOAD_PORT: 35729,
-    NOTIFIER_LOG_QUERIES: 0,
     NOTIFIER_PASSWORD_HASH_ITERATIONS: 20000,
     NOTIFIER_PASSWORD_HASH_KEYLENGTH: 64,
     NOTIFIER_PASSWORD_HASH_RANDBYTES: 64,
@@ -133,6 +132,9 @@ sequelize = new Sequelize(nconf.get('NOTIFIER_DB_DSN'), {
     // This silences a deprecation warning at startup about string based operators
     // even if they aren't actually any being used.
     operatorsAliases: false,
+
+    // To re-enable logging to the console, set this to console.log
+    logging: false,
 });
 
 app.locals.Token = Token(sequelize);
