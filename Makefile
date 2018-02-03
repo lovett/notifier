@@ -61,8 +61,10 @@ onemessage: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -t "onemessage" -e "5 hours" -p 0 -u "http://example.com" -l "onemessage"
 
 smallbatch: dummy
-	clients/send-notification -s $(NOTIFIER_DEV) -t "smallbatch" -b "message 1 of 2" -p 0 -u "http://example.com" -l "smallbatch-1"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "smallbatch" -b "message 2 of 2" -p 0 -u "http://example.com" -l "smallbatch-2"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "smallbatch" -b "message 1 of 4" -p 0 -u "http://example.com" -l "smallbatch-1"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "smallbatch" -b "message 2 of 4" -g "todo" -p 0 -u "http://example.com" -l "smallbatch-2"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "smallbatch" -b "message 3 of 4" -g "calendar" -p 0 -u "http://example.com" -l "smallbatch-3"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "smallbatch" -b "message 4 of 4" -g "email" -p 0 -u "http://example.com" -l "smallbatch-4"
 
 retract: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -c -l test
