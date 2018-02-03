@@ -28,7 +28,7 @@ export default class Message {
     public active: boolean;
     public extended: boolean;
     public title: string;
-    public body?: string;
+    public body: string;
     public group: string;
     public publicId: string;
     public received: Date;
@@ -42,6 +42,14 @@ export default class Message {
 
     constructor() {
         this.active = false;
+        this.extended = false;
+        this.title = '';
+        this.body = '';
+        this.group = '';
+        this.publicId = '';
+        this.received = new Date();
+        this.timeRemaining = 0;
+
     }
 
     public age() {
