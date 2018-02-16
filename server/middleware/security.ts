@@ -18,8 +18,6 @@ export default function(req: express.Request, res: express.Response, next: expre
     let scheme = req.get('x-forwarded-proto');
     scheme = (scheme === 'https' || req.get('x-https') === 'On' || forceHttps) ? 'https' : 'http';
 
-    const socketScheme = (scheme === 'https') ? 'wss' : 'ws';
-
     let hostname = (req.get('x-forwarded-server') || req.get('x-forwarded-host') || req.headers.host) as string;
     hostname = hostname.replace(/:[0-9]+$/, '');
 
@@ -34,7 +32,7 @@ export default function(req: express.Request, res: express.Response, next: expre
 
     const csp: CspParams = {
         'child-src': ['self'],
-        'connect-src': ['self', 'data:', 'unsafe-inline', util.format('%s://%s%s', socketScheme, hostname, port)],
+        'connect-src': ['self', 'data:', 'unsafe-inline'],
         'default-src': ['none'],
         'img-src': ['self'],
         'script-src': ['self', 'data:', 'unsafe-inline', util.format('%s://%s%s', scheme, hostname, port)],
@@ -42,6 +40,7 @@ export default function(req: express.Request, res: express.Response, next: expre
     };
 
     if (config.get('NOTIFIER_LIVERELOAD_HOST') && config.get('NOTIFIER_LIVERELOAD_PORT')) {
+        const socketScheme = (scheme === 'https') ? 'wss' : 'ws';
         const liveReload = util.format(
             '://%s:%s',
             config.get('NOTIFIER_LIVERELOAD_HOST'),
