@@ -35,11 +35,9 @@ appFilters.filter('reldate', (dateFilter: angular.IFilterDate) => {
 
         if (days === 0) {
             if (secondsRemaining) {
-                // Round down so that minutesRemaining is accurate
                 const hoursRemaining = Math.floor(secondsRemaining / 3600);
 
-                // Round up because seconds are not displayed
-                const minutesRemaining = Math.ceil((secondsRemaining % 3600) / 60);
+                const minutesRemaining = Math.floor((secondsRemaining % 3600) / 60);
 
                 if (secondsRemaining === 1) {
                     return 'in 1 second';
@@ -63,6 +61,18 @@ appFilters.filter('reldate', (dateFilter: angular.IFilterDate) => {
 
                 if (secondsRemaining === 3600) {
                     return 'in 1 hour';
+                }
+
+                if (minutesRemaining > 50 && hoursRemaining === 0) {
+                    return 'in about 1 hour';
+                }
+
+                if (minutesRemaining > 50 && hoursRemaining >= 1) {
+                    return `in about ${hoursRemaining + 1} hours`;
+                }
+
+                if (minutesRemaining === 0) {
+                    return `in ${hoursRemaining} hours`;
                 }
 
                 return `in ${hoursRemaining} hours, ${minutesRemaining} minutes`;
