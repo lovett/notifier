@@ -1,8 +1,7 @@
 @import (inline) "~normalize.css/normalize.css";
 @import (inline) "~angular/angular-csp.css";
 
-@palettePrimary: #2d8e5e;
-@paletteAccent: #f08551;
+@palettePrimary: #006ba6;
 
 html {
     background-color: #333;
@@ -227,7 +226,7 @@ footer {
 
 .message.focused,
 .message:focus {
-    border-color: @paletteAccent;
+    border-color: darken(@palettePrimary, 15%);
     outline: 0;
 
     .options {
