@@ -7,7 +7,7 @@
 # save it to ~/.netrc.
 #
 
-VERSION="1.1.0"
+VERSION="1.1.1"
 
 set -u
 
@@ -65,6 +65,7 @@ authorize() {
 
     RESPONSE=$(curl -s \
                     --write-out ",%{http_code}" \
+                    --header "Accept: text/plain" \
                     -d "username=$NOTIFIER_USERNAME" \
                     -d "password=$NOTIFIER_PASSWORD" \
                     -d "label=${0##*/}" \
@@ -83,9 +84,12 @@ authorize() {
 
     NETRC=$HOME/.netrc
     if [ -f $NETRC ]; then
+        NETRC_BACKUP="$NETRC.backup"
+        cp "$NETRC" "$NETRC_BACKUP"
         NETRC_TMP=$NETRC.tmp-${0##*/}
         sed "/$NOTIFIER_HOST/d" $NETRC > $NETRC_TMP
         mv $NETRC_TMP $NETRC
+        echo "Copied $NETRC to $NETRC_BACKUP for safe keeping"
     fi
 
     echo "machine $NOTIFIER_HOST login $RESPONSE_USER password $RESPONSE_PASS" >> $NETRC
