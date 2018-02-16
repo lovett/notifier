@@ -51,8 +51,12 @@ authorize() {
 
     read -p "Enter the full URL of your notifier server: " NOTIFIER_URL
 
-    NOTIFIER_HOST_AND_PORT=${NOTIFIER_URL##*\/\/}
-    NOTIFIER_HOST=${NOTIFIER_HOST_AND_PORT%%:*}
+    # Remove trailing slash
+    NOTIFIER_URL=${NOTIFIER_URL/%\//}
+
+    # Isolate hostname
+    NOTIFIER_HOST=${NOTIFIER_URL##*\/\/}
+    NOTIFIER_HOST=${NOTIFIER_HOST%%:*}
 
     read -p "Username: " NOTIFIER_USERNAME
 
