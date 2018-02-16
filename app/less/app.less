@@ -257,7 +257,7 @@ p {
 button {
     padding: 0.5em 1em;
     border: 0;
-    background-color: @palettePrimary;
+    background-color: darken(@palettePrimary, 10%);
     color: white;
     letter-spacing: 1px;
     text-transform: uppercase;
@@ -265,11 +265,7 @@ button {
 }
 
 button:hover {
-    background-color: darken(@palettePrimary, 10%);
-}
-
-.disabled {
-    background-color: darken(@palettePrimary, 10%);
+    background-color: darken(@palettePrimary, 20%);
 }
 
 .centered {
@@ -282,7 +278,7 @@ form[name='loginForm'] {
     }
 
     .error {
-        background-color: salmon;
+        background-color: #e9190f;
         color: white;
         padding: 1em;
         margin-top: -1em;
@@ -292,6 +288,11 @@ form[name='loginForm'] {
 
     .field:last-of-type {
         margin-bottom: 0;
+    }
+
+    button {
+        display: block;
+        margin: auto;
     }
 
     fieldset {
