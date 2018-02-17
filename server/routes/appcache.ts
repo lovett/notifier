@@ -28,7 +28,7 @@ router.get('/', (req: express.Request, res: express.Response) => {
         '**/*',
     );
 
-    glob(globPattern, {nodir: true}, (globErr, files: string[]) => {
+    glob(globPattern, {nodir: true, ignore: '**/*.svg'}, (globErr, files: string[]) => {
         if (globErr) {
             errorHandler(res, globErr);
             return;
