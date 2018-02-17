@@ -60,6 +60,9 @@ migrate: dummy
 onemessage: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -t "onemessage" -e "5 hours" -p 0 -u "http://example.com" -l "onemessage"
 
+pushbullet: dummy
+	clients/send-notification -s $(NOTIFIER_DEV) -t "pushbullet test" -e "2 minutes" -u "http://example.com" -l "pushbullet-test"
+
 smallbatch: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -t "smallbatch" -b "message 1 of 4" -p 0 -u "http://example.com" -l "smallbatch-1"
 	clients/send-notification -s $(NOTIFIER_DEV) -t "smallbatch" -b "message 2 of 4" -g "todo" -p 0 -u "http://example.com" -l "smallbatch-2"
