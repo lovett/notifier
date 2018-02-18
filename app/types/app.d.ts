@@ -6,6 +6,7 @@ declare namespace app {
     interface RawMessage {
         title: string;
         body?: string;
+        badge?: string;
         url?: string;
         publicId: string;
         group: string;

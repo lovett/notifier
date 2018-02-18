@@ -7,7 +7,7 @@
 # save it to ~/.netrc.
 #
 
-VERSION="1.1.1"
+VERSION="1.2.0"
 
 set -u
 
@@ -111,6 +111,7 @@ OPTIND=1
 TITLE=""
 GROUP=""
 BODY=""
+BADGE=""
 URL=""
 PUSHBULLET_ID=""
 LOCAL_ID=""
@@ -118,7 +119,7 @@ SERVER=${NOTIFIER_SERVER:-}
 ENDPOINT="message"
 EXPIRATION=""
 
-while getopts "ahcVp:s:t:g:b:u:l:e:" opt; do
+while getopts "ahcVp:s:t:g:b:u:l:e:i:" opt; do
     case "$opt" in
         a)
             authorize
@@ -135,6 +136,9 @@ while getopts "ahcVp:s:t:g:b:u:l:e:" opt; do
             ;;
         b)
             BODY="$OPTARG"
+            ;;
+        i)
+            BADGE="$OPTARG"
             ;;
         u)
             URL="$OPTARG"
@@ -184,6 +188,7 @@ until [ "$RETRIES" -lt 1 ]; do
                     --data-urlencode "body=$BODY" \
                     --data-urlencode "url=$URL"  \
                     --data-urlencode "pushbulletId=$PUSHBULLET_ID" \
+                    --data-urlencode "badge=$BADGE" \
                     --data-urlencode "localId=$LOCAL_ID" \
 		    --data-urlencode "expiresAt=$EXPIRATION" \
                     "$SERVER/$ENDPOINT" 2>&1 )

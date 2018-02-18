@@ -39,6 +39,10 @@ export default function(req: express.Request, res: express.Response, next: expre
         'style-src': ['self'],
     };
 
+    if (config.get('NOTIFIER_BADGE_BASE_URL')) {
+        csp['img-src'].push(config.get('NOTIFIER_BADGE_BASE_URL'));
+    }
+
     if (config.get('NOTIFIER_LIVERELOAD_HOST') && config.get('NOTIFIER_LIVERELOAD_PORT')) {
         const socketScheme = (scheme === 'https') ? 'wss' : 'ws';
         const liveReload = util.format(

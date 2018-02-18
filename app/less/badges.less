@@ -4,16 +4,30 @@
     left: 0;
     height: 100%;
     width: 6em;
-    background: transparent url('../svg/default-badge.svg') no-repeat center;
-    background-size: 80%;
-    display: block;
+    display: flex;
+
+    div {
+        background: transparent url('../svg/default-badge.svg') no-repeat center;
+        background-size: 80%;
+        width: 100%;
+        height: 100%;
+    }
+
+    img {
+        width: 80%;
+        height: 80%;
+        display: block;
+        margin: auto;
+    }
 }
 
 .badgeGroup(@backgroundColor; @svgPath) {
     background-color: @backgroundColor;
 
     .badge {
-        background-image: url(@svgPath);
+        div {
+            background-image: url(@svgPath);
+        }
     }
 }
 

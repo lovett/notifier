@@ -2,6 +2,7 @@ export default class Message {
     public static fromRaw(message: app.RawMessage) {
         const m = new Message();
 
+        m.badge = message.badge;
         m.title = message.title;
         m.group = message.group;
         m.publicId = message.publicId;
@@ -15,7 +16,6 @@ export default class Message {
             m.body = message.body.replace(/\n/g, '<br/>');
         }
 
-        m.badge = message.group.split('.').pop();
 
         if (m.group === 'phone' && m.body) {
             // Format US phone numbers, dropping optional country code

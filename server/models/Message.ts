@@ -2,8 +2,21 @@ import * as Sequelize from 'sequelize';
 import * as sanitize from '../validation/sanitize';
 import { MessageInstance } from '../types/server';
 
-export default function(sequelize: Sequelize.Sequelize) {
+export default function(sequelize: Sequelize.Sequelize, badgeBaseUrl: string) {
     const fields: Sequelize.DefineAttributes = {
+        badge: {
+            allowNull: true,
+            defaultValue: null,
+            type: Sequelize.STRING(50),
+            get(this: MessageInstance): string|null {
+                const badge = this.getDataValue('badge');
+                if (badge && badgeBaseUrl) {
+                    return badgeBaseUrl + '/' + this.getDataValue('badge');
+                }
+                return badge;
+            },
+        },
+
         body: {
             allowNull: true,
             set(this: MessageInstance, value: string) {

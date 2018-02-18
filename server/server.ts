@@ -67,6 +67,7 @@ nconf.file('host', '/etc/notifier.json');
 nconf.defaults({
     NOTIFIER_ACCESS_LOG: path.resolve('./notifier.log'),
     NOTIFIER_APP_DIR: path.resolve('./app'),
+    NOTIFIER_BADGE_BASE_URL: '/svg',
     NOTIFIER_BASE_URL: '/',
     NOTIFIER_DB_DSN: 'postgres://notifier:notifier@localhost:5432/notifier',
     NOTIFIER_DEFAULT_PASSWORD: undefined,
@@ -139,7 +140,11 @@ sequelize = new Sequelize(nconf.get('NOTIFIER_DB_DSN'), {
 
 app.locals.Token = Token(sequelize);
 app.locals.User = User(sequelize, app);
-app.locals.Message = Message(sequelize);
+
+app.locals.Message = Message(
+    sequelize,
+    app.locals.config.get('NOTIFIER_BADGE_BASE_URL').replace(/\/$/, ''),
+);
 
 app.locals.Token.belongsTo(app.locals.User);
 app.locals.User.hasMany(app.locals.Token);

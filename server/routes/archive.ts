@@ -16,7 +16,7 @@ router.get('/:count?', (req: express.Request, res: express.Response) => {
     const count = Math.min(parseInt(req.params.count || maxCount, 10), maxCount);
 
     const filters = {
-        attributes: ['id', 'publicId', 'title', 'url', 'body', 'source', 'group', 'received', 'expiresAt'],
+        attributes: ['id', 'publicId', 'title', 'url', 'body', 'badge', 'source', 'group', 'received', 'expiresAt'],
         limit: count,
         order: [['received', 'DESC']],
         where: {
