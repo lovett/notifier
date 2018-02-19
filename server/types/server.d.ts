@@ -21,7 +21,6 @@ interface Message extends IndexSignature {
 
 interface MessageInstance extends Sequelize.Instance<Message> {
     body?: string;
-    dataValues: any;
     id: number;
     serviceTokens: any;
     expiresAt?: Date;
@@ -61,7 +60,6 @@ interface Token {
 }
 
 interface TokenInstance extends Sequelize.Instance<Token> {
-    dataValues: any;
     id: number;
     prune: PruneCallback;
     key: string;

@@ -106,7 +106,7 @@ export default (app: express.Application, user: UserInstance, message: MessageIn
     let messageValues: Message;
 
     if (message) {
-        messageValues = message.dataValues;
+        messageValues = message.get();
     } else {
         messageValues = {
             retracted: retractionId,
