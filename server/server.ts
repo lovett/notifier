@@ -134,7 +134,12 @@ sequelize = new Sequelize(nconf.get('NOTIFIER_DB_DSN'), {
     // even if they aren't actually any being used.
     operatorsAliases: false,
 
-    // To re-enable logging to the console, set this to console.log
+    pool: {
+        max: 10,
+        min: 3,
+    },
+
+    // To re-enable logging, set this to console.log
     logging: false,
 });
 
