@@ -58,20 +58,28 @@ migrate: dummy
 	sqlite3 notifier.sqlite < migrations/01-message-drop-deliveredat.sql
 
 onemessage: dummy
-	clients/send-notification -s $(NOTIFIER_DEV) -t "onemessage" -e "5 hours" -p 0 -u "http://example.com" -l "onemessage"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "Single test message" -e "5 hours" -p 0 -u "http://example.com" -l "onemessage"
 
-badgedmessage: dummy
-	clients/send-notification -s $(NOTIFIER_DEV) -t "onemessage" -e "5 hours" -p 0 -i "test.svg" -u "http://example.com" -l "onemessage"
+badgemessage: dummy
 
 
-pushbullet: dummy
-	clients/send-notification -s $(NOTIFIER_DEV) -t "pushbullet test" -e "2 minutes" -u "http://example.com" -l "pushbullet-test"
+multimessage: dummy
+	clients/send-notification -s $(NOTIFIER_DEV) -t "email group test message"		-g email		-b "Message 1"	-p 0	-l "multi-email"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "phone group test message"		-g phone		-b "Message 2"	-p 0	-l "multi-phone"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "web group test message"		-g web			-b "Message 3"	-p 0	-l "multi-web"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "reminder group test message"	-g reminder		-b "Message 4"	-p 0	-l "multi-reminder"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "calendar group test message"	-g calendar		-b "Message 5"	-p 0	-l "multi-calendar"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "sysdown group test message"	-g sysdown		-b "Message 6"	-p 0	-l "multi-sysdown"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "sysdown group test message"	-g sysdown		-b "Message 7"	-p 0	-l "multi-sysdown"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "sysup group test message"		-g sysup		-b "Message 8"	-p 0	-l "multi-sysup"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "chore group test message"		-g chore		-b "Message 9"	-p 0	-l "multi-chore"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "education group test message"	-g education	-b "Message 10"	-p 0	-l "multi-education"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "custom badge test message"                     -b "Message 11" -p 0    -l "mult-badge" -i "test.svg"
 
-smallbatch: dummy
-	clients/send-notification -s $(NOTIFIER_DEV) -t "smallbatch" -b "message 1 of 4" -p 0 -u "http://example.com" -l "smallbatch-1"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "smallbatch" -b "message 2 of 4" -g "todo" -p 0 -u "http://example.com" -l "smallbatch-2"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "smallbatch" -b "message 3 of 4" -g "calendar" -p 0 -u "http://example.com" -l "smallbatch-3"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "smallbatch" -b "message 4 of 4" -g "email" -p 0 -u "http://example.com" -l "smallbatch-4"
+# badgedmessage: dummy
+
+
+#pushbullet: dummy
 
 retract: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -c -l test
