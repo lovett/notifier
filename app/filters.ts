@@ -35,50 +35,24 @@ appFilters.filter('reldate', (dateFilter: angular.IFilterDate) => {
 
         if (days === 0) {
             if (secondsRemaining) {
-                const hoursRemaining = Math.floor(secondsRemaining / 3600);
-
-                const minutesRemaining = Math.floor((secondsRemaining % 3600) / 60);
-
                 if (secondsRemaining === 1) {
                     return 'in 1 second';
                 }
 
-                if (secondsRemaining < 11) {
+                if (secondsRemaining <= 10) {
                     return `in ${secondsRemaining} seconds`;
                 }
 
-                if (secondsRemaining < 60) {
+                if (secondsRemaining <= 60) {
                     return 'in less than 1 minute';
                 }
 
-                if (secondsRemaining === 60) {
-                    return 'in 1 minute';
+                if (secondsRemaining <= 300) {
+                    return `in less than ${Math.ceil(secondsRemaining / 60)} minutes`;
                 }
-
-                if (secondsRemaining < 3600) {
-                    return `in ${minutesRemaining} minutes`;
-                }
-
-                if (secondsRemaining === 3600) {
-                    return 'in 1 hour';
-                }
-
-                if (minutesRemaining > 50 && hoursRemaining === 0) {
-                    return 'in about 1 hour';
-                }
-
-                if (minutesRemaining > 50 && hoursRemaining >= 1) {
-                    return `in about ${hoursRemaining + 1} hours`;
-                }
-
-                if (minutesRemaining === 0) {
-                    return `in ${hoursRemaining} hours`;
-                }
-
-                return `in ${hoursRemaining} hours, ${minutesRemaining} minutes`;
             }
 
-            return labelAndTime('today', value);
+            return 'at ' + dateFilter(value, 'h:mm a');
         }
 
         if (days === -1) {
