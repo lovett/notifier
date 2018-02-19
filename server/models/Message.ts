@@ -11,7 +11,7 @@ export default function(sequelize: Sequelize.Sequelize, badgeBaseUrl: string) {
             get(this: MessageInstance): string|null {
                 const badge = this.getDataValue('badge');
                 if (badge && badgeBaseUrl) {
-                    return badgeBaseUrl + '/' + this.getDataValue('badge');
+                    return badgeBaseUrl + '/' + badge;
                 }
                 return badge;
             },
