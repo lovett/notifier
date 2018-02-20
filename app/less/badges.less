@@ -7,15 +7,15 @@
     display: flex;
 
     div {
-        background: transparent url('../svg/default-badge.svg') no-repeat center;
-        background-size: 80%;
+        background: transparent url('../svg/default.svg') no-repeat center;
+        background-size: 60%;
         width: 100%;
         height: 100%;
     }
 
     img {
-        width: 80%;
-        height: 80%;
+        width: 60%;
+        height: 60%;
         display: block;
         margin: auto;
     }
@@ -31,17 +31,8 @@
     }
 }
 
-.dark-bg {
-    color: white;
-
-    .options a .icon {
-        fill: white;
-    }
-}
-
 .message.email {
-    .dark-bg;
-    .badgeGroup(rgb(56,101,120), '../svg/email.svg');
+    .badgeGroup(#b5bad0, '../svg/envelop.svg');
 }
 
 .message.phone {
@@ -49,12 +40,11 @@
 }
 
 .message.web {
-    .dark-bg;
-    .badgeGroup(rgb(142,116,113), '../svg/web.svg');
+    .badgeGroup(#C7AD9B, '../svg/link.svg');
 }
 
 .message.reminder {
-    .badgeGroup(#e5e5e5, '../svg/reminder.svg');
+    .badgeGroup(#B8DBD9, '../svg/pushpin.svg');
 }
 
 .message.calendar {
@@ -62,39 +52,17 @@
 }
 
 .message.sysdown {
-    .dark-bg;
-    .badgeGroup(#ef4747, '../svg/sysdown.svg');
+    .badgeGroup(#ef4747, '../svg/fire.svg');
 }
 
 .message.sysup {
-    .badgeGroup(rgb(135, 227, 243), '../svg/sysup.svg');
-}
-
-.message.git {
-    .badgeGroup(#d1f4f8, '../svg/git.svg');
-}
-
-.message.debian {
-    .badgeGroup(white, '../svg/debian.svg');
-
-    .badge {
-        background-size: 60%;
-    }
-}
-
-.message.azure {
-    .dark-bg;
-    .badgeGroup(#16aaea, '../svg/azure.svg');
+    .badgeGroup(LightGreen, '../svg/terminal.svg');
 }
 
 .message.chore {
-    .badgeGroup(LightGreen, '../svg/chore.svg');
+    .badgeGroup(#a2d9fb, '../svg/home3.svg');
 }
 
 .message.education {
-    .badgeGroup(Moccasin, '../svg/education.svg');
-}
-
-.message.jenkins {
-    .badgeGroup(white, '../svg/jenkins.svg');
+    .badgeGroup(#D0E6CD, '../svg/book.svg');
 }
