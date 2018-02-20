@@ -7,7 +7,7 @@
     <div class="growable">
         <div ng-show="messageListVisible" ng-class="{columns: (queue.messages |toArray).length > 1}">
             <a ng-href="{{message.url}}"
-               rel="noreferrer"
+               rel="noopener noreferrer"
                target="_blank"
                class="message {{message.group}}"
                ng-class="{linked: message.url, expired: message.isExpired(), focused: message.active, extended: message.extended, stuck: message.state == 'stuck', hidden: message.state == 'clearing'}"
