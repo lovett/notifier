@@ -29,6 +29,7 @@ import logger from './middleware/logger';
 import messageClear from './routes/message/clear';
 import messageIndex from './routes/message/index';
 import messageUnclear from './routes/message/unclear';
+import publishMessage from './helpers/publish-message';
 import push from './routes/push';
 import pushbulletFinish from './routes/pushbullet/finish';
 import pushbulletStart from './routes/pushbullet/start';
@@ -102,6 +103,8 @@ app.locals.appsecret = crypto.randomBytes(app.locals.config.get('NOTIFIER_PASSWO
 app.locals.protected = passport.authenticate(['cookie', 'basic', 'local'], { session: false });
 
 app.locals.pushClients = {};
+
+app.locals.expirationCache = {};
 
 app.use(logger(nconf.get('NOTIFIER_ACCESS_LOG')));
 
@@ -208,8 +211,43 @@ app.use(nconf.get('NOTIFIER_BASE_URL'), router);
  */
 if (!module.parent) {
 
+    setInterval(() => {
+        if (Object.keys(app.locals.expirationCache).length === 0) {
+            return;
+        }
+
+        const now = new Date();
+        const cache = app.locals.expirationCache;
+        Object.keys(cache).forEach((key) => {
+            const user = cache[key][0];
+            const expiration = cache[key][1];
+            if (expiration < now) {
+                publishMessage(app, user, null, key);
+                delete app.locals.expirationCache[key];
+            }
+        });
+    }, 2000);
+
     sequelize.sync()
         .then(() => createUser(app))
+        .then(() => {
+            return app.locals.Message.findAll({
+                include: [{
+                    model: app.locals.User,
+                }],
+                where: {
+                    expiresAt: {
+                        [Sequelize.Op.gt]: new Date(),
+                    },
+                    unread: true,
+                },
+            });
+        })
+        .then((messages) => {
+            for (const message of messages) {
+                app.locals.expirationCache[message.publicId] = [message.User, message.expiresAt];
+            }
+        })
         .then(() => {
             let server;
             if (app.locals.config.get('NOTIFIER_SSL_CERT')) {

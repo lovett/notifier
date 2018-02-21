@@ -17,6 +17,8 @@ router.post('/', (req: express.Request, res: express.Response) => {
                 return;
             }
 
+            delete req.app.locals.expirationCache[id];
+
             publishMessage(req.app, req.user, null, id);
             res.sendStatus(204);
 

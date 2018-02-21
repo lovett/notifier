@@ -95,6 +95,11 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
 
     message.save().then(() => {
         message.setUser(req.user).then(() => {
+            const expiration = message.get('expiresAt');
+            if (expiration) {
+                req.app.locals.expirationCache[message.get('publicId')] = [req.user, message.get('expiresAt')];
+            }
+
             publishMessage(req.app, req.user, message);
             res.sendStatus(204);
         });
