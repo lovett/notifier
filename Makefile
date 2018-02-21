@@ -61,7 +61,7 @@ onemessage: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -t "Single test message" -e "5 hours" -p 0 -u "http://example.com" -l "onemessage"
 
 badgemessage: dummy
-
+	clients/send-notification -s $(NOTIFIER_DEV) -t "Badged message test" -g sysup -i "test.svg" -e "5 hours" -p 0 -u "http://example.com" -l "badged"
 
 multimessage: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -t "email group test message"		-g email		-b "Message 1"	-p 0	-l "multi-email"
@@ -75,11 +75,6 @@ multimessage: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -t "chore group test message"		-g chore		-b "Message 9"	-p 0	-l "multi-chore"
 	clients/send-notification -s $(NOTIFIER_DEV) -t "education group test message"	-g education	-b "Message 10"	-p 0	-l "multi-education"
 	clients/send-notification -s $(NOTIFIER_DEV) -t "custom badge test message"                     -b "Message 11" -p 0    -l "mult-badge" -i "test.svg"
-
-# badgedmessage: dummy
-
-
-#pushbullet: dummy
 
 retract: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -c -l test
