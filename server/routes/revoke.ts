@@ -6,7 +6,7 @@ router.post('/', (req: express.Request, res: express.Response) => {
 
     req.app.locals.Token.destroy({
         where: {
-            UserId: req.user.id,
+            UserId: req.user!.id,
             key: req.body.service,
             label: 'service',
         },

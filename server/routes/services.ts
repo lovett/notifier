@@ -1,5 +1,5 @@
 import * as express from 'express';
-import {Token, TokenInstance} from '../types/server';
+import {Token, TokenInstance, User} from '../types/server';
 import getServiceTokens from '../helpers/service-tokens';
 
 const router = express.Router();
@@ -14,7 +14,7 @@ const router = express.Router();
  * push notifications.
  */
 router.get('/', (req: express.Request, res: express.Response) => {
-    getServiceTokens(req.app, req.user, (tokens: TokenInstance[]) => {
+    getServiceTokens(req.app, req.user as User, (tokens: TokenInstance[]) => {
         const services = tokens.map((token) => {
             if (token.label === 'service') {
                 delete token.value;
@@ -44,7 +44,7 @@ router.post('/', (req: express.Request, res: express.Response) => {
         }
 
         additions.push({
-            UserId: req.user.id,
+            UserId: req.user!.id,
             key: name,
             label: 'userval',
             persist: true,
@@ -59,7 +59,7 @@ router.post('/', (req: express.Request, res: express.Response) => {
 
     req.app.locals.Token.destroy({
         where: {
-            UserId: req.user.id,
+            UserId: req.user!.id,
             key: {
                 $in: removals,
             },

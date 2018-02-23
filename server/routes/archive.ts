@@ -20,7 +20,7 @@ router.get('/:count?', (req: express.Request, res: express.Response) => {
         limit: count,
         order: [['received', 'DESC']],
         where: {
-            UserId: req.user.id,
+            UserId: req.user!.id,
             received: { [Sequelize.Op.lte]: new Date() },
             unread: true,
         } as WhereFilter,

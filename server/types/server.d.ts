@@ -33,6 +33,7 @@ interface MessageInstance extends Sequelize.Instance<Message> {
 }
 
 interface User {
+    id: number;
     passwordHash: string;
     username: string;
     token: any;

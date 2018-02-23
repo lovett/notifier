@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as Sequelize from 'sequelize';
 import * as dateparser from 'dateparser';
 import publishMessage from '../../helpers/publish-message';
-import { Message, MessageInstance } from '../../types/server';
+import { Message, User, MessageInstance } from '../../types/server';
 
 const router = express.Router();
 
@@ -57,7 +57,7 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
         req.app.locals.Message.findAll({
             attributes: ['publicId'],
             where: {
-                UserId: req.user.id,
+                UserId: req.user!.id,
                 localId: req.body.localId,
                 publicId: {
                     [Sequelize.Op.ne]: message.publicId,
@@ -84,7 +84,7 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
             }).then((updatedRows: number[]) => {
                 if (updatedRows[0] > 0) {
                     ids.forEach((id) => {
-                        publishMessage(req.app, req.user, null, id);
+                        publishMessage(req.app, req.user as User, null, id);
                     });
                 }
             });
@@ -94,13 +94,13 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
     }
 
     message.save().then(() => {
-        message.setUser(req.user).then(() => {
+        message.setUser(req.user as User).then(() => {
             const expiration = message.get('expiresAt');
             if (expiration) {
                 req.app.locals.expirationCache[message.get('publicId')] = [req.user, message.get('expiresAt')];
             }
 
-            publishMessage(req.app, req.user, message);
+            publishMessage(req.app, req.user as User, message);
             res.sendStatus(204);
         });
     }).catch((error: Error) => {
@@ -122,7 +122,7 @@ router.patch('/', (req, res) => {
 
     req.app.locals.Message.update(fieldObject, {
         where: {
-            UserId: req.user.id,
+            UserId: req.user!.id,
             publicId: req.body.publicId,
         },
     }).then((affectedRows: number[]) => {
@@ -132,11 +132,11 @@ router.patch('/', (req, res) => {
 
         req.app.locals.Message.findOne({
             where: {
-                UserId: req.user.id,
+                UserId: req.user!.id,
                 publicId: req.body.publicId,
             },
         }).then((message: MessageInstance) => {
-            publishMessage(req.app, req.user, message);
+            publishMessage(req.app, req.user as User, message);
             res.sendStatus(204);
         });
     });

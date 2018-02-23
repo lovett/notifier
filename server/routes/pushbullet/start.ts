@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as url from 'url';
 import generateTokenKeyValue from '../../helpers/token-keyvalue';
 
-import { GenerateCallback, TokenInstance } from '../../types/server';
+import { GenerateCallback, TokenInstance, User } from '../../types/server';
 
 const router = express.Router();
 
@@ -42,7 +42,7 @@ router.get('/', (req: express.Request, res: express.Response) => {
     const callback: GenerateCallback = (_: string, value: string) => {
         token.value = value;
         token.save().then((t) => {
-            t.setUser(req.user).then(() => {
+            t.setUser(req.user as User).then(() => {
                 sendUrl(token.value);
             });
         }, (error: Error) => {

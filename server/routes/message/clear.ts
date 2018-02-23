@@ -1,6 +1,6 @@
 import * as express from 'express';
 import publishMessage from '../../helpers/publish-message';
-import { MessageInstance } from '../../types/server';
+import { User, MessageInstance } from '../../types/server';
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.post('/', (req: express.Request, res: express.Response) => {
 
             delete req.app.locals.expirationCache[id];
 
-            publishMessage(req.app, req.user, null, id);
+            publishMessage(req.app, req.user as User, null, id);
             res.sendStatus(204);
 
             return true;

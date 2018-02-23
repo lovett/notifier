@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as needle from 'needle';
 import getServiceTokens from '../helpers/service-tokens';
-import { Message, MessageInstance, TokenInstance, UserInstance } from '../types/server';
+import { Message, MessageInstance, TokenInstance, User } from '../types/server';
 
 enum PushbulletType {
     note = 'note',
@@ -18,14 +18,14 @@ interface PushbulletParams {
 }
 
 
-function publishServerEvent(app: express.Application, _: UserInstance, message: Message) {
+function publishServerEvent(app: express.Application, _: User, message: Message) {
     for (const id of Object.keys(app.locals.pushClients)) {
         const res = app.locals.pushClients[id];
         res.write(`event: message\ndata: ${JSON.stringify(message)}\n\n`);
     }
 }
 
-function publishPushbullet(app: express.Application, _: UserInstance, message: Message, tokenValue: string) {
+function publishPushbullet(app: express.Application, _: User, message: Message, tokenValue: string) {
     let params;
 
     if (message.hasOwnProperty('retracted')) {
@@ -78,7 +78,7 @@ function publishPushbullet(app: express.Application, _: UserInstance, message: M
     });
 }
 
-function publishWebhook(_: UserInstance, message: Message, tokenValue: string) {
+function publishWebhook(_: User, message: Message, tokenValue: string) {
     delete message.UserId;
     delete message.id;
 
@@ -101,7 +101,7 @@ function publishWebhook(_: UserInstance, message: Message, tokenValue: string) {
 
 
 
-export default (app: express.Application, user: UserInstance, message: MessageInstance|null, retractionId?: string) => {
+export default (app: express.Application, user: User, message: MessageInstance|null, retractionId?: string) => {
 
     let messageValues: Message;
 
