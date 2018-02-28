@@ -23,8 +23,9 @@ appDirectives.directive('notifierFocus', [() => {
     };
 }]);
 
-appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$document', (MessageList, $rootScope, $document) => {
+appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$document', '$timeout', (MessageList, $rootScope, $document, $timeout) => {
     const shortcutMap: app.ShortcutMap = [];
+    let messageNumber = 0;
 
     shortcutMap[49] = {
         action(charCode) {
@@ -35,15 +36,6 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
         key: '1..9',
         shiftKey: false,
     };
-
-    shortcutMap[50] = {charCode: 49};
-    shortcutMap[51] = {charCode: 49};
-    shortcutMap[52] = {charCode: 49};
-    shortcutMap[53] = {charCode: 49};
-    shortcutMap[54] = {charCode: 49};
-    shortcutMap[55] = {charCode: 49};
-    shortcutMap[56] = {charCode: 49};
-    shortcutMap[57] = {charCode: 49};
 
     shortcutMap[67] = {
         action() {
@@ -130,6 +122,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
 
     shortcutMap[27] = {
         action() {
+            messageNumber = 0;
             MessageList.activateNone();
             $rootScope.$broadcast('shortcuts', false);
         },
@@ -162,6 +155,21 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
 
                 // Safari triggers a keyless keydown event during login autofill
                 if (!charCode) {
+                    return;
+                }
+
+                // Selecting a message does not use the shortcut map to allow for
+                // multi-key input for indexes greater than 9
+                const numericValue = parseInt(e.key, 10);
+                if (numericValue >= 0) {
+                    messageNumber = messageNumber * 10 + numericValue;
+
+                    $timeout(() => {
+                        if (messageNumber > 0) {
+                            MessageList.activateByIndex(messageNumber - 1);
+                            messageNumber = 0;
+                        }
+                    }, 250);
                     return;
                 }
 
