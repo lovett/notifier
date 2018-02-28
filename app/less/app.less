@@ -117,7 +117,7 @@ footer {
     margin-bottom: 0.5em;
     overflow: hidden;
     position: relative;
-    padding: 0.25em 6em;
+    padding: 0.5em 6em;
     display: block;
     color: black;
     break-inside: avoid;
@@ -148,9 +148,10 @@ footer {
 
     .index {
         position: absolute;
-        top: 0.5em;
-        right: 0.5em;
+        top: 0;
+        right: 0;
         font-size: 0.5em;
+        padding: 0.5em 0.75em;
     }
 
     .options {
@@ -232,11 +233,15 @@ footer {
 
 .message.focused,
 .message:focus {
-    border-color: darken(@palettePrimary, 15%);
     outline: 0;
 
     .options {
         opacity: 1;
+    }
+
+    .index {
+        background-color: black;
+        color: #fff;
     }
 }
 
