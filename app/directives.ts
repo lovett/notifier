@@ -227,39 +227,34 @@ appDirectives.directive('notifierAppcacheReload', ['$window', ($window) => {
 }]);
 
 appDirectives.directive('notifierStatusBar', ['MessageList', ( MessageList) => {
+    function messageCount() {
+        const count = MessageList.count();
+
+        if (count === 0) {
+            return '';
+        }
+
+        const label = (count === 1) ? 'message' : 'messages';
+        return `${count} ${label}`;
+    }
+
     return {
         link(scope: app.StatusBarScope) {
             scope.$on('connection:change', (_, state, message) => {
                 scope.$evalAsync(() => {
-                    scope.message = message || state;
-
                     if (state === 'offline' || state === 'disconnected' || state === 'error') {
+                        scope.message = message || state;
                         scope.disconnected = true;
                     } else {
+                        scope.message = messageCount();
                         scope.disconnected = false;
                     }
                 });
             });
 
             scope.$on('queue:change', () => {
-                const summary: string[] = [];
-                const tallys = MessageList.tallyByGroup();
-
-                let message: string;
-
-                Object.keys(tallys).forEach((group) => {
-                    const displayName = (group === 'default') ? 'ungrouped' : group;
-                    summary.push(`${tallys[group]} ${displayName}`);
-                });
-
-                if (summary.length > 3) {
-                    message = `${MessageList.count()} messages in ${summary.length} groups`;
-                } else {
-                    message = summary.sort().join(', ');
-                }
-
                 scope.$evalAsync(() => {
-                    scope.message = message;
+                    scope.message = messageCount();
                 });
             });
         },

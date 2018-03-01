@@ -393,10 +393,6 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location
             }).finally(() => lastFetched = now);
         },
 
-        tallyByGroup() {
-            return store.tallyByGroup();
-        },
-
         canUnclear() {
             return removedIds.length > 0;
         },

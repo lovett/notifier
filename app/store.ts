@@ -158,17 +158,6 @@ export default class Store {
         });
     }
 
-    public tallyByGroup() {
-        return Object.keys(this.items).reduce((accumulator: { [key: string]: number; }, key) => {
-            const group = this.items[key].group;
-            if (group in accumulator === false) {
-                accumulator[group] = 0;
-            }
-            accumulator[group] += 1;
-            return accumulator;
-        }, {});
-    }
-
     public itemList(): Message[] {
         const messages = Object.keys(this.items).map((k: string) => this.items[k]);
 
