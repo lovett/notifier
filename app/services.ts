@@ -289,7 +289,6 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location
                 return;
             }
 
-            store.activateByStep(1);
             clear([activeMessage]);
         },
 
