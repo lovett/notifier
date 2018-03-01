@@ -75,7 +75,8 @@ multimessage: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -t "chore group test message"		-g chore		-b "Message 9"	-p 0	-l "multi-chore"
 	clients/send-notification -s $(NOTIFIER_DEV) -t "education group test message"	-g education	-b "Message 10"	-p 0	-l "multi-education"
 	clients/send-notification -s $(NOTIFIER_DEV) -t "computer group test message"	-g computer	    -b "Message 11"	-p 0	-l "multi-computer"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "custom badge test message"                     -b "Message 12" -p 0    -l "mult-badge" -i "test.svg"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "financial group test message"	-g financial    -b "Message 12"	-p 0	-l "multi-financial"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "custom badge test message"                     -b "Message 13" -p 0    -l "mult-badge" -i "test.svg"
 
 retract: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -c -l test
