@@ -16,26 +16,23 @@
       shell="/usr/sbin/nologin"
       system=yes
 
-  - name: Create the application directories
+  - name: Create the log directory
     become: true
     file:
-      path: "{{ item }}"
+      path: "/var/log/notifier"
       state: directory
       owner: "{{ application_user }}"
       group: "{{ application_user }}"
       mode: 0700
-    with_items:
-      - "{{ installation_directory }}"
-      - /var/log/notifier
 
-  - name: Rsync
+  - name: Rsync the application
     become: true
     become_user: "{{ application_user }}"
     synchronize:
+      archive: yes
       src: "../notifier/"
       dest: "{{ installation_directory }}"
-      delete: true
-      recursive: true
+      delete: yes
 
   - name: Populate the systemd unit
     become: true
