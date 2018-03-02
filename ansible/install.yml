@@ -34,24 +34,30 @@
       dest: "{{ installation_directory }}"
       delete: yes
 
-  - name: Populate the systemd unit
+  - name: Populate the systemd service
     become: true
     template:
       src: "notifer.service.j2"
       dest: "/etc/systemd/system/notifier.service"
-    notify: Reload systemd
 
   - name: Enable systemd service
     become: true
-    command: systemctl enable notifier
+    systemd:
+      name: notifier
+      enabled: yes
+      masked: no
+      daemon_reload: yes
 
-  - name: Restart the application
+  - name: Restart the server
     become: true
-    command: systemctl restart notifier
+    systemd:
+      name: notifier
+      state: restarted
 
-  handlers:
-    - name: Reload systemd
-      become: true
-      command: systemctl daemon-reload
+  - name: Wait for server to come up
+    wait_for:
+      host: 0.0.0.0
+      port: 8080
+      state: started
 
 ...
