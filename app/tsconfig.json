@@ -4,7 +4,7 @@
       "dom",
       "es5"
     ],
-    "outDir": "../public/app",
+    "outDir": "../build/app",
     "typeRoots": [
       "../worker/types",
       "../node_modules/@types/"
