@@ -6,7 +6,6 @@ TAGS
 node_modules
 notifier
 production_logs
-public
 .nodemonignore
 *.scpt
 *.sqlite
