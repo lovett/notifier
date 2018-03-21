@@ -36,7 +36,7 @@ build: packages app worker server
 	tar --create --gzip --file="notifier.tar.gz" notifier
 
 app: dummy
-	npm run build:app
+	webpack --config webpack-app.ts
 	./node_modules/.bin/uglifyjs -o build/public/app-minified.js build/public/app.js
 	mv build/public/app-minified.js build/public/app.js
 
@@ -48,11 +48,21 @@ packages:
 	npm install -D --no-optional
 
 worker: dummy
-	npm run build:worker
+	webpack --config webpack-worker.ts
 
 server: dummy
 	rm -rf build/server
-	npm run build:server
+	tsc -p server
+
+tsserver: dummy
+	rm -rf build/server
+	tsc -p server -w
+
+devserver:
+	nodemon server
+
+livereload:
+	livereload build/public -p 35740 -d -u 1
 
 migrate: dummy
 	sqlite3 notifier.sqlite < migrations/01-message-drop-deliveredat.sql
