@@ -25,10 +25,13 @@ appControllers.controller('MessageController', ['$scope', '$location', 'User', '
 
     $scope.$on('connection:change', (_: angular.IAngularEvent, state: string) => {
         $scope.connectionState = state;
+
+        if (state === 'connected') {
+            $scope.queue.fetch();
+        }
     });
 
     $scope.queue = MessageList;
-    $scope.queue.fetch();
 
     PushClient.connect();
 
