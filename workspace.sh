@@ -23,24 +23,19 @@ tmux attach-session -d -t "$PROJECT_NAME" || {
     tmux new-window -a -t "$PROJECT_NAME" bash
 
     ## 2: Webpack, app
-    tmux new-window -a -t "$PROJECT_NAME" -n "app" "NODE_ENV=dev npm run build:app"
+    tmux new-window -a -t "$PROJECT_NAME" -n "app" "NODE_ENV=dev make app"
 
     ## 3: Webpack, worker
-    tmux new-window -a -t "$PROJECT_NAME" -n "worker" "NODE_ENV=dev npm run build:worker"
+    tmux new-window -a -t "$PROJECT_NAME" -n "worker" "NODE_ENV=dev make worker"
 
-    ## 3: Typescript, server
-    tmux new-window -a -t "$PROJECT_NAME" -n "server" "NODE_ENV=dev npm run build:server -- -w"
+    ## 4: Typescript server
+    tmux new-window -a -t "$PROJECT_NAME" -n "tsserver" "NODE_ENV=dev make tsserver"
 
-    ## 4: Livereload
-    tmux new-window -a -t "$PROJECT_NAME" -n "watch" "NODE_ENV=dev npm run watch"
+    ## 5: Live reload
+    tmux new-window -a -t "$PROJECT_NAME" -n "livereload" "NODE_ENV=dev make livereload"
 
-    ## 5: Dev server
-    tmux new-window -a -t "$PROJECT_NAME" -n "devserver" "npm run devserver"
-
-    ## 6: Log
-    rm -f "$LOG"
-    touch "$LOG" 2> /dev/null
-    tmux new-window -a -t "$PROJECT_NAME" -n "log" "tail -f $LOG"
+    ## 6: Dev server
+    tmux new-window -a -t "$PROJECT_NAME" -n "devserver" "make devserver"
 
     tmux select-window -t "$PROJECT_NAME":0
 
