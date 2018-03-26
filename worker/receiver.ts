@@ -4,6 +4,8 @@ import {WorkerEvent} from '../worker/events';
 export class Receiver {
     private eventSource: any;
 
+    private reconnectTimer: number = 0;
+
     public connect() {
 
         this.eventSource = new EventSource('push');
@@ -24,13 +26,34 @@ export class Receiver {
         });
 
         this.eventSource.addEventListener('error', () => {
+            this.setReconnectTimer();
             const reply = new WorkerMessage(WorkerEvent.disconnected);
             return reply.send();
         });
+
+        this.clearReconnectTimer();
     }
 
     public disconnect() {
         this.eventSource.close();
+    }
+
+    public clearReconnectTimer() {
+        clearTimeout(this.reconnectTimer);
+    }
+
+    public setReconnectTimer() {
+        const self = this;
+        this.clearReconnectTimer();
+
+        this.reconnectTimer = setTimeout(() => {
+            self.reconnect();
+        }, 2000);
+    }
+
+    public reconnect() {
+        this.disconnect();
+        this.connect();
     }
 
     public parseMessage(data: string) {
