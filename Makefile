@@ -45,6 +45,16 @@ app: dummy
 hooks: dummy
 	cp hooks/* .git/hooks/
 
+#
+# Check for outdated NPM packages
+#
+# Uses "or true" after the npm command to prevent a non-zero exit code
+# from producing a warning. Non-zero exit here is not an indicator of
+# badness.
+#
+outdated: dummy
+	npm outdated || true
+
 packages: export NPM_CONFIG_PROGRESS = false
 packages:
 	npm install -D --no-optional
