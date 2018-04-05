@@ -70,9 +70,6 @@ tsserver: dummy
 	rm -rf build/server
 	tsc -p server -w
 
-livereload:
-	livereload build/public -p 35740 -d -u 1
-
 migrate: dummy
 	sqlite3 notifier.sqlite < migrations/01-message-drop-deliveredat.sql
 

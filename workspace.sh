@@ -32,10 +32,10 @@ tmux attach-session -d -t "$PROJECT_NAME" || {
     tmux new-window -a -t "$PROJECT_NAME" -n "tsserver" "NODE_ENV=dev make tsserver"
 
     ## 5: Live reload
-    tmux new-window -a -t "$PROJECT_NAME" -n "livereload" "NODE_ENV=dev make livereload"
+    tmux new-window -a -t "$PROJECT_NAME" -n "livereload" "node_modules/.bin/livereload build/public -p 35740 -d -u 1"
 
     ## 6: Dev server
-    tmux new-window -a -t "$PROJECT_NAME" -n "devserver" "nodemon --signal SIGHUP server"
+    tmux new-window -a -t "$PROJECT_NAME" -n "devserver" "node_modules/.bin/nodemon --signal SIGHUP server"
 
     tmux select-window -t "$PROJECT_NAME":0
 
