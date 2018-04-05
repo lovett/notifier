@@ -70,9 +70,6 @@ tsserver: dummy
 	rm -rf build/server
 	tsc -p server -w
 
-devserver:
-	nodemon server
-
 livereload:
 	livereload build/public -p 35740 -d -u 1
 
