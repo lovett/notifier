@@ -1,12 +1,16 @@
-import * as webpack from 'webpack';
+import {Configuration} from 'webpack';
 import {resolve} from 'path';
 
-const config: webpack.Configuration = {
+const mode = (process.env.NODE_ENV !== 'production') ? 'development' : 'production';
+
+const config: Configuration = {
     context: resolve(__dirname, 'worker'),
 
     devtool: false,
 
     entry: './worker.ts',
+
+    mode,
 
     module: {
         rules: [{
@@ -16,14 +20,14 @@ const config: webpack.Configuration = {
         }],
     },
 
+    optimization: {
+        minimize: true,
+    },
+
     output: {
         filename: 'worker.js',
         path: resolve(__dirname, 'build/public'),
     },
-
-    plugins: [
-        new webpack.optimize.UglifyJsPlugin(),
-    ],
 
     resolve: {
         extensions: ['.ts'],
@@ -32,8 +36,7 @@ const config: webpack.Configuration = {
     target: 'webworker',
 };
 
-if (process.env.NODE_ENV === 'dev') {
-    config.devtool = 'inline-source-map';
+if (mode === 'development') {
     config.watch = true;
     config.watchOptions = {
         ignored: /node_modules/,
