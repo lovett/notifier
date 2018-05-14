@@ -50,6 +50,10 @@ const config: Configuration = {
         ],
     },
 
+    optimization: {
+        minimize: true,
+    },
+
     output: {
         filename: 'app.js',
         path: resolve(__dirname, 'build/public'),
