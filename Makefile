@@ -3,6 +3,7 @@
 export PATH := ./node_modules/.bin:$(PATH)
 
 build: export NPM_CONFIG_PROGRESS = false
+build: export NODE_ENV = production
 build: packages app worker server
 	rsync -ar \
 	--exclude='***/.bin' \
