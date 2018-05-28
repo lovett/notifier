@@ -1,6 +1,7 @@
 import {Configuration} from 'webpack';
 import {resolve} from 'path';
 import * as MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import * as UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 
 const mode = (process.env.NODE_ENV !== 'production') ? 'development' : 'production';
 
@@ -53,6 +54,13 @@ const config: Configuration = {
 
     optimization: {
         minimize: true,
+        minimizer: [
+            new UglifyJsPlugin({
+                uglifyOptions: {
+                    mangle: false,
+                },
+            }),
+        ],
     },
 
     output: {
