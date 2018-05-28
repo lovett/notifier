@@ -56,7 +56,7 @@ outdated: dummy
 
 packages: export NPM_CONFIG_PROGRESS = false
 packages:
-	npm install -D --no-optional
+	npm install
 
 worker: dummy
 	webpack --config webpack-worker.ts
