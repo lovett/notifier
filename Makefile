@@ -101,6 +101,4 @@ resetdb: dummy
 	touch server/server.ts
 
 # "test:server": "mocha --bail --reporter min test",
-# "test:client": "karma start app/test/karma.conf.js --single-run",
 # "coverage:server": "istanbul cover --dir coverage/server _mocha -- -R min test",
-# "coverage:client": "echo 'Nope. Client coverage is automatically written by test:client'",
