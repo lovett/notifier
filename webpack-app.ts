@@ -29,6 +29,7 @@ const config: Configuration = {
             {
                 test: /\.less$/,
                 use: [
+                    MiniCssExtractPlugin.loader,
                     'css-loader?sourceMap=false&minimize=true',
                     'less-loader?sourceMap=false',
                 ],
