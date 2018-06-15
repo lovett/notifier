@@ -34,7 +34,7 @@ pipeline {
 
     post {
         always {
-            archive "*.tar.gz"
+            archiveArtifacts "*.tar.gz"
         }
 
         success {
