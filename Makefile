@@ -4,7 +4,7 @@ export PATH := ./node_modules/.bin:$(PATH)
 
 build: export NPM_CONFIG_PROGRESS = false
 build: export NODE_ENV = production
-build: packages app worker server
+build: setup app worker server
 	rsync -ar \
 	--exclude='***/.bin' \
 	--exclude='***/test' \
@@ -54,8 +54,8 @@ hooks: dummy
 outdated: dummy
 	npm outdated || true
 
-packages: export NPM_CONFIG_PROGRESS = false
-packages:
+setup: export NPM_CONFIG_PROGRESS = false
+setup:
 	npm install
 
 worker: dummy
