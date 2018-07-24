@@ -56,7 +56,7 @@ outdated: dummy
 
 setup: export NPM_CONFIG_PROGRESS = false
 setup:
-	npm install
+	npm install --dev
 
 worker: dummy
 	webpack --config webpack-worker.ts
