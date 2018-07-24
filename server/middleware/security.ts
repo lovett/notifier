@@ -1,3 +1,4 @@
+import * as url from "url";
 import * as util from "util";
 import * as express from "express";
 
@@ -31,16 +32,17 @@ export default function(req: express.Request, res: express.Response, next: expre
     }
 
     const csp: CspParams = {
-        'child-src': ['self'],
         'connect-src': ['self', 'data:', 'unsafe-inline'],
         'default-src': ['none'],
         'img-src': ['self'],
         'script-src': ['self', 'data:', 'unsafe-inline', util.format('%s://%s%s', scheme, hostname, port)],
-        'style-src': ['self'],
+        'style-src': ['self', 'unsafe-inline'],
+        'worker-src': ['self'],
     };
 
     if (config.get('NOTIFIER_BADGE_BASE_URL')) {
-        csp['img-src'].push(config.get('NOTIFIER_BADGE_BASE_URL'));
+        const parsedUrl = url.parse(config.get('NOTIFIER_BADGE_BASE_URL'));
+        csp['img-src'].push(parsedUrl.host as string);
     }
 
     if (config.get('NOTIFIER_LIVERELOAD_HOST') && config.get('NOTIFIER_LIVERELOAD_PORT')) {
@@ -56,9 +58,10 @@ export default function(req: express.Request, res: express.Response, next: expre
 
     const cspString = Object.keys(csp).reduce((acc, key) => {
         let values;
+        const quotables = ['self', 'none', 'unsafe-inline', 'unsafe-eval'];
 
         values = csp[key].map((value) => {
-            if (value.match(/.:/)) {
+            if (quotables.indexOf(value) === -1) {
                 return value;
             }
 
