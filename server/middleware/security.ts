@@ -33,11 +33,10 @@ export default function(req: express.Request, res: express.Response, next: expre
 
     const csp: CspParams = {
         'connect-src': ['self', 'data:', 'unsafe-inline'],
-        'default-src': ['none'],
+        'default-src': ['self'],
         'img-src': ['self'],
         'script-src': ['self', 'data:', 'unsafe-inline', util.format('%s://%s%s', scheme, hostname, port)],
         'style-src': ['self', 'unsafe-inline'],
-        'worker-src': ['self'],
     };
 
     if (config.get('NOTIFIER_BADGE_BASE_URL')) {
