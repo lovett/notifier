@@ -23,10 +23,10 @@ tmux attach-session -d -t "$PROJECT_NAME" || {
     tmux new-window -a -t "$PROJECT_NAME" bash
 
     ## 2: Webpack, app
-    tmux new-window -a -t "$PROJECT_NAME" -n "app" "NODE_ENV=dev make app"
+    tmux new-window -a -t "$PROJECT_NAME" -n "app" "make app"
 
     ## 3: Webpack, worker
-    tmux new-window -a -t "$PROJECT_NAME" -n "worker" "NODE_ENV=dev make worker"
+    tmux new-window -a -t "$PROJECT_NAME" -n "worker" "make worker"
 
     ## 4: Typescript server
     tmux new-window -a -t "$PROJECT_NAME" -n "tsserver" "NODE_ENV=dev make tsserver"

@@ -38,7 +38,24 @@ build: setup app worker server
 	rm -f "notifier.tar.gz"
 	tar --create --gzip --file="notifier.tar.gz" notifier
 
+#
+# Build the browser UI via webpack.
+#
+# When this target is invoked directly, webpack will run in
+# development mode resulting in a long-running process that triggers a
+# rebuild whenever a file in the app directory is modified.
+#
+# When invoked as a dependency of the build target, webpack will run
+# in production mode based on the NODE_ENV environment.
+#
+# Extra care is taken to clean up previous webpack instances via
+# pkill. Instances created within a Tmux workspace may not die depending
+# on how the workspace is terminated.
+#
+# The same approach is used in the worker target.
+#
 app: dummy
+	pkill -f "webpack --config webpack-app.ts" || true
 	webpack --config webpack-app.ts
 
 hooks: dummy
@@ -58,7 +75,24 @@ setup: export NPM_CONFIG_PROGRESS = false
 setup:
 	npm install --dev
 
+#
+# Build the web worker portion of the UI via webpack.
+#
+# When this target is invoked directly, webpack will run in
+# development mode resulting in a long-running process that triggers a
+# rebuild whenever a file in the worker directory is modified.
+#
+# When invoked as a dependency of the build target, webpack will run
+# in production mode based on the NODE_ENV environment.
+#
+# Extra care is taken to clean up previous webpack instances via
+# pkill. Instances created within a Tmux workspace may not die depending
+# on how the workspace is terminated.
+#
+# The same approach is used in the app target.
+#
 worker: dummy
+	pkill -f "webpack --config webpack-worker.ts" || true
 	webpack --config webpack-worker.ts
 
 server: dummy
@@ -100,5 +134,6 @@ resetdb: dummy
 	rm notifier.sqlite
 	touch server/server.ts
 
+# Leftovers from an earlier setup.
 # "test:server": "mocha --bail --reporter min test",
 # "coverage:server": "istanbul cover --dir coverage/server _mocha -- -R min test",
