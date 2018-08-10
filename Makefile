@@ -134,6 +134,17 @@ resetdb: dummy
 	rm notifier.sqlite
 	touch server/server.ts
 
+#
+# Create a package upgrade commit.
+#
+# "puc" stands for Package Upgrade Commit
+#
+puc: dummy
+	git checkout master
+	git add package.json package-lock.json
+	git commit -m "Upgrade npm packages"
+
+
 # Leftovers from an earlier setup.
 # "test:server": "mocha --bail --reporter min test",
 # "coverage:server": "istanbul cover --dir coverage/server _mocha -- -R min test",
