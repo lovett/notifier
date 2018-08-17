@@ -73,7 +73,7 @@ outdated: dummy
 
 setup: export NPM_CONFIG_PROGRESS = false
 setup:
-	npm install --dev
+	npm install
 
 #
 # Build the web worker portion of the UI via webpack.
