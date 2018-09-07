@@ -74,6 +74,7 @@ outdated: dummy
 setup: export NPM_CONFIG_PROGRESS = false
 setup:
 	npm install
+	npm outdated || true
 
 #
 # Build the web worker portion of the UI via webpack.
