@@ -35,7 +35,7 @@ tmux attach-session -d -t "$PROJECT_NAME" || {
     tmux new-window -a -t "$PROJECT_NAME" -n "livereload" "node_modules/.bin/livereload build/public -p 35740 -d -u 1"
 
     ## 6: Dev server
-    tmux new-window -a -t "$PROJECT_NAME" -n "devserver" "node_modules/.bin/nodemon --signal SIGHUP server"
+    tmux new-window -a -t "$PROJECT_NAME" -n "devserver" "sleep 5; node_modules/.bin/nodemon --signal SIGHUP server"
 
     tmux select-window -t "$PROJECT_NAME":0
 
