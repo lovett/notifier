@@ -73,7 +73,7 @@ outdated: dummy
 
 setup: export NPM_CONFIG_PROGRESS = false
 setup:
-	npm install
+	NODE_ENV=dev npm install --no-optional
 	npm outdated || true
 
 #
