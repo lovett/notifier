@@ -1,7 +1,7 @@
 import * as Sequelize from 'sequelize';
-import { Token, TokenInstance } from '../types/server';
+import { TokenInstance } from '../types/server';
 
-export default function(sequelize: Sequelize.Sequelize): Sequelize.Model<TokenInstance, Token> {
+export default function(sequelize: Sequelize.Sequelize): Sequelize.Model<TokenInstance, any> {
 
     const fields: Sequelize.DefineAttributes = {
         key: {
