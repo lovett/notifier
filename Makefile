@@ -55,7 +55,7 @@ build: setup app worker server
 # The same approach is used in the worker target.
 #
 app: dummy
-	pkill -f "webpack --config webpack-app.ts" || true
+	pkill -f "[w]ebpack --config webpack-app.ts" || true
 	webpack --config webpack-app.ts
 
 hooks: dummy
@@ -93,7 +93,7 @@ setup:
 # The same approach is used in the app target.
 #
 worker: dummy
-	pkill -f "webpack --config webpack-worker.ts" || true
+	pkill -f "[w]ebpack --config webpack-worker.ts" || true
 	webpack --config webpack-worker.ts
 
 server: dummy
