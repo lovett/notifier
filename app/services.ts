@@ -237,8 +237,6 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location
 
     let removedIds: string[] = [];
 
-    let lastFetched: Date = new Date(0);
-
     const clear = (messages: Message[]) => {
         for (const message of messages) {
             message.state = 'clearing';
@@ -356,8 +354,6 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location
 
 
         fetch() {
-            const now = new Date();
-
             $http({
                 method: 'GET',
                 url: 'archive',
@@ -390,7 +386,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location
                 if (res.status === 401) {
                     $location.path('login');
                 }
-            }).finally(() => lastFetched = now);
+            });
         },
 
         canUnclear() {
