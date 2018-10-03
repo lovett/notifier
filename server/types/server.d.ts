@@ -14,7 +14,6 @@ interface Message extends IndexSignature {
     publicId?: string;
     retracted?: string;
     localId?: string;
-    pushbulletId?: string;
     UserId?: number;
 
 }
@@ -26,7 +25,6 @@ interface MessageInstance extends Sequelize.Instance<Message> {
     expiresAt?: Date;
     localId?: string;
     publicId: string;
-    pushbulletId?: string;
     purgeServiceToken(service: string, callback: (affectedRows: number) => void): void;
     setUser(user: User): Promise<MessageInstance>;
     title: string;

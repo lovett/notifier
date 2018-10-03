@@ -31,8 +31,6 @@ import messageIndex from './routes/message/index';
 import messageUnclear from './routes/message/unclear';
 import publishMessage from './helpers/publish-message';
 import push from './routes/push';
-import pushbulletFinish from './routes/pushbullet/finish';
-import pushbulletStart from './routes/pushbullet/start';
 import revoke from './routes/revoke';
 import robots from './routes/robots';
 import security from './middleware/security';
@@ -83,8 +81,6 @@ nconf.defaults({
     NOTIFIER_PASSWORD_HASH_KEYLENGTH: 64,
     NOTIFIER_PASSWORD_HASH_RANDBYTES: 64,
     NOTIFIER_PUBLIC_DIR: path.resolve('./build/public'),
-    NOTIFIER_PUSHBULLET_CLIENT_ID: undefined,
-    NOTIFIER_PUSHBULLET_CLIENT_SECRET: undefined,
     NOTIFIER_SSL_CERT: undefined,
     NOTIFIER_SSL_KEY: undefined,
 });
@@ -187,10 +183,6 @@ router.use('/deauth', deauth);
 router.use('/services', app.locals.protected, services);
 
 router.use('/revoke', app.locals.protected, revoke);
-
-router.use('/authorize/pushbullet/start', app.locals.protected, pushbulletStart);
-
-router.use('/authorize/pushbullet/finish', pushbulletFinish);
 
 router.use('/auth', passport.authenticate('local', { session: false }), auth);
 

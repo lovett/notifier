@@ -75,11 +75,6 @@ export default function(sequelize: Sequelize.Sequelize, badgeBaseUrl: string) {
             type: Sequelize.UUID,
         },
 
-        pushbulletId: {
-            allowNull: true,
-            type: Sequelize.STRING(255),
-        },
-
         source: {
             allowNull: true,
             set(this: MessageInstance, value: string) {
