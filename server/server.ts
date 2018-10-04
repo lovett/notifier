@@ -4,7 +4,6 @@ import * as cookieParser from 'cookie-parser';
 import * as crypto from 'crypto';
 import * as express from 'express';
 import * as fs from 'fs';
-import * as https from 'https';
 import * as nconf from 'nconf';
 import * as passport from 'passport';
 import * as path from 'path';
@@ -81,8 +80,6 @@ nconf.defaults({
     NOTIFIER_PASSWORD_HASH_KEYLENGTH: 64,
     NOTIFIER_PASSWORD_HASH_RANDBYTES: 64,
     NOTIFIER_PUBLIC_DIR: path.resolve('./build/public'),
-    NOTIFIER_SSL_CERT: undefined,
-    NOTIFIER_SSL_KEY: undefined,
 });
 
 app = express();
@@ -241,18 +238,12 @@ if (!module.parent) {
             }
         })
         .then(() => {
-            let server;
-            if (app.locals.config.get('NOTIFIER_SSL_CERT')) {
-                server = https.createServer({
-                    cert: fs.readFileSync(nconf.get('NOTIFIER_SSL_CERT')),
-                    key: fs.readFileSync(nconf.get('NOTIFIER_SSL_KEY')),
-                }, app).listen(nconf.get('NOTIFIER_HTTP_PORT'), nconf.get('NOTIFIER_HTTP_IP'));
-            } else {
-                server = app.listen(nconf.get('NOTIFIER_HTTP_PORT'), nconf.get('NOTIFIER_HTTP_IP'));
-            }
+            const port = nconf.get('NOTIFIER_HTTP_PORT');
+            const ip = nconf.get('NOTIFIER_HTTP_IP');
+            const server = app.listen(port, ip);
 
             server.on('listening', () => {
-                process.stdout.write(`Listening on ${nconf.get('NOTIFIER_HTTP_IP')}:${nconf.get('NOTIFIER_HTTP_PORT')}\n`);
+                process.stdout.write(`Listening on ${ip}:${port}\n`);
             });
         })
         .catch((err) => {
