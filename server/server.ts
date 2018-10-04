@@ -3,7 +3,6 @@ import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
 import * as crypto from 'crypto';
 import * as express from 'express';
-import * as fs from 'fs';
 import * as nconf from 'nconf';
 import * as passport from 'passport';
 import * as path from 'path';
@@ -73,7 +72,6 @@ nconf.defaults({
     NOTIFIER_FORCE_HTTPS: 0,
     NOTIFIER_HTTP_IP: '127.0.0.1',
     NOTIFIER_HTTP_PORT: 8080,
-    NOTIFIER_LESS_DIR: path.resolve('./app/less'),
     NOTIFIER_LIVERELOAD_HOST: undefined,
     NOTIFIER_LIVERELOAD_PORT: 35729,
     NOTIFIER_PASSWORD_HASH_ITERATIONS: 20000,
