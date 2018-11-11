@@ -126,7 +126,8 @@ multimessage: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -t "education group test message"	-g education	-b "Message 10"	-l "multi-education"
 	clients/send-notification -s $(NOTIFIER_DEV) -t "computer group test message"	-g computer	    -b "Message 11"	-l "multi-computer"
 	clients/send-notification -s $(NOTIFIER_DEV) -t "financial group test message"	-g financial    -b "Message 12"	-l "multi-financial"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "custom badge test message"                     -b "Message 13" -l "mult-badge" -i "test.svg"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "timer group test message"	    -g timer        -b "Message 13"	-l "multi-timer"
+	clients/send-notification -s $(NOTIFIER_DEV) -t "custom badge test message"                     -b "Message 14" -l "mult-badge" -i "test.svg"
 
 retract: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -c -l test
