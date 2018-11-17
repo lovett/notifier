@@ -12,7 +12,6 @@ import * as Sequelize from 'sequelize';
 import Message from './models/Message';
 import Token from './models/Token';
 import User from './models/User';
-import appCache from './routes/appcache';
 import archive from './routes/archive';
 import asset from './middleware/asset';
 import auth from './routes/auth';
@@ -166,8 +165,6 @@ router = express.Router();
 router.use(asset(nconf.get('NOTIFIER_PUBLIC_DIR')));
 
 router.use(/^\/(login|logout)?$/, index);
-
-router.use('/notifier.appcache', appCache);
 
 router.use('/robots.txt', robots);
 

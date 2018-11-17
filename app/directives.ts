@@ -209,23 +209,6 @@ appDirectives.directive('notifierOfflineEvent', ['$window', '$rootScope', ($wind
     };
 }]);
 
-appDirectives.directive('notifierAppcacheReload', ['$window', ($window) => {
-    return {
-        link(_: ng.IScope, element) {
-            if (!$window.hasOwnProperty('applicationCache')) {
-                element.addClass('appcache-nope');
-                return;
-            }
-
-            $window.applicationCache.addEventListener('updateready', () => {
-                $window.location.reload();
-            });
-        },
-
-        restrict: 'A',
-    };
-}]);
-
 appDirectives.directive('notifierStatusBar', ['MessageList', ( MessageList) => {
     function messageCount() {
         const count = MessageList.count();
