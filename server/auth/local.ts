@@ -5,7 +5,7 @@ import { UserInstance } from '../types/server';
 
 export default (app: express.Application) => {
     return new LocalStrategy((username, password, done) => {
-        app.locals.User.find({ where: { username } }).then((user: UserInstance) => {
+        app.locals.User.findOne({ where: { username } }).then((user: UserInstance) => {
             if (!user) {
                 return done(null, false);
             }
