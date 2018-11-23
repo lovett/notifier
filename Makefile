@@ -72,9 +72,9 @@ outdated: dummy
 	npm outdated || true
 
 setup: export NPM_CONFIG_PROGRESS = false
+setup: export NODE_ENV=dev
 setup:
-	NODE_ENV=dev npm install --no-optional
-	npm outdated || true
+	npm install --no-optional
 
 #
 # Build the web worker portion of the UI via webpack.
