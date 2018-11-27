@@ -114,7 +114,10 @@ appServices.factory('PushClient', ['$rootScope', '$log', '$filter', 'MessageList
 
     return {
         connect() {
-            pushWorker.postMessage({action: WorkerCommand.connect});
+            pushWorker.postMessage({
+                action: WorkerCommand.connect,
+                agent: window.navigator.userAgent
+            });
         },
 
         disconnect() {

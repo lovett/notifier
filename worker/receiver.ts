@@ -6,7 +6,21 @@ export class Receiver {
 
     private reconnectTimer: number = 0;
 
-    public connect() {
+    public connect(userAgent?: string) {
+        // There is a problem with EventSource on Firefox for Android.
+        // The browser will crash if the page is reloaded or unloaded
+        // after the EventSource connection has been made. The exact
+        // nature of the problem is unknown; this is a
+        // workaround. Pretending the connection was successful allows
+        // the initial message fetch to continue working. Real-time
+        // updates are lost, but on a mobile screen this is not
+        // entirely terrible because usage is probably short-lived
+        // anyway. A long-running connection isn't happening on mobile
+        // the way it is on desktop.
+        if (userAgent!.indexOf('Android') > -1 && userAgent!.indexOf('Firefox') > -1) {
+            const reply = new WorkerMessage(WorkerEvent.connected);
+            return reply.send();
+        }
 
         this.eventSource = new EventSource('push');
 

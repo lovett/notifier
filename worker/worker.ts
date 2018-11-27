@@ -12,7 +12,7 @@ self.addEventListener('message', (e: Event) => {
     }
 
     if (command.action === WorkerCommand.connect) {
-        receiver.connect();
+        receiver.connect(command.agent);
     }
 
     if (command.action === WorkerCommand.disconnect) {
