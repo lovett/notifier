@@ -1,6 +1,7 @@
 declare namespace worker {
     interface Command {
         action: 'CONNECT' | 'DISCONNECT';
+        agent?: string;
         token?: string;
     }
 
