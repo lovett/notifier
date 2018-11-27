@@ -1,5 +1,6 @@
 import {Configuration} from 'webpack';
 import {resolve} from 'path';
+import * as TerserPlugin from 'terser-webpack-plugin';
 
 const mode = (process.env.NODE_ENV !== 'production') ? 'development' : 'production';
 
@@ -22,6 +23,7 @@ const config: Configuration = {
 
     optimization: {
         minimize: true,
+        minimizer: [new TerserPlugin()],
     },
 
     output: {

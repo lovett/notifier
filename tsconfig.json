@@ -9,6 +9,7 @@
     "noUnusedParameters": true,
     "sourceMap": true,
     "target": "ES5",
-    "strict": true
+    "strict": true,
+    "noImplicitAny": false,
   }
 }
