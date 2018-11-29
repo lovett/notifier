@@ -17,7 +17,9 @@ export class Receiver {
         // entirely terrible because usage is probably short-lived
         // anyway. A long-running connection isn't happening on mobile
         // the way it is on desktop.
-        if (userAgent!.indexOf('Android') > -1 && userAgent!.indexOf('Firefox') > -1) {
+        const isAndroid = userAgent && userAgent.indexOf('Android') > -1;
+        const isFirefox = userAgent && userAgent.indexOf('Firefox') > -1;
+        if (isAndroid && isFirefox) {
             const reply = new WorkerMessage(WorkerEvent.connected);
             return reply.send();
         }
