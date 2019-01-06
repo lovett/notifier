@@ -1,4 +1,5 @@
 import * as bodyParser from 'body-parser';
+import * as childProcess from 'child_process';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
 import * as crypto from 'crypto';
@@ -239,6 +240,7 @@ if (!module.parent) {
 
             server.on('listening', () => {
                 process.stdout.write(`Listening on ${ip}:${port}\n`);
+                childProcess.exec('/bin/systemd-notify --ready');
             });
         })
         .catch((err) => {
