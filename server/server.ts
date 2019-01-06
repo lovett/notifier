@@ -240,7 +240,7 @@ if (!module.parent) {
 
             server.on('listening', () => {
                 process.stdout.write(`Listening on ${ip}:${port}\n`);
-                childProcess.exec('/bin/systemd-notify --ready');
+                childProcess.exec(`/bin/systemd-notify --ready --pid=${process.pid}`);
             });
         })
         .catch((err) => {
