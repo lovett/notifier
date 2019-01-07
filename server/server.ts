@@ -240,7 +240,11 @@ if (!module.parent) {
 
             server.on('listening', () => {
                 process.stdout.write(`Listening on ${ip}:${port}\n`);
-                childProcess.exec(`/bin/systemd-notify --ready --pid=${process.pid}`);
+
+                // Tell systemd that startup has completed and all systems are go.
+                if (process.env.NODE_ENV === 'production') {
+                    childProcess.exec(`/bin/systemd-notify --ready --pid=${process.pid}`);
+                }
             });
         })
         .catch((err) => {
