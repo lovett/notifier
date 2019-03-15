@@ -124,10 +124,6 @@ app.param('count', validateCount);
  * Database configuration
  */
 sequelize = new Sequelize(nconf.get('NOTIFIER_DB_DSN'), {
-    // This silences a deprecation warning at startup about string based operators
-    // even if they aren't actually any being used.
-    operatorsAliases: false,
-
     pool: {
         max: 10,
         min: 3,
