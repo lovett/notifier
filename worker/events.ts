@@ -1,9 +1,4 @@
-export enum WorkerCommand {
-    connect = 'CONNECT',
-    disconnect = 'DISCONNECT',
-}
-
-export enum WorkerEvent {
+export enum ReplyEvent {
     add = 'ADD',
     connected = 'CONNECTED',
     disconnected = 'DISCONNECTED',

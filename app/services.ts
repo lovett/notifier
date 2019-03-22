@@ -1,6 +1,7 @@
 import Message from './message';
 import Store from './store';
-import {WorkerCommand, WorkerEvent} from '../worker/events';
+import {Command} from '../worker/command';
+import {ReplyEvent} from '../worker/events';
 
 const appServices = angular.module('appServices', []);
 
@@ -89,39 +90,55 @@ appServices.factory('PushClient', ['$rootScope', '$log', '$filter', 'MessageList
         const now = $filter('date')(new Date(), 'mediumTime');
         const reply = e.data;
 
-        if (reply.event === WorkerEvent.disconnected) {
+        if (reply.event === ReplyEvent.disconnected) {
             $log.warn('Disconnected as of ' + now);
             $rootScope.$broadcast('connection:change', 'disconnected');
         }
 
-        if (reply.event === WorkerEvent.connected) {
+        if (reply.event === ReplyEvent.connected) {
             $log.info('Connected as of ' + now);
             $rootScope.$broadcast('connection:change', 'connected');
         }
 
-        if (reply.event === WorkerEvent.dropped) {
+        if (reply.event === ReplyEvent.dropped) {
             MessageList.drop(reply.retractions);
         }
 
-        if (reply.event === WorkerEvent.add) {
+        if (reply.event === ReplyEvent.add) {
             MessageList.add(reply.message);
         }
 
-        if (reply.event === WorkerEvent.parsefail) {
+        if (reply.event === ReplyEvent.parsefail) {
             $log.error('Failed to parse message');
         }
     });
 
     return {
         connect() {
-            pushWorker.postMessage({
-                action: WorkerCommand.connect,
-                agent: window.navigator.userAgent
-            });
+            // There is a problem with EventSource on Firefox for Android.
+            // The browser will crash if the page is reloaded or unloaded
+            // after the EventSource connection has been made. The exact
+            // nature of the problem is unknown; this is a
+            // workaround. Pretending the connection was successful allows
+            // the initial message fetch to continue working. Real-time
+            // updates are lost, but on a mobile screen this is not
+            // entirely terrible because usage is probably short-lived
+            // anyway. A long-running connection isn't happening on mobile
+            // the way it is on desktop.
+            const agent = window.navigator.userAgent;
+            const isAndroid = agent.indexOf('Android') > -1;
+            const isFirefox = agent.indexOf('Firefox') > -1;
+
+            let action = Command.connect;
+            if (isAndroid && isFirefox) {
+                action = Command.fauxconnect;
+            }
+
+            pushWorker.postMessage(action);
         },
 
         disconnect() {
-            pushWorker.postMessage({action: WorkerCommand.disconnect});
+            pushWorker.postMessage(Command.disconnect);
         },
     };
 }]);

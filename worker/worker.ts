@@ -1,21 +1,7 @@
-import {Receiver} from './receiver';
-import {WorkerCommand} from './events';
+import {Listener} from './listener';
 
+const listener = new Listener();
 
-let receiver: Receiver;
-
-self.addEventListener('message', (e: Event) => {
-    const command: worker.Command = (e as MessageEvent).data;
-
-    if (!receiver) {
-        receiver = new Receiver();
-    }
-
-    if (command.action === WorkerCommand.connect) {
-        receiver.connect(command.agent);
-    }
-
-    if (command.action === WorkerCommand.disconnect) {
-        receiver.disconnect();
-    }
+self.addEventListener('message', (e: MessageEvent) => {
+    listener.do(e.data);
 });

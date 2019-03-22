@@ -10,6 +10,6 @@
     "sourceMap": true,
     "target": "ES5",
     "strict": true,
-    "noImplicitAny": false,
+    "noImplicitAny": false
   }
 }

@@ -1,8 +1,11 @@
 declare namespace worker {
-    interface Command {
-        action: 'CONNECT' | 'DISCONNECT';
-        agent?: string;
-        token?: string;
+    type Command  = 'CONNECT' | 'FAUXCONNECT' | 'DISCONNECT';
+    type ReplyEvent = 'ADD' | 'CONNECTED' | 'DISCONNECTED' | 'DROPPED' | 'PARSEFAIL';
+
+    interface Reply {
+        event: ReplyEvent;
+        message?: Message;
+        retractions?: string[];
     }
 
     interface Message {
@@ -14,11 +17,5 @@ declare namespace worker {
         group?: string;
         received?: string;
         retracted?: string[];
-    }
-
-    interface Reply {
-        event: 'ADD' | 'CONNECTED' | 'DISCONNECTED' | 'DROPPED' | 'PARSEFAIL';
-        message?: Message;
-        retractions?: string[];
     }
 }
