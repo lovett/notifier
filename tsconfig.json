@@ -2,6 +2,7 @@
   "compilerOptions": {
     "alwaysStrict": true,
     "downlevelIteration": true,
+    "extendedDiagnostics": false,
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitReturns": true,
@@ -11,5 +12,11 @@
     "target": "ES5",
     "strict": true,
     "noImplicitAny": false
-  }
+  },
+  "exclude": [
+    "**/flycheck_*",
+    "**/#*",
+    "**/.*"
+  ]
+
 }
