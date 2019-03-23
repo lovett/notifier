@@ -1,7 +1,9 @@
 {
   "delay": "2500",
+  "ignore": ["**/*/flycheck_*.js"],
   "verbose": false,
   "watch": ["build/server"],
   "ext": "js",
-  "exec": "node build/server/server.js"
+  "exec": "node build/server/server.js",
+  "signal": "SIGHUP"
 }
