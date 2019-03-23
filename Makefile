@@ -1,5 +1,7 @@
 .PHONY: dummy
 
+DEV_URL := http://localhost:8080/notifier
+
 export PATH := ./node_modules/.bin:$(PATH)
 
 build: export NPM_CONFIG_PROGRESS = false
@@ -107,31 +109,31 @@ tsserver: dummy
 # Send a test message
 #
 onemessage: dummy
-	clients/send-notification -s $(NOTIFIER_DEV) -t "Single test message" -e "5 hours" -u "http://example.com" -l "onemessage"
+	clients/send-notification -s $(DEV_URL) -t "Single test message" -e "5 hours" -u "http://example.com" -l "onemessage"
 
 # Retract a previously-sent test message
 #
 onemessage-retract: dummy
-	clients/send-notification -s $(NOTIFIER_DEV) -c -l onemessage
+	clients/send-notification -s $(DEV_URL) -c -l onemessage
 
 badgemessage: dummy
-	clients/send-notification -s $(NOTIFIER_DEV) -t "Badged message test" -g sysup -i "test.svg" -e "5 hours" -u "http://example.com" -l "badged"
+	clients/send-notification -s $(DEV_URL) -t "Badged message test" -g sysup -i "test.svg" -e "5 hours" -u "http://example.com" -l "badged"
 
 multimessage: dummy
-	clients/send-notification -s $(NOTIFIER_DEV) -t "email group test message"		-g email		-b "Message 1"	-l "multi-email"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "phone group test message"		-g phone		-b "Message 2"	-l "multi-phone"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "web group test message"		-g web			-b "Message 3"	-l "multi-web"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "reminder group test message"	-g reminder		-b "Message 4"	-l "multi-reminder"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "calendar group test message"	-g calendar		-b "Message 5"	-l "multi-calendar"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "sysdown group test message"	-g sysdown		-b "Message 6"	-l "multi-sysdown"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "sysdown group test message"	-g sysdown		-b "Message 7"	-l "multi-sysdown"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "sysup group test message"		-g sysup		-b "Message 8"	-l "multi-sysup"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "chore group test message"		-g chore		-b "Message 9"	-l "multi-chore"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "education group test message"	-g education	-b "Message 10"	-l "multi-education"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "computer group test message"	-g computer	    -b "Message 11"	-l "multi-computer"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "financial group test message"	-g financial    -b "Message 12"	-l "multi-financial"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "timer group test message"	    -g timer        -b "Message 13"	-l "multi-timer"
-	clients/send-notification -s $(NOTIFIER_DEV) -t "custom badge test message"                     -b "Message 14" -l "mult-badge" -i "test.svg"
+	clients/send-notification -s $(DEV_URL) -t "email group test message"		-g email		-b "Message 1"	-l "multi-email"
+	clients/send-notification -s $(DEV_URL) -t "phone group test message"		-g phone		-b "Message 2"	-l "multi-phone"
+	clients/send-notification -s $(DEV_URL) -t "web group test message"		-g web			-b "Message 3"	-l "multi-web"
+	clients/send-notification -s $(DEV_URL) -t "reminder group test message"	-g reminder		-b "Message 4"	-l "multi-reminder"
+	clients/send-notification -s $(DEV_URL) -t "calendar group test message"	-g calendar		-b "Message 5"	-l "multi-calendar"
+	clients/send-notification -s $(DEV_URL) -t "sysdown group test message"	-g sysdown		-b "Message 6"	-l "multi-sysdown"
+	clients/send-notification -s $(DEV_URL) -t "sysdown group test message"	-g sysdown		-b "Message 7"	-l "multi-sysdown"
+	clients/send-notification -s $(DEV_URL) -t "sysup group test message"		-g sysup		-b "Message 8"	-l "multi-sysup"
+	clients/send-notification -s $(DEV_URL) -t "chore group test message"		-g chore		-b "Message 9"	-l "multi-chore"
+	clients/send-notification -s $(DEV_URL) -t "education group test message"	-g education	-b "Message 10"	-l "multi-education"
+	clients/send-notification -s $(DEV_URL) -t "computer group test message"	-g computer	    -b "Message 11"	-l "multi-computer"
+	clients/send-notification -s $(DEV_URL) -t "financial group test message"	-g financial    -b "Message 12"	-l "multi-financial"
+	clients/send-notification -s $(DEV_URL) -t "timer group test message"	    -g timer        -b "Message 13"	-l "multi-timer"
+	clients/send-notification -s $(DEV_URL) -t "custom badge test message"                     -b "Message 14" -l "mult-badge" -i "test.svg"
 
 #
 # Create a package upgrade commit.
