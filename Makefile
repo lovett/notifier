@@ -104,9 +104,6 @@ tsserver: dummy
 	rm -rf build/server
 	tsc -p server -w
 
-migrate: dummy
-	sqlite3 notifier.sqlite < migrations/01-message-drop-deliveredat.sql
-
 onemessage: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -t "Single test message" -e "5 hours" -u "http://example.com" -l "onemessage"
 
@@ -131,10 +128,6 @@ multimessage: dummy
 
 retract: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -c -l test
-
-resetdb: dummy
-	rm notifier.sqlite
-	touch server/server.ts
 
 #
 # Create a package upgrade commit.
