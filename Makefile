@@ -104,8 +104,15 @@ tsserver: dummy
 	rm -rf build/server
 	tsc -p server -w
 
+# Send a test message
+#
 onemessage: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -t "Single test message" -e "5 hours" -u "http://example.com" -l "onemessage"
+
+# Retract a previously-sent test message
+#
+onemessage-retract: dummy
+	clients/send-notification -s $(NOTIFIER_DEV) -c -l onemessage
 
 badgemessage: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -t "Badged message test" -g sysup -i "test.svg" -e "5 hours" -u "http://example.com" -l "badged"
@@ -125,9 +132,6 @@ multimessage: dummy
 	clients/send-notification -s $(NOTIFIER_DEV) -t "financial group test message"	-g financial    -b "Message 12"	-l "multi-financial"
 	clients/send-notification -s $(NOTIFIER_DEV) -t "timer group test message"	    -g timer        -b "Message 13"	-l "multi-timer"
 	clients/send-notification -s $(NOTIFIER_DEV) -t "custom badge test message"                     -b "Message 14" -l "mult-badge" -i "test.svg"
-
-retract: dummy
-	clients/send-notification -s $(NOTIFIER_DEV) -c -l test
 
 #
 # Create a package upgrade commit.
