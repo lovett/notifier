@@ -1,6 +1,7 @@
 .PHONY: dummy
 
 DEV_URL := http://localhost:8080/notifier
+TMUX_SESSION_NAME := notifier
 
 export PATH := ./node_modules/.bin:$(PATH)
 
@@ -156,6 +157,29 @@ master-to-production: dummy
 	git push
 	git checkout master
 
+workspace:
+## 0: Editor
+	tmux new-session -d -s "$(TMUX_SESSION_NAME)" bash
+	tmux send-keys -t "$(TMUX_SESSION_NAME)" "$(EDITOR) ." C-m
+
+## 1: Shell
+	tmux new-window -a -t "$(TMUX_SESSION_NAME)" bash
+
+## 2: Webpack, app
+	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "app" "make app"
+
+## 3: Webpack, worker
+	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "worker" "make worker"
+
+## 4: Typescript server
+	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "tsserver" "NODE_ENV=dev make tsserver"
+
+## 5: Dev server
+	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "devserver" "sleep 5; node_modules/.bin/nodemon"
+
+	tmux select-window -t "$(TMUX_SESSION_NAME)":0
+
+	tmux attach-session -t "$(TMUX_SESSION_NAME)"
 
 # Leftovers from an earlier setup.
 # "test:server": "mocha --bail --reporter min test",
