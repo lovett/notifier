@@ -22,20 +22,11 @@ export default function(req: express.Request, res: express.Response, next: expre
     let hostname = (req.get('x-forwarded-server') || req.get('x-forwarded-host') || req.headers.host) as string;
     hostname = hostname.replace(/:[0-9]+$/, '');
 
-    let port = (req.get('x-forwarded-port') || req.get('x-forwarded-host') || req.headers.host) as string;
-    const numericPort = parseInt(port.replace(/.*:/, ''), 10);
-
-    if ((scheme === 'http' && numericPort !== 80) || (scheme === 'https' && numericPort !== 443)) {
-        port = ':' + numericPort;
-    } else {
-        port = '';
-    }
-
     const csp: CspParams = {
         'connect-src': ['self', 'data:', 'unsafe-inline'],
         'default-src': ['self'],
         'img-src': ['self'],
-        'script-src': ['self', 'data:', 'unsafe-inline', util.format('%s://%s%s', scheme, hostname, port)],
+        'script-src': ['self', 'data:', 'unsafe-inline'],
         'style-src': ['self', 'unsafe-inline'],
     };
 
