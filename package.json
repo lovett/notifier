@@ -77,7 +77,6 @@
     "istanbul": "0.4.5",
     "less": "3.9.0",
     "less-loader": "4.1.0",
-    "livereload": "0.7.0",
     "mini-css-extract-plugin": "0.5.0",
     "mocha": "6.0.2",
     "ng-cache-loader": "0.0.26",

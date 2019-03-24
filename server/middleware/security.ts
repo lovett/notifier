@@ -44,17 +44,6 @@ export default function(req: express.Request, res: express.Response, next: expre
         csp['img-src'].push(parsedUrl.host as string);
     }
 
-    if (config.get('NOTIFIER_LIVERELOAD_HOST') && config.get('NOTIFIER_LIVERELOAD_PORT')) {
-        const socketScheme = (scheme === 'https') ? 'wss' : 'ws';
-        const liveReload = util.format(
-            '://%s:%s',
-            config.get('NOTIFIER_LIVERELOAD_HOST'),
-            config.get('NOTIFIER_LIVERELOAD_PORT'),
-        );
-        csp['connect-src'].push(socketScheme + liveReload);
-        csp['script-src'].push(scheme + liveReload);
-    }
-
     const cspString = Object.keys(csp).reduce((acc, key) => {
         let values;
         const quotables = ['self', 'none', 'unsafe-inline', 'unsafe-eval'];
