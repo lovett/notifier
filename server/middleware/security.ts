@@ -1,6 +1,6 @@
-import * as url from "url";
-import * as util from "util";
-import * as express from "express";
+import * as url from 'url';
+import * as util from 'util';
+import * as express from 'express';
 
 interface CspParams {
     [key: string]: string[];
@@ -36,10 +36,9 @@ export default function(req: express.Request, res: express.Response, next: expre
     }
 
     const cspString = Object.keys(csp).reduce((acc, key) => {
-        let values;
         const quotables = ['self', 'none', 'unsafe-inline', 'unsafe-eval'];
 
-        values = csp[key].map((value) => {
+        const values = csp[key].map((value) => {
             if (quotables.indexOf(value) === -1) {
                 return value;
             }

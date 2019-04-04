@@ -1,6 +1,6 @@
 import * as express from 'express';
 import publishMessage from '../../helpers/publish-message';
-import { User, MessageInstance } from '../../types/server';
+import { MessageInstance, User } from '../../types/server';
 
 const router = express.Router();
 

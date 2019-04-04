@@ -1,35 +1,35 @@
-import * as sanitizeHtml from "sanitize-html"
+import * as sanitizeHtml from 'sanitize-html';
 
 /**
  * Remove all markup from a value
  *
  */
-export function strictSanitize (value: string) {
-    let config = {
-        allowedTags: [] as string[],
+export function strictSanitize(value: string) {
+    const config = {
         allowedAttributes: {},
-        textFilter: function (text: string) {
+        allowedTags: [] as string[],
+        textFilter(text: string) {
             return text.replace(/&quot;/g, '"');
-        }
+        },
     };
 
     return sanitizeHtml(value, config);
-};
+}
 
 /**
  * Filter markup from a value based on a whitelist
  *
  */
-export function tolerantSanitize (value: string) {
-    let config = {
-        allowedTags: [ 'b', 'i', 'em', 'strong', 'a', 'p' ],
+export function tolerantSanitize(value: string) {
+    const config = {
         allowedAttributes: {
-            'a': [ 'href' ]
+            a: ['href'],
         },
-        textFilter: function (text: string) {
+        allowedSchemes: ['http', 'https', 'mailto'],
+        allowedTags: ['b', 'i', 'em', 'strong', 'a', 'p'],
+        textFilter(text: string) {
             return text.replace(/&quot;/g, '"');
         },
-        allowedSchemes: [ 'http', 'https', 'mailto' ]
     };
 
     return sanitizeHtml(value, config);

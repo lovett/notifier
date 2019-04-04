@@ -3,9 +3,7 @@ import * as crypto from 'crypto';
 import { UserInstance } from '../types/server';
 
 function randomString(len: number) {
-    let randomBytes;
-
-    randomBytes = crypto.randomBytes(Math.ceil(len / 2));
+    const randomBytes = crypto.randomBytes(Math.ceil(len / 2));
 
     return randomBytes.toString('hex').slice(0, len);
 }

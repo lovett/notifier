@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as Sequelize from 'sequelize';
 import * as dateparser from 'dateparser';
 import publishMessage from '../../helpers/publish-message';
-import { Message, User, MessageInstance } from '../../types/server';
+import { Message, MessageInstance, User } from '../../types/server';
 
 const router = express.Router();
 

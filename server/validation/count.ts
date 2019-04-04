@@ -1,4 +1,4 @@
-import * as express from "express";
+import * as express from 'express';
 
 /**
  * Validate a numeric string as a number between 1 and 100
