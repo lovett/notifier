@@ -24,5 +24,9 @@ ansible/vars.yml
 modules/**/*.js
 app/scripts/**/*.js
 notifier.js
-build/public
+build/public/*
+!build/public/app-icon.png
+!build/public/favicon.ico
+!build/public/favicon.png
+!build/public/robots.txt
 build/server

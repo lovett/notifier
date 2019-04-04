@@ -21,7 +21,6 @@ import authBasic from './auth/basic';
 import authLocal from './auth/local';
 import createUser from './helpers/create-user';
 import deauth from './routes/deauth';
-import favicon from './middleware/favicon';
 import index from './routes/index';
 import logger from './middleware/logger';
 import messageClear from './routes/message/clear';
@@ -30,7 +29,6 @@ import messageUnclear from './routes/message/unclear';
 import publishMessage from './helpers/publish-message';
 import push from './routes/push';
 import revoke from './routes/revoke';
-import robots from './routes/robots';
 import security from './middleware/security';
 import services from './routes/services';
 import status from './routes/status';
@@ -97,8 +95,6 @@ app.locals.expirationCache = {};
 
 app.use(logger(nconf.get('NOTIFIER_ACCESS_LOG')));
 
-app.use(favicon(nconf.get('NOTIFIER_PUBLIC_DIR')));
-
 app.use(security);
 
 app.use(responseTime());
@@ -164,8 +160,6 @@ router = express.Router();
 router.use(asset(nconf.get('NOTIFIER_PUBLIC_DIR')));
 
 router.use(/^\/(login|logout)?$/, index);
-
-router.use('/robots.txt', robots);
 
 router.use('/status', status);
 
