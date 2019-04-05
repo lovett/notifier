@@ -1,6 +1,6 @@
+import * as db from '../db';
 import * as express from 'express';
-import {Token, TokenInstance, User} from '../types/server';
-import getServiceTokens from '../helpers/service-tokens';
+import {Token, TokenRecord} from '../types/server';
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ const router = express.Router();
  * push notifications.
  */
 router.get('/', (req: express.Request, res: express.Response) => {
-    getServiceTokens(req.app, req.user as User, (tokens: TokenInstance[]) => {
+    db.getServiceTokens(req.user.id, (tokens: TokenRecord[]) => {
         const services = tokens.map((token) => {
             if (token.label === 'service') {
                 delete token.value;

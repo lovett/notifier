@@ -51,6 +51,7 @@
     "@types/passport": "1.0.0",
     "@types/passport-http": "0.3.7",
     "@types/passport-local": "1.0.33",
+    "@types/pg": "^7.4.14",
     "@types/response-time": "2.3.3",
     "@types/sanitize-html": "1.18.3",
     "@types/sequelize": "4.27.44",

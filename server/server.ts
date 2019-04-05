@@ -10,6 +10,7 @@ import * as path from 'path';
 import * as responseTime from 'response-time';
 import * as Sequelize from 'sequelize';
 
+import * as db from './db';
 import Message from './models/Message';
 import Token from './models/Token';
 import User from './models/User';
@@ -114,8 +115,11 @@ app.use(bodyParser.json({
 
 app.param('count', validateCount);
 
+db.connect(nconf.get('NOTIFIER_DB_DSN'));
+
 /**
  * Database configuration
+ * @deprecated
  */
 sequelize = new Sequelize(nconf.get('NOTIFIER_DB_DSN'), {
     // This silences a deprecation warning at startup about string based operators

@@ -1,7 +1,7 @@
 import * as express from 'express';
 import * as needle from 'needle';
-import getServiceTokens from '../helpers/service-tokens';
-import { Message, MessageInstance, TokenInstance, User } from '../types/server';
+import * as db from '../db';
+import { Message, MessageInstance, User } from '../types/server';
 
 function publishServerEvent(app: express.Application, _: User, message: Message) {
     for (const id of Object.keys(app.locals.pushClients)) {
@@ -47,12 +47,9 @@ export default (app: express.Application, user: User, message: MessageInstance|n
 
     publishServerEvent(app, user, messageValues);
 
-    getServiceTokens(app, user, (tokens: TokenInstance[]) => {
-
-        for (const token of tokens) {
-            if (token.key === 'webhook') {
-                publishWebhook(user, messageValues, token.value);
-            }
+    db.getWebhookUrls(user.id, (urls: string[]) => {
+        for (const url of urls) {
+            publishWebhook(user, messageValues, url);
         }
     });
 };

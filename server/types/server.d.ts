@@ -1,3 +1,11 @@
+interface TokenRecord {
+    key: string;
+    label?: string;
+    persist?: boolean;
+    value: string;
+    UserId: number;
+}
+
 import * as Sequelize from 'sequelize';
 import * as Promise from 'bluebird';
 
