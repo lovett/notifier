@@ -33,7 +33,7 @@ function publishWebhook(_: User, message: Message, tokenValue: string) {
 
 
 
-export default (app: express.Application, user: User, message: MessageInstance|null, retractionId?: string) => {
+export default (app: express.Application, user: User, message: MessageInstance | null, retractionId?: string) => {
 
     let messageValues: Message;
 
@@ -47,9 +47,11 @@ export default (app: express.Application, user: User, message: MessageInstance|n
 
     publishServerEvent(app, user, messageValues);
 
-    db.getWebhookUrls(user.id, (urls: string[]) => {
+    (async () => {
+        const urls = await db.getWebhookUrls(user.id);
+
         for (const url of urls) {
             publishWebhook(user, messageValues, url);
         }
-    });
+    })();
 };

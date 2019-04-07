@@ -3,14 +3,13 @@ interface TokenRecord {
     label?: string;
     persist?: boolean;
     value: string;
-    UserId: number;
 }
 
 import * as Sequelize from 'sequelize';
 import * as Promise from 'bluebird';
 
 interface IndexSignature {
-  [key: string]: any;
+    [key: string]: any;
 }
 
 interface Message extends IndexSignature {
@@ -45,7 +44,7 @@ interface User {
     token: any;
 }
 
-type GenerateCallback = (key: string|null, value: string|null) => void;
+type GenerateCallback = (key: string | null, value: string | null) => void;
 
 interface UserInstance extends Sequelize.Instance<User> {
     id: number;

@@ -1,11 +1,12 @@
 import * as db from '../db';
 import * as express from 'express';
-import {Token, TokenRecord} from '../types/server';
+import PromiseRouter from 'express-promise-router';
+import { TokenRecord } from '../types/server';
 
-const router = express.Router();
+const router = PromiseRouter();
 
 /**
- * Return a list of the additonal functionality the user has opted into
+ * Return a list of additional functionality the user has opted into
  *
  * Services can be third-party integrations or application-local
  * functionality.
@@ -13,22 +14,29 @@ const router = express.Router();
  * Client-specific functionality is not included, specifically browser
  * push notifications.
  */
-router.get('/', (req: express.Request, res: express.Response) => {
-    db.getServiceTokens(req.user.id, (tokens: TokenRecord[]) => {
-        const services = tokens.map((token) => {
-            if (token.label === 'service') {
-                delete token.value;
-            }
-            delete token.label;
-            return token;
-        });
+router.get('/', async (req: express.Request, res: express.Response) => {
+    const tokens = await db.getServiceTokens(req.user.id);
 
-        res.json(services);
+    const services = tokens.map((token) => {
+        if (token.label === 'service') {
+            delete token.value;
+        }
+        delete token.label;
+        return token;
     });
+
+    res.json(services);
 });
 
-router.post('/', (req: express.Request, res: express.Response) => {
-    const additions: Token[] = [];
+/**
+ * Activate or deactive additional services
+ *
+ * Deactivation is based on whether a value is provided for a given
+ * service key. If yes, an existing key is removed and a new key is
+ * created. If no, only the removal happens.
+ */
+router.post('/', async (req: express.Request, res: express.Response) => {
+    const additions: TokenRecord[] = [];
     const removals: string[] = [];
     const whitelist = ['webhook'];
 
@@ -44,7 +52,6 @@ router.post('/', (req: express.Request, res: express.Response) => {
         }
 
         additions.push({
-            UserId: req.user!.id,
             key: name,
             label: 'userval',
             persist: true,
@@ -57,20 +64,13 @@ router.post('/', (req: express.Request, res: express.Response) => {
         return;
     }
 
-    req.app.locals.Token.destroy({
-        where: {
-            UserId: req.user!.id,
-            key: {
-                $in: removals,
-            },
-        },
-    }).then(() => {
-        return req.app.locals.Token.bulkCreate(additions);
-    }).then(() => {
-        res.sendStatus(200);
-    }).catch((error: Error) => {
-        res.status(500).json(error);
-    });
+    try {
+        await db.deleteTokensByKey(req.user!.id, removals);
+        await db.addTokens(req.user!.id, additions);
+        return res.sendStatus(200);
+    } catch (e) {
+        return res.status(500).json(e);
+    }
 });
 
 export default router;

@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import {TokenRecord} from './types/server';
+import { TokenRecord } from './types/server';
 
 let pool: Pool;
 
@@ -13,32 +13,71 @@ export function connect(dsn: string) {
     });
 }
 
-export function getServiceTokens(userId: number, callback: (rows: TokenRecord[]) => void) {
+export async function getServiceTokens(userId: number) {
     const sql = `SELECT key, value, label
         FROM "Tokens"
         WHERE "UserId"=$1
         AND label IN ('service', 'userval')`;
 
-    pool.query(sql, [userId], (err, res) => {
-        if (err) {
-            throw err;
-        }
-
-        callback(res.rows);
-    });
+    try {
+        const res = await pool.query(sql, [userId]);
+        return res.rows;
+    } catch (err) {
+        console.log(err);
+        return [];
+    }
 }
 
-export function getWebhookUrls(userId: number, callback: (urls: string[]) => void) {
+export async function getWebhookUrls(userId: number) {
     const sql = `SELECT value
     FROM "Tokens"
     WHERE "UserId"=$1
     AND key='webhook'`;
 
-    pool.query(sql, [userId], (err, res) => {
-        if (err) {
-            throw err;
-        }
+    try {
+        const res = await pool.query(sql, [userId]);
+        return res.rows;
+    } catch (err) {
+        console.log(err);
+        return [];
+    }
+}
 
-        callback(res.rows);
-    });
+export async function deleteTokensByKey(userId: number, records: string[]) {
+    const sql = `DELETE FROM "Tokens"
+    WHERE "UserId"=$1
+    AND key = ANY ($2)`;
+
+    try {
+        await pool.query(sql, [userId, records]);
+        return true;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}
+
+export async function addTokens(userId: number, records: TokenRecord[]) {
+    const sql = `INSERT INTO "Tokens"
+    ("UserId", key, value, label, "createdAt", "updatedAt")
+    VALUES ($1, $2, $3, $4, NOW(), NOW())`;
+
+    (async () => {
+        const client = await pool.connect();
+
+        try {
+            for (const { key, value, label } of records) {
+                await client.query(
+                    sql,
+                    [userId, key, value, label],
+                );
+            }
+            await client.query('COMMIT');
+        } catch (e) {
+            await client.query('ROLLBACK');
+            throw e;
+        } finally {
+            client.release();
+        }
+    })().catch((e) => console.error(e.stack));
 }
