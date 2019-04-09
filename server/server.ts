@@ -32,7 +32,6 @@ import push from './routes/push';
 import revoke from './routes/revoke';
 import security from './middleware/security';
 import services from './routes/services';
-import status from './routes/status';
 import validateCount from './validation/count';
 
 let app: express.Application;
@@ -164,8 +163,6 @@ router = express.Router();
 router.use(asset(nconf.get('NOTIFIER_PUBLIC_DIR')));
 
 router.use(/^\/(login|logout)?$/, index);
-
-router.use('/status', status);
 
 router.use('/deauth', deauth);
 
