@@ -29,7 +29,6 @@ import messageIndex from './routes/message/index';
 import messageUnclear from './routes/message/unclear';
 import publishMessage from './helpers/publish-message';
 import push from './routes/push';
-import revoke from './routes/revoke';
 import security from './middleware/security';
 import services from './routes/services';
 import validateCount from './validation/count';
@@ -167,8 +166,6 @@ router.use(/^\/(login|logout)?$/, index);
 router.use('/deauth', deauth);
 
 router.use('/services', app.locals.protected, services);
-
-router.use('/revoke', app.locals.protected, revoke);
 
 router.use('/auth', passport.authenticate('local', { session: false }), auth);
 

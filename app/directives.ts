@@ -209,7 +209,7 @@ appDirectives.directive('notifierOfflineEvent', ['$window', '$rootScope', ($wind
     };
 }]);
 
-appDirectives.directive('notifierStatusBar', ['MessageList', ( MessageList) => {
+appDirectives.directive('notifierStatusBar', ['MessageList', (MessageList) => {
     function messageCount() {
         const count = MessageList.count();
 
@@ -333,18 +333,6 @@ appDirectives.directive('notifierBottomnav', ['BrowserNotification', 'WebhookNot
 
                 if (service === 'webhook') {
                     WebhookNotification.enable(scope.webhookUrl);
-                }
-            };
-
-            scope.toggle = (service) => {
-                if (scope.state[service] === 'active') {
-                    User.deauthorize(service, () => {
-                        delete scope.state[service];
-                    });
-                } else {
-                    User.authorize(service, (url: string) => {
-                        $window.location.href = url;
-                    });
                 }
             };
 

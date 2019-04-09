@@ -1,11 +1,11 @@
 import Message from './message';
 import Store from './store';
-import {Command} from '../worker/command';
-import {ReplyEvent} from '../worker/events';
+import { Command } from '../worker/command';
+import { ReplyEvent } from '../worker/events';
 
 const appServices = angular.module('appServices', []);
 
-appServices.factory('User', ['$window', '$http', '$cookies', ($window: angular.IWindowService, $http: angular.IHttpService, $cookies: angular.cookies.ICookiesService) => {
+appServices.factory('User', ['$http', '$cookies', ($http: angular.IHttpService, $cookies: angular.cookies.ICookiesService) => {
     const loginCookieName = 'token';
 
     function isLoggedIn() {
@@ -38,27 +38,6 @@ appServices.factory('User', ['$window', '$http', '$cookies', ($window: angular.I
             }).catch(() => {
                 callback(false);
             });
-        },
-
-        authorize(service: app.Service, callback: app.ServiceCallback) {
-            $http({
-                method: 'GET',
-                params: {
-                    host: $window.location.host,
-                    protocol: $window.location.protocol,
-                },
-                url: 'authorize/' + service + '/start',
-            }).then((res: angular.IHttpResponse<app.AuthRedirect>) => {
-                callback(res.data.url);
-            });
-        },
-
-        deauthorize(service: app.Service, callback: app.ServiceCallback) {
-            $http({
-                data: {service},
-                method: 'POST',
-                url: 'revoke',
-            }).then(callback);
         },
 
         logIn(form: angular.IFormController) {
@@ -152,8 +131,8 @@ appServices.service('WebhookNotification', ['$window', '$rootScope', 'User', ($w
     let state: States;
 
     return {
-        enable(currentUrl: string|null) {
-            let hookUrl: string|null = $window.prompt('URL:', currentUrl || '');
+        enable(currentUrl: string | null) {
+            let hookUrl: string | null = $window.prompt('URL:', currentUrl || '');
 
             if (hookUrl === null) {
                 return;
@@ -226,7 +205,7 @@ via the browser's Notifications settings`);
         state = 'inactive';
     }
 
-    return {state, enable, send};
+    return { state, enable, send };
 }]);
 
 appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location', 'BrowserNotification', ($rootScope: angular.IRootScopeService, $http: angular.IHttpService, $window: angular.IWindowService, $location: angular.ILocationService, BrowserNotification: app.BrowserNotificationService) => {
@@ -415,7 +394,7 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location
 
         unclear() {
             $http({
-                data: {publicId: removedIds.pop()},
+                data: { publicId: removedIds.pop() },
                 method: 'POST',
                 url: 'message/unclear',
             }).then(() => {
