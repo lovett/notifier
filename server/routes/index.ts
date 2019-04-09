@@ -1,12 +1,13 @@
 import * as express from 'express';
+import PromiseRouter from 'express-promise-router';
 
-const router = express.Router();
+const router = PromiseRouter();
 
 /**
  * The homepage is an HTML shell that loads the client-side
  * application, which in turn decides which screen to display.
  */
-router.get('/', (req: express.Request, res: express.Response) => {
+router.get('/', async (req: express.Request, res: express.Response) => {
     const config = req.app.locals.config;
 
     let title = 'Notifier';
