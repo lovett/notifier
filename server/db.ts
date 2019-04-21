@@ -57,6 +57,21 @@ export async function deleteTokensByKey(userId: number, records: string[]) {
     }
 }
 
+export async function deleteToken(userId: number, key: string, value: string) {
+    const sql = `DELETE FROM "Tokens"
+    WHERE "UserId"=$1
+    AND key = $2
+    AND value = $3`;
+
+    try {
+        await pool.query(sql, [userId, key, value]);
+        return true;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}
+
 export async function addTokens(userId: number, records: TokenRecord[]) {
     const sql = `INSERT INTO "Tokens"
     ("UserId", key, value, label, "createdAt", "updatedAt")
@@ -80,4 +95,19 @@ export async function addTokens(userId: number, records: TokenRecord[]) {
             client.release();
         }
     })().catch((e) => console.error(e.stack));
+}
+
+export async function markMessageUnread(userId: number, publicId: string) {
+    const sql = `UPDATE "Messages"
+    SET unread=true
+    WHERE "UserId"=$1
+    AND publicId=$2`;
+
+    try {
+        await pool.query(sql, [userId, publicId]);
+        return true;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
 }

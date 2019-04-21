@@ -1,26 +1,22 @@
+import * as db from '../../db';
 import * as express from 'express';
+import PromiseRouter from 'express-promise-router';
 
-const router = express.Router();
+const router = PromiseRouter();
 
-router.post('/', (req: express.Request, res: express.Response) => {
+router.post('/', async (req: express.Request, res: express.Response) => {
     if (!req.body.hasOwnProperty('publicId')) {
         res.sendStatus(400);
         return;
     }
 
-    req.app.locals.Message.update(
-        {unread: true},
-        {where: {publicId: req.body.publicId}},
-    ).then((affectedRows: number[]) => {
-        if (affectedRows[0] === 0) {
-            res.sendStatus(400);
-            return;
-        }
+    try {
+        await db.markMessageUnread(req.user!.id, req.body.publicId);
         res.sendStatus(204);
-    }).catch(() => {
-        res.sendStatus(500);
-    });
-
+        return;
+    } catch (e) {
+        return res.status(500).json(e);
+    }
 });
 
 export default router;

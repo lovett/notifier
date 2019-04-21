@@ -1,9 +1,10 @@
 import * as express from 'express';
 import * as uuid from 'uuid';
+import PromiseRouter from 'express-promise-router';
 
-const router = express.Router();
+const router = PromiseRouter();
 
-router.get('/', (req: express.Request, res: express.Response) => {
+router.get('/', async (req: express.Request, res: express.Response) => {
     const id = uuid.v4();
 
     const timer = setInterval(() => {
@@ -21,9 +22,9 @@ router.get('/', (req: express.Request, res: express.Response) => {
 
     req.app.locals.pushClients[id] = res;
 
-    // The no-transform value of the Cache-Control header tells the compresssion
-    // middleware not to compress this response. Otherwise, the client never sees
-    // any of the writes.
+    // The no-transform value of the Cache-Control header tells the
+    // compresssion middleware not to compress this
+    // response. Otherwise, the client never sees any of the writes.
     res.writeHead(200, {
         'Cache-Control': 'no-cache, no-transform',
         'Connection': 'keep-alive',
