@@ -1,5 +1,4 @@
 {
-  "delay": "2500",
   "ignore": ["**/*/flycheck_*.js"],
   "verbose": false,
   "watch": ["build/server"],
