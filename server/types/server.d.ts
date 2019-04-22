@@ -5,6 +5,17 @@ interface TokenRecord {
     value: string;
 }
 
+interface MessageRecord {
+    body?: string;
+    serviceTokens: any;
+    expiresAt?: Date;
+    localId?: string;
+    publicId: string;
+    title: string;
+    group?: string;
+    badge?: string;
+}
+
 import * as Sequelize from 'sequelize';
 import * as Promise from 'bluebird';
 
@@ -22,7 +33,6 @@ interface Message extends IndexSignature {
     retracted?: string;
     localId?: string;
     UserId?: number;
-
 }
 
 interface MessageInstance extends Sequelize.Instance<Message> {

@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { TokenRecord } from './types/server';
+import { TokenRecord, MessageRecord } from './types/server';
 
 let pool: Pool;
 
@@ -109,5 +109,25 @@ export async function markMessageUnread(userId: number, publicId: string) {
     } catch (err) {
         console.log(err);
         return false;
+    }
+}
+
+export async function getUnreadMessages(userId: number, startDate: Date, limit: number = 50) {
+    const sql = `SELECT "publicId", title, url, body, badge, source,
+    "group", received, "expiresAt"
+    FROM "Messages"
+    WHERE "UserId"=$1
+    AND unread=true
+    AND received >= $2
+    AND ("expiresAt" IS NULL OR "expiresAt" < NOW())
+    ORDER BY received DESC
+    LIMIT $3`;
+
+    try {
+        const res = await pool.query(sql, [userId, startDate, limit]);
+        return res.rows as MessageRecord[];
+    } catch (err) {
+        console.log(err);
+        return [] as MessageRecord[];
     }
 }

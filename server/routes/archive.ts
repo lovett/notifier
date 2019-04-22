@@ -1,70 +1,28 @@
+import * as db from '../db';
 import * as express from 'express';
-import * as Sequelize from 'sequelize';
-import {MessageInstance} from '../types/server';
+import PromiseRouter from 'express-promise-router';
 
-const router = express.Router();
+const router = PromiseRouter();
 
-interface WhereFilter {
-    UserId: number;
-    unread: boolean;
-    received?: any;
-}
-
-router.get('/:count?', (req: express.Request, res: express.Response) => {
+router.get('/:count?', async (req: express.Request, res: express.Response) => {
     const maxCount = 50;
-
     const count = Math.min(parseInt(req.params.count || maxCount, 10), maxCount);
 
-    const filters = {
-        attributes: ['id', 'publicId', 'title', 'url', 'body', 'badge', 'source', 'group', 'received', 'expiresAt'],
-        limit: count,
-        order: [['received', 'DESC']],
-        where: {
-            UserId: req.user!.id,
-            received: { [Sequelize.Op.lte]: new Date() },
-            unread: true,
-        } as WhereFilter,
-    };
+    const since = parseInt(req.query.since, 10) || 0;
 
-    if (req.query.since) {
-        req.query.since = parseInt(req.query.since, 10) || 0;
-        if (req.query.since > 0) {
-            filters.where.received = {
-                [Sequelize.Op.gt]: new Date(req.query.since),
-            };
-        }
-    }
+    const startDate = new Date(since);
 
-    req.app.locals.Message.findAll(filters).then((messages: MessageInstance[]) => {
-        const now = new Date();
-
-        const filteredMessages = messages.filter((message: MessageInstance) => {
-            if (message.expiresAt === null) {
-                return true;
-            }
-
-            if (message.expiresAt! < now) {
-                message.update({unread: false});
-
-                return false;
-            }
-
-            return true;
-        });
-
-        const mappedMessages = filteredMessages.map((message: MessageInstance) => {
-            const messageValues = message.get({plain: true});
-
-            delete messageValues.id;
-
-            return messageValues;
-        });
+    try {
+        const messages = await db.getUnreadMessages(req.user!.id, startDate, count);
 
         res.send({
-            limit: req.params.count,
-            messages: mappedMessages,
+            limit: count,
+            messages,
         });
-    });
+        return true;
+    } catch (e) {
+        return res.status(500).json(e);
+    }
 });
 
 export default router;
