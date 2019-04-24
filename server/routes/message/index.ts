@@ -76,18 +76,18 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
             req.app.locals.Message.update({
                 unread: false,
             }, {
-                where: {
-                    publicId: {
-                        [Sequelize.Op.in]: ids,
+                    where: {
+                        publicId: {
+                            [Sequelize.Op.in]: ids,
+                        },
                     },
-                },
-            }).then((updatedRows: number[]) => {
-                if (updatedRows[0] > 0) {
-                    ids.forEach((id) => {
-                        publishMessage(req.app, req.user as User, null, id);
-                    });
-                }
-            });
+                }).then((updatedRows: number[]) => {
+                    if (updatedRows[0] > 0) {
+                        ids.forEach((id) => {
+                            publishMessage(req.app, req.user!.id, null, id);
+                        });
+                    }
+                });
 
             return null;
         });
@@ -100,7 +100,7 @@ router.post('/', (req: express.Request, res: express.Response, next: express.Nex
                 req.app.locals.expirationCache[message.get('publicId')] = [req.user, message.get('expiresAt')];
             }
 
-            publishMessage(req.app, req.user as User, message);
+            publishMessage(req.app, req.user!.id, message);
             res.sendStatus(204);
         });
     }).catch((error: Error) => {
@@ -136,7 +136,7 @@ router.patch('/', (req, res) => {
                 publicId: req.body.publicId,
             },
         }).then((message: MessageInstance) => {
-            publishMessage(req.app, req.user as User, message);
+            publishMessage(req.app, req.user!.id, message);
             res.sendStatus(204);
         });
     });

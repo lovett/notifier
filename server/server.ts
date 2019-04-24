@@ -193,7 +193,7 @@ if (!module.parent) {
             const user = cache[key][0];
             const expiration = cache[key][1];
             if (expiration < now) {
-                publishMessage(app, user, null, key);
+                publishMessage(app, user.id, null, key);
                 delete app.locals.expirationCache[key];
             }
         });

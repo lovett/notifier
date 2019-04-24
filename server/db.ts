@@ -36,7 +36,7 @@ export async function getWebhookUrls(userId: number) {
 
     try {
         const res = await pool.query(sql, [userId]);
-        return res.rows;
+        return res.rows.map((row) => row.value);
     } catch (err) {
         console.log(err);
         return [];
@@ -112,6 +112,22 @@ export async function markMessageUnread(userId: number, publicId: string) {
     }
 }
 
+export async function markMessagesRead(userId: number, publicIds: string[]) {
+    const sql = `UPDATE "Messages"
+    SET unread=false
+    WHERE "UserId"=$1
+    AND "publicId" = ANY ($2)`;
+
+    try {
+        await pool.query(sql, [userId, publicIds]);
+        return true;
+    } catch (err) {
+        console.log(err);
+        return [];
+    }
+}
+
+
 export async function getUnreadMessages(userId: number, startDate: Date, limit: number = 50) {
     const sql = `SELECT "publicId", title, url, body, badge, source,
     "group", received, "expiresAt"
@@ -129,5 +145,20 @@ export async function getUnreadMessages(userId: number, startDate: Date, limit: 
     } catch (err) {
         console.log(err);
         return [] as MessageRecord[];
+    }
+}
+
+export async function getRetractableMessageIds(userId: number, localId: string) {
+    const sql = `SELECT "publicId"
+    FROM "Messages"
+    WHERE "UserId"=$1
+    AND "localId"=$2`;
+
+    try {
+        const res = await pool.query(sql, [userId, localId]);
+        return res.rows as string[];
+    } catch (err) {
+        console.log(err);
+        return [] as string[];
     }
 }

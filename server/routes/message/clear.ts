@@ -1,51 +1,54 @@
+import * as db from '../../db';
 import * as express from 'express';
 import publishMessage from '../../helpers/publish-message';
-import { MessageInstance, User } from '../../types/server';
+import PromiseRouter from 'express-promise-router';
 
-const router = express.Router();
+const router = PromiseRouter();
 
-router.post('/', (req: express.Request, res: express.Response) => {
-
-    const update = (id: string) => {
-        req.app.locals.Message.update(
-            {unread: false},
-            {where: {publicId: id}},
-        ).then((affectedRows: number[]) => {
-            if (affectedRows[0] === 0) {
-                res.sendStatus(304);
-
-                return;
-            }
-
-            delete req.app.locals.expirationCache[id];
-
-            publishMessage(req.app, req.user as User, null, id);
-            res.sendStatus(204);
-
-            return true;
-        }).catch(() => res.sendStatus(500));
-    };
+/**
+ * Endpoint for marking a message as read.
+ *
+ * Messages are specified by their public id or local id.
+ */
+router.post('/', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    let err: Error;
+    const messageIds: string[] = [];
 
     if (req.body.hasOwnProperty('publicId')) {
-        update(req.body.publicId);
-    } else if (req.body.hasOwnProperty('localId')) {
-        req.app.locals.Message.find({
-            limit: 1,
-            where: {
-                localId: req.body.localId,
-                unread: true,
-            },
-        }).then((message: MessageInstance) => {
-            if (!message) {
-                res.sendStatus(404);
-            } else {
-                update(message.publicId);
-            }
-        });
-    } else {
-        res.sendStatus(400);
+        messageIds.push(req.body.publicId);
     }
 
+    if (req.body.hasOwnProperty('localId')) {
+        try {
+            const ids = await db.getRetractableMessageIds(
+                req.user!.id,
+                req.body.localId,
+            );
+            messageIds.concat(ids);
+        } catch (e) {
+            res.status(500);
+            return next(e);
+        }
+    }
+
+    if (messageIds.length === 0) {
+        err = new Error('Reqest lacked a publicId or localId');
+        res.status(400);
+        return next(err);
+    }
+
+    try {
+        await db.markMessagesRead(req.user!.id, messageIds);
+        for (const id of messageIds) {
+            delete req.app.locals.expirationCache[id];
+            publishMessage(req.app, req.user!.id, null, id);
+        }
+    } catch (e) {
+        res.status(500);
+        return next(e);
+    }
+
+    res.sendStatus(204);
 });
 
 export default router;

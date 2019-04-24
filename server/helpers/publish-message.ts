@@ -1,16 +1,16 @@
 import * as express from 'express';
 import * as needle from 'needle';
 import * as db from '../db';
-import { Message, MessageInstance, User } from '../types/server';
+import { Message, MessageInstance } from '../types/server';
 
-function publishServerEvent(app: express.Application, _: User, message: Message) {
+function publishServerEvent(app: express.Application, message: Message) {
     for (const id of Object.keys(app.locals.pushClients)) {
         const res = app.locals.pushClients[id];
         res.write(`event: message\ndata: ${JSON.stringify(message)}\n\n`);
     }
 }
 
-function publishWebhook(_: User, message: Message, tokenValue: string) {
+function publishWebhook(message: Message, tokenValue: string) {
     delete message.UserId;
     delete message.id;
 
@@ -33,7 +33,7 @@ function publishWebhook(_: User, message: Message, tokenValue: string) {
 
 
 
-export default (app: express.Application, user: User, message: MessageInstance | null, retractionId?: string) => {
+export default (app: express.Application, userId: number, message: MessageInstance | null, retractionId?: string) => {
 
     let messageValues: Message;
 
@@ -45,13 +45,12 @@ export default (app: express.Application, user: User, message: MessageInstance |
         };
     }
 
-    publishServerEvent(app, user, messageValues);
+    publishServerEvent(app, messageValues);
 
     (async () => {
-        const urls = await db.getWebhookUrls(user.id);
-
+        const urls = await db.getWebhookUrls(userId);
         for (const url of urls) {
-            publishWebhook(user, messageValues, url);
+            publishWebhook(messageValues, url);
         }
     })();
 };
