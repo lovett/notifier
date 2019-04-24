@@ -23,7 +23,6 @@ import authLocal from './auth/local';
 import createUser from './helpers/create-user';
 import deauth from './routes/deauth';
 import index from './routes/index';
-import logger from './middleware/logger';
 import messageClear from './routes/message/clear';
 import messageIndex from './routes/message/index';
 import messageUnclear from './routes/message/unclear';
@@ -59,7 +58,6 @@ nconf.file('application', path.join(__dirname, '../../', 'config.json'));
 nconf.file('host', '/etc/notifier.json');
 
 nconf.defaults({
-    NOTIFIER_ACCESS_LOG: path.resolve('./notifier.log'),
     NOTIFIER_APP_DIR: path.resolve('./app'),
     NOTIFIER_BADGE_BASE_URL: '/svg',
     NOTIFIER_BASE_URL: '/',
@@ -91,8 +89,6 @@ app.locals.protected = passport.authenticate(['cookie', 'basic', 'local'], { ses
 app.locals.pushClients = {};
 
 app.locals.expirationCache = {};
-
-app.use(logger(nconf.get('NOTIFIER_ACCESS_LOG')));
 
 app.use(security);
 
