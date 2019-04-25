@@ -1,5 +1,6 @@
 import { Pool } from 'pg';
-import { TokenRecord, MessageRecord } from './types/server';
+import { TokenRecord } from './types/server';
+import Message from './Message';
 
 let pool: Pool;
 
@@ -97,14 +98,51 @@ export async function addTokens(userId: number, records: TokenRecord[]) {
     })().catch((e) => console.error(e.stack));
 }
 
-export async function markMessageUnread(userId: number, publicId: string) {
+export async function addMessages(userId: number, messages: Message[]) {
+    const sql = `INSERT INTO "Messages"
+    (body, "expiresAt", "group", "localId", "publicId", source, title, url, received, "UserId", badge)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`;
+
+    (async () => {
+        const client = await pool.connect();
+
+        try {
+            for (const message of messages) {
+                await client.query(
+                    sql,
+                    [
+                        message.body,
+                        message.expiresAt,
+                        message.group,
+                        message.localId,
+                        message.publicId,
+                        message.source,
+                        message.title,
+                        message.url,
+                        new Date(),
+                        userId,
+                        message.badge,
+                    ],
+                );
+            }
+            await client.query('COMMIT');
+        } catch (e) {
+            await client.query('ROLLBACK');
+            throw e;
+        } finally {
+            client.release();
+        }
+    })().catch((e) => console.error(e.stack));
+}
+
+export async function markMessagesUnread(userId: number, publicIds: string[]) {
     const sql = `UPDATE "Messages"
     SET unread=true
     WHERE "UserId"=$1
-    AND publicId=$2`;
+    AND "publicId" = ANY ($2)`;
 
     try {
-        await pool.query(sql, [userId, publicId]);
+        await pool.query(sql, [userId, publicIds]);
         return true;
     } catch (err) {
         console.log(err);
@@ -135,16 +173,16 @@ export async function getUnreadMessages(userId: number, startDate: Date, limit: 
     WHERE "UserId"=$1
     AND unread=true
     AND received >= $2
-    AND ("expiresAt" IS NULL OR "expiresAt" < NOW())
+    AND ("expiresAt" IS NULL OR "expiresAt" > NOW())
     ORDER BY received DESC
     LIMIT $3`;
 
     try {
         const res = await pool.query(sql, [userId, startDate, limit]);
-        return res.rows as MessageRecord[];
+        return res.rows as Message[];
     } catch (err) {
         console.log(err);
-        return [] as MessageRecord[];
+        return [] as Message[];
     }
 }
 
@@ -152,11 +190,12 @@ export async function getRetractableMessageIds(userId: number, localId: string) 
     const sql = `SELECT "publicId"
     FROM "Messages"
     WHERE "UserId"=$1
+    AND unread=true
     AND "localId"=$2`;
 
     try {
         const res = await pool.query(sql, [userId, localId]);
-        return res.rows as string[];
+        return res.rows.map((row) => row.publicId);
     } catch (err) {
         console.log(err);
         return [] as string[];

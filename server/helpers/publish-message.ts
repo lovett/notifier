@@ -1,24 +1,14 @@
 import * as express from 'express';
 import * as needle from 'needle';
 import * as db from '../db';
-import { Message, MessageInstance } from '../types/server';
+import Message from '../Message';
 
-function publishServerEvent(app: express.Application, message: Message) {
-    for (const id of Object.keys(app.locals.pushClients)) {
-        const res = app.locals.pushClients[id];
-        res.write(`event: message\ndata: ${JSON.stringify(message)}\n\n`);
-    }
-}
-
-function publishWebhook(message: Message, tokenValue: string) {
-    delete message.UserId;
-    delete message.id;
-
+function publishWebhook(message: Message, url: string) {
     const options = {
         json: true,
     };
 
-    needle.post(tokenValue, message, options, (err, res) => {
+    needle.post(url, message, options, (err, res) => {
         if (err) {
             return false;
         }
@@ -31,26 +21,35 @@ function publishWebhook(message: Message, tokenValue: string) {
     });
 }
 
+export default (app: express.Application, userId: number, message: Message | null, retractionId?: string) => {
 
-
-export default (app: express.Application, userId: number, message: MessageInstance | null, retractionId?: string) => {
-
-    let messageValues: Message;
+    let jsonMessage: string | undefined;
 
     if (message) {
-        messageValues = message.get();
-    } else {
-        messageValues = {
-            retracted: retractionId,
-        };
+        jsonMessage = JSON.stringify(message);
     }
 
-    publishServerEvent(app, messageValues);
+    if (retractionId) {
+        jsonMessage = JSON.stringify({ retracted: retractionId });
+    }
+
+    if (!jsonMessage) {
+        return;
+    }
+
+    for (const id of Object.keys(app.locals.pushClients)) {
+        const res = app.locals.pushClients[id];
+        res.write(`event: message\ndata: ${jsonMessage}\n\n`);
+    }
+
+    if (!message) {
+        return;
+    }
 
     (async () => {
         const urls = await db.getWebhookUrls(userId);
         for (const url of urls) {
-            publishWebhook(messageValues, url);
+            publishWebhook(message, url);
         }
     })();
 };

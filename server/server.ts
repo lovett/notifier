@@ -23,9 +23,11 @@ import authLocal from './auth/local';
 import createUser from './helpers/create-user';
 import deauth from './routes/deauth';
 import index from './routes/index';
+import jsonError from './middleware/error-json';
 import messageClear from './routes/message/clear';
 import messageIndex from './routes/message/index';
 import messageUnclear from './routes/message/unclear';
+import noBlanks from './middleware/no-blanks';
 import publishMessage from './helpers/publish-message';
 import push from './routes/push';
 import security from './middleware/security';
@@ -107,6 +109,8 @@ app.use(bodyParser.json({
     limit: '5kb',
 }));
 
+app.use(noBlanks);
+
 app.param('count', validateCount);
 
 db.connect(nconf.get('NOTIFIER_DB_DSN'));
@@ -176,6 +180,8 @@ router.use('/message/unclear', app.locals.protected, messageUnclear);
 router.use('/push', app.locals.protected, push);
 
 app.use(nconf.get('NOTIFIER_BASE_URL'), router);
+
+app.use(jsonError);
 
 /**
  * Server startup

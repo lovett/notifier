@@ -1,5 +1,5 @@
 import * as db from '../../db';
-import * as express from 'express';
+import { NextFunction, Request, Response } from 'express';
 import publishMessage from '../../helpers/publish-message';
 import PromiseRouter from 'express-promise-router';
 
@@ -10,8 +10,7 @@ const router = PromiseRouter();
  *
  * Messages are specified by their public id or local id.
  */
-router.post('/', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    let err: Error;
+router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     const messageIds: string[] = [];
 
     if (req.body.hasOwnProperty('publicId')) {
@@ -32,7 +31,7 @@ router.post('/', async (req: express.Request, res: express.Response, next: expre
     }
 
     if (messageIds.length === 0) {
-        err = new Error('Reqest lacked a publicId or localId');
+        const err = new Error('Reqest lacked a publicId or localId');
         res.status(400);
         return next(err);
     }

@@ -7,13 +7,16 @@ interface TokenRecord {
 
 interface MessageRecord {
     body?: string;
-    serviceTokens: any;
+    serviceTokens?: any;
     expiresAt?: Date;
     localId?: string;
     publicId: string;
     title: string;
     group?: string;
     badge?: string;
+    source?: string;
+    url?: string;
+    received: Date;
 }
 
 import * as Sequelize from 'sequelize';
