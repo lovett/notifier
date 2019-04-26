@@ -20,7 +20,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.hasOwnProperty('localId')) {
         try {
             const ids = await db.getRetractableMessageIds(
-                req.user!.id,
+                req.user,
                 req.body.localId,
             );
             messageIds.concat(ids);
@@ -37,10 +37,10 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     }
 
     try {
-        await db.markMessagesRead(req.user!.id, messageIds);
+        await db.markMessagesRead(req.user, messageIds);
         for (const id of messageIds) {
             delete req.app.locals.expirationCache[id];
-            publishMessage(req.app, req.user!.id, null, id);
+            publishMessage(req.app, req.user, null, id);
         }
     } catch (e) {
         res.status(500);

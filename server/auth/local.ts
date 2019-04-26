@@ -14,7 +14,7 @@ export default () => {
             const validPassword = await user.testPassword(password);
 
             if (validPassword) {
-                return done(null, user);
+                return done(null, user.id);
             }
 
             return done(null, false);

@@ -33,6 +33,26 @@ export async function getUser(username: string): Promise<User | null> {
     }
 }
 
+export async function getUserIdByToken(key: string, value: string): Promise<number | null> {
+    const sql = `SELECT "UserId"
+    FROM "Tokens"
+    WHERE key=$1
+    AND value=$2`;
+
+    try {
+        const res = await pool.query(sql, [key, value]);
+        if (res.rows.length === 0) {
+            return null;
+        }
+
+        return res.rows[0].UserId;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
+
 export async function addUser(username: string, password: string): Promise<User | null> {
     const sql = `INSERT INTO "Users"
     (username, "passwordHash", "createdAt", "updatedAt")
@@ -47,30 +67,8 @@ export async function addUser(username: string, password: string): Promise<User 
             return null;
         }
 
-        return new User({
-            passwordHash,
-            username,
-        });
+        return await getUser(username);
 
-    } catch (err) {
-        console.log(err);
-        return null;
-    }
-}
-
-export async function getTokenUser(key: string, value: string) {
-    const sql = `SELECT "UserId"
-    FROM "Tokens"
-    WHERE key=$1
-    AND value=$2`;
-
-    try {
-        const res = await pool.query(sql, [key, value]);
-        if (res.rows.length === 0) {
-            return null;
-        }
-
-        return res.rows[0].UserId;
     } catch (err) {
         console.log(err);
         return null;

@@ -19,7 +19,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 
     const token = new Token(label, persist);
 
-    await db.addTokens(req.user.id, [token]);
+    await db.addTokens(req.user, [token]);
 
     const cookieOptions: CookieOptions = {
         path: req.app.locals.config.get('NOTIFIER_BASE_URL'),

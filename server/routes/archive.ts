@@ -13,7 +13,7 @@ router.get('/:count?', async (req: express.Request, res: express.Response) => {
     const startDate = new Date(since);
 
     try {
-        const messages = await db.getUnreadMessages(req.user!.id, startDate, count);
+        const messages = await db.getUnreadMessages(req.user, startDate, count);
 
         res.send({
             limit: count,

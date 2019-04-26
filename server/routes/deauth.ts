@@ -15,7 +15,7 @@ router.post('/', async (req: Request, res: Response) => {
     const [key, value] = req.cookies.token;
 
     try {
-        await db.deleteToken(req.user!.id, key, value);
+        await db.deleteToken(req.user, key, value);
         res.clearCookie('token', { path: baseUrl });
         return res.sendStatus(200);
     } catch (e) {

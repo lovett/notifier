@@ -53,8 +53,8 @@ router.post('/', async (req: Request, res: Response) => {
     }
 
     try {
-        await db.deleteTokensByKey(req.user!.id, removals);
-        await db.addTokens(req.user!.id, additions);
+        await db.deleteTokensByKey(req.user, removals);
+        await db.addTokens(req.user, additions);
         return res.sendStatus(200);
     } catch (e) {
         return res.status(500).json(e);

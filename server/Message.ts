@@ -19,6 +19,10 @@ export default class Message {
             }
         }
 
+        if (!this.received) {
+            this.received = new Date();
+        }
+
         this.publicId = uuid();
     }
 }

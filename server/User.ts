@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import * as util from 'util';
 
 export default class User {
-    public static passwordToHash(password: string) {
+    public static passwordToHash(password: string): string {
         const buf = crypto.randomBytes(this.hashKeylength);
         const salt = buf.toString('hex');
 
@@ -24,7 +24,7 @@ export default class User {
     public readonly username!: string;
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
-    public readonly passwordHash!: string;
+    private readonly passwordHash!: string;
 
     constructor(data: Partial<User>) {
         Object.assign(this, data);

@@ -5,9 +5,9 @@ export default function() {
     return new BasicStrategy((key, value, next) => {
 
         (async () => {
-            const userId = db.getTokenUser(key, value);
+            const userId = await db.getUserIdByToken(key, value);
 
             return next(null, userId);
-        })();
+        })().catch((err) => { throw err; });
     });
 }

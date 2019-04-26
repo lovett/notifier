@@ -13,7 +13,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 
     try {
         await db.markMessagesUnread(
-            req.user!.id,
+            req.user,
             [req.body.publicId],
         );
         res.sendStatus(204);

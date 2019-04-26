@@ -6,9 +6,9 @@ export default () => {
         const [key, value] = cookieValue.split(',');
 
         (async () => {
-            const userId = db.getTokenUser(key, value);
+            const userId = await db.getUserIdByToken(key, value);
 
             return next(null, userId);
-        })();
+        })().catch((err) => { throw err; });
     });
 };

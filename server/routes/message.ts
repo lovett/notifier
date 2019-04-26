@@ -41,15 +41,15 @@ async function retract(req: Request, res: Response, next: NextFunction) {
 
     try {
         const messageIds = await db.getRetractableMessageIds(
-            req.user!.id,
+            req.user,
             message.localId!,
         );
 
-        await db.markMessagesRead(req.user!.id, messageIds);
+        await db.markMessagesRead(req.user, messageIds);
 
         for (const id of messageIds) {
             delete req.app.locals.expirationCache[id];
-            publishMessage(req.app, req.user!.id, null, id);
+            publishMessage(req.app, req.user, null, id);
         }
     } catch (err) {
         res.status(500);
@@ -63,7 +63,7 @@ async function save(req: Request, res: Response, next: NextFunction) {
     const message: Message = req.body.message;
 
     try {
-        await db.addMessages(req.user!.id, [message]);
+        await db.addMessages(req.user, [message]);
     } catch (err) {
         res.status(500);
         throw err;
@@ -80,7 +80,7 @@ async function publish(req: Request, res: Response, next: NextFunction) {
     const message: Message = req.body.message;
 
     try {
-        await publishMessage(req.app, req.user!.id, message);
+        await publishMessage(req.app, req.user, message);
     } catch (err) {
         res.status(500);
         throw err;
