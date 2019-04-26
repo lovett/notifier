@@ -1,4 +1,4 @@
-import * as db from '../../db';
+import * as db from '../db';
 import { NextFunction, Request, Response } from 'express';
 import PromiseRouter from 'express-promise-router';
 

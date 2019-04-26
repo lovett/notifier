@@ -1,6 +1,6 @@
-import * as db from '../../db';
+import * as db from '../db';
 import { NextFunction, Request, Response } from 'express';
-import publishMessage from '../../helpers/publish-message';
+import publishMessage from '../helpers/publish-message';
 import PromiseRouter from 'express-promise-router';
 
 const router = PromiseRouter();

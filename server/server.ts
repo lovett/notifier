@@ -18,9 +18,9 @@ import authLocal from './auth/local';
 import deauth from './routes/deauth';
 import index from './routes/index';
 import jsonError from './middleware/error-json';
-import messageClear from './routes/message/clear';
-import messageIndex from './routes/message/index';
-import messageUnclear from './routes/message/unclear';
+import clear from './routes/clear';
+import message from './routes/message';
+import unclear from './routes/unclear';
 import noBlanks from './middleware/no-blanks';
 import publishMessage from './helpers/publish-message';
 import push from './routes/push';
@@ -127,13 +127,13 @@ router.use('/services', app.locals.protected, services);
 
 router.use('/auth', passport.authenticate('local', { session: false }), auth);
 
-router.use('/message', app.locals.protected, messageIndex);
+router.use('/message', app.locals.protected, message);
 
 router.use('/archive', app.locals.protected, archive);
 
-router.use('/message/clear', app.locals.protected, messageClear);
+router.use('/message/clear', app.locals.protected, clear);
 
-router.use('/message/unclear', app.locals.protected, messageUnclear);
+router.use('/message/unclear', app.locals.protected, unclear);
 
 router.use('/push', app.locals.protected, push);
 
