@@ -1,28 +1,13 @@
-import * as express from 'express';
-import {BasicStrategy} from 'passport-http';
-import { TokenInstance } from '../types/server';
+import * as db from '../db';
+import { BasicStrategy } from 'passport-http';
 
-export default function(app: express.Application) {
+export default function() {
     return new BasicStrategy((key, value, next) => {
 
-        app.locals.Token.findOne({
-            include: [ app.locals.User],
-            where: {
-                value,
-            },
-        }).then((token: TokenInstance) => {
-            if (!token || token.key !== key) {
-                return next(null, false);
-            }
+        (async () => {
+            const userId = db.getTokenUser(key, value);
 
-            token.User.token = {
-                key,
-                value,
-            };
-
-            return next(null, token.User);
-        }).catch(() => {
-            next(new Error('Application error'));
-        });
+            return next(null, userId);
+        })();
     });
 }

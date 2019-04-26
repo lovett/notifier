@@ -2,25 +2,19 @@ import * as bodyParser from 'body-parser';
 import * as childProcess from 'child_process';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
-import * as crypto from 'crypto';
 import * as express from 'express';
 import * as nconf from 'nconf';
 import * as passport from 'passport';
 import * as path from 'path';
 import * as responseTime from 'response-time';
-import * as Sequelize from 'sequelize';
 
 import * as db from './db';
-import Message from './models/Message';
-import Token from './models/Token';
-import User from './models/User';
 import archive from './routes/archive';
 import asset from './middleware/asset';
 import auth from './routes/auth';
 import authCookie from './auth/cookie';
 import authBasic from './auth/basic';
 import authLocal from './auth/local';
-import createUser from './helpers/create-user';
 import deauth from './routes/deauth';
 import index from './routes/index';
 import jsonError from './middleware/error-json';
@@ -36,7 +30,6 @@ import validateCount from './validation/count';
 
 let app: express.Application;
 let router: express.Router;
-let sequelize: Sequelize.Sequelize;
 
 /**
  * Application configuration
@@ -69,9 +62,6 @@ nconf.defaults({
     NOTIFIER_FORCE_HTTPS: 0,
     NOTIFIER_HTTP_IP: '127.0.0.1',
     NOTIFIER_HTTP_PORT: 8080,
-    NOTIFIER_PASSWORD_HASH_ITERATIONS: 20000,
-    NOTIFIER_PASSWORD_HASH_KEYLENGTH: 64,
-    NOTIFIER_PASSWORD_HASH_RANDBYTES: 64,
     NOTIFIER_PUBLIC_DIR: path.resolve('./build/public'),
 });
 
@@ -85,7 +75,6 @@ app.disable('x-powered-by');
 
 app.locals.config = nconf;
 
-app.locals.appsecret = crypto.randomBytes(app.locals.config.get('NOTIFIER_PASSWORD_HASH_RANDBYTES')).toString('hex');
 app.locals.protected = passport.authenticate(['cookie', 'basic', 'local'], { session: false });
 
 app.locals.pushClients = {};
@@ -116,44 +105,13 @@ app.param('count', validateCount);
 db.connect(nconf.get('NOTIFIER_DB_DSN'));
 
 /**
- * Database configuration
- * @deprecated
- */
-sequelize = new Sequelize(nconf.get('NOTIFIER_DB_DSN'), {
-    // This silences a deprecation warning at startup about string based operators
-    // even if they aren't actually any being used.
-    operatorsAliases: false,
-
-    pool: {
-        max: 10,
-        min: 3,
-    },
-
-    // To re-enable logging, set this to console.log
-    logging: false,
-});
-
-app.locals.Token = Token(sequelize);
-app.locals.User = User(sequelize, app);
-
-app.locals.Message = Message(
-    sequelize,
-    app.locals.config.get('NOTIFIER_BADGE_BASE_URL').replace(/\/$/, ''),
-);
-
-app.locals.Token.belongsTo(app.locals.User);
-app.locals.User.hasMany(app.locals.Token);
-app.locals.User.hasMany(app.locals.Message);
-app.locals.Message.belongsTo(app.locals.User);
-
-/**
  * Routes
  */
-passport.use(authLocal(app));
+passport.use(authLocal());
 
-passport.use(authBasic(app));
+passport.use(authBasic());
 
-passport.use(authCookie(app));
+passport.use(authCookie());
 
 app.use(passport.initialize());
 
@@ -205,42 +163,24 @@ if (!module.parent) {
         });
     }, 2000);
 
-    sequelize.sync()
-        .then(() => createUser(app))
-        .then(() => {
-            return app.locals.Message.findAll({
-                include: [{
-                    model: app.locals.User,
-                }],
-                where: {
-                    expiresAt: {
-                        [Sequelize.Op.gt]: new Date(),
-                    },
-                    unread: true,
-                },
-            });
-        })
-        .then((messages) => {
-            for (const message of messages) {
-                app.locals.expirationCache[message.publicId] = [message.User, message.expiresAt];
-            }
-        })
-        .then(() => {
-            const port = nconf.get('NOTIFIER_HTTP_PORT');
-            const ip = nconf.get('NOTIFIER_HTTP_IP');
-            const server = app.listen(port, ip);
+    (async () => {
+        app.locals.expirationCache = await db.getExpiringMessages();
+        db.addUser(
+            app.locals.config.get('NOTIFIER_DEFAULT_USER'),
+            app.locals.config.get('NOTIFIER_DEFAULT_PASSWORD'),
+        );
+    })();
 
-            server.on('listening', () => {
-                process.stdout.write(`Listening on ${ip}:${port}\n`);
+    const port = nconf.get('NOTIFIER_HTTP_PORT');
+    const ip = nconf.get('NOTIFIER_HTTP_IP');
+    const server = app.listen(port, ip);
 
-                // Tell systemd that startup has completed and all systems are go.
-                if (process.env.NODE_ENV === 'production') {
-                    childProcess.exec(`/bin/systemd-notify --ready --pid=${process.pid}`);
-                }
-            });
-        })
-        .catch((err) => {
-            process.stderr.write(err + '\\n');
-            process.exit();
-        });
+    server.on('listening', () => {
+        process.stdout.write(`Listening on ${ip}:${port}\n`);
+
+        // Tell systemd that startup has completed and all systems are go.
+        if (process.env.NODE_ENV === 'production') {
+            childProcess.exec(`/bin/systemd-notify --ready --pid=${process.pid}`);
+        }
+    });
 }

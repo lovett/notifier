@@ -1,7 +1,7 @@
 import * as db from '../db';
-import * as express from 'express';
+import { Request, Response } from 'express';
 import PromiseRouter from 'express-promise-router';
-import { TokenRecord } from '../types/server';
+import Token from '../Token';
 
 const router = PromiseRouter();
 
@@ -14,18 +14,9 @@ const router = PromiseRouter();
  * Client-specific functionality is not included, specifically browser
  * push notifications.
  */
-router.get('/', async (req: express.Request, res: express.Response) => {
+router.get('/', async (req: Request, res: Response) => {
     const tokens = await db.getServiceTokens(req.user.id);
-
-    const services = tokens.map((token) => {
-        if (token.label === 'service') {
-            delete token.value;
-        }
-        delete token.label;
-        return token;
-    });
-
-    res.json(services);
+    res.json(tokens);
 });
 
 /**
@@ -35,8 +26,8 @@ router.get('/', async (req: express.Request, res: express.Response) => {
  * service key. If yes, an existing key is removed and a new key is
  * created. If no, only the removal happens.
  */
-router.post('/', async (req: express.Request, res: express.Response) => {
-    const additions: TokenRecord[] = [];
+router.post('/', async (req: Request, res: Response) => {
+    const additions: Token[] = [];
     const removals: string[] = [];
     const whitelist = ['webhook'];
 
@@ -51,12 +42,9 @@ router.post('/', async (req: express.Request, res: express.Response) => {
             continue;
         }
 
-        additions.push({
-            key: name,
-            label: 'userval',
-            persist: true,
-            value: req.body[name],
-        });
+        const token = new Token('userval', true, name, req.body[name]);
+
+        additions.push(token);
     }
 
     if (removals.length === 0 && additions.length === 0) {

@@ -2,7 +2,6 @@ import * as sanitizeHtml from 'sanitize-html';
 
 /**
  * Remove all markup from a value
- *
  */
 export function strictSanitize(value: string) {
     const config = {
@@ -18,7 +17,6 @@ export function strictSanitize(value: string) {
 
 /**
  * Filter markup from a value based on a whitelist
- *
  */
 export function tolerantSanitize(value: string) {
     const config = {

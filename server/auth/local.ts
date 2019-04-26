@@ -1,28 +1,24 @@
-import * as crypto from 'crypto';
-import * as express from 'express';
-import {Strategy as LocalStrategy} from 'passport-local';
-import { UserInstance } from '../types/server';
+import * as db from '../db';
+import { Strategy } from 'passport-local';
 
-export default (app: express.Application) => {
-    return new LocalStrategy((username, password, done) => {
-        app.locals.User.findOne({ where: { username } }).then((user: UserInstance) => {
+export default () => {
+    return new Strategy((username, password, done) => {
+
+        (async () => {
+            const user = await db.getUser(username);
+
             if (!user) {
                 return done(null, false);
             }
 
-            const segments = user.getDataValue('passwordHash').split('::');
+            const validPassword = await user.testPassword(password);
 
-            const keyLength = app.locals.config.get('NOTIFIER_PASSWORD_HASH_KEYLENGTH');
+            if (validPassword) {
+                return done(null, user);
+            }
 
-            const iterations = app.locals.config.get('NOTIFIER_PASSWORD_HASH_ITERATIONS');
+            return done(null, false);
 
-            crypto.pbkdf2(password, segments[0], iterations, keyLength, 'sha1', (_, key) => {
-                if (key.toString('hex') === segments[1]) {
-                    return done(null, user);
-                } else {
-                    return done(null, false);
-                }
-            });
-        }).catch((error: Error) => done(error));
+        })().catch((err) => { throw err; });
     });
 };

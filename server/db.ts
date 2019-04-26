@@ -1,6 +1,7 @@
 import { Pool } from 'pg';
-import { TokenRecord } from './types/server';
 import Message from './Message';
+import User from './User';
+import Token from './Token';
 
 let pool: Pool;
 
@@ -14,15 +15,82 @@ export function connect(dsn: string) {
     });
 }
 
-export async function getServiceTokens(userId: number) {
-    const sql = `SELECT key, value, label
+export async function getUser(username: string): Promise<User | null> {
+    const sql = `SELECT id, username, "passwordHash", "createdAt", "updatedAt"
+    FROM "Users"
+    WHERE username=$1`;
+
+    try {
+        const res = await pool.query(sql, [username]);
+        if (res.rows.length === 0) {
+            return null;
+        }
+
+        return new User(res.rows[0]);
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
+export async function addUser(username: string, password: string): Promise<User | null> {
+    const sql = `INSERT INTO "Users"
+    (username, "passwordHash", "createdAt", "updatedAt")
+    VALUES ($1, $2, NOW(), NOW())
+    ON CONFLICT ON CONSTRAINT "Users_username_key" DO NOTHING`;
+
+    const passwordHash = User.passwordToHash(password);
+
+    try {
+        const res = await pool.query(sql, [username, passwordHash]);
+        if (res.rowCount === 0) {
+            return null;
+        }
+
+        return new User({
+            passwordHash,
+            username,
+        });
+
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
+export async function getTokenUser(key: string, value: string) {
+    const sql = `SELECT "UserId"
+    FROM "Tokens"
+    WHERE key=$1
+    AND value=$2`;
+
+    try {
+        const res = await pool.query(sql, [key, value]);
+        if (res.rows.length === 0) {
+            return null;
+        }
+
+        return res.rows[0].UserId;
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
+
+export async function getServiceTokens(userId: number): Promise<Token[]> {
+    const sql = `SELECT key, value, label, persist
         FROM "Tokens"
         WHERE "UserId"=$1
         AND label IN ('service', 'userval')`;
 
     try {
         const res = await pool.query(sql, [userId]);
-        return res.rows;
+        return res.rows.map((row) => new Token(
+            row.label,
+            row.persist,
+            row.key,
+            row.value,
+        ));
     } catch (err) {
         console.log(err);
         return [];
@@ -73,19 +141,25 @@ export async function deleteToken(userId: number, key: string, value: string) {
     }
 }
 
-export async function addTokens(userId: number, records: TokenRecord[]) {
+export async function addTokens(userId: number, tokens: Token[]) {
     const sql = `INSERT INTO "Tokens"
-    ("UserId", key, value, label, "createdAt", "updatedAt")
-    VALUES ($1, $2, $3, $4, NOW(), NOW())`;
+    ("UserId", key, value, label, persist, "createdAt", "updatedAt")
+    VALUES ($1, $2, $3, $4, $5, NOW(), NOW())`;
 
     (async () => {
         const client = await pool.connect();
 
         try {
-            for (const { key, value, label } of records) {
+            for (const token of tokens) {
                 await client.query(
                     sql,
-                    [userId, key, value, label],
+                    [
+                        userId,
+                        token.key,
+                        token.value,
+                        token.label,
+                        token.persist,
+                    ],
                 );
             }
             await client.query('COMMIT');
@@ -199,5 +273,23 @@ export async function getRetractableMessageIds(userId: number, localId: string) 
     } catch (err) {
         console.log(err);
         return [] as string[];
+    }
+}
+
+export async function getExpiringMessages() {
+    const sql = `SELECT "publicId", "UserId", "expiresAt"
+    FROM "Messages"
+    WHERE unread=true
+    AND "expiresAt" > NOW()`;
+
+    try {
+        const res = await pool.query(sql);
+        return res.rows.reduce((accumulator, row) => {
+            accumulator[row.publicId] = [row.UserId, row.expiresAt];
+            return accumulator;
+        }, {});
+    } catch (err) {
+        console.log(err);
+        return [];
     }
 }

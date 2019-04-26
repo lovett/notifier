@@ -30,7 +30,6 @@
     "pg-hstore": "2.3.2",
     "response-time": "2.3.2",
     "sanitize-html": "1.20.0",
-    "sequelize": "4.43.0",
     "useragent": "2.3.0",
     "uuid": "3.3.2"
   },
@@ -54,7 +53,6 @@
     "@types/pg": "7.4.14",
     "@types/response-time": "2.3.3",
     "@types/sanitize-html": "1.18.3",
-    "@types/sequelize": "4.27.48",
     "@types/serve-favicon": "2.2.30",
     "@types/terser-webpack-plugin": "^1.2.1",
     "@types/useragent": "2.1.1",
