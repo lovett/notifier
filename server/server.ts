@@ -6,7 +6,6 @@ import * as express from 'express';
 import * as nconf from 'nconf';
 import * as passport from 'passport';
 import * as path from 'path';
-import * as responseTime from 'response-time';
 
 import * as db from './db';
 import archive from './routes/archive';
@@ -82,8 +81,6 @@ app.locals.pushClients = {};
 app.locals.expirationCache = {};
 
 app.use(security);
-
-app.use(responseTime());
 
 app.use(compression());
 
