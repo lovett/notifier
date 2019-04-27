@@ -1,8 +1,8 @@
 import * as db from '../db';
-import { Strategy as CookieStrategy } from 'passport-cookie';
+import { Strategy } from 'passport-cookie';
 
 export default () => {
-    return new CookieStrategy((cookieValue, next) => {
+    return new Strategy((cookieValue, next) => {
         const [key, value] = cookieValue.split(',');
 
         (async () => {
