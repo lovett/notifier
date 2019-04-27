@@ -56,8 +56,6 @@ nconf.defaults({
     NOTIFIER_BADGE_BASE_URL: '/svg',
     NOTIFIER_BASE_URL: '/',
     NOTIFIER_DB_DSN: 'postgres://notifier:notifier@localhost:5432/notifier',
-    NOTIFIER_DEFAULT_PASSWORD: undefined,
-    NOTIFIER_DEFAULT_USER: undefined,
     NOTIFIER_FORCE_HTTPS: 0,
     NOTIFIER_HTTP_IP: '127.0.0.1',
     NOTIFIER_HTTP_PORT: 8080,
@@ -162,10 +160,6 @@ if (!module.parent) {
 
     (async () => {
         app.locals.expirationCache = await db.getExpiringMessages();
-        db.addUser(
-            app.locals.config.get('NOTIFIER_DEFAULT_USER'),
-            app.locals.config.get('NOTIFIER_DEFAULT_PASSWORD'),
-        );
     })();
 
     const port = nconf.get('NOTIFIER_HTTP_PORT');

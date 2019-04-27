@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 import * as util from 'util';
 
 export default class User {
-    public static passwordToHash(password: string): string {
+    public static hashPassword(password: string): string {
         const buf = crypto.randomBytes(this.hashKeylength);
         const salt = buf.toString('hex');
 

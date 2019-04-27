@@ -52,14 +52,12 @@ export async function getUserIdByToken(key: string, value: string): Promise<numb
     }
 }
 
-
 export async function addUser(username: string, password: string): Promise<User | null> {
     const sql = `INSERT INTO "Users"
     (username, "passwordHash", "createdAt", "updatedAt")
-    VALUES ($1, $2, NOW(), NOW())
-    ON CONFLICT ON CONSTRAINT "Users_username_key" DO NOTHING`;
+    VALUES ($1, $2, NOW(), NOW())`;
 
-    const passwordHash = User.passwordToHash(password);
+    const passwordHash = User.hashPassword(password);
 
     try {
         const res = await pool.query(sql, [username, passwordHash]);
