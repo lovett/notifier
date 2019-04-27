@@ -235,6 +235,26 @@ export async function markMessagesRead(userId: number, publicIds: string[]) {
     }
 }
 
+export async function getMessage(userId: number, publicId: string): Promise<Message | null> {
+    const sql = `SELECT "publicId", title, url, body, badge, source,
+    "group", received, "expiresAt"
+    FROM "Messages"
+    WHERE "UserId"=$1
+    AND "publicId"=$2`;
+
+    try {
+        const res = await pool.query(sql, [userId, publicId]);
+
+        if (res.rows.length === 0) {
+            return null;
+        }
+
+        return new Message(res.rows[0]);
+    } catch (err) {
+        console.log(err);
+        return null;
+    }
+}
 
 export async function getUnreadMessages(userId: number, startDate: Date, limit: number = 50) {
     const sql = `SELECT "publicId", title, url, body, badge, source,
