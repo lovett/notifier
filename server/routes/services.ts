@@ -15,7 +15,7 @@ const router = PromiseRouter();
  * push notifications.
  */
 router.get('/', async (req: Request, res: Response) => {
-    const tokens = await db.getServiceTokens(req.user.id);
+    const tokens = await db.getServiceTokens(req.user);
     res.json(tokens);
 });
 
