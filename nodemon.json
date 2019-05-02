@@ -3,6 +3,6 @@
   "verbose": false,
   "watch": ["build/server"],
   "ext": "js",
-  "exec": "node build/server/server.js",
+  "exec": "cd build; node server/server.js",
   "signal": "SIGHUP"
 }
