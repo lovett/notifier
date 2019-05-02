@@ -11,10 +11,10 @@ const router = PromiseRouter();
  * Messages are specified by their public id or local id.
  */
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
-    const messageIds: string[] = [];
+    let messageIds: string[] = [];
 
     if (req.body.hasOwnProperty('publicId')) {
-        messageIds.push(req.body.publicId);
+        messageIds = messageIds.concat(req.body.publicId);
     }
 
     if (req.body.hasOwnProperty('localId')) {
@@ -23,7 +23,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
                 req.user,
                 req.body.localId,
             );
-            messageIds.concat(ids);
+            messageIds = messageIds.concat(ids);
         } catch (e) {
             res.status(500);
             return next(e);
