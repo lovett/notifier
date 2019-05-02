@@ -15,6 +15,10 @@ router.get('/:count?', async (req: express.Request, res: express.Response) => {
     try {
         const messages = await db.getUnreadMessages(req.user, startDate, count);
 
+        for (const message of messages) {
+            message.urlizeBadge(req.app.locals.config.get('NOTIFIER_BADGE_BASE_URL'));
+        }
+
         res.send({
             limit: count,
             messages,

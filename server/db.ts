@@ -269,7 +269,7 @@ export async function getUnreadMessages(userId: number, startDate: Date, limit: 
 
     try {
         const res = await pool.query(sql, [userId, startDate, limit]);
-        return res.rows as Message[];
+        return res.rows.map((row) => new Message(row));
     } catch (err) {
         console.log(err);
         return [] as Message[];

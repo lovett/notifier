@@ -26,6 +26,7 @@ export default (app: express.Application, userId: number, message: Message | nul
     let jsonMessage: string | undefined;
 
     if (message) {
+        message.urlizeBadge(app.locals.config.get('NOTIFIER_BADGE_BASE_URL'));
         jsonMessage = JSON.stringify(message);
     }
 
