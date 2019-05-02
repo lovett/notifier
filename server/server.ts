@@ -59,14 +59,10 @@ nconf.defaults({
     NOTIFIER_FORCE_HTTPS: 0,
     NOTIFIER_HTTP_IP: '127.0.0.1',
     NOTIFIER_HTTP_PORT: 8080,
-    NOTIFIER_PUBLIC_DIR: path.resolve('./build/public'),
+    NOTIFIER_PUBLIC_DIR: path.resolve('./public'),
 });
 
 app = express();
-
-app.set('views', path.resolve('./build/views'));
-
-app.set('view engine', 'ejs');
 
 app.disable('x-powered-by');
 

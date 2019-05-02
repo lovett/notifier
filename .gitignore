@@ -29,4 +29,5 @@ build/public/*
 !build/public/favicon.ico
 !build/public/favicon.png
 !build/public/robots.txt
+!build/public/index.html
 build/server
