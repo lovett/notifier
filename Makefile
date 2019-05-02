@@ -41,7 +41,6 @@ build: setup app worker server
 	rm -f "notifier.tar.gz"
 	tar --create --gzip --file="notifier.tar.gz" notifier
 
-#
 # Build the browser UI via webpack.
 #
 # When this target is invoked directly, webpack will run in
@@ -64,7 +63,6 @@ app: dummy
 hooks: dummy
 	cp hooks/* .git/hooks/
 
-#
 # Check for outdated NPM packages
 #
 # Uses "or true" after the npm command to prevent a non-zero exit code
@@ -79,7 +77,6 @@ setup: export NODE_ENV=dev
 setup:
 	npm install --no-optional
 
-#
 # Build the web worker portion of the UI via webpack.
 #
 # When this target is invoked directly, webpack will run in
@@ -136,7 +133,6 @@ multimessage: dummy
 	clients/send-notification -s $(DEV_URL) -t "timer group test message"	    -g timer        -b "Message 13"	-l "multi-timer"
 	clients/send-notification -s $(DEV_URL) -t "custom badge test message"                     -b "Message 14" -l "mult-badge" -i "test.svg"
 
-#
 # Create a package upgrade commit.
 #
 # "puc" stands for Package Upgrade Commit
@@ -157,6 +153,8 @@ master-to-production: dummy
 	git push
 	git checkout master
 
+# Automation for setting up a tmux session
+#
 workspace:
 ## 0: Editor
 	tmux new-session -d -s "$(TMUX_SESSION_NAME)" bash
@@ -181,6 +179,7 @@ workspace:
 
 	tmux attach-session -t "$(TMUX_SESSION_NAME)"
 
-# Leftovers from an earlier setup.
-# "test:server": "mocha --bail --reporter min test",
-# "coverage:server": "istanbul cover --dir coverage/server _mocha -- -R min test",
+# Install the application on the production host via Ansible
+#
+install:
+	ansible-playbook ansible/install.yml
