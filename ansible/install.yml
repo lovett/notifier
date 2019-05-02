@@ -1,8 +1,9 @@
 ---
-- hosts: all
+- hosts: notifier
   vars:
     application_user: notifier
-    installation_directory: /srv/notifier-prod
+    application_group: notifier
+    installation_directory: /srv/notifier
     nodejs_path: /usr/local/bin/node
   tasks:
   - name: Create the application user
@@ -16,23 +17,43 @@
       shell="/usr/sbin/nologin"
       system=yes
 
-  - name: Create the log directory
-    become: true
-    file:
-      path: "/var/log/notifier"
-      state: directory
-      owner: "{{ application_user }}"
-      group: "{{ application_user }}"
-      mode: 0700
-
   - name: Rsync the application
     become: true
-    become_user: "{{ application_user }}"
     synchronize:
-      archive: yes
-      src: "../notifier/"
+      src: "../build/"
       dest: "{{ installation_directory }}"
       delete: yes
+      recursive: true
+      rsync_opts:
+        - "--exclude=node_modules"
+        - "--exclude=package.json"
+        - "--exclude=package-lock.json"
+
+  - name: Copy package.json
+    become: true
+    copy:
+      src: "{{ item }}"
+      dest: "{{ installation_directory }}"
+    with_items:
+      - ../package.json
+      - ../package-lock.json
+
+  - name: Install NPM packages
+    become: true
+    npm:
+      executable: "/usr/local/bin/npm"
+      global: no
+      ignore_scripts: yes
+      path: "{{ installation_directory }}"
+      production: yes
+
+  - name: Set permissions on application root
+    become: true
+    file:
+      path: "{{ installation_directory }}"
+      recurse: yes
+      owner: "{{ application_user }}"
+      group: "{{ application_group }}"
 
   - name: Populate the systemd service
     become: true

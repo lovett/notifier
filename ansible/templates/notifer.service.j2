@@ -8,7 +8,7 @@ NotifyAccess=all
 User=notifier
 Group=notifier
 WorkingDirectory={{ installation_directory }}
-ExecStart={{ nodejs_path }} build/server/server.js
+ExecStart={{ nodejs_path }} server/server.js
 Environment=NODE_ENV=production
 
 [Install]
