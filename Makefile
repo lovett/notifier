@@ -69,8 +69,12 @@ hooks: dummy
 # from producing a warning. Non-zero exit here is not an indicator of
 # badness.
 #
+# The ts-loader is omitted from output as a means of pinning the
+# current version to retain compatibility with node v6. The current
+# version of ts-loader has a dependency that does not work with node
+# 6. See https://github.com/TypeStrong/ts-loader/issues/929
 outdated: dummy
-	npm outdated || true
+	npm outdated | grep -v 'ts-loader' || true
 
 setup: export NPM_CONFIG_PROGRESS = false
 setup: export NODE_ENV=dev
