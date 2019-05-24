@@ -155,10 +155,6 @@ while getopts "ahcVp:s:t:g:b:u:l:e:i:" opt; do
             version
             exit
             ;;
-        ?)
-            usage  >&2
-            exit 2
-            ;;
     esac
 done
 
