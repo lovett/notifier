@@ -353,10 +353,10 @@ appServices.factory('MessageList', ['$rootScope', '$http', '$window', '$location
 
 
         fetch() {
-            $http({
+            $http<app.ArchiveResponse>({
                 method: 'GET',
                 url: 'archive',
-            }).then((res: angular.IHttpResponse<app.ArchiveResponse>) => {
+            }).then((res) => {
                 let receivedMessages: Message[] = [];
                 let staleMessages: Message[] = [];
 
