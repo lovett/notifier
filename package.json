@@ -45,7 +45,7 @@
     "@types/morgan": "1.7.37",
     "@types/nconf": "0.10.0",
     "@types/needle": "2.0.4",
-    "@types/node": "12.7.2",
+    "@types/node": "12.7.3",
     "@types/passport": "1.0.1",
     "@types/passport-http": "0.3.8",
     "@types/passport-local": "1.0.33",
@@ -55,7 +55,7 @@
     "@types/terser-webpack-plugin": "1.2.1",
     "@types/useragent": "2.1.1",
     "@types/uuid": "3.4.5",
-    "@types/webpack": "4.39.0",
+    "@types/webpack": "4.39.1",
     "ajv": "6.10.2",
     "angular": "1.7.8",
     "angular-cookies": "1.7.8",
@@ -86,8 +86,8 @@
     "ts-loader": "5.4.5",
     "ts-node": "8.3.0",
     "tslint": "5.19.0",
-    "typescript": "3.5.3",
-    "webpack": "4.39.2",
+    "typescript": "3.6.2",
+    "webpack": "4.39.3",
     "webpack-cli": "3.3.7"
   }
 }
