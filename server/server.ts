@@ -25,7 +25,6 @@ import publishMessage from './helpers/publish-message';
 import push from './routes/push';
 import security from './middleware/security';
 import services from './routes/services';
-import validateCount from './validation/count';
 
 let app: express.Application;
 let router: express.Router;
@@ -90,8 +89,6 @@ app.use(bodyParser.json({
 }));
 
 app.use(noBlanks);
-
-app.param('count', validateCount);
 
 db.connect(nconf.get('NOTIFIER_DB_DSN'));
 
