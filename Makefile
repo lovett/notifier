@@ -74,7 +74,7 @@ hooks: dummy
 # version of ts-loader has a dependency that does not work with node
 # 6. See https://github.com/TypeStrong/ts-loader/issues/929
 outdated: dummy
-	npm outdated | grep -v 'ts-loader' || true
+	npm outdated || true
 
 setup: export NPM_CONFIG_PROGRESS = false
 setup: export NODE_ENV=dev
