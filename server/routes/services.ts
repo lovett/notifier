@@ -1,4 +1,5 @@
 import * as db from '../db';
+import User from '../User';
 import { Request, Response } from 'express';
 import PromiseRouter from 'express-promise-router';
 import Token from '../Token';
@@ -15,7 +16,8 @@ const router = PromiseRouter();
  * push notifications.
  */
 router.get('/', async (req: Request, res: Response) => {
-    const tokens = await db.getServiceTokens(req.user);
+    const user = req.user as User;
+    const tokens = await db.getServiceTokens(user.id);
     res.json(tokens);
 });
 
@@ -53,8 +55,9 @@ router.post('/', async (req: Request, res: Response) => {
     }
 
     try {
-        await db.deleteTokensByKey(req.user, removals);
-        await db.addTokens(req.user, additions);
+        const user = req.user as User;
+        await db.deleteTokensByKey(user.id!, removals);
+        await db.addTokens(user.id!, additions);
         return res.sendStatus(200);
     } catch (e) {
         return res.status(500).json(e);

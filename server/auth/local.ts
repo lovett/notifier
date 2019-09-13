@@ -7,17 +7,15 @@ export default () => {
         (async () => {
             const user = await db.getUser(username);
 
-            if (!user) {
-                return done(null, false);
+            if (user) {
+                const validPassword = await user.testPassword(password);
+
+                if (validPassword) {
+                    return done(null, user);
+                }
             }
 
-            const validPassword = await user.testPassword(password);
-
-            if (validPassword) {
-                return done(null, user.id);
-            }
-
-            return done(null, false);
+            return done(null, null);
 
         })().catch((err) => { throw err; });
     });

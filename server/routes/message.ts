@@ -1,4 +1,5 @@
 import * as db from '../db';
+import User from '../User';
 import { NextFunction, Request, Response } from 'express';
 import PromiseRouter from 'express-promise-router';
 import * as dateparser from 'dateparser';
@@ -40,16 +41,18 @@ async function retract(req: Request, res: Response, next: NextFunction) {
     }
 
     try {
+        const user = req.user as User;
+
         const messageIds = await db.getRetractableMessageIds(
-            req.user,
+            user.id!,
             message.localId!,
         );
 
-        await db.markMessagesRead(req.user, messageIds);
+        await db.markMessagesRead(user.id!, messageIds);
 
         for (const id of messageIds) {
             delete req.app.locals.expirationCache[id];
-            publishMessage(req.app, req.user, null, id);
+            publishMessage(req.app, user.id!, null, id);
         }
     } catch (err) {
         res.status(500);
@@ -60,10 +63,11 @@ async function retract(req: Request, res: Response, next: NextFunction) {
 }
 
 async function save(req: Request, res: Response, next: NextFunction) {
+    const user = req.user as User;
     const message: Message = req.body.message;
 
     try {
-        await db.addMessages(req.user, [message]);
+        await db.addMessages(user.id, [message]);
     } catch (err) {
         res.status(500);
         throw err;
@@ -78,9 +82,10 @@ async function save(req: Request, res: Response, next: NextFunction) {
 
 async function publish(req: Request, res: Response, next: NextFunction) {
     const message: Message = req.body.message;
+    const user = req.user as User;
 
     try {
-        await publishMessage(req.app, req.user, message);
+        publishMessage(req.app, user.id, message);
     } catch (err) {
         res.status(500);
         throw err;

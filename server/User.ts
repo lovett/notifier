@@ -20,18 +20,25 @@ export default class User {
     private static hashIterations = 20000;
     private static hashKeylength = 64;
     private static hashDigest = 'sha1';
-    public readonly id!: number;
-    public readonly username!: string;
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
-    private readonly passwordHash!: string;
+
+    public readonly id: number;
+    public readonly username: string;
+    public readonly createdAt?: Date;
+    public readonly updatedAt?: Date;
+    private readonly passwordHash: string = '';
 
     constructor(data: Partial<User>) {
+        this.id = 0;
+        this.username = '';
         Object.assign(this, data);
     }
 
-    public async testPassword(password: string) {
+    public async testPassword(password: string): Promise<boolean> {
         const pbkdf2 = util.promisify(crypto.pbkdf2);
+
+        if (this.passwordHash === undefined) {
+            return false;
+        }
 
         const [salt, storedKey] = this.passwordHash.split('::', 2);
 

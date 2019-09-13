@@ -1,4 +1,5 @@
 import * as db from '../db';
+import User from '../User';
 import { NextFunction, Request, Response } from 'express';
 import publishMessage from '../helpers/publish-message';
 import PromiseRouter from 'express-promise-router';
@@ -6,6 +7,8 @@ import PromiseRouter from 'express-promise-router';
 const router = PromiseRouter();
 
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
+    const user = req.user as User;
+
     if (!req.body.hasOwnProperty('publicId')) {
         const err = new Error('Request lacked a publicId');
         res.status(400);
@@ -16,13 +19,13 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 
     try {
         await db.markMessagesUnread(
-            req.user,
+            user.id,
             [publicId],
         );
 
-        const message = await db.getMessage(req.user, publicId);
+        const message = await db.getMessage(user.id, publicId);
 
-        publishMessage(req.app, req.user, message);
+        publishMessage(req.app, user.id, message);
 
         res.sendStatus(204);
         return;

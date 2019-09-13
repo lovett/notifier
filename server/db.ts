@@ -18,23 +18,25 @@ export function connect(dsn: string) {
 export async function getUser(username: string): Promise<User | null> {
     const sql = `SELECT id, username, "passwordHash", "createdAt", "updatedAt"
     FROM "Users"
-    WHERE username=$1`;
+WHERE username=$1`;
 
     try {
         const res = await pool.query(sql, [username]);
-        if (res.rows.length === 0) {
-            return null;
+
+        if (res.rows.length === 1) {
+            return new User(res.rows[0]);
         }
 
-        return new User(res.rows[0]);
+        return null;
+
     } catch (err) {
         console.log(err);
         return null;
     }
 }
 
-export async function getUserIdByToken(key: string, value: string): Promise<number | null> {
-    const sql = `SELECT "UserId"
+export async function getUserByToken(key: string, value: string): Promise<User | null> {
+    const sql = `SELECT "UserId" as id
     FROM "Tokens"
     WHERE key=$1
     AND value=$2`;
@@ -45,7 +47,7 @@ export async function getUserIdByToken(key: string, value: string): Promise<numb
             return null;
         }
 
-        return res.rows[0].UserId;
+        return new User(res.rows[0]);
     } catch (err) {
         console.log(err);
         return null;
