@@ -4,7 +4,7 @@
     application_user: notifier
     application_group: notifier
     installation_directory: /srv/notifier
-    nodejs_path: /usr/local/bin/node
+    nodejs_path: /usr/bin/node
   tasks:
   - name: Create the application user
     become: true
@@ -41,7 +41,6 @@
   - name: Install NPM packages
     become: true
     npm:
-      executable: "/usr/local/bin/npm"
       global: no
       ignore_scripts: yes
       path: "{{ installation_directory }}"
