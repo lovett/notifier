@@ -31,7 +31,8 @@ router.get('/:count?', async (req: express.Request, res: express.Response) => {
         });
         return true;
     } catch (e) {
-        return res.status(500).json(e);
+        console.log(e);
+        return res.sendStatus(500);
     }
 });
 
