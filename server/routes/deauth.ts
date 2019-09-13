@@ -14,14 +14,15 @@ router.post('/', async (req: Request, res: Response) => {
     const user = req.user as User;
     const baseUrl = req.app.locals.config.get('NOTIFIER_BASE_URL');
 
-    const [key, value] = req.cookies.token;
+    const [key, value] = req.cookies.token.split(',', 2);
 
     try {
         await db.deleteToken(user.id, key, value);
         res.clearCookie('token', { path: baseUrl });
         return res.sendStatus(200);
     } catch (e) {
-        return res.status(500).json(e);
+        console.log(e);
+        return res.sendStatus(500);
     }
 });
 

@@ -109,7 +109,7 @@ router.use(asset(nconf.get('NOTIFIER_PUBLIC_DIR')));
 
 router.use(/^\/(login|logout)?$/, index);
 
-router.use('/deauth', deauth);
+router.use('/deauth', app.locals.protected, deauth);
 
 router.use('/services', app.locals.protected, services);
 
