@@ -1,5 +1,4 @@
-@import (inline) "~normalize.css/normalize.css";
-@import (inline) "~angular/angular-csp.css";
+@import (inline) "../../node_modules/normalize.css/normalize.css";
 
 @palettePrimary: #006ba6; // Manually sync this value with the theme-color meta tag in index.ejs.
 
@@ -243,12 +242,6 @@ footer {
     }
 }
 
-// Hide visually and from screen readers: h5bp.com/u
-.hidden {
-    opacity: 0;
-    display: none;
-}
-
 h1 {
     font-size: 2em;
     margin-bottom: 1em;
@@ -267,10 +260,14 @@ button {
     letter-spacing: 1px;
     text-transform: uppercase;
     font-size: 0.85em;
-}
 
-button:hover {
-    background-color: darken(@palettePrimary, 20%);
+    &:hover {
+        background-color: darken(@palettePrimary, 20%);
+    }
+
+    &:disabled {
+        background-color: darken(@palettePrimary, 50%);
+    }
 }
 
 .centered {

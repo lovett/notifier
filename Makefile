@@ -108,6 +108,9 @@ tsserver: dummy
 	rm -rf build/server
 	tsc -p server -w
 
+ui: dummy
+	parcel watch ui/index.html --out-dir build/public --no-hmr
+
 # Send a test message
 #
 onemessage: dummy
@@ -167,10 +170,10 @@ workspace:
 ## 1: Shell
 	tmux new-window -a -t "$(TMUX_SESSION_NAME)" bash
 
-## 2: Webpack, app
-	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "app" "make app"
+## 2: UI
+	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "ui" "make ui"
 
-## 3: Webpack, worker
+## 3: Worker
 	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "worker" "make worker"
 
 ## 4: Typescript server

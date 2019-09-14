@@ -31,3 +31,4 @@ build/public/*
 !build/public/robots.txt
 !build/public/index.html
 build/server
+.cache

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "es6"
+    ],
+    "sourceMap": false,
+    "strictFunctionTypes": false,
+    "outDir": "../build/public",
+    "target": "ES5",
+    "types": [],
+    "esModuleInterop": true
+  },
+  "extends": "../tsconfig.json"
+}
