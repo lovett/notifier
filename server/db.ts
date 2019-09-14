@@ -18,7 +18,7 @@ export function connect(dsn: string) {
 export async function getUser(username: string): Promise<User | null> {
     const sql = `SELECT id, username, "passwordHash", "createdAt", "updatedAt"
     FROM "Users"
-WHERE username=$1`;
+    WHERE username=$1`;
 
     try {
         const res = await pool.query(sql, [username]);
@@ -302,12 +302,27 @@ export async function getExpiringMessages() {
 
     try {
         const res = await pool.query(sql);
+
         return res.rows.reduce((accumulator, row) => {
-            accumulator[row.publicId] = [row.UserId, row.expiresAt];
+            accumulator.set(row.publicId, [row.UserId, row.expiresAt]);
             return accumulator;
-        }, {});
+        }, new Map());
     } catch (err) {
         console.log(err);
         return [];
+    }
+}
+
+export async function pruneStaleTokens() {
+    const sql = `DELETE FROM "Tokens"
+    WHERE DATE_PART('day', now() - "createdAt") > 7
+    AND persist=False`;
+
+    try {
+        await pool.query(sql);
+        return true;
+    } catch (err) {
+        console.log(err);
+        return false;
     }
 }

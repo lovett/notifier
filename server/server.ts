@@ -71,7 +71,7 @@ app.locals.protected = passport.authenticate(['cookie', 'basic', 'local'], { ses
 
 app.locals.pushClients = {};
 
-app.locals.expirationCache = {};
+app.locals.maintenanceTimestamp = new Date();
 
 app.use(security);
 
@@ -129,42 +129,49 @@ app.use(nconf.get('NOTIFIER_BASE_URL'), router);
 
 app.use(jsonError);
 
+async function scheduler() {
+    const now = new Date();
+
+    if (app.locals.expirationCache === undefined) {
+        app.locals.expirationCache = await db.getExpiringMessages();
+    }
+
+    for (const key of app.locals.expirationCache) {
+        const [user, expiration] = app.locals.expirationCache.get(key);
+        if (expiration < now) {
+            publishMessage(app, user.id, null, key);
+            app.locals.expirationCache.delete(key);
+        }
+    }
+
+    const elapsedTime = now.getTime() - app.locals.maintenanceTimestamp.getTime();
+
+    // Clean up old tokens once per hour.
+    const oneHourMs = 1_000 * 60 * 60;
+    if (elapsedTime / oneHourMs > 1) {
+        await db.pruneStaleTokens();
+        app.locals.maintenanceTimestamp = now;
+    }
+}
+
 /**
  * Server startup
  */
 if (!module.parent) {
 
-    setInterval(() => {
-        if (Object.keys(app.locals.expirationCache).length === 0) {
-            return;
-        }
-
-        const now = new Date();
-        const cache = app.locals.expirationCache;
-        Object.keys(cache).forEach((key) => {
-            const user = cache[key][0];
-            const expiration = cache[key][1];
-            if (expiration < now) {
-                publishMessage(app, user.id, null, key);
-                delete app.locals.expirationCache[key];
-            }
-        });
-    }, 2000);
-
-    (async () => {
-        app.locals.expirationCache = await db.getExpiringMessages();
-    })();
-
-    const port = nconf.get('NOTIFIER_HTTP_PORT');
-    const ip = nconf.get('NOTIFIER_HTTP_IP');
-    const server = app.listen(port, ip);
+    const server = app.listen(
+        nconf.get('NOTIFIER_HTTP_PORT'),
+        nconf.get('NOTIFIER_HTTP_IP'),
+    );
 
     server.on('listening', () => {
-        process.stdout.write(`Listening on ${ip}:${port}\n`);
+        process.stdout.write(`Listening on ${nconf.get('NOTIFIER_HTTP_IP')}:${nconf.get('NOTIFIER_HTTP_PORT')}\n`);
 
         // Tell systemd that startup has completed and all systems are go.
         if (process.env.NODE_ENV === 'production') {
             childProcess.exec(`/bin/systemd-notify --ready --pid=${process.pid}`);
         }
+
+        setInterval(scheduler, 2_000);
     });
 }
