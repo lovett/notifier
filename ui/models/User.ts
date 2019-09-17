@@ -1,10 +1,22 @@
 import m from 'mithril';
 
+export interface Settings {
+    [name: string]: string | boolean | undefined;
+}
+
+interface Service {
+    readonly label: string;
+    readonly persist: boolean;
+    readonly key: string;
+    readonly value?: string | boolean;
+}
+
 interface UserFields {
     password?: string;
     persist: boolean;
     username?: string;
     message?: string;
+    settings?: Settings;
 }
 
 const currentUser: UserFields = {
@@ -12,12 +24,28 @@ const currentUser: UserFields = {
     password: undefined,
     persist: false,
     username: undefined,
+    settings: {
+        webhook: undefined,
+    },
 };
 
 let loginUnderway = false;
 
 export default {
     current: currentUser,
+
+    getServices() {
+        m.request({
+            body: currentUser,
+            method: 'GET',
+            url: 'services',
+            withCredentials: true,
+        }).then((services: Service[]) => {
+            for (const service of services) {
+                currentUser.settings![service.key] = service.value;
+            }
+        });
+    },
 
     hasMessage(): boolean {
         return currentUser.message !== undefined;
@@ -83,7 +111,7 @@ export default {
             currentUser.persist = false;
             currentUser.username = undefined;
         }).catch((e: Event) => {
-            console.log(e);
+            pp            console.log(e);
         });
     },
 };
