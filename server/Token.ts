@@ -22,6 +22,8 @@ export default class Token {
 
         if (!value) {
             this.value = this.randomString(32);
+        } else {
+            this.value = value;
         }
     }
 

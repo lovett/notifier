@@ -14,9 +14,9 @@ export default {
             }, [
                 m('fieldset', [
                     m('h1', 'Hello'),
-                    m('.field.error', {
-                        hidden: User.hasNoMessage(),
-                    }, User.current.message),
+                    m('.message.error', {
+                        hidden: User.hasNoErrorMessage(),
+                    }, User.current.errorMessage),
                     m('.field', [
                         m('label', { for: 'username' }, 'Username'),
                         m('input', {

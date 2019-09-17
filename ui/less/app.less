@@ -42,15 +42,6 @@ h1 {
 #login {
     margin: auto;
 
-    .error {
-        background-color: #e9190f;
-        color: white;
-        padding: 1em;
-        margin-top: -1em;
-        margin-left: -1em;
-        margin-right: -1em;
-    }
-
     .field:last-of-type {
         margin-bottom: 0;
     }
@@ -162,7 +153,23 @@ button {
     margin-bottom: 1.5em;
 }
 
+.message {
+    margin-bottom: 1.5em;
+    padding: 1em;
+    margin-top: -1em;
+    margin-left: -1em;
+    margin-right: -1em;
 
+    &.error {
+        background-color: #e9190f;
+        color: white;
+    }
+
+    &.success {
+        background-color: green;
+        color: white;
+    }
+}
 
 
 // .page-jacket {

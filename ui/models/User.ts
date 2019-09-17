@@ -15,12 +15,14 @@ interface UserFields {
     password?: string;
     persist: boolean;
     username?: string;
-    message?: string;
+    errorMessage?: string;
+    successMessage?: string;
     settings?: Settings;
 }
 
 const currentUser: UserFields = {
-    message: undefined,
+    errorMessage: undefined,
+    successMessage: undefined,
     password: undefined,
     persist: false,
     username: undefined,
@@ -47,12 +49,20 @@ export default {
         });
     },
 
-    hasMessage(): boolean {
-        return currentUser.message !== undefined;
+    hasErrorMessage(): boolean {
+        return currentUser.errorMessage !== undefined;
     },
 
-    hasNoMessage(): boolean {
-        return !this.hasMessage();
+    hasNoErrorMessage(): boolean {
+        return !this.hasErrorMessage();
+    },
+
+    hasSuccessMessage(): boolean {
+        return currentUser.successMessage !== undefined;
+    },
+
+    hasNoSuccessMessage(): boolean {
+        return !this.hasSuccessMessage();
     },
 
     isLoggedIn(): boolean {
@@ -111,7 +121,20 @@ export default {
             currentUser.persist = false;
             currentUser.username = undefined;
         }).catch((e: Event) => {
-            pp            console.log(e);
+            console.log(e);
+        });
+    },
+
+    saveServices(data: FormData) {
+        m.request({
+            body: Object.fromEntries(data),
+            method: 'POST',
+            url: 'services',
+            withCredentials: true,
+        }).then((_) => {
+            currentUser.successMessage = 'Settings saved.';
+        }).catch((_: Event) => {
+            currentUser.errorMessage = 'Please try again.';
         });
     },
 };
