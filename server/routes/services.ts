@@ -40,7 +40,7 @@ router.post('/', async (req: Request, res: Response) => {
 
         removals.push(name);
 
-        if (req.body[name].trim().length === 0) {
+        if (req.body[name] === null) {
             continue;
         }
 
