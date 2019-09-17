@@ -12,6 +12,8 @@ export default class Token {
 
         if (!key) {
             this.key = this.randomString(32);
+        } else {
+            this.key = key;
         }
 
         if (label === 'service') {
