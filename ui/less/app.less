@@ -92,17 +92,6 @@ h1 {
         }
     }
 
-    // nav {
-    //     visibility: hidden;
-    //     display: inline-block;
-    //     width: 100%;
-
-    //     a:last-of-type {
-    //         position: absolute;
-    //         right: 0;
-    //     }
-    // }
-
     ul {
         list-style-type: none;
 
@@ -141,10 +130,29 @@ button {
 
 #settings {
     margin: auto;
+    color: #fff;
+
+    a {
+        color: currentColor;
+        text-decoration: underline;
+    }
+
+    span + a {
+        margin-left: 1em;
+    }
 
     label  {
         padding-right: 1em;
         text-transform: capitalize;
+    }
+
+    .field {
+        margin-bottom: 3em;
+    }
+
+    p {
+        font-size: .85em;
+        line-height: 1.5;
     }
 
 }
