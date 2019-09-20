@@ -2,11 +2,11 @@
   "compilerOptions": {
     "lib": [
       "dom",
-      "es5",
+      "es6",
       "webworker"
     ],
-    "outDir": "../build/worker",
+    "outDir": "../../build/public",
     "typeRoots": []
   },
-  "extends": "../tsconfig.json"
+  "extends": "../../tsconfig.json"
 }
