@@ -1,10 +1,9 @@
 import m from 'mithril';
 
 import error from './views/error';
-import layout from './views/layout';
 import login from './views/login';
 import logout from './views/logout';
-import messages from './views/messages';
+import messageList from './views/message-list';
 import settings from './views/settings';
 
 import User from './models/User';
@@ -15,14 +14,14 @@ const loginRequired = () => {
     if (User.isLoggedOut()) {
         m.route.set('/login');
     }
-}
+};
 
 m.route(root, '/', {
     '/': {
         onmatch: loginRequired,
         render() {
             if (User.isLoggedIn()) {
-                return m(messages);
+                return m(messageList);
             }
 
             return m.route.set('/login');
@@ -31,7 +30,7 @@ m.route(root, '/', {
 
     '/error': {
         render() {
-            return m(layout, m(error));
+            return m(error);
         },
     } as m.RouteResolver,
 
@@ -61,6 +60,6 @@ m.route(root, '/', {
         onmatch: loginRequired,
         render() {
             return m(settings);
-        }
+        },
     } as m.RouteResolver,
 });

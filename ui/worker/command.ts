@@ -1,5 +1,6 @@
-export enum Command {
+enum Command {
     connect = 'CONNECT',
-    fauxconnect = 'FAUXCONNECT',
     disconnect = 'DISCONNECT',
 }
+
+export default Command;

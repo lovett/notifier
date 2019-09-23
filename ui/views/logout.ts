@@ -4,9 +4,10 @@ export default {
     view() {
         return [
             m('header'),
+
             m('main#logout', [
                 m('h1', 'Goodbye'),
-                m('p', 'You have been logged out'),
+                m('p', 'You have been logged out.'),
                 m('button', {
                     autofocus: true,
                     onclick: (e: Event) => {
@@ -15,6 +16,7 @@ export default {
                     },
                 }, 'Sign in again'),
             ]),
+
             m('footer'),
         ];
     },

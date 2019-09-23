@@ -25,14 +25,10 @@ router.get('/:count?', async (req: express.Request, res: express.Response) => {
             message.urlizeBadge(req.app.locals.config.get('NOTIFIER_BADGE_BASE_URL'));
         }
 
-        res.send({
-            limit: count,
-            messages,
-        });
-        return true;
+        res.send(messages);
     } catch (e) {
         console.log(e);
-        return res.sendStatus(500);
+        res.sendStatus(500);
     }
 });
 

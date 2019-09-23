@@ -14,7 +14,7 @@ export default {
             }, [
                 m('fieldset', [
                     m('h1', 'Hello'),
-                    m('.message.error', {
+                    m('.status-message.error', {
                         hidden: User.hasNoErrorMessage(),
                     }, User.current.errorMessage),
                     m('.field', [

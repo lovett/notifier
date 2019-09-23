@@ -12,7 +12,7 @@
     "no-bitwise": true,
     "no-conditional-assignment": true,
     "no-consecutive-blank-lines": false,
-    "no-console": [true, "log"],
+    "no-console": false,
     "no-construct": true,
     "no-extra-semi": true,
     "no-invalid-this": false,

@@ -3,11 +3,11 @@ import m from 'mithril';
 import User from '../models/User';
 import BrowserNotification from '../models/BrowserNotification';
 
-const notificationOffMessage = `Browser notifications are off.`;
-const notificationOnMessage = `Browser notifications are on.`;
-const notificationsDeniedMessage = `They can be turned on from the brower's settings page.`;
-const notificationsEnabledMessage = `They can be turned off from the browser's settings page.`;
-const notificationEnableLabel = `Turn them on`;
+const notificationOffMessage = 'Browser notifications are off.';
+const notificationOnMessage = 'Browser notifications are on.';
+const notificationsDeniedMessage = 'They can be turned on from the brower\'s settings page.';
+const notificationsEnabledMessage = 'They can be turned off from the browser\'s settings page.';
+const notificationEnableLabel = 'Turn them on';
 
 export default {
     oninit() {
@@ -26,10 +26,10 @@ export default {
             }, [
                 m('fieldset', [
                     m('h1', 'Settings'),
-                    m('.message.error', {
+                    m('.status-message.error', {
                         hidden: User.hasNoErrorMessage(),
                     }, User.current.errorMessage),
-                    m('.message.success', {
+                    m('.status-message.success', {
                         hidden: User.hasNoSuccessMessage(),
                     }, User.current.successMessage),
                     m('.field', [
