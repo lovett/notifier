@@ -58,7 +58,7 @@ export default {
     view() {
         return [
             m('header#messageListSummary', [
-                m(messageListSummary, { cache }),
+                m(messageListSummary, { cache } as m.Attributes),
             ]),
 
             m('main#messageListBody', Object.keys(cache.items).map((key, index) => {
@@ -67,7 +67,7 @@ export default {
             })),
 
             m('footer#messageListFooter', [
-                m(messageListFooter, { cache }),
+                m(messageListFooter, { cache } as m.Attributes),
             ]),
         ];
     },
