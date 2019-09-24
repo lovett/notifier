@@ -7,7 +7,7 @@ export PATH := ./node_modules/.bin:$(PATH)
 
 build: export NPM_CONFIG_PROGRESS = false
 build: export NODE_ENV = production
-build: setup app worker server
+build: setup server
 	rsync -ar \
 	--exclude='***/.bin' \
 	--exclude='***/test' \
@@ -41,25 +41,6 @@ build: setup app worker server
 	rm -f "notifier.tar.gz"
 	tar --create --gzip --file="notifier.tar.gz" notifier
 
-# Build the browser UI via webpack.
-#
-# When this target is invoked directly, webpack will run in
-# development mode resulting in a long-running process that triggers a
-# rebuild whenever a file in the app directory is modified.
-#
-# When invoked as a dependency of the build target, webpack will run
-# in production mode based on the NODE_ENV environment.
-#
-# Extra care is taken to clean up previous webpack instances via
-# pkill. Instances created within a Tmux workspace may not die depending
-# on how the workspace is terminated.
-#
-# The same approach is used in the worker target.
-#
-app: dummy
-	pkill -f "[w]ebpack --config webpack-app.ts" || true
-	webpack --config webpack-app.ts
-
 hooks: dummy
 	cp hooks/* .git/hooks/
 
@@ -80,25 +61,6 @@ setup: export NPM_CONFIG_PROGRESS = false
 setup: export NODE_ENV=dev
 setup:
 	npm install --no-optional
-
-# Build the web worker portion of the UI via webpack.
-#
-# When this target is invoked directly, webpack will run in
-# development mode resulting in a long-running process that triggers a
-# rebuild whenever a file in the worker directory is modified.
-#
-# When invoked as a dependency of the build target, webpack will run
-# in production mode based on the NODE_ENV environment.
-#
-# Extra care is taken to clean up previous webpack instances via
-# pkill. Instances created within a Tmux workspace may not die depending
-# on how the workspace is terminated.
-#
-# The same approach is used in the app target.
-#
-worker: dummy
-	pkill -f "[w]ebpack --config webpack-worker.ts" || true
-	webpack --config webpack-worker.ts
 
 server: dummy
 	rm -rf build/server
@@ -173,10 +135,7 @@ workspace:
 ## 2: UI
 	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "ui" "make ui"
 
-## 3: Worker
-	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "worker" "make worker"
-
-## 4: Typescript server
+## 3: Typescript server
 	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "tsserver" "NODE_ENV=dev make tsserver"
 
 ## 5: Dev server
