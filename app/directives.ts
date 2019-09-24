@@ -147,31 +147,7 @@ appDirectives.directive('notifierShortcuts', ['MessageList', '$rootScope', '$doc
             angular.element($document[0]).bind('keydown', (e) => {
                 const charCode: number = e.which || e.keyCode;
 
-                // To avoid conflict with browser UI shortcuts, ignore
-                // anything involving the alt or control keys
-                if (e.altKey === true || e.ctrlKey === true) {
-                    return;
-                }
 
-                // Safari triggers a keyless keydown event during login autofill
-                if (!charCode) {
-                    return;
-                }
-
-                // Selecting a message does not use the shortcut map to allow for
-                // multi-key input for indexes greater than 9
-                const numericValue = parseInt(e.key, 10);
-                if (numericValue >= 0) {
-                    messageNumber = messageNumber * 10 + numericValue;
-
-                    $timeout(() => {
-                        if (messageNumber > 0) {
-                            MessageList.activateByIndex(messageNumber - 1);
-                            messageNumber = 0;
-                        }
-                    }, 250);
-                    return;
-                }
 
                 let mapValue = shortcutMap[charCode];
 

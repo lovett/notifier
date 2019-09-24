@@ -34,6 +34,15 @@ export default class Cache {
         Object.keys(this.items).forEach((key: string) => {
             this.items[key].active = (key === message.publicId);
         });
+        m.redraw();
+    }
+
+    public activateByIndex(index: number) {
+        console.log('activate index ', index);
+        const key = this.keyOfIndex(index);
+        if (key) {
+            this.activate(this.items[key]);
+        }
     }
 
     public active(): Message | null {
@@ -46,13 +55,6 @@ export default class Cache {
         }
 
         return null;
-    }
-
-    public activateByIndex(index: number) {
-        const key = this.keyOfIndex(index);
-        if (key) {
-            this.activate(this.items[key]);
-        }
     }
 
     public activateByStep(step: number) {
@@ -90,6 +92,7 @@ export default class Cache {
         for (const key of Object.keys(this.items)) {
             this.items[key].active = false;
         }
+        m.redraw();
     }
 
     public add(message: Message) {
