@@ -1,0 +1,11 @@
+@breakpoints: {
+    mobile: 320px;
+    tablet: 768px;
+    desktop: 1024px;
+}
+
+.breakpoint-desktop(@rules) {
+    @media (min-width: @breakpoints[desktop]) {
+        @rules();
+    }
+}

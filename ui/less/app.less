@@ -1,5 +1,7 @@
 @import (inline) "../../node_modules/normalize.css/normalize.css";
 
+@import "breakpoints.less";
+
 @palettePrimary: #006ba6; // Manually sync this value with the theme-color meta tag in index.ejs.
 
 fieldset {
@@ -54,8 +56,17 @@ h1 {
     }
 }
 
+#messageListBody {
+    display: grid;
+    grid-row-gap: 0.5em;
+
+    .breakpoint-desktop({
+        grid-template-columns: 1fr 1fr;
+        grid-column-gap: 0.5em;
+    });
+}
+
 #messageListSummary {
-    background-color: purple;
     text-transform: uppercase;
     font-size: 0.6em;
     letter-spacing: 1px;
@@ -67,7 +78,6 @@ h1 {
 
 #messageListFooter {
     font-size: 0.85em;
-    background-color: lighten(@palettePrimary, 10%);
     display: flex;
     flex-flow: row nowrap;
 
@@ -146,135 +156,8 @@ button {
     }
 }
 
-
 .field {
     margin-bottom: 1.5em;
-}
-
-.message {
-    min-height: 6em;
-    box-sizing: border-box;
-    border: 0.25em solid transparent;
-    background-color: white;
-    margin-bottom: 0.5em;
-    overflow: hidden;
-    position: relative;
-    padding: 0.5em 6em;
-    display: block;
-    color: black;
-    break-inside: avoid;
-    page-break-inside: avoid;
-    vertical-align: top;
-    line-height: 1.5;
-
-    &:hover .options {
-        display: block;
-    }
-
-    &.extended {
-        padding-right: 8em;
-    }
-
-    &.stuck {
-        opacity: 0.1;
-
-        .options {
-            display: none;
-        }
-    }
-
-    .index {
-        position: absolute;
-        top: 0;
-        right: 0;
-        font-size: 0.5em;
-        padding: 0.5em 0.75em;
-    }
-
-    .options {
-        position: absolute;
-        top: 0;
-        right: 0;
-        height: 101%;
-        width: 8em;
-        display: none;
-        transition: opacity 0.1s 0.2s;
-
-        a {
-            height: 100%;
-            float: right;
-            font-size: 0.75em;
-            text-transform: uppercase;
-            margin-left: 0.25em;
-            padding: 0 1.5em;
-            display: table;
-
-            span {
-                display: table-cell;
-                vertical-align: middle;
-            }
-
-            .icon {
-                width: 4em;
-                height: 4em;
-                fill: black;
-            }
-        }
-    }
-
-    h1 {
-        font-size: 1.1em;
-        font-weight: bold;
-        margin: 0;
-        padding: 0;
-
-        a {
-            color: black;
-        }
-    }
-
-    p {
-        margin: 0;
-        padding: 0;
-    }
-
-    time {
-        font-size: 0.7em;
-        display: block;
-    }
-
-    .domain,
-    .expiration {
-        font-size: 0.7em;
-    }
-
-    .expiration {
-        font-style: italic;
-    }
-
-    .right {
-        margin-right: -0.5em;
-        margin-top: -0.5em;
-    }
-}
-
-.message.expired {
-    background-color: #ccc;
-    color: #666;
-}
-
-.message.focused,
-.message:focus {
-    outline: 0;
-
-    .options {
-        opacity: 1;
-    }
-
-    .index {
-        background-color: black;
-        color: #fff;
-    }
 }
 
 .status-message {
