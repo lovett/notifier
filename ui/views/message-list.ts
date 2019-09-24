@@ -4,66 +4,54 @@ import messageListFooter from './message-list-footer';
 import messageListMessage from './message-list-message';
 import Cache from '../models/Cache';
 
-const cache = new Cache(window.navigator.userAgent);
-
-let lastKeydownNumber = 0;
-
-function onKeydown(e: KeyboardEvent) {
-    const charCode: number = e.which || e.keyCode;
-
-    // Avoid conflict with browser UI shortcuts.
-    if (e.altKey === true || e.ctrlKey === true) {
-        return;
-    }
-
-    // Safari triggers a keyless keydown event during login autofill.
-    if (!charCode) {
-        return;
-    }
-
-    // Message activation by index.
-    const numericValue = parseInt(e.key, 10);
-    if (numericValue >= 0) {
-        lastKeydownNumber = lastKeydownNumber * 10 + numericValue;
-
-        setTimeout(() => {
-            if (lastKeydownNumber > 0) {
-                cache.activateByIndex(lastKeydownNumber - 1);
-                lastKeydownNumber = 0;
-            }
-        }, 250);
-        return;
-    }
-}
-
-function onVisibilityChange() {
-    if (document.hidden) {
-        cache.deactivate()
-        return;
-    }
-}
-
-function onWindowBlur() {
-    cache.deactivate();
-}
-
 export default {
-    oninit() {
+    oninit(vnode: m.Vnode) {
+        const attrs = vnode.attrs as m.Attributes;
+        const cache = attrs.cache as Cache;
         cache.fill();
-        document.addEventListener('keydown', onKeydown);
-        document.addEventListener('visibilitychange', onVisibilityChange);
-        window.addEventListener('blur', onWindowBlur);
     },
 
-    view() {
+    oncreate(vnode: m.Vnode) {
+        const attrs = vnode.attrs as m.Attributes;
+        const cache = attrs.cache as Cache;
+
+        document.addEventListener(
+            'visibilitychange',
+            cache.deselect.bind(cache),
+        );
+
+        window.addEventListener(
+            'blur',
+            cache.deselect.bind(cache),
+        );
+    },
+
+    onremove(vnode: m.Vnode) {
+        const attrs = vnode.attrs as m.Attributes;
+        const cache = attrs.cache as Cache;
+
+        document.removeEventListener(
+            'visibilitychange',
+            cache.deselect.bind(cache),
+        );
+
+        window.addEventListener(
+            'blur',
+            cache.deselect.bind(cache),
+        );
+    },
+
+    view(vnode: m.Vnode) {
+        const attrs = vnode.attrs as m.Attributes;
+        const cache = attrs.cache as Cache;
+
         return [
             m('header#messageListSummary', [
                 m(messageListSummary, { cache } as m.Attributes),
             ]),
 
-            m('main#messageListBody', Object.keys(cache.items).map((key, index) => {
-                const message = cache.items[key];
-                return m(messageListMessage, { message, index, cache })
+            m('main#messageListBody', Array.from(cache.items.values()).map((message, index) => {
+                return m(messageListMessage, { message, index, cache } as m.Attributes);
             })),
 
             m('footer#messageListFooter', [

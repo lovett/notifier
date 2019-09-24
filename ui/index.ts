@@ -5,7 +5,10 @@ import login from './views/login';
 import logout from './views/logout';
 import messageList from './views/message-list';
 import settings from './views/settings';
+import shortcuts from './views/shortcuts';
 
+import Cache from './models/Cache';
+import ShortcutMap from './models/ShortcutMap';
 import User from './models/User';
 
 const root = document.getElementById('app-container') as HTMLElement;
@@ -16,15 +19,30 @@ const loginRequired = () => {
     }
 };
 
+const cache = new Cache(window.navigator.userAgent);
+const shortcutMap = new ShortcutMap(cache);
+
+document.addEventListener('keydown', (e: KeyboardEvent) => {
+    const charCode: number = e.which || e.keyCode;
+
+    // Avoid conflict with browser UI shortcuts.
+    if (e.altKey === true || e.ctrlKey === true) {
+        return;
+    }
+
+    // Safari triggers a keyless keydown event during login autofill.
+    if (!charCode) {
+        return;
+    }
+
+    shortcutMap.run(e.key);
+});
+
 m.route(root, '/', {
     '/': {
         onmatch: loginRequired,
         render() {
-            if (User.isLoggedIn()) {
-                return m(messageList);
-            }
-
-            return m.route.set('/login');
+            return m(messageList, { cache } as m.Attributes);
         },
     } as m.RouteResolver,
 
@@ -60,6 +78,13 @@ m.route(root, '/', {
         onmatch: loginRequired,
         render() {
             return m(settings);
+        },
+    } as m.RouteResolver,
+
+    '/shortcuts': {
+        onmatch: loginRequired,
+        render() {
+            return m(shortcuts, { shortcutMap } as m.Attributes);
         },
     } as m.RouteResolver,
 });

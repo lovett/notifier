@@ -7,7 +7,7 @@
     "sourceMap": false,
     "strictFunctionTypes": false,
     "outDir": "../build/public",
-    "target": "ES5",
+    "target": "ES6",
     "types": [],
     "esModuleInterop": true
   },

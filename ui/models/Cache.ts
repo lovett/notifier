@@ -3,13 +3,16 @@ import Message from './Message';
 
 import Command from '../worker/command';
 
+/**
+ * A container to hold notification messages.
+ */
 export default class Cache {
     private worker?: Worker;
 
-    public items: { [index: string]: Message } = {};
+    public items: Map<string, Message> = new Map();
 
     /**
-     * Set up a cache to hold and manage messages.
+     * Attach the instance to a web worker for push-based updates.
      *
      * There is a long-standing problem with EventSource on Firefox
      * for Android that causes the browser to crash. The exact nature
@@ -30,170 +33,154 @@ export default class Cache {
         this.worker.postMessage(Command.connect);
     }
 
-    public activate(message: Message) {
-        Object.keys(this.items).forEach((key: string) => {
-            this.items[key].active = (key === message.publicId);
+    /**
+     * Mark a message as being in-focus by the UI.
+     */
+    public select(publicId: string) {
+        this.items.forEach((value: Message) => {
+            value.selected = (value.publicId === publicId);
         });
         m.redraw();
     }
 
-    public activateByIndex(index: number) {
-        console.log('activate index ', index);
+    /**
+     * Select a message based on its index in the container.
+     */
+    public selectByIndex(index: number) {
         const key = this.keyOfIndex(index);
         if (key) {
-            this.activate(this.items[key]);
+            this.select(key);
+            return;
         }
+
+        this.deselect();
     }
 
-    public active(): Message | null {
-        const items = this.itemList();
-
-        for (const item of items) {
-            if (item.active) {
-                return item;
+    /**
+     * Locate the selected message.
+     */
+    public selected(): Message | null {
+        for (const message of this.items.values()) {
+            if (message.selected) {
+                return message;
             }
         }
 
         return null;
     }
 
-    public activateByStep(step: number) {
-        const currentIndex = this.activeIndex();
-        const lastIndex = this.size() - 1;
+    /**
+     * Select a message based on distance to the current one.
+     */
+    public selectRelative(step: number) {
+        const currentIndex = this.selectedIndex();
+        const lastIndex = this.items.size - 1;
         let targetIndex = currentIndex + step;
 
         if (targetIndex > lastIndex) {
-            targetIndex %= this.size();
+            targetIndex %= this.items.size;
         }
 
         if (targetIndex < 0) {
-            targetIndex = this.size() - Math.abs(targetIndex);
+            targetIndex = this.items.size - Math.abs(targetIndex);
         }
 
-        this.activateByIndex(targetIndex);
+        this.selectByIndex(targetIndex);
     }
 
-    public activeIndex(): number {
-        for (const key of Object.keys(this.items)) {
-            if (this.items[key].active) {
-                return this.indexOfKey(key);
-            }
+    public selectedIndex(): number {
+        const message = this.selected();
+
+        if (message) {
+            return this.indexOfKey(message.publicId!);
         }
 
         return -1;
     }
 
-    public activeKey() {
-        const activeIndex = this.activeIndex();
-        return this.keyOfIndex(activeIndex);
+    public selectedKey() {
+        const selectedIndex = this.selectedIndex();
+        return this.keyOfIndex(selectedIndex);
     }
 
-    public deactivate() {
+    public deselect() {
         for (const key of Object.keys(this.items)) {
-            this.items[key].active = false;
+            this.items[key].selected = false;
         }
         m.redraw();
     }
 
     public add(message: Message) {
-        this.items[message.publicId] = message;
+        this.items.set(message.publicId!, message);
     }
 
+    /**
+     * Mark a message as read and remove it from the container.
+     */
     public remove(publicId: string) {
-        const message = this.items[publicId];
-
-        if (!message) {
+        if (!this.items.has(publicId)) {
             return;
         }
 
         m.request({
-            body: { publicId: message.publicId },
+            body: { publicId: publicId },
             method: 'POST',
             url: 'message/clear',
             withCredentials: true,
         }).then(() => {
-            this.discard(message.publicId);
-        }).catch((e) => {
-            console.log(e);
-            message.state = 'stuck';
+            this.retract(publicId);
+        }).catch(() => {
+            const message = this.items.get(publicId);
+            message!.state = 'stuck';
             console.log('Message could not be cleared');
         });
     }
 
-    public reset() {
-        this.items = {};
+    /**
+     * Remove a message from the container.
+     */
+    public retract(publicId: string) {
+        this.items.delete(publicId);
     }
 
-    public removeAll() {
-        console.log('remove all');
-    }
+    /**
+     * Find a message index from its key.
+     */
+    protected indexOfKey(wantedKey: string): number {
+        if (!this.items.has(wantedKey)) {
+            return -1;
+        }
 
-    public retract(id: string) {
-        delete this.items[id];
-    }
-
-    public undo() {
-    }
-
-    public keys() {
-        return Object.keys(this.items);
-    }
-
-    public size() {
-        return this.keys().length;
-    }
-
-    public message(key: string) {
-        return this.items[key];
-    }
-
-    public hasMessage(message: Message) {
-        return this.items.hasOwnProperty(message.publicId);
-    }
-
-    public allExcept(messages: Message[]) {
-        const keys = this.keys();
-
-        const excludedKeys = messages.map((message) => message.publicId);
-
-        const difference = keys.filter((key) => {
-            return excludedKeys.indexOf(key) === -1;
-        });
-
-        return difference.map((key) => {
-            return this.message(key);
-        });
-    }
-
-    public itemList(): Message[] {
-        const messages = Object.keys(this.items).map((k: string) => this.items[k]);
-
-        return messages.sort((a, b) => {
-            return b.received.getTime() - a.received.getTime();
-        });
-    }
-
-    protected indexOfKey(key: string) {
-        const messages = this.itemList();
-
-        for (let i = 0; i < messages.length; i++) {
-            if (messages[i].publicId === key) {
-                return i;
+        let counter = 0;
+        for (let currentKey of this.items.keys()) {
+            if (currentKey === wantedKey) {
+                break;
             }
+            counter++;
         }
-        return -1;
+
+        return counter;
     }
 
+    /**
+     * Find a message key from its index.
+     */
     protected keyOfIndex(index: number): string | null {
-        const items = this.itemList();
+        let counter = 0;
 
-        if (!items[index]) {
-            return null;
+        for (let message of this.items.values()) {
+            if (counter === index) {
+                return message.publicId!;
+            }
+            counter++;
         }
 
-        return items[index].publicId;
+        return null;
     }
 
+    /**
+     * Add notifications via HTTP request.
+     */
     public fill() {
         m.request({
             method: 'GET',
@@ -207,11 +194,14 @@ export default class Cache {
         });
     }
 
-    private onWorkerPush(e: MessageEvent) {
+    /**
+     * Add a notification received by the web worker.
+     */
+    private onWorkerPush(e: MessageEvent): void {
         const message = Message.fromJson(e.data);
 
         if (message.isExpired()) {
-            this.discard(message.publicId);
+            this.retract(message.publicId!);
             return;
         }
 
@@ -219,8 +209,4 @@ export default class Cache {
         m.redraw();
     }
 
-    private discard(publicId: string) {
-        //message.closeBrowserNotification();
-        delete this.items[publicId];
-    }
 }

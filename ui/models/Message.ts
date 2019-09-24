@@ -41,7 +41,7 @@ export default class Message {
         }, []);
     }
 
-    public active: boolean = false;
+    public selected: boolean = false;
     public extended: boolean = false;
     public title?: string;
     public body?: string;
@@ -82,8 +82,8 @@ export default class Message {
             classes.push('expired');
         }
 
-        if (this.isActive()) {
-            classes.push('focused');
+        if (this.isSelected()) {
+            classes.push('selected');
         }
 
         if (this.isExtended()) {
@@ -207,8 +207,8 @@ export default class Message {
         return this.url !== undefined;
     }
 
-    public isActive(): boolean {
-        return this.active;
+    public isSelected(): boolean {
+        return this.selected;
     }
 
     public isExpired(): boolean {
