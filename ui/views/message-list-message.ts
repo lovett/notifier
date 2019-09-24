@@ -4,6 +4,31 @@ import Cache from '../models/Cache';
 import messageListMessageOptions from './message-list-message-options';
 
 export default {
+    oncreate(vnode: m.VnodeDOM) {
+        const attrs = vnode.attrs as m.Attributes;
+        const message = attrs.message as Message;
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+        vnode.dom.addEventListener('touchstart', (e: TouchEvent) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        vnode.dom.addEventListener('touchend', (e: TouchEvent) => {
+            touchEndX = e.changedTouches[0].screenX;
+
+            if (touchEndX < touchStartX) {
+                message.extended = true
+            }
+
+            if (touchEndX > touchStartX) {
+                message.extended = false;
+            }
+
+            m.redraw();
+        });
+    },
+
     view(vnode: m.Vnode) {
         const attrs = vnode.attrs as m.Attributes;
         const message = attrs.message as Message;

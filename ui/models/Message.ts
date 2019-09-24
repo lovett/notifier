@@ -41,15 +41,15 @@ export default class Message {
         }, []);
     }
 
-    public active: boolean;
-    public extended: boolean;
-    public title: string;
-    public body: string;
-    public group: string;
-    public publicId: string;
+    public active: boolean = false;
+    public extended: boolean = false;
+    public title?: string;
+    public body?: string;
+    public group?: string;
+    public publicId?: string;
     public domain?: string;
     public expiration?: Date;
-    public timeRemaining: number;
+    public timeRemaining?: number;
     public badge?: string;
     public browserNotification: any;
     public state?: string;
@@ -57,13 +57,6 @@ export default class Message {
     public received: Date;
 
     constructor() {
-        this.active = false;
-        this.extended = false;
-        this.title = '';
-        this.body = '';
-        this.group = '';
-        this.publicId = '';
-        this.timeRemaining = 0;
         this.received = new Date();
     }
 

@@ -12,13 +12,18 @@
     page-break-inside: avoid;
     vertical-align: top;
     line-height: 1.5;
+    touch-action: none;
 
     &:hover .options {
         display: block;
     }
 
     &.extended {
-        padding-right: 8em;
+        margin-left: -4em;
+
+        .options {
+            display: block;
+        }
     }
 
     &.stuck {
