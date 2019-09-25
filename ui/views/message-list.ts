@@ -45,6 +45,11 @@ export default {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
 
+        if (cache.hasFilled === false) {
+            console.log('too soon!');
+            return;
+        }
+
         const nodes: m.Vnode[] = [];
 
         nodes.push(m('header#messageListSummary', [

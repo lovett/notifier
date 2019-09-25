@@ -8,6 +8,8 @@ import m from 'mithril';
 export default class Cache {
     private worker?: Worker;
 
+    public hasFilled = false;
+
     public items: Map<string, Message> = new Map();
 
     public undoQueue: string[] = [];
@@ -231,6 +233,7 @@ export default class Cache {
             withCredentials: true,
             deserialize: Message.fromJsonArray,
         }).then((messages: Message[]) => {
+            this.hasFilled = true;
             for (let message of messages) {
                 this.add(message);
             }
