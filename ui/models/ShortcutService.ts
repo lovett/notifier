@@ -63,7 +63,7 @@ export class ShortcutService {
 
         this.bag.set('?', {
             run() {
-                m.route.set('/bag');
+                m.route.set('/shortcuts');
             },
             description: 'Show the shortcut list',
         });
