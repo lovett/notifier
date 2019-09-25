@@ -1,5 +1,5 @@
 import m from 'mithril';
-import ShortcutService from '../models/ShortcutService';
+import { ShortcutService } from '../models/ShortcutService';
 
 export default {
     view(vnode: m.Vnode) {

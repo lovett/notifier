@@ -4,14 +4,14 @@ export interface Settings {
     [name: string]: string | boolean | undefined;
 }
 
-interface Service {
+export interface Service {
     readonly label: string;
     readonly persist: boolean;
     readonly key: string;
     readonly value?: string | boolean;
 }
 
-interface UserFields {
+export interface UserFields {
     password?: string;
     persist: boolean;
     username?: string;

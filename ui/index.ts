@@ -8,7 +8,7 @@ import settings from './views/settings';
 import shortcuts from './views/shortcuts';
 
 import Cache from './models/Cache';
-import ShortcutService from './models/ShortcutService';
+import { ShortcutService } from './models/ShortcutService';
 import User from './models/User';
 
 const root = document.getElementById('app-container') as HTMLElement;

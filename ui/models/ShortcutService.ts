@@ -6,7 +6,7 @@ export interface Shortcut {
     run: (messageIndex?: number) => void;
 }
 
-export default class ShortcutService {
+export class ShortcutService {
     public bag: Map<string, Shortcut> = new Map();
 
     private accumulatingDigit = 0;

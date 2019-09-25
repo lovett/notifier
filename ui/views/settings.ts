@@ -1,13 +1,6 @@
 import m from 'mithril';
-
 import User from '../models/User';
-import BrowserNotification from '../models/BrowserNotification';
-
-const notificationOffMessage = 'Browser notifications are off.';
-const notificationOnMessage = 'Browser notifications are on.';
-const notificationsDeniedMessage = 'They can be turned on from the brower\'s settings page.';
-const notificationsEnabledMessage = 'They can be turned off from the browser\'s settings page.';
-const notificationEnableLabel = 'Turn them on';
+import * as bns from '../models/BrowserNotificationService';
 
 export default {
     oninit() {
@@ -33,18 +26,16 @@ export default {
                         hidden: User.hasNoSuccessMessage(),
                     }, User.current.successMessage),
                     m('.field', [
-                        m('span', BrowserNotification.isGranted() ? notificationOnMessage : notificationOffMessage),
-
-                        BrowserNotification.isDenied() ? m('p', notificationsDeniedMessage) : null,
-                        BrowserNotification.isGranted() ? m('p', notificationsEnabledMessage) : null,
-                        BrowserNotification.isDefault() ? m('a', {
+                        m('span', bns.onOffMessage()),
+                        bns.isDenied() ? m('p', bns.notificationsDeniedMessage) : null,
+                        bns.isGranted() ? m('p', bns.notificationsEnabledMessage) : null,
+                        bns.isDefault() ? m('a', {
                             href: '#browser-notifications',
                             onclick: (e: Event) => {
                                 e.preventDefault();
-                                BrowserNotification.prompt();
+                                bns.prompt();
                             },
-                        }, notificationEnableLabel) : null,
-
+                        }, bns.notificationEnableLabel) : null,
                     ]),
                     Object.keys(User.current.settings!).map((name: string) => {
                         const value = User.current.settings![name];
