@@ -56,10 +56,7 @@ export class ShortcutService {
 
         this.bag.set('Z', {
             run() {
-                console.log('not yet implemented');
-                // if (cache.canUnclear()) {
-                //     cache.unclear();
-                // }
+                cache.restore();
             },
             description: 'Undo',
         });

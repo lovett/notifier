@@ -9,13 +9,13 @@ export default {
         return [
             m(m.route.Link, { href: '/settings' }, 'Settings'),
 
-            m('a', {
+            (cache.canRestore()) ? m('a', {
                 href: '#undo',
                 onclick: (e: Event) => {
                     e.preventDefault();
-                    cache.undo();
+                    cache.restore();
                 },
-            }, 'Undo'),
+            }, 'Undo') : null,
 
             m(m.route.Link, { href: '/logout' }, 'Logout'),
         ];

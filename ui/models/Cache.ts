@@ -10,6 +10,8 @@ export default class Cache {
 
     public items: Map<string, Message> = new Map();
 
+    public undoQueue: string[] = [];
+
     /**
      * Attach the instance to a web worker for push-based updates.
      *
@@ -30,6 +32,10 @@ export default class Cache {
         this.worker = new Worker('../worker/worker.ts');
         this.worker.onmessage = this.onWorkerPush.bind(this);
         this.worker.postMessage(Command.connect);
+    }
+
+    public canRestore() {
+        return this.undoQueue.length > 0;
     }
 
     /**
@@ -116,8 +122,6 @@ export default class Cache {
         this.items.set(message.publicId!, message);
     }
 
-    public
-
     /**
      * Mark a message as read and remove it from the container.
      */
@@ -133,6 +137,7 @@ export default class Cache {
             withCredentials: true,
         }).then(() => {
             this.retract(publicId);
+            this.undoQueue.push(publicId);
         }).catch(() => {
             const message = this.items.get(publicId);
             message!.state = 'stuck';
@@ -149,6 +154,29 @@ export default class Cache {
             return;
         }
         this.remove(message.publicId!);
+    }
+
+    /**
+     * Bring back a previously-removed message.
+     */
+    public restore() {
+        if (this.undoQueue.length === 0) {
+            return;
+        }
+
+        const publicId = this.undoQueue.pop();
+
+        m.request({
+            body: { publicId },
+            method: 'POST',
+            url: 'message/unclear',
+            withCredentials: true,
+        }).then(() => {
+            m.redraw();
+        }).catch(() => {
+            this.undoQueu.push(publicId);
+            console.log('Message could not be restored');
+        });
     }
 
     /**
