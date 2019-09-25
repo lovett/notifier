@@ -222,4 +222,10 @@ export default class Message {
     public isExtended(): boolean {
         return this.extended;
     }
+
+    public visit() {
+        if (this.hasLink()) {
+            window.open(this.url);
+        }
+    }
 }

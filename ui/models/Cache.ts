@@ -116,6 +116,8 @@ export default class Cache {
         this.items.set(message.publicId!, message);
     }
 
+    public
+
     /**
      * Mark a message as read and remove it from the container.
      */
@@ -194,6 +196,14 @@ export default class Cache {
                 this.add(message);
             }
         });
+    }
+
+    /**
+     * Open the URL of the selected message.
+     */
+    public visitSelected() {
+        const message = this.selected();
+        message.visit();
     }
 
     /**

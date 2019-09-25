@@ -28,8 +28,7 @@ export class ShortcutService {
 
         this.bag.set('o', {
             run() {
-                console.log('not yet implemented');
-                // cache.visitSelected();
+                cache.visitSelected();
             },
             description: 'Visit the link of the selected message',
         });
