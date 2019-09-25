@@ -8,7 +8,7 @@ import settings from './views/settings';
 import shortcuts from './views/shortcuts';
 
 import Cache from './models/Cache';
-import ShortcutMap from './models/ShortcutMap';
+import ShortcutService from './models/ShortcutService';
 import User from './models/User';
 
 const root = document.getElementById('app-container') as HTMLElement;
@@ -20,7 +20,7 @@ const loginRequired = () => {
 };
 
 const cache = new Cache(window.navigator.userAgent);
-const shortcutMap = new ShortcutMap(cache);
+const shortcutService = new ShortcutService(cache);
 
 document.addEventListener('keydown', (e: KeyboardEvent) => {
     const charCode: number = e.which || e.keyCode;
@@ -35,7 +35,7 @@ document.addEventListener('keydown', (e: KeyboardEvent) => {
         return;
     }
 
-    shortcutMap.run(e.key);
+    shortcutService.match(e.key);
 });
 
 m.route(root, '/', {
@@ -84,7 +84,7 @@ m.route(root, '/', {
     '/shortcuts': {
         onmatch: loginRequired,
         render() {
-            return m(shortcuts, { shortcutMap } as m.Attributes);
+            return m(shortcuts, { shortcutService } as m.Attributes);
         },
     } as m.RouteResolver,
 });

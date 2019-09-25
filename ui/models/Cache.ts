@@ -1,7 +1,6 @@
-import m from 'mithril';
-import Message from './Message';
-
 import Command from '../worker/command';
+import Message from './Message';
+import m from 'mithril';
 
 /**
  * A container to hold notification messages.
@@ -88,6 +87,9 @@ export default class Cache {
         this.selectByIndex(targetIndex);
     }
 
+    /**
+     * Locate the selected message and return its index.
+     */
     public selectedIndex(): number {
         const message = this.selected();
 
