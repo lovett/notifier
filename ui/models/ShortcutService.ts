@@ -40,14 +40,6 @@ export class ShortcutService {
             description: 'Mark the selected message as read and remove it',
         });
 
-        this.bag.set('C', {
-            run() {
-                console.log('not yet implemented');
-                // cache.clearAll();
-            },
-            description: 'Clear all messages',
-        });
-
         this.bag.set('L', {
             run() {
                 m.route.set('/logout');
