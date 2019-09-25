@@ -141,6 +141,17 @@ export default class Cache {
     }
 
     /**
+     * Open the URL of the selected message.
+     */
+    public removeSelected() {
+        const message = this.selected();
+        if (!message) {
+            return;
+        }
+        this.remove(message.publicId!);
+    }
+
+    /**
      * Remove a message from the container.
      */
     public retract(publicId: string) {
@@ -203,6 +214,11 @@ export default class Cache {
      */
     public visitSelected() {
         const message = this.selected();
+
+        if (!message) {
+            return;
+        }
+
         message.visit();
     }
 

@@ -35,10 +35,9 @@ export class ShortcutService {
 
         this.bag.set('x', {
             run() {
-                console.log('not yet implemented');
-                // cache.clearSelected();
+                cache.removeSelected();
             },
-            description: 'Clear selected message',
+            description: 'Mark the selected message as read and remove it',
         });
 
         this.bag.set('C', {
