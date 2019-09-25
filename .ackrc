@@ -1,4 +1,5 @@
 --ignore-dir=coverage
+--ignore-dir=.cache
 --ignore-dir=build/public
 --ignore-dir=build/server
 --ignore-dir=notifier

@@ -50,9 +50,11 @@ export default {
                 m(messageListSummary, { cache } as m.Attributes),
             ]),
 
-            m('main#messageListBody', Array.from(cache.items.values()).map((message, index) => {
-                return m(messageListMessage, { message, index, cache } as m.Attributes);
-            })),
+            m('main#messageListBody', [
+                m('#messages', Array.from(cache.items.values()).map((message, index) => {
+                    return m(messageListMessage, { message, index, cache } as m.Attributes);
+                })),
+            ]),
 
             m('footer#messageListFooter', [
                 m(messageListFooter, { cache } as m.Attributes),
