@@ -6,16 +6,14 @@ export default {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
 
-        const itemCount = Object.keys(cache.items).length;
-
-        if (itemCount === 0) {
+        if (cache.items.size === 0) {
             return '';
         }
 
-        if (itemCount === 1) {
+        if (cache.items.size === 1) {
             return '1 message';
         }
 
-        return `${itemCount} messages`;
+        return `${cache.items.size} messages`;
     },
 };
