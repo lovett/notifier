@@ -45,20 +45,32 @@ export default {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
 
-        return [
-            m('header#messageListSummary', [
-                m(messageListSummary, { cache } as m.Attributes),
-            ]),
+        const nodes: m.Vnode[] = [];
 
-            m('main#messageListBody', [
+        nodes.push(m('header#messageListSummary', [
+            m(messageListSummary, { cache } as m.Attributes),
+        ]));
+
+        if (cache.items.size === 0) {
+            nodes.push(m('main#messageListEmptyBody', [
+                m('svg.icon.icon-close', { role: 'img' }, [
+                    m('use', { 'xlink:href': '#icon-waves' }),
+                ]),
+                m('p', 'You have no messages.'),
+
+            ]));
+        } else {
+            nodes.push(m('main', [
                 m('#messages', Array.from(cache.items.values()).map((message, index) => {
                     return m(messageListMessage, { message, index, cache } as m.Attributes);
                 })),
-            ]),
+            ]));
+        }
 
-            m('footer#messageListFooter', [
-                m(messageListFooter, { cache } as m.Attributes),
-            ]),
-        ];
+        nodes.push(m('footer#messageListFooter', [
+            m(messageListFooter, { cache } as m.Attributes),
+        ]));
+
+        return nodes;
     },
 };

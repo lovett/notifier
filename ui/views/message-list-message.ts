@@ -58,7 +58,7 @@ export default {
 
             m('p', message.body),
 
-            m(messageListMessageOptions, { message, cache }),
+            m(messageListMessageOptions, { message, cache } as m.Attributes),
 
             m('.index', index + 1),
         ]);
