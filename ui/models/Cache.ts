@@ -166,7 +166,7 @@ export default class Cache {
             return;
         }
 
-        const publicId = this.undoQueue.pop();
+        const publicId = this.undoQueue.pop() as string;
 
         m.request({
             body: { publicId },
@@ -176,7 +176,7 @@ export default class Cache {
         }).then(() => {
             m.redraw();
         }).catch(() => {
-            this.undoQueu.push(publicId);
+            this.undoQueue.push(publicId);
             console.log('Message could not be restored');
         });
     }
@@ -185,6 +185,16 @@ export default class Cache {
      * Remove a message from the container.
      */
     public retract(publicId: string) {
+        if (!this.items.has(publicId)) {
+            return;
+        }
+
+        const message = this.items.get(publicId) as Message;
+
+        if (message.browserNotification) {
+            message.browserNotification.close();
+        }
+
         this.items.delete(publicId);
     }
 
@@ -265,6 +275,11 @@ export default class Cache {
         }
 
         this.add(message);
+
+        if (!document.hasFocus()) {
+            message.sendBrowserNotification();
+        }
+
         m.redraw();
     }
 

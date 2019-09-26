@@ -51,7 +51,7 @@ export default class Message {
     public expiration?: Date;
     public timeRemaining?: number;
     public badge?: string;
-    public browserNotification: any;
+    public browserNotification?: Notification;
     public state?: string;
     public url?: string;
     public received: Date;
@@ -182,7 +182,7 @@ export default class Message {
         }
     }
 
-    public asBrowserNotification(): Notification {
+    public sendBrowserNotification() {
         let body: string = this.body || '';
 
         // Truncation avoids unwanted whitespace in Chrome
@@ -196,7 +196,10 @@ export default class Message {
             tag: this.publicId,
         };
 
-        return new Notification(this.title, opts);
+        this.browserNotification = new Notification(
+            this.title!,
+            opts
+        );
     }
 
     public hasExpiration(): boolean {
