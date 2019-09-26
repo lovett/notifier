@@ -1,8 +1,10 @@
+import m from 'mithril';
+
 export const notificationsDeniedMessage = 'They can be turned on from the brower\'s settings page.';
 export const notificationsEnabledMessage = 'They can be turned off from the browser\'s settings page.';
-export const notificationEnableLabel = 'Turn them on';
+export let promptMessage = 'Turn them on';
 
-export function isDefault() {
+export function isUncertain() {
     return window.Notification.permission === 'default';
 }
 
@@ -23,22 +25,15 @@ export function onOffMessage() {
         return 'Browser notifications are on.';
     }
 
-    return 'Browser notifications are off.';
+    if (isDenied()) {
+        return 'Browser notifications are off.';
+    }
+
+    return '';
 }
 
 export function prompt() {
-    window.Notification.requestPermission((permission: string) => {
-        if (permission === 'granted') {
-            alert('Notifications are enabled.');
-            return;
-            // const message = new Message();
-            // message.publicId = 'notification-enabled';
-            // message.group = 'internal';
-            // message.title = 'Browser notifications enabled';
-
-            // // send(message, true);
-        }
-
-        window.location.reload();
+    window.Notification.requestPermission(() => {
+        m.redraw();
     });
 }

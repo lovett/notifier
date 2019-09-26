@@ -5,6 +5,7 @@ import * as bns from '../models/BrowserNotificationService';
 export default {
     oninit() {
         User.getServices();
+        bns.prompt();
     },
 
     view() {
@@ -19,23 +20,19 @@ export default {
             }, [
                 m('fieldset', [
                     m('h1', 'Settings'),
+
                     m('.status-message.error', {
                         hidden: User.hasNoErrorMessage(),
                     }, User.current.errorMessage),
+
                     m('.status-message.success', {
                         hidden: User.hasNoSuccessMessage(),
                     }, User.current.successMessage),
+
                     m('.field', [
                         m('span', bns.onOffMessage()),
                         bns.isDenied() ? m('p', bns.notificationsDeniedMessage) : null,
                         bns.isGranted() ? m('p', bns.notificationsEnabledMessage) : null,
-                        bns.isDefault() ? m('a', {
-                            href: '#browser-notifications',
-                            onclick: (e: Event) => {
-                                e.preventDefault();
-                                bns.prompt();
-                            },
-                        }, bns.notificationEnableLabel) : null,
                     ]),
                     Object.keys(User.current.settings!).map((name: string) => {
                         const value = User.current.settings![name];
