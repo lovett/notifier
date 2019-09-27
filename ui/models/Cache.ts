@@ -113,6 +113,14 @@ export default class Cache {
         return this.keyOfIndex(selectedIndex);
     }
 
+    public close() {
+        if (!this.worker) {
+            return;
+        }
+        this.worker.postMessage(Command.disconnect);
+        this.worker.terminate();
+    }
+
     public deselect() {
         for (const key of Object.keys(this.items)) {
             this.items[key].selected = false;

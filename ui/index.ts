@@ -19,8 +19,8 @@ const loginRequired = () => {
     }
 };
 
-const cache = new Cache(window.navigator.userAgent);
-const shortcutService = new ShortcutService(cache);
+let cache: Cache | null = null;
+let shortcutService: ShortcutService | null = null;
 
 document.addEventListener('keydown', (e: KeyboardEvent) => {
     const charCode: number = e.which || e.keyCode;
@@ -35,13 +35,19 @@ document.addEventListener('keydown', (e: KeyboardEvent) => {
         return;
     }
 
-    shortcutService.match(e.key);
+    if (shortcutService) {
+        shortcutService.match(e.key);
+    }
 });
 
 m.route(root, '/', {
     '/': {
         onmatch: loginRequired,
         render() {
+            if (!cache) {
+                cache = new Cache(window.navigator.userAgent);
+                shortcutService = new ShortcutService(cache);
+            }
             return m(messageList, { cache } as m.Attributes);
         },
     } as m.RouteResolver,
@@ -68,6 +74,13 @@ m.route(root, '/', {
             if (User.isLoggedIn()) {
                 User.logOut();
             }
+
+            if (cache) {
+                cache.close();
+            }
+
+            cache = null;
+            shortcutService = null;
         },
         render() {
             return m(logout);
