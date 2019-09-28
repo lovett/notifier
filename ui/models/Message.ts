@@ -49,7 +49,6 @@ export default class Message {
     public publicId?: string;
     public domain?: string;
     public expiration?: Date;
-    public timeRemaining?: number;
     public badge?: string;
     public browserNotification?: Notification;
     public state?: string;
@@ -67,7 +66,7 @@ export default class Message {
         const received = new Date(this.received);
         received.setHours(0, 0, 0);
 
-        const now = new Date()
+        const now = new Date();
         now.setHours(0, 0, 0, 0);
 
         return (now.getTime() - received.getTime()) / 86400_000;
@@ -168,12 +167,6 @@ export default class Message {
             undefined,
             { hour: 'numeric', minute: '2-digit' },
         ).format(this.expiration);
-    }
-
-    public refresh() {
-        const initialValue = this.timeRemaining;
-        this.calculateTimeRemaining();
-        return (this.timeRemaining !== initialValue);
     }
 
     public closeBrowserNotification() {
