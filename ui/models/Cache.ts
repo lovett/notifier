@@ -40,6 +40,25 @@ export default class Cache {
         return this.undoQueue.length > 0;
     }
 
+    public impendingExpirations() {
+        const expirations: Map<string, Date> = new Map();
+        const now = new Date();
+        this.items.forEach((item) => {
+            if (!item.expiringSoon()) {
+                return;
+            }
+
+            if (item.expiration! < now) {
+                this.retract(item.publicId!);
+            }
+
+            expirations.set(item.publicId!, item.expiration!);
+
+        });
+
+        return expirations;
+    }
+
     /**
      * Mark a message as being in-focus by the UI.
      */

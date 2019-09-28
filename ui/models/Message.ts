@@ -140,6 +140,13 @@ export default class Message {
             return '';
         }
 
+        if (!this.expiringSoon()) {
+            return 'at ' + new Intl.DateTimeFormat(
+                undefined,
+                { hour: 'numeric', minute: '2-digit' },
+            ).format(this.expiration);
+        }
+
         const seconds = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
         const minutes = Math.floor(seconds / 60);
 
@@ -159,14 +166,7 @@ export default class Message {
             return 'in less than a minute';
         }
 
-        if (minutes < 10) {
-            return `in ${minutes} minutes`;
-        }
-
-        return 'at ' + new Intl.DateTimeFormat(
-            undefined,
-            { hour: 'numeric', minute: '2-digit' },
-        ).format(this.expiration);
+        return `in ${minutes} minutes`;
     }
 
     public closeBrowserNotification() {
@@ -174,6 +174,19 @@ export default class Message {
             this.browserNotification.close();
         }
     }
+
+    public expiringSoon() {
+        if (!this.expiration) {
+            return '';
+        }
+
+        const seconds = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
+        const minutes = Math.floor(seconds / 60);
+
+        return minutes <= 10;
+    }
+
+
 
     public sendBrowserNotification() {
         let body: string = this.body || '';

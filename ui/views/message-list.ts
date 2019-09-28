@@ -4,6 +4,8 @@ import messageListFooter from './message-list-footer';
 import messageListMessage from './message-list-message';
 import Cache from '../models/Cache';
 
+let redrawTimer: number = 0;
+
 export default {
     oninit(vnode: m.Vnode) {
         const attrs = vnode.attrs as m.Attributes;
@@ -24,6 +26,14 @@ export default {
             'blur',
             cache.deselect.bind(cache),
         );
+
+        redrawTimer = setInterval(() => {
+            const expirations = cache.impendingExpirations();
+
+            if (expirations.size > 0) {
+                m.redraw();
+            }
+        }, 1000);
     },
 
     onremove(vnode: m.Vnode) {
@@ -39,6 +49,8 @@ export default {
             'blur',
             cache.deselect.bind(cache),
         );
+
+        clearInterval(redrawTimer);
     },
 
     view(vnode: m.Vnode) {
