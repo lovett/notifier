@@ -1,6 +1,7 @@
 import Command from './command';
 
 let eventSource: EventSource;
+let reconnectTimer: number;
 
 /**
  * Open a persistent connection to the server for real-time push.
@@ -9,16 +10,21 @@ function connect() {
     eventSource = new EventSource('push');
 
     eventSource.onopen = () => {
-        console.log('Connected to push endpoint');
+        self.postMessage(Command.online);
     };
 
     eventSource.onmessage = (e: MessageEvent) => {
         const json = JSON.parse(e.data);
+        console.log(json);
         self.postMessage(json);
     };
 
-    eventSource.onerror = (e: Event) => {
-        console.log(e);
+    eventSource.onerror = () => {
+        self.postMessage(Command.offline);
+
+        clearTimeout(reconnectTimer);
+
+        reconnectTimer = setTimeout(connect, 5000);
     };
 }
 

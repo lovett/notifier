@@ -10,6 +10,8 @@ export default class Cache {
 
     public hasFilled = false;
 
+    public isOffline = false;
+
     public items: Map<string, Message> = new Map();
 
     public undoQueue: string[] = [];
@@ -31,9 +33,7 @@ export default class Cache {
             return;
         }
 
-        this.worker = new Worker('../worker/worker.ts');
-        this.worker.onmessage = this.onWorkerPush.bind(this);
-        this.worker.postMessage(Command.connect);
+        this.startWorker();
     }
 
     public canRestore() {
@@ -132,7 +132,17 @@ export default class Cache {
         return this.keyOfIndex(selectedIndex);
     }
 
-    public close() {
+    public startWorker() {
+        if (this.worker) {
+            return;
+        }
+
+        this.worker = new Worker('../worker/worker.ts');
+        this.worker.onmessage = this.onWorkerPush.bind(this);
+        this.worker.postMessage(Command.connect);
+    }
+
+    public stopWorker() {
         if (!this.worker) {
             return;
         }
@@ -294,11 +304,21 @@ export default class Cache {
      * Add a notification received by the web worker.
      */
     private onWorkerPush(e: MessageEvent): void {
+
+        if (e.data === Command.offline) {
+            this.goOffline(true);
+            return;
+        }
+
+        if (e.data === Command.online) {
+            this.goOnline();
+            return;
+        }
+
         const message = Message.fromJson(e.data);
 
         if (message.isExpired()) {
             this.retract(message.publicId!);
-            return;
         }
 
         this.add(message);
@@ -310,4 +330,21 @@ export default class Cache {
         m.redraw();
     }
 
+    public goOnline() {
+        console.log('going online');
+        this.isOffline = false;
+        this.startWorker();
+        m.redraw();
+    }
+
+    public goOffline(attemptReconnect: Boolean = false) {
+        console.log('going offline');
+        this.isOffline = true;
+
+        if (attemptReconnect === false) {
+            this.stopWorker();
+        }
+
+        m.redraw();
+    }
 }

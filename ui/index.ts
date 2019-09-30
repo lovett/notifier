@@ -76,7 +76,7 @@ m.route(root, '/', {
             }
 
             if (cache) {
-                cache.close();
+                cache.stopWorker();
             }
 
             cache = null;
