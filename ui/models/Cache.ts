@@ -169,13 +169,14 @@ export default class Cache {
             return;
         }
 
+        this.retract(publicId);
+
         m.request({
             body: { publicId: publicId },
             method: 'POST',
             url: 'message/clear',
             withCredentials: true,
         }).then(() => {
-            this.retract(publicId);
             this.undoQueue.push(publicId);
         }).catch(() => {
             const message = this.items.get(publicId);
@@ -304,7 +305,6 @@ export default class Cache {
      * Add a notification received by the web worker.
      */
     private onWorkerPush(e: MessageEvent): void {
-
         if (e.data === Command.offline) {
             this.goOffline(true);
             return;
@@ -319,6 +319,7 @@ export default class Cache {
 
         if (message.isExpired()) {
             this.retract(message.publicId!);
+            return;
         }
 
         this.add(message);

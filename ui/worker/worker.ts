@@ -15,7 +15,6 @@ function connect() {
 
     eventSource.onmessage = (e: MessageEvent) => {
         const json = JSON.parse(e.data);
-        console.log(json);
         self.postMessage(json);
     };
 
