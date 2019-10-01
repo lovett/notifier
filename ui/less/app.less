@@ -68,12 +68,16 @@ h1 {
 
 #messageListEmptyBody {
     margin: auto;
-    fill: cyan;
     text-align: center;
+    font-size: 2em;
 
-    .breakpoint-desktop({
-        font-size: 2em;
-    });
+    .icon {
+        display: inline-block;
+        width: 30vw;
+        height: 30vh;
+        background: transparent url('../svg/waves.svg') no-repeat center;
+        background-size: contain;
+    }
 }
 
 #messageListSummary {

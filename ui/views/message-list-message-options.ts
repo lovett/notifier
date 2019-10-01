@@ -18,16 +18,7 @@ export default {
                     cache.remove(message.publicId);
                 },
             }, [
-                m('span', [
-                    m('svg.icon.icon-close', {
-                        'aria-label': 'Close icon',
-                        'role': 'img',
-                    }, [
-                        m('use', {
-                            'xlink:href': '#icon-close',
-                        }),
-                    ]),
-                ]),
+                m('span.icon'),
             ]),
         ]);
     },

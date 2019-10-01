@@ -98,11 +98,8 @@ export default {
 
         if (cache.items.size === 0) {
             nodes.push(m('main#messageListEmptyBody', [
-                m('svg.icon', { role: 'img' }, [
-                    m('use', { 'xlink:href': '#icon-waves' }),
-                ]),
+                m('.icon'),
                 m('p', 'You have no messages.'),
-
             ]));
         } else {
             nodes.push(m('main', [
