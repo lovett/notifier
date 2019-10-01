@@ -34,11 +34,23 @@ export default {
                         bns.isDenied() ? m('p', bns.notificationsDeniedMessage) : null,
                         bns.isGranted() ? m('p', bns.notificationsEnabledMessage) : null,
                     ]),
+
                     Object.keys(User.current.settings!).map((name: string) => {
                         const value = User.current.settings![name];
+
                         return m('.field', [
                             m('label', { for: name }, name),
-                            m('input', { name, type: 'text', value }),
+                            m('input', { name, type: 'text', value, autocomplet: 'off' }),
+                            m('.shortcuts', [
+                                m('a', {
+                                    href: '#',
+                                    onclick: (e: Event) => {
+                                        e.preventDefault();
+                                        const field = document.querySelector(`input[name=${name}]`) as HTMLInputElement;
+                                        field.value = '';
+                                    },
+                                }, 'Clear'),
+                            ]),
                         ]);
                     }),
                     m('.field', m('button', 'save')),

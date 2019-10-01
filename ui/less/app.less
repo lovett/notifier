@@ -22,6 +22,13 @@ h1 {
     margin-bottom: 2em;
 }
 
+input {
+    font-family: monospace;
+    font-size: 1.3em;
+    border-radius: 0;
+    padding: 0.25em;
+}
+
 noscript {
     margin: auto;
     text-align: center;
@@ -53,14 +60,6 @@ noscript {
     label {
         display: inline-block;
         min-width: 6em;
-    }
-
-    input[type='text'],
-    input[type='password'] {
-        font-family: monospace;
-        font-size: 1.3em;
-        border-radius: 0;
-        padding: 0.25em;
     }
 }
 
@@ -148,6 +147,11 @@ noscript {
         text-transform: capitalize;
     }
 
+    input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
     .field {
         margin-bottom: 3em;
     }
@@ -184,6 +188,12 @@ button {
 
 .field {
     margin-bottom: 1.5em;
+}
+
+.shortcuts {
+    padding-top: .5em;
+    font-size: .75em;
+    text-align: right;
 }
 
 .status-message {
