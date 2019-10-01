@@ -44,9 +44,9 @@ let router: express.Router;
 
 nconf.env();
 
-nconf.file('environment', path.join(__dirname, '../../', 'config-' + process.env.NODE_ENV + '.json'));
+nconf.file('environment', path.join(__dirname, '../', 'config-' + process.env.NODE_ENV + '.json'));
 
-nconf.file('application', path.join(__dirname, '../../', 'config.json'));
+nconf.file('application', path.join(__dirname, '../', 'config.json'));
 
 nconf.file('host', '/etc/notifier.json');
 
@@ -58,7 +58,7 @@ nconf.defaults({
     NOTIFIER_FORCE_HTTPS: 0,
     NOTIFIER_HTTP_IP: '127.0.0.1',
     NOTIFIER_HTTP_PORT: 8080,
-    NOTIFIER_PUBLIC_DIR: path.resolve('./public'),
+    NOTIFIER_PUBLIC_DIR: path.resolve(__dirname, './public'),
 });
 
 app = express();

@@ -7,7 +7,7 @@ export PATH := ./node_modules/.bin:$(PATH)
 
 build: export NPM_CONFIG_PROGRESS = false
 build: export NODE_ENV = production
-build: setup server
+build: setup
 	rsync -ar \
 	--exclude='***/.bin' \
 	--exclude='***/test' \
@@ -31,15 +31,16 @@ build: setup server
 	--include='package.json' \
 	--include='README.md' \
 	--include='node_modules/***' \
-	--include='build/***' \
 	--include='migrations/***' \
 	--exclude='*' \
 	--delete \
 	--delete-excluded \
 	. notifier
-	cd notifier; npm prune --production
-	rm -f "notifier.tar.gz"
-	tar --create --gzip --file="notifier.tar.gz" notifier
+	tsc -p server
+	parcel build ui/index.html --out-dir notifier/public
+	# cd notifier; npm prune --production
+	# rm -f "notifier.tar.gz"
+	# tar --create --gzip --file="notifier.tar.gz" notifier
 
 hooks: dummy
 	cp hooks/* .git/hooks/
@@ -62,16 +63,11 @@ setup: export NODE_ENV=dev
 setup:
 	npm install --no-optional
 
-server: dummy
-	rm -rf build/server
-	tsc -p server
-
-tsserver: dummy
-	rm -rf build/server
-	tsc -p server -w
+devserver: dummy
+	ts-node-dev --respawn --transpileOnly server/server.ts
 
 ui: dummy
-	parcel watch ui/index.html --out-dir build/public --no-hmr
+	parcel watch ui/index.html --out-dir server/public --no-hmr
 
 # Send a test message
 #
@@ -135,11 +131,8 @@ workspace:
 ## 2: UI
 	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "ui" "make ui"
 
-## 3: Typescript server
-	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "tsserver" "NODE_ENV=dev make tsserver"
-
-## 5: Dev server
-	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "devserver" "sleep 5; node_modules/.bin/nodemon"
+## 3: Dev server
+	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "server" "make devserver"
 
 	tmux select-window -t "$(TMUX_SESSION_NAME)":0
 

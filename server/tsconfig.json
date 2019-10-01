@@ -5,7 +5,7 @@
     ],
     "sourceMap": false,
     "strictFunctionTypes": false,
-    "outDir": "../build/server",
+    "outDir": "../notifier/",
     "target": "ES6",
     "types": []
   },
