@@ -136,13 +136,13 @@ async function scheduler() {
         app.locals.expirationCache = await db.getExpiringMessages();
     }
 
-    for (const key of app.locals.expirationCache) {
-        const [user, expiration] = app.locals.expirationCache.get(key);
+    app.locals.expirationCache.forEach((value: [number, Date], key: string) => {
+        const [userId, expiration] = value;
         if (expiration < now) {
-            publishMessage(app, user.id, null, key);
+            publishMessage(app, userId, null, key);
             app.locals.expirationCache.delete(key);
         }
-    }
+    });
 
     const elapsedTime = now.getTime() - app.locals.maintenanceTimestamp.getTime();
 
