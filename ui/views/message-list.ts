@@ -94,9 +94,7 @@ export default {
 
         const nodes: m.Vnode[] = [];
 
-        nodes.push(m('header#messageListSummary', [
-            m(messageListSummary, { cache } as m.Attributes),
-        ]));
+        nodes.push(m(messageListSummary, { cache } as m.Attributes));
 
         if (cache.items.size === 0) {
             nodes.push(m('main#messageListEmptyBody', [
@@ -114,9 +112,7 @@ export default {
             ]));
         }
 
-        nodes.push(m('footer#messageListFooter', [
-            m(messageListFooter, { cache } as m.Attributes),
-        ]));
+        nodes.push(m(messageListFooter, { cache } as m.Attributes));
 
         return nodes;
     },

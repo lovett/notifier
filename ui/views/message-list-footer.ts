@@ -5,8 +5,15 @@ export default {
     view(vnode: m.Vnode) {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
+        const selector = 'footer#messageListFooter';
 
-        return [
+        const logout = m(m.route.Link, { href: '/logout' }, 'Logout');
+
+        if (cache.isOffline) {
+            return m(selector, { class: 'offline' }, logout);
+        }
+
+        return m(selector, [
             m(m.route.Link, { href: '/settings' }, 'Settings'),
 
             (cache.canRestore()) ? m('a', {
@@ -17,7 +24,7 @@ export default {
                 },
             }, 'Undo') : null,
 
-            m(m.route.Link, { href: '/logout' }, 'Logout'),
-        ];
+            logout,
+        ]);
     },
 };
