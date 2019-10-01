@@ -1,14 +1,17 @@
-@import (inline) "../../node_modules/normalize.css/normalize.css";
-
 @import "breakpoints.less";
 
-@palettePrimary: #006ba6; // Manually sync this value with the theme-color meta tag in index.ejs.
+@palettePrimary: #006ba6; // Manually sync this value with the theme-color meta tag in index.html.
+
+body {
+    margin: 0;
+}
 
 fieldset {
     border: 0;
 }
 
 html {
+    margin: 0;
     background-color: @palettePrimary;
     color: #fff;
     font-family: 'Geneva', Arial, sans-serif;
@@ -17,6 +20,11 @@ html {
 h1 {
     font-size: 1em;
     margin-bottom: 2em;
+}
+
+noscript {
+    margin: auto;
+    text-align: center;
 }
 
 #app-container {
@@ -69,12 +77,12 @@ h1 {
 #messageListEmptyBody {
     margin: auto;
     text-align: center;
-    font-size: 2em;
+    font-size: 1.5em;
 
     .icon {
         display: inline-block;
-        width: 30vw;
-        height: 30vh;
+        width: 40vw;
+        height: 20vh;
         background: transparent url('../svg/waves.svg') no-repeat center;
         background-size: contain;
     }
@@ -196,44 +204,6 @@ button {
     }
 }
 
-
-// .page-jacket {
-//     &.disconnected {
-//         background-color: #333;
-
-//         nav {
-//             visibility: hidden;
-//         }
-//     }
-
-//     nav {
-//         visibility: visible;
-//         background-color: @palettePrimary;
-//     }
-// }
-
-// a:hover {
-//     text-decoration: underline;
-//     cursor: pointer;
-// }
-
-
-// h1 {
-//     font-size: 2em;
-//     margin-bottom: 1em;
-// }
-
-// p {
-//     padding: 0;
-//     margin: 1em 0;
-// }
-
-
-// .app-message {
-//     text-align: center;
-//     color: white;
-//     font-size: 2em;
-// }
-
-
 @import "shortcuts.less";
+@import "message.less";
+@import "badges.less";
