@@ -45,6 +45,7 @@ export default {
             if (cache.isOffline !== isOffline) {
                 isOffline = cache.isOffline;
                 shouldRedraw = true;
+                n
             }
 
             if (expirations.size > 0) {
@@ -54,6 +55,7 @@ export default {
             if (shouldRedraw) {
                 m.redraw();
             }
+
         }, 1000);
     },
 
@@ -87,11 +89,6 @@ export default {
     view(vnode: m.Vnode) {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
-
-        if (cache.hasFilled === false) {
-            return;
-        }
-
         const nodes: m.Vnode[] = [];
 
         nodes.push(m(messageListSummary, { cache } as m.Attributes));

@@ -144,8 +144,12 @@ export default class Cache {
         m.redraw();
     }
 
-    public add(message: Message) {
+    public add(message: Message, withStorage: Boolean = true) {
         this.items.set(message.publicId!, message);
+
+        if (withStorage) {
+            sessionStorage.setItem(message.publicId!, JSON.stringify(message));
+        }
     }
 
     /**
@@ -221,6 +225,8 @@ export default class Cache {
         }
 
         this.items.delete(publicId);
+        sessionStorage.removeItem(publicId);
+
     }
 
     /**
@@ -262,17 +268,47 @@ export default class Cache {
      * Add notifications via HTTP request.
      */
     public fill() {
+        this.fillFromStorage();
         m.request({
             method: 'GET',
             url: 'archive',
             withCredentials: true,
             deserialize: Message.fromJsonArray,
         }).then((messages: Message[]) => {
-            this.hasFilled = true;
             for (let message of messages) {
                 this.add(message);
             }
         });
+    }
+
+    private fillFromStorage() {
+        const messages: Message[] = [];
+        for (let i = 0; i < sessionStorage.length; i++) {
+            const key = sessionStorage.key(i) as string;
+            const value = sessionStorage.getItem(key);
+
+            if (!value) {
+                return;
+            }
+
+            const json = JSON.parse(value);
+            const message = Message.fromJson(json);
+            messages.push(message);
+        }
+
+        messages.sort((a: Message, b: Message) => {
+            if (a.received < b.received) {
+                return 1;
+            }
+
+            return -1;
+        });
+
+        messages.forEach((message) => {
+            this.add(message, false);
+        });
+
+        m.redraw();
     }
 
     /**
