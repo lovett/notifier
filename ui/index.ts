@@ -45,7 +45,7 @@ m.route(root, '/', {
         onmatch: loginRequired,
         render() {
             if (!cache) {
-                cache = new Cache(window.navigator.userAgent);
+                cache = new Cache();
                 shortcutService = new ShortcutService(cache);
             }
             return m(messageList, { cache } as m.Attributes);

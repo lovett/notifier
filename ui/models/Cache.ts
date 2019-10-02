@@ -18,21 +18,8 @@ export default class Cache {
 
     /**
      * Attach the instance to a web worker for push-based updates.
-     *
-     * There is a long-standing problem with EventSource on Firefox
-     * for Android that causes the browser to crash. The exact nature
-     * of the problem is unknown, but skipping real-time push
-     * sidesteps the problem. On mobile this isn't entirely terrible
-     * because usage more likely to be shorter-term than on desktopp.
      */
-    public constructor(userAgent: string) {
-        const isAndroid = userAgent.indexOf('Android') > -1;
-        const isFirefox = userAgent.indexOf('Firefox') > -1;
-
-        if (isAndroid && isFirefox) {
-            return;
-        }
-
+    public constructor() {
         this.startWorker();
     }
 
