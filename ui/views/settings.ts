@@ -53,9 +53,14 @@ export default {
                             ]),
                         ]);
                     }),
-                    m('.field', m('button', 'save')),
+
+                    m('.field', [
+                        m('button', 'save'),
+                        m(m.route.Link, { href: '/' }, 'Cancel'),
+                    ]),
                 ]),
             ]),
+
             m('footer#messageListFooter', [
                 m(m.route.Link, { href: '/' }, 'Messages'),
                 m(m.route.Link, { href: '/logout' }, 'Logout'),
