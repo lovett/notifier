@@ -51,7 +51,7 @@ export default {
 
                 m('time', message.receivedAt()),
 
-                m('p.expiration', message.expiresAt()),
+                m('p.expiration', 'Expires ' + message.expiresAt()),
 
                 (message.domain) ? m('p.domain', message.domain) : null,
             ]),
