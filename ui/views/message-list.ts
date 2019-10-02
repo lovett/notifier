@@ -45,7 +45,6 @@ export default {
             if (cache.isOffline !== isOffline) {
                 isOffline = cache.isOffline;
                 shouldRedraw = true;
-                n
             }
 
             if (expirations.size > 0) {

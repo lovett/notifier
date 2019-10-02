@@ -100,7 +100,7 @@ export default {
             m.route.set('/');
         }).catch((_: Event) => {
             loginUnderway = false;
-            currentUser.message = 'Please try again.';
+            currentUser.errorMessage = 'Please try again.';
         });
     },
 

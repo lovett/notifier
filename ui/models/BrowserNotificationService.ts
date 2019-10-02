@@ -1,5 +1,4 @@
 import m from 'mithril';
-import Message from './Message';
 
 export const notificationsDeniedMessage = 'They can be turned on from the brower\'s settings page.';
 export const notificationsEnabledMessage = 'They can be turned off from the browser\'s settings page.';

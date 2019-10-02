@@ -34,13 +34,6 @@ export default class Message {
         return m;
     }
 
-    public static fromJsonArray(messages: any[]) {
-        return messages.reduce((accumulator: Message[], message) => {
-            accumulator.push(Message.fromJson(message));
-            return accumulator;
-        }, []);
-    }
-
     public selected: boolean = false;
     public extended: boolean = false;
     public title?: string;
@@ -204,7 +197,7 @@ export default class Message {
 
         this.browserNotification = new Notification(
             this.title!,
-            opts
+            opts,
         );
     }
 

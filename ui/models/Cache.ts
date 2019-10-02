@@ -6,8 +6,6 @@ import m from 'mithril';
  * A container to hold notification messages.
  */
 export default class Cache {
-    private worker?: Worker;
-
     public hasFilled = false;
 
     public isOffline = false;
@@ -15,6 +13,8 @@ export default class Cache {
     public items: Map<string, Message> = new Map();
 
     public undoQueue: string[] = [];
+
+    private worker?: Worker;
 
     /**
      * Attach the instance to a web worker for push-based updates.
@@ -25,6 +25,24 @@ export default class Cache {
 
     public canRestore() {
         return this.undoQueue.length > 0;
+    }
+
+    public goOnline() {
+        console.log('going online');
+        this.isOffline = false;
+        this.startWorker();
+        m.redraw();
+    }
+
+    public goOffline(attemptReconnect: boolean = false) {
+        console.log('going offline');
+        this.isOffline = true;
+
+        if (attemptReconnect === false) {
+            this.stopWorker();
+        }
+
+        m.redraw();
     }
 
     public impendingExpirations() {
@@ -144,7 +162,7 @@ export default class Cache {
         m.redraw();
     }
 
-    public add(message: Message, withStorage: Boolean = true) {
+    public add(message: Message, withStorage: boolean = true) {
         this.items.set(message.publicId!, message);
 
         if (withStorage) {
@@ -162,10 +180,9 @@ export default class Cache {
 
         this.retract(publicId);
 
-        m.request({
-            body: { publicId: publicId },
+        m.request('message/clear', {
+            body: { publicId },
             method: 'POST',
-            url: 'message/clear',
             withCredentials: true,
         }).then(() => {
             this.undoQueue.push(publicId);
@@ -230,6 +247,36 @@ export default class Cache {
     }
 
     /**
+     * Add notifications via HTTP request.
+     */
+    public fill() {
+        this.fillFromStorage();
+
+        m.request('archive', {
+            extract: this.extract,
+            method: 'GET',
+            withCredentials: true,
+        } as m.RequestOptions<Message[]>).then((messages: Message[]) => {
+            for (const message of messages) {
+                this.add(message);
+            }
+        });
+    }
+
+    /**
+     * Open the URL of the selected message.
+     */
+    public visitSelected() {
+        const message = this.selected();
+
+        if (!message) {
+            return;
+        }
+
+        message.visit();
+    }
+
+    /**
      * Find a message index from its key.
      */
     protected indexOfKey(wantedKey: string): number {
@@ -238,7 +285,7 @@ export default class Cache {
         }
 
         let counter = 0;
-        for (let currentKey of this.items.keys()) {
+        for (const currentKey of this.items.keys()) {
             if (currentKey === wantedKey) {
                 break;
             }
@@ -254,7 +301,7 @@ export default class Cache {
     protected keyOfIndex(index: number): string | null {
         let counter = 0;
 
-        for (let message of this.items.values()) {
+        for (const message of this.items.values()) {
             if (counter === index) {
                 return message.publicId!;
             }
@@ -262,23 +309,6 @@ export default class Cache {
         }
 
         return null;
-    }
-
-    /**
-     * Add notifications via HTTP request.
-     */
-    public fill() {
-        this.fillFromStorage();
-        m.request({
-            method: 'GET',
-            url: 'archive',
-            withCredentials: true,
-            deserialize: Message.fromJsonArray,
-        }).then((messages: Message[]) => {
-            for (let message of messages) {
-                this.add(message);
-            }
-        });
     }
 
     private fillFromStorage() {
@@ -312,19 +342,6 @@ export default class Cache {
     }
 
     /**
-     * Open the URL of the selected message.
-     */
-    public visitSelected() {
-        const message = this.selected();
-
-        if (!message) {
-            return;
-        }
-
-        message.visit();
-    }
-
-    /**
      * Add a notification received by the web worker.
      */
     private onWorkerPush(e: MessageEvent): void {
@@ -354,21 +371,11 @@ export default class Cache {
         m.redraw();
     }
 
-    public goOnline() {
-        console.log('going online');
-        this.isOffline = false;
-        this.startWorker();
-        m.redraw();
-    }
-
-    public goOffline(attemptReconnect: Boolean = false) {
-        console.log('going offline');
-        this.isOffline = true;
-
-        if (attemptReconnect === false) {
-            this.stopWorker();
-        }
-
-        m.redraw();
+    private extract(xhr: XMLHttpRequest) {
+        const json = JSON.parse(xhr.responseText);
+        return json.reduce((accumulator: Message[], item: object) => {
+            accumulator.push(Message.fromJson(item));
+            return accumulator;
+        }, []);
     }
 }

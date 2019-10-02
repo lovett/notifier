@@ -54,7 +54,7 @@ async function poll() {
         { credentials: 'same-origin' },
     );
     const json = await response.json();
-    json.forEach((message: Object) => {
+    json.forEach((message: object) => {
         self.postMessage(message);
     });
 }
