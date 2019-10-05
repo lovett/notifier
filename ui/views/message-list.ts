@@ -98,10 +98,14 @@ export default {
                 m('p', 'You have no messages.'),
             ]));
         } else {
+            const messageList: m.Vnode[] = [];
+
+            for (const [, message] of cache.items) {
+                messageList.push(m(messageListMessage, { message, index: 1, cache } as m.Attributes));
+            }
+
             nodes.push(m('main', [
-                m('#messages', Array.from(cache.items.values()).map((message, index) => {
-                    return m(messageListMessage, { message, index, cache } as m.Attributes);
-                })),
+                m('#messages', messageList),
             ]));
         }
 

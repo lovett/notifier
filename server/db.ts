@@ -266,7 +266,7 @@ export async function getUnreadMessages(userId: number, startDate: Date, limit: 
     AND unread=true
     AND received >= $2
     AND ("expiresAt" IS NULL OR "expiresAt" > NOW())
-    ORDER BY received DESC
+    ORDER BY received
     LIMIT $3`;
 
     try {

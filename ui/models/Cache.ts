@@ -18,9 +18,28 @@ export default class Cache {
 
     /**
      * Attach the instance to a web worker for push-based updates.
+     *
+     * A custom iterator is attached to the item map so that messages
+     * can be displayed in reverse-chronological order.
      */
     public constructor() {
         this.startWorker();
+
+        this.items[Symbol.iterator] = function() {
+            const entries = Array.from(this.entries());
+
+            let index = entries.length;
+
+            return {
+                [Symbol.iterator]() { return this; },
+                next() {
+                    return {
+                        done: index === 0,
+                        value: entries[--index],
+                    };
+                },
+            };
+        };
     }
 
     public canRestore() {
@@ -327,7 +346,7 @@ export default class Cache {
         }
 
         messages.sort((a: Message, b: Message) => {
-            if (a.received < b.received) {
+            if (a.received > b.received) {
                 return 1;
             }
 
