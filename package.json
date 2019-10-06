@@ -69,7 +69,6 @@
     "istanbul": "0.4.5",
     "less": "3.10.3",
     "mocha": "6.2.1",
-    "normalize.css": "8.0.1",
     "parcel-bundler": "1.12.3",
     "sinon": "7.5.0",
     "stylelint": "11.0.0",
