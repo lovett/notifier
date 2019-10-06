@@ -78,7 +78,6 @@
     "mini-css-extract-plugin": "0.8.0",
     "mocha": "6.2.1",
     "ng-cache-loader": "0.0.26",
-    "nodemon": "1.19.3",
     "normalize.css": "8.0.1",
     "parcel-bundler": "1.12.3",
     "sinon": "7.5.0",
