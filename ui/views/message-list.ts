@@ -100,8 +100,10 @@ export default {
         } else {
             const messageList: m.Vnode[] = [];
 
+            let index = cache.items.size - 1;
             for (const [, message] of cache.items) {
-                messageList.push(m(messageListMessage, { message, index: 1, cache } as m.Attributes));
+                messageList.push(m(messageListMessage, { message, index, cache } as m.Attributes));
+                index--;
             }
 
             nodes.push(m('main', [

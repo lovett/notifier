@@ -120,19 +120,33 @@ export default class Cache {
     }
 
     /**
-     * Select a message based on distance to the current one.
+     * Select a message by its distance from the currently-selected message.
+     *
+     * If no message is currently selected, infer which end of the
+     * list to select from the sign of the step.
      */
     public selectRelative(step: number) {
         const currentIndex = this.selectedIndex();
-        const lastIndex = this.items.size - 1;
-        let targetIndex = currentIndex + step;
+        let targetIndex: number;
 
-        if (targetIndex > lastIndex) {
+        if (currentIndex === null) {
+            if (step < 0) {
+                // Select the newest message.
+                targetIndex = this.items.size - 1;
+            } else {
+                // Select the oldest message.
+                targetIndex = 0;
+            }
+        } else {
+            targetIndex = currentIndex + step;
+        }
+
+        if (targetIndex >= this.items.size) {
             targetIndex %= this.items.size;
         }
 
         if (targetIndex < 0) {
-            targetIndex = this.items.size - Math.abs(targetIndex);
+            targetIndex = this.items.size + targetIndex;
         }
 
         this.selectByIndex(targetIndex);
@@ -141,19 +155,14 @@ export default class Cache {
     /**
      * Locate the selected message and return its index.
      */
-    public selectedIndex(): number {
+    public selectedIndex(): number | null {
         const message = this.selected();
 
         if (message) {
             return this.indexOfKey(message.publicId!);
         }
 
-        return -1;
-    }
-
-    public selectedKey() {
-        const selectedIndex = this.selectedIndex();
-        return this.keyOfIndex(selectedIndex);
+        return null;
     }
 
     public startWorker() {

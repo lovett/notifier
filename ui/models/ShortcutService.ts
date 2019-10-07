@@ -14,16 +14,16 @@ export class ShortcutService {
     constructor(cache: Cache) {
         this.bag.set('j', {
             run() {
-                cache.selectRelative(1);
+                cache.selectRelative(-1);
             },
-            description: 'Move to next message',
+            description: 'Move to previous message',
         });
 
         this.bag.set('k', {
             run() {
-                cache.selectRelative(-1);
+                cache.selectRelative(1);
             },
-            description: 'Move to previous message',
+            description: 'Move to next message',
         });
 
         this.bag.set('o', {
