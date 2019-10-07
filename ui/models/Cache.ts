@@ -291,6 +291,10 @@ export default class Cache {
         });
     }
 
+    public flushStorage() {
+        sessionStorage.clear();
+    }
+
     /**
      * Open the URL of the selected message.
      */
