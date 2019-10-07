@@ -69,7 +69,7 @@ app.locals.config = nconf;
 
 app.locals.protected = passport.authenticate(['cookie', 'basic', 'local'], { session: false });
 
-app.locals.pushClients = {};
+app.locals.pushClients = new Map();
 
 app.locals.maintenanceTimestamp = new Date();
 

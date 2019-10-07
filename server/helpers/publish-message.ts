@@ -38,8 +38,12 @@ export default (app: express.Application, userId: number, message: Message | nul
         return;
     }
 
-    for (const id of Object.keys(app.locals.pushClients)) {
-        const res = app.locals.pushClients[id];
+    if (!app.locals.pushClients.has(userId)) {
+        return;
+    }
+
+    const clients = app.locals.pushClients.get(userId);
+    for (const res of clients.values()) {
         res.write(`event: message\ndata: ${jsonMessage}\n\n`);
     }
 

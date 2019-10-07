@@ -1,11 +1,20 @@
 import * as express from 'express';
+import User from '../User';
 import * as uuid from 'uuid';
 import PromiseRouter from 'express-promise-router';
 
 const router = PromiseRouter();
 
 router.get('/', async (req: express.Request, res: express.Response) => {
-    const id = uuid.v4();
+    const user = req.user as User;
+    const clientId = uuid.v4();
+
+    if (!req.app.locals.pushClients.has(user.id)) {
+        req.app.locals.pushClients.set(user.id, new Map());
+    }
+
+    const clients = req.app.locals.pushClients.get(user.id);
+    console.log(clients.size, ' clients for user ', user.id);
 
     const timer = setInterval(() => {
         res.write('event:keepalive\ndata:\n\n');
@@ -16,11 +25,11 @@ router.get('/', async (req: express.Request, res: express.Response) => {
 
     req.connection.on('close', () => {
         clearInterval(timer);
-        delete req.app.locals.pushClients[id];
+        clients.delete(clientId);
         res.end();
     });
 
-    req.app.locals.pushClients[id] = res;
+    clients.set(clientId, res);
 
     // The no-transform value of the Cache-Control header tells the
     // compresssion middleware not to compress this
