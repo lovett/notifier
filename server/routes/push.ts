@@ -14,7 +14,6 @@ router.get('/', async (req: express.Request, res: express.Response) => {
     }
 
     const clients = req.app.locals.pushClients.get(user.id);
-    console.log(clients.size, ' clients for user ', user.id);
 
     const timer = setInterval(() => {
         res.write('event:keepalive\ndata:\n\n');
