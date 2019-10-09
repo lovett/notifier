@@ -288,6 +288,8 @@ export default class Cache {
             for (const message of messages) {
                 this.add(message);
             }
+
+            this.hasFilled = true;
         });
     }
 
@@ -369,6 +371,10 @@ export default class Cache {
         messages.forEach((message) => {
             this.add(message, false);
         });
+
+        if (this.items.size > 0) {
+            this.hasFilled = true;
+        }
 
         m.redraw();
     }

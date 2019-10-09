@@ -88,6 +88,11 @@ export default {
     view(vnode: m.Vnode) {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
+
+        if (cache.hasFilled === false) {
+            return;
+        }
+
         const nodes: m.Vnode[] = [];
 
         nodes.push(m(messageListSummary, { cache } as m.Attributes));
