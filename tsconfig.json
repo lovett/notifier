@@ -11,7 +11,7 @@
     "sourceMap": true,
     "target": "ES5",
     "strict": true,
-    "noImplicitAny": false
+    "noImplicitAny": true
   },
   "exclude": [
     "**/flycheck_*",

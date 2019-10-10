@@ -137,3 +137,9 @@ workspace:
 #
 install:
 	ansible-playbook ansible/install.yml
+
+lint-server:
+	tsc --noEmit -p server
+
+lint-ui:
+	tsc --noEmit -p ui
