@@ -36,6 +36,11 @@ let loginUnderway = false;
 export default {
     current: currentUser,
 
+    discardCookie() {
+        console.log('discarding token cookie');
+        document.cookie = `token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    },
+
     getServices() {
         m.request({
             body: currentUser,
@@ -45,6 +50,10 @@ export default {
         }).then((services: Service[]) => {
             for (const service of services) {
                 currentUser.settings![service.key] = service.value;
+            }
+        }).catch((e) => {
+            if (e.code === 401) {
+                this.discardCookie();
             }
         });
     },
@@ -98,7 +107,7 @@ export default {
         }).then((_) => {
             loginUnderway = false;
             m.route.set('/');
-        }).catch((_: Event) => {
+        }).catch(() => {
             loginUnderway = false;
             currentUser.errorMessage = 'Please try again.';
         });
@@ -120,8 +129,10 @@ export default {
             currentUser.password = undefined;
             currentUser.persist = false;
             currentUser.username = undefined;
-        }).catch((e: Event) => {
-            console.log(e);
+        }).catch((e: Error) => {
+            if (e.code === 401) {
+                this.discardCookie();
+            }
         });
     },
 
@@ -131,9 +142,9 @@ export default {
             method: 'POST',
             url: 'services',
             withCredentials: true,
-        }).then((_) => {
+        }).then(() => {
             currentUser.successMessage = 'Settings saved.';
-        }).catch((_: Event) => {
+        }).catch(() => {
             currentUser.errorMessage = 'Please try again.';
         });
     },

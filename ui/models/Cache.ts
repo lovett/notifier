@@ -290,6 +290,8 @@ export default class Cache {
             }
 
             this.hasFilled = true;
+        }).catch(() => {
+            m.route.set('/logout');
         });
     }
 
@@ -409,11 +411,22 @@ export default class Cache {
         m.redraw();
     }
 
+    /**
+     * Convert an XHR response to a list of Message instances.
+     */
     private extract(xhr: XMLHttpRequest) {
-        const json = JSON.parse(xhr.responseText);
-        return json.reduce((accumulator: Message[], item: object) => {
-            accumulator.push(Message.fromJson(item));
-            return accumulator;
-        }, []);
+        if (xhr.status === 401) {
+            throw new Error(xhr.responseText);
+        }
+
+        try {
+            const json = JSON.parse(xhr.responseText);
+            return json.reduce((accumulator: Message[], item: object) => {
+                accumulator.push(Message.fromJson(item));
+                return accumulator;
+            }, []);
+        } catch (e) {
+            return [];
+        }
     }
 }
