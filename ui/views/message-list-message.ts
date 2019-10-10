@@ -43,6 +43,12 @@ export default {
             rootAttrs.target = '_blank';
         }
 
+        if (cache.isOffline) {
+            rootAttrs.class = 'offline';
+        } else {
+            rootAttrs.class = 'online';
+        }
+
         return m(rootTag, rootAttrs, [
             m('.badge', m('div')),
 

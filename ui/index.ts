@@ -25,6 +25,10 @@ let shortcutService: ShortcutService | null = null;
 document.addEventListener('keydown', (e: KeyboardEvent) => {
     const charCode: number = e.which || e.keyCode;
 
+    if (!cache || cache.isOffline) {
+        return;
+    }
+
     // Avoid conflict with browser UI shortcuts.
     if (e.altKey === true || e.ctrlKey === true) {
         return;
