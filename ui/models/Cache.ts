@@ -184,8 +184,8 @@ export default class Cache {
     }
 
     public deselect() {
-        for (const key of Object.keys(this.items)) {
-            this.items[key].selected = false;
+        for (const message of this.items.values()) {
+            message.selected = false;
         }
         m.redraw();
     }
