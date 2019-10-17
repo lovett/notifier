@@ -271,7 +271,7 @@ export default class Cache {
 
         this.items.delete(publicId);
         sessionStorage.removeItem(publicId);
-
+        m.redraw();
     }
 
     /**
