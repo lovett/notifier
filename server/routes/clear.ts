@@ -33,7 +33,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     }
 
     if (messageIds.length === 0) {
-        const err = new Error('Reqest lacked a publicId or localId');
+        const err = new Error('No messages found with that ID');
         res.status(400);
         return next(err);
     }
