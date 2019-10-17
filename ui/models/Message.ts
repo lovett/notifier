@@ -31,6 +31,10 @@ export default class Message {
             m.body = json.body.replace(/\n/g, '<br/>');
         }
 
+        if (json.localId) {
+            m.localId = json.localId;
+        }
+
         return m;
     }
 
@@ -47,6 +51,7 @@ export default class Message {
     public state?: string;
     public url?: string;
     public received: Date;
+    public localId?: string;
 
     constructor() {
         this.received = new Date();

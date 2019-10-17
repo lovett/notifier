@@ -66,7 +66,10 @@ export default {
 
             m(messageListMessageOptions, { message, cache } as m.Attributes),
 
-            m('.index', index + 1),
+            m('.index', [
+                (message.localId) ? `#${message.localId} / ` : '',
+                index + 1,
+            ]),
         ]);
     },
 };

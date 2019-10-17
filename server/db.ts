@@ -259,7 +259,7 @@ export async function getMessage(userId: number, publicId: string): Promise<Mess
 }
 
 export async function getUnreadMessages(userId: number, startDate: Date, limit: number = 50) {
-    const sql = `SELECT "publicId", title, url, body, badge, source,
+    const sql = `SELECT "publicId", "localId", title, url, body, badge, source,
     "group", received, "expiresAt"
     FROM "Messages"
     WHERE "UserId"=$1
