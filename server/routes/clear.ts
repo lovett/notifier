@@ -15,11 +15,17 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user as User;
     let messageIds: string[] = [];
 
-    if (req.body.hasOwnProperty('publicId')) {
+    if (!req.body.publicId && !req.body.localId) {
+        const err = new Error('Message ID was not provided');
+        res.status(400);
+        return next(err);
+    }
+
+    if (req.body.publicId) {
         messageIds = messageIds.concat(req.body.publicId);
     }
 
-    if (req.body.hasOwnProperty('localId')) {
+    if (req.body.localId) {
         try {
             const ids = await db.getRetractableMessageIds(
                 user.id,
@@ -30,12 +36,6 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
             res.status(500);
             return next(e);
         }
-    }
-
-    if (messageIds.length === 0) {
-        const err = new Error('No messages found with that ID');
-        res.status(400);
-        return next(err);
     }
 
     try {
