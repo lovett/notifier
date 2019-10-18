@@ -43,7 +43,7 @@
     "@types/morgan": "1.7.37",
     "@types/nconf": "0.10.0",
     "@types/needle": "2.0.4",
-    "@types/node": "12.7.12",
+    "@types/node": "12.11.1",
     "@types/passport": "1.0.1",
     "@types/passport-http": "0.3.8",
     "@types/passport-local": "1.0.33",
