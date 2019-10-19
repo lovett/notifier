@@ -124,14 +124,13 @@ export async function deleteTokensByKey(userId: number, records: string[]) {
     }
 }
 
-export async function deleteToken(userId: number, key: string, value: string) {
+export async function deleteToken(key: string, value: string) {
     const sql = `DELETE FROM "Tokens"
-    WHERE "UserId"=$1
-    AND key = $2
-    AND value = $3`;
+    WHERE key = $1
+    AND value = $2`;
 
     try {
-        await pool.query(sql, [userId, key, value]);
+        await pool.query(sql, [key, value]);
         return true;
     } catch (err) {
         console.log(err);
