@@ -11,7 +11,7 @@ const router = PromiseRouter();
 async function validate(req: Request, res: Response, next: NextFunction) {
     if (Object.keys(req.body).length === 0) {
         res.status(400);
-        throw new Error('No fields specified');
+        throw new Error('No message fields specified');
     }
 
     if (req.body.expiresAt) {

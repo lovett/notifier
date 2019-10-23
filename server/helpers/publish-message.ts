@@ -47,14 +47,14 @@ export default (app: express.Application, userId: number, message: Message | nul
         res.write(`event: message\ndata: ${jsonMessage}\n\n`);
     }
 
-    if (!message) {
+    if (message!.deliveryStyle === 'whisper') {
         return;
     }
 
     (async () => {
         const urls = await db.getWebhookUrls(userId);
         for (const url of urls) {
-            publishWebhook(message, url);
+            publishWebhook(message!, url);
         }
     })();
 };

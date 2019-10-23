@@ -2,6 +2,7 @@ import { v4 as uuid } from 'uuid';
 
 export default class Message {
     public readonly body?: string = undefined;
+    public readonly deliveryStyle: string = 'normal';
     public readonly expiresAt?: Date = undefined;
     public readonly localId?: string = undefined;
     public readonly title?: string = undefined;
