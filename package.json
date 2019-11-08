@@ -19,7 +19,7 @@
     "ejs": "2.7.1",
     "express": "4.17.1",
     "express-promise-router": "3.0.3",
-    "glob": "7.1.5",
+    "glob": "7.1.6",
     "mithril": "2.0.4",
     "nconf": "0.10.0",
     "needle": "2.4.0",
@@ -43,7 +43,7 @@
     "@types/morgan": "1.7.37",
     "@types/nconf": "0.10.0",
     "@types/needle": "2.0.4",
-    "@types/node": "12.12.5",
+    "@types/node": "12.12.6",
     "@types/passport": "1.0.1",
     "@types/passport-http": "0.3.8",
     "@types/passport-local": "1.0.33",
@@ -64,8 +64,8 @@
     "stylelint-config-standard": "19.0.0",
     "supertest": "4.0.2",
     "ts-node": "8.4.1",
-    "ts-node-dev": "1.0.0-pre.43",
-    "tslint": "5.20.0",
-    "typescript": "3.6.4"
+    "ts-node-dev": "1.0.0-pre.44",
+    "tslint": "5.20.1",
+    "typescript": "3.7.2"
   }
 }
