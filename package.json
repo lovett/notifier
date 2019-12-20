@@ -27,7 +27,7 @@
     "passport-cookie": "1.0.6",
     "passport-http": "0.3.0",
     "passport-local": "1.0.0",
-    "pg": "7.14.0",
+    "pg": "7.15.1",
     "pg-hstore": "2.3.3",
     "sanitize-html": "1.20.1",
     "useragent": "2.3.0",
@@ -43,7 +43,7 @@
     "@types/morgan": "1.7.37",
     "@types/nconf": "0.10.0",
     "@types/needle": "2.0.4",
-    "@types/node": "12.12.17",
+    "@types/node": "12.12.21",
     "@types/passport": "1.0.2",
     "@types/passport-http": "0.3.8",
     "@types/passport-local": "1.0.33",
@@ -66,6 +66,6 @@
     "ts-node": "8.5.4",
     "ts-node-dev": "1.0.0-pre.44",
     "tslint": "5.20.1",
-    "typescript": "3.7.3"
+    "typescript": "3.7.4"
   }
 }
