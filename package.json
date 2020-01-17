@@ -29,9 +29,9 @@
     "passport-local": "1.0.0",
     "pg": "7.17.1",
     "pg-hstore": "2.3.3",
-    "sanitize-html": "1.20.1",
+    "sanitize-html": "1.21.1",
     "useragent": "2.3.0",
-    "uuid": "3.3.3"
+    "uuid": "3.4.0"
   },
   "devDependencies": {
     "@types/body-parser": "1.17.1",
@@ -43,7 +43,7 @@
     "@types/morgan": "1.7.37",
     "@types/nconf": "0.10.0",
     "@types/needle": "2.0.4",
-    "@types/node": "13.1.6",
+    "@types/node": "13.1.8",
     "@types/passport": "1.0.2",
     "@types/passport-http": "0.3.8",
     "@types/passport-local": "1.0.33",
@@ -59,13 +59,13 @@
     "less": "3.10.3",
     "mocha": "7.0.0",
     "parcel-bundler": "1.12.4",
-    "sinon": "8.0.4",
-    "stylelint": "12.0.1",
+    "sinon": "8.1.0",
+    "stylelint": "13.0.0",
     "stylelint-config-standard": "19.0.0",
     "supertest": "4.0.2",
-    "ts-node": "8.6.0",
+    "ts-node": "8.6.2",
     "ts-node-dev": "1.0.0-pre.44",
     "tslint": "5.20.1",
-    "typescript": "3.7.4"
+    "typescript": "3.7.5"
   }
 }
