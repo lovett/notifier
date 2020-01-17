@@ -56,7 +56,7 @@ outdated: dummy
 setup: export NPM_CONFIG_PROGRESS = false
 setup: export NODE_ENV=dev
 setup:
-	npm install --no-optional
+	npm install --no-optional --no-fund
 
 devserver: dummy
 	ts-node-dev --respawn --transpileOnly server/server.ts
