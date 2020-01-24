@@ -51,12 +51,12 @@ hooks: dummy
 # from producing a warning. Non-zero exit here is not an indicator of
 # badness.
 outdated: dummy
-	npm outdated || true
+	npm --no-update-notifier --no-audit --no-fund outdated || true
 
 setup: export NPM_CONFIG_PROGRESS = false
 setup: export NODE_ENV=dev
 setup:
-	npm install --no-optional --no-fund
+	npm --no-update-notifier --no-audit --no-fund --no-optional install
 
 devserver: dummy
 	ts-node-dev --respawn --transpileOnly server/server.ts
