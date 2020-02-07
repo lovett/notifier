@@ -22,7 +22,7 @@
     "glob": "7.1.6",
     "mithril": "2.0.4",
     "nconf": "0.10.0",
-    "needle": "2.4.0",
+    "needle": "2.3.2",
     "passport": "0.4.1",
     "passport-cookie": "1.0.6",
     "passport-http": "0.3.0",
