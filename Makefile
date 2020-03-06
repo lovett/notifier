@@ -5,7 +5,6 @@ TMUX_SESSION_NAME := notifier
 
 export PATH := ./node_modules/.bin:$(PATH)
 
-build: export NPM_CONFIG_PROGRESS = false
 build: export NODE_ENV = production
 build: setup
 	rsync -ar \
@@ -46,20 +45,12 @@ hooks: dummy
 	cp hooks/* .git/hooks/
 
 # Check for outdated NPM packages
-#
-# Uses "or true" after the npm command to prevent a non-zero exit code
-# from producing a warning. Non-zero exit here is not an indicator of
-# badness.
 outdated: dummy
-	npm --no-update-notifier --no-audit --no-fund outdated || true
+	-npm outdated
 
-# Warnings about fsevents are filtered because they are irrelevant.
-
-setup: export NPM_CONFIG_PROGRESS = false
-setup: export NODE_ENV=dev
+# Install NPM packages quietly.
 setup:
-	npm --no-update-notifier --no-audit --no-fund --no-optional install 2>&1 \
-	| grep -v fsevents \
+	DISABLE_OPENCOLLECTIVE=1 NODE_ENV=dev npm install
 
 devserver: dummy
 	ts-node-dev --respawn --transpileOnly server/server.ts
