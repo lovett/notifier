@@ -53,10 +53,13 @@ hooks: dummy
 outdated: dummy
 	npm --no-update-notifier --no-audit --no-fund outdated || true
 
+# Warnings about fsevents are filtered because they are irrelevant.
+
 setup: export NPM_CONFIG_PROGRESS = false
 setup: export NODE_ENV=dev
 setup:
-	npm --no-update-notifier --no-audit --no-fund --no-optional install
+	npm --no-update-notifier --no-audit --no-fund --no-optional install 2>&1 \
+	| grep -v fsevents \
 
 devserver: dummy
 	ts-node-dev --respawn --transpileOnly server/server.ts
