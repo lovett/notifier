@@ -46,7 +46,7 @@ hooks: dummy
 
 # Check for outdated NPM packages
 outdated: dummy
-	-npm outdated
+	npm outdated || true
 
 # Install NPM packages quietly.
 setup:
