@@ -13,7 +13,6 @@ production_logs
 *.tar.gz
 .token
 config*.json
-!config-test.json
 coverage
 *.bak
 migration-config.json
@@ -31,3 +30,4 @@ server/public/*
 !server/public/robots.txt
 !server/public/index.html
 .cache
+.cookiejar

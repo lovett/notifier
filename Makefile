@@ -44,7 +44,7 @@ build: setup
 hooks: dummy
 	cp hooks/* .git/hooks/
 
-# Check for outdated NPM packages
+# Check for outdated NPM packages.
 outdated: dummy
 	npm outdated || true
 
@@ -52,52 +52,54 @@ outdated: dummy
 setup:
 	DISABLE_OPENCOLLECTIVE=1 NODE_ENV=dev npm install
 
+# Start a server instance for development.
 devserver: dummy
 	ts-node-dev --respawn --transpileOnly server/server.ts
 
+# Build front-end assets for the browser UI.
 ui: dummy
 	parcel watch ui/index.html --out-dir server/public --no-hmr
 
-# Send a test message
-#
-onemessage: dummy
-	clients/send-notification -s $(DEV_URL) -t "Single test message" -e "5 hours" -u "http://example.com" -l "onemessage"
+# Authenticate with the server as the default user.
+.cookiejar:
+	curl -c .cookiejar -d "username=notifier" -d "password=notifier" $(DEV_URL)/auth
 
-# Retract a previously-sent test message
-#
-onemessage-retract: dummy
-	clients/send-notification -s $(DEV_URL) -c -l onemessage
+# Send a single test message.
+onemessage: .cookiejar
+	curl -b .cookiejar -d "title=Single test message" -d "expiresAt=5 hours" -d "url=http://example.com" -d "localId=onemessage" $(DEV_URL)/message
 
+# Retract a previously-sent test message.
+onemessage-retract: .cookiejar
+	curl -b .cookiejar -d "localId=onemessage" $(DEV_URL)/message/clear
+
+# Send a test message with a custom badge.
 badgemessage: dummy
-	clients/send-notification -s $(DEV_URL) -t "Badged message test" -g sysup -i "test.svg" -e "5 hours" -u "http://example.com" -l "badged"
+	curl -b .cookiejar -d "title=custom badge test message" -d "body=Custom message" -d "localId=badgemessage" -d "badge=test.svg"  $(DEV_URL)/message
 
+# Send a batch of serveral messages.
 multimessage: dummy
-	clients/send-notification -s $(DEV_URL) -t "email group test message"		-g email		-b "Message 1"	-l "multi-email"
-	clients/send-notification -s $(DEV_URL) -t "phone group test message"		-g phone		-b "Message 2"	-l "multi-phone"
-	clients/send-notification -s $(DEV_URL) -t "web group test message"		-g web			-b "Message 3"	-l "multi-web"
-	clients/send-notification -s $(DEV_URL) -t "reminder group test message"	-g reminder		-b "Message 4"	-l "multi-reminder"
-	clients/send-notification -s $(DEV_URL) -t "calendar group test message"	-g calendar		-b "Message 5"	-l "multi-calendar"
-	clients/send-notification -s $(DEV_URL) -t "sysdown group test message"	-g sysdown		-b "Message 6"	-l "multi-sysdown"
-	clients/send-notification -s $(DEV_URL) -t "sysdown group test message"	-g sysdown		-b "Message 7"	-l "multi-sysdown"
-	clients/send-notification -s $(DEV_URL) -t "sysup group test message"		-g sysup		-b "Message 8"	-l "multi-sysup"
-	clients/send-notification -s $(DEV_URL) -t "chore group test message"		-g chore		-b "Message 9"	-l "multi-chore"
-	clients/send-notification -s $(DEV_URL) -t "education group test message"	-g education	-b "Message 10"	-l "multi-education"
-	clients/send-notification -s $(DEV_URL) -t "computer group test message"	-g computer	    -b "Message 11"	-l "multi-computer"
-	clients/send-notification -s $(DEV_URL) -t "financial group test message"	-g financial    -b "Message 12"	-l "multi-financial"
-	clients/send-notification -s $(DEV_URL) -t "timer group test message"	    -g timer        -b "Message 13"	-l "multi-timer"
-	clients/send-notification -s $(DEV_URL) -t "custom badge test message"                     -b "Message 14" -l "mult-badge" -i "test.svg"
+	curl -b .cookiejar -d "title=email group test message"     -d "group=email"     -d "body=Message 1"	 -d "localId=multi-email"     $(DEV_URL)/message
+	curl -b .cookiejar -d "title=phone group test message"     -d "group=phone"     -d "body=Message 2"	 -d "localId=multi-phone"     $(DEV_URL)/message
+	curl -b .cookiejar -d "title=web group test message"       -d "group=web"       -d "body=Message 3"	 -d "localId=multi-web"       $(DEV_URL)/message
+	curl -b .cookiejar -d "title=reminder group test message"  -d "group=reminder"  -d "body=Message 4"	 -d "localId=multi-reminder"  $(DEV_URL)/message
+	curl -b .cookiejar -d "title=calendar group test message"  -d "group=calendar"  -d "body=Message 5"	 -d "localId=multi-calendar"  $(DEV_URL)/message
+	curl -b .cookiejar -d "title=sysdown group test message"   -d "group=sysdown"   -d "body=Message 6"	 -d "localId=multi-sysdown"   $(DEV_URL)/message
+	curl -b .cookiejar -d "title=sysdown group test message"   -d "group=sysdown"   -d "body=Message 7"	 -d "localId=multi-sysdown"   $(DEV_URL)/message
+	curl -b .cookiejar -d "title=sysup group test message"     -d "group=sysup"     -d "body=Message 8"	 -d "localId=multi-sysup"     $(DEV_URL)/message
+	curl -b .cookiejar -d "title=chore group test message"     -d "group=chore"     -d "body=Message 9"	 -d "localId=multi-chore"     $(DEV_URL)/message
+	curl -b .cookiejar -d "title=education group test message" -d "group=education" -d "body=Message 10" -d "localId=multi-education" $(DEV_URL)/message
+	curl -b .cookiejar -d "title=computer group test message"  -d "group=computer"  -d "body=Message 11" -d "localId=multi-computer"  $(DEV_URL)/message
+	curl -b .cookiejar -d "title=financial group test message" -d "group=financial" -d "body=Message 12" -d "localId=multi-financial" $(DEV_URL)/message
+	curl -b .cookiejar -d "title=timer group test message"     -d "group=timer"     -d "body=Message 13" -d "localId=multi-timer"     $(DEV_URL)/message
+
 
 # Create a package upgrade commit.
-#
-# "puc" stands for Package Upgrade Commit
-#
-puc: dummy
+puc:
 	git checkout master
 	git add package.json package-lock.json
 	git commit -m "Upgrade npm packages"
 
-# Automation for setting up a tmux session
-#
+# Automation for setting up a tmux session.
 workspace:
 ## 0: Editor
 	tmux new-session -d -s "$(TMUX_SESSION_NAME)" bash
@@ -116,13 +118,14 @@ workspace:
 
 	tmux attach-session -t "$(TMUX_SESSION_NAME)"
 
-# Install the application on the production host via Ansible
-#
+# Install the application on the production host via Ansible.
 install:
 	ansible-playbook ansible/install.yml
 
+# Lint the source files for the server.
 lint-server:
 	tsc --noEmit -p server
 
+# Lint the source files for the browser UI.
 lint-ui:
 	tsc --noEmit -p ui
