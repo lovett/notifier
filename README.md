@@ -1,25 +1,24 @@
 # Notifier
 
-Notifier is a web service for reminders about important things. It's
-similar to the notification systems built into desktop and mobile
-operating systems, but more agnostic.
+Notifier is a web service for sending yourself notifications.
 
-Notifier consists of a Node.js server that is meant to be
-self-hosted. There is a browser-based UI that presents messages in
-real-time. Everything happens over HTTP.
+It provides an HTTP endpoint you can send messages to, a browser-based
+interface for viewing them, and a hook point for relaying to other
+services.
 
-What constitutes a message is open-ended. Anything that can trigger an
-HTTP request is fair game.
+Unlike OS- or app-based notifications, Notifier is free-form and
+standalone. You control when a notification is sent, what it says, and
+how it looks.
 
 ## What it's made of
 
-The browser UI uses AngularJS and a web worker.
+The browser UI uses Mithril.
 
-Message delivery to the browser UI is done with server-sent events.
+Message delivery to the browser is done with server-sent events.
 
-The server uses Express and Sequelize against a PostgresSQL database.
+The server uses Express and a PostgresSQL database.
 
-Typescript is used for both the server and the browser UI.
+The browser UI and the server are both written in Typescript.
 
 ## Attribution
 
