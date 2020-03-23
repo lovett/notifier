@@ -18,7 +18,7 @@ export default {
             touchEndX = e.changedTouches[0].screenX;
 
             if (touchEndX < touchStartX) {
-                message.extended = true
+                message.extended = true;
             }
 
             if (touchEndX > touchStartX) {
@@ -49,15 +49,19 @@ export default {
             rootAttrs.class = 'online';
         }
 
+        let displayTime = m('time', message.receivedAt());
+
+        if (message.hasExpiration()) {
+            displayTime = m('p.expiration', message.expiresAt());
+        }
+
         return m(rootTag, rootAttrs, [
             m('.badge', m('div')),
 
             m('header', [
                 m('h1', message.title),
 
-                m('time', message.receivedAt()),
-
-                m('p.expiration', message.expiresAt()),
+                displayTime,
 
                 (message.domain) ? m('p.domain', message.domain) : null,
             ]),

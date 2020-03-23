@@ -184,8 +184,6 @@ export default class Message {
         return minutes <= 10;
     }
 
-
-
     public sendBrowserNotification() {
         let body: string = this.body || '';
 
@@ -207,7 +205,7 @@ export default class Message {
     }
 
     public hasExpiration(): boolean {
-        return this.expiresAt !== undefined;
+        return this.expiration !== undefined;
     }
 
     public hasLink(): boolean {
