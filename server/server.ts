@@ -51,7 +51,6 @@ nconf.file('application', path.join(__dirname, '../', 'config.json'));
 nconf.file('host', '/etc/notifier.json');
 
 nconf.defaults({
-    NOTIFIER_APP_DIR: path.resolve('./app'),
     NOTIFIER_BADGE_BASE_URL: '/svg',
     NOTIFIER_BASE_URL: '/',
     NOTIFIER_DB_DSN: 'postgres://notifier:notifier@localhost:5432/notifier',
