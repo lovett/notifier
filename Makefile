@@ -66,7 +66,7 @@ ui: dummy
 
 # Send a single test message.
 onemessage: .cookiejar
-	curl -b .cookiejar -d "title=Single test message" -d "expiresAt=5 hours" -d "url=http://example.com" -d "localId=onemessage" $(DEV_URL)/message
+	curl -b .cookiejar -d "title=Single test message" -d "expiresAt=10 minutes" -d "url=http://example.com" -d "localId=onemessage" $(DEV_URL)/message
 
 # Retract a previously-sent test message.
 onemessage-retract: .cookiejar

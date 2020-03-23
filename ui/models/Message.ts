@@ -138,12 +138,10 @@ export default class Message {
             return '';
         }
 
-        if (!this.expiringSoon()) {
-            return 'Expires at ' + new Intl.DateTimeFormat(
-                undefined,
-                { hour: 'numeric', minute: '2-digit' },
-            ).format(this.expiration);
-        }
+        const message = 'Due at ' + new Intl.DateTimeFormat(
+            undefined,
+            { hour: 'numeric', minute: '2-digit' },
+        ).format(this.expiration);
 
         const seconds = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
         const minutes = Math.floor(seconds / 60);
@@ -161,10 +159,14 @@ export default class Message {
         }
 
         if (seconds < 60) {
-            return 'Expires in less than a minute';
+            return `Less than a minute remaining. ${message}.`;
         }
 
-        return `Expires in ${minutes} minutes`;
+        if (minutes < 60) {
+            return `${minutes} minutes remaining. ${message}.`;
+        }
+
+        return message;
     }
 
     public closeBrowserNotification() {
