@@ -96,17 +96,6 @@ puc: dummy
 	git add package.json package-lock.json
 	git commit -m "Upgrade npm packages"
 
-# Automation for merging changes from the master branch into the
-# production branch.
-#
-master-to-production: dummy
-	git checkout master
-	git push
-	git checkout production
-	git merge master
-	git push
-	git checkout master
-
 # Automation for setting up a tmux session
 #
 workspace:
