@@ -46,13 +46,6 @@
       path: "{{ installation_directory }}"
       production: yes
 
-  - name: Copy send-notification
-    become: true
-    copy:
-      src: "{{ playbook_dir }}/../clients/send-notification"
-      dest: "/usr/local/bin/send-notification"
-      mode: 0755
-
   - name: Set permissions on application root
     become: true
     file:
