@@ -47,7 +47,7 @@ export default (app: express.Application, userId: number, message: Message | nul
         res.write(`event: message\ndata: ${jsonMessage}\n\n`);
     }
 
-    if (message!.deliveryStyle === 'whisper') {
+    if (message && message.deliveryStyle === 'whisper') {
         return;
     }
 
