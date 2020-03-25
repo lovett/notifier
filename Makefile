@@ -102,11 +102,11 @@ puc:
 # Automation for setting up a tmux session.
 workspace:
 ## 0: Editor
-	tmux new-session -d -s "$(TMUX_SESSION_NAME)" bash
+	tmux new-session -d -s "$(TMUX_SESSION_NAME)" "$$SHELL"
 	tmux send-keys -t "$(TMUX_SESSION_NAME)" "$(EDITOR) ." C-m
 
 ## 1: Shell
-	tmux new-window -a -t "$(TMUX_SESSION_NAME)" bash
+	tmux new-window -a -t "$(TMUX_SESSION_NAME)" "$$SHELL"
 
 ## 2: UI
 	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "ui" "make ui"
