@@ -54,7 +54,7 @@ setup:
 
 # Start a server instance for development.
 devserver: dummy
-	ts-node-dev --respawn --transpileOnly server/server.ts
+	ts-node-dev --respawn --transpileOnly --ignore-watch node_modules server/server.ts
 
 # Build front-end assets for the browser UI.
 ui: dummy
