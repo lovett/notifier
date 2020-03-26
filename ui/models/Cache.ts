@@ -94,16 +94,21 @@ export default class Cache {
     }
 
     /**
-     * Select a message based on its index in the container.
+     * Select a message based on its reverse index in the container.
+     *
+     * It's a reverse index because the container is displayed in
+     * newest-first order, but its insertion order is oldest-first.
      */
-    public selectByIndex(index: number) {
-        const key = this.keyOfIndex(index);
-        if (key) {
-            this.select(key);
-            return;
+    public selectByReverseIndex(index: number): void {
+        const reverseIndex = this.items.size - index;
+        let counter = 0;
+
+        for (const message: Message of this.items.values()) {
+            message.selected = (counter === reverseIndex);
+            counter++;
         }
 
-        this.deselect();
+        m.redraw();
     }
 
     /**
@@ -123,46 +128,32 @@ export default class Cache {
      * Select a message by its distance from the currently-selected message.
      *
      * If no message is currently selected, infer which end of the
-     * list to select from the sign of the step.
+     * list to select from based on whether the step is positive or
+     * negative.
      */
-    public selectRelative(step: number) {
-        const currentIndex = this.selectedIndex();
+    public selectRelative(step: number): void {
+        const selectedMessage = this.selected();
         let targetIndex: number;
 
-        if (currentIndex === null) {
-            if (step < 0) {
-                // Select the newest message.
-                targetIndex = this.items.size - 1;
-            } else {
-                // Select the oldest message.
-                targetIndex = 0;
-            }
+        if (selectedMessage) {
+            targetIndex = this.items.size - this.indexOfKey(selectedMessage.publicId) - step;
         } else {
-            targetIndex = currentIndex + step;
+            if (step < 0) {
+                targetIndex = 1;
+            } else {
+                targetIndex = this.items.size;
+            }
         }
 
-        if (targetIndex >= this.items.size) {
-            targetIndex %= this.items.size;
+        if (targetIndex < 1) {
+            targetIndex = this.items.size;
         }
 
-        if (targetIndex < 0) {
-            targetIndex = this.items.size + targetIndex;
+        if (targetIndex > this.items.size) {
+            targetIndex = 1;
         }
 
-        this.selectByIndex(targetIndex);
-    }
-
-    /**
-     * Locate the selected message and return its index.
-     */
-    public selectedIndex(): number | null {
-        const message = this.selected();
-
-        if (message) {
-            return this.indexOfKey(message.publicId!);
-        }
-
-        return null;
+        this.selectByReverseIndex(targetIndex);
     }
 
     public startWorker() {
@@ -329,22 +320,6 @@ export default class Cache {
         }
 
         return counter;
-    }
-
-    /**
-     * Find a message key from its index.
-     */
-    protected keyOfIndex(index: number): string | null {
-        let counter = 0;
-
-        for (const message of this.items.values()) {
-            if (counter === index) {
-                return message.publicId!;
-            }
-            counter++;
-        }
-
-        return null;
     }
 
     private fillFromStorage() {

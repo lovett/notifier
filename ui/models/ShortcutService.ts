@@ -78,7 +78,7 @@ export class ShortcutService {
 
         this.bag.set('digit', {
             run(messageIndex: number) {
-                cache.selectByIndex(messageIndex - 1);
+                cache.selectByReverseIndex(messageIndex);
             },
             description: 'Select a message by its number',
         });
