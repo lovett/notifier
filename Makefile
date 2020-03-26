@@ -129,3 +129,7 @@ lint-server:
 # Lint the source files for the browser UI.
 lint-ui:
 	tsc --noEmit -p ui
+
+# Local Variables:
+# truncate-lines: t
+# End:

@@ -56,7 +56,9 @@ export default {
         }
 
         return m(rootTag, rootAttrs, [
-            m('.badge', m('div')),
+            m('.badge', [
+                (message.badge) ? m('img', { src: message.badge }) : m('div'),
+            ]),
 
             m('header', [
                 m('h1', message.title),
