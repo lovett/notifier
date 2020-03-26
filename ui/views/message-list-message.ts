@@ -35,7 +35,13 @@ export default {
         const index = attrs.index as number;
         const cache = attrs.cache as Cache;
         const rootTag = message.rootTag();
-        const rootAttrs: m.Attributes = {};
+        const rootAttrs: m.Attributes = {
+            class: 'online',
+        };
+
+        if (cache.isOffline) {
+            rootAttrs.class = 'offline';
+        }
 
         if (rootTag.startsWith('a')) {
             rootAttrs.href = message.url;
@@ -43,17 +49,6 @@ export default {
             rootAttrs.target = '_blank';
         }
 
-        if (cache.isOffline) {
-            rootAttrs.class = 'offline';
-        } else {
-            rootAttrs.class = 'online';
-        }
-
-        let displayTime = m('time', message.receivedAt());
-
-        if (message.hasExpiration()) {
-            displayTime = m('p.expiration', message.expiresAt());
-        }
 
         return m(rootTag, rootAttrs, [
             m('.badge', [
@@ -63,7 +58,7 @@ export default {
             m('header', [
                 m('h1', message.title),
 
-                displayTime,
+                m('time', (message.hasExpiration()) ? message.expiresAt() : message.receivedAt()),
 
                 (message.domain) ? m('p.domain', message.domain) : null,
             ]),
