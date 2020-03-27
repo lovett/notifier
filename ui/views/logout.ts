@@ -1,7 +1,7 @@
 import m from 'mithril';
 
 export default {
-    view() {
+    view(): Array<m.Vnode> {
         return [
             m('header'),
 

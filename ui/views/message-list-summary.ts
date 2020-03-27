@@ -2,7 +2,7 @@ import m from 'mithril';
 import Cache from '../models/Cache';
 
 export default {
-    view(vnode: m.Vnode) {
+    view(vnode: m.Vnode): m.Vnode {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
         const selector = 'header#messageListSummary';

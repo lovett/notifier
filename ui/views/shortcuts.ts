@@ -2,7 +2,7 @@ import m from 'mithril';
 import { ShortcutService } from '../models/ShortcutService';
 
 export default {
-    view(vnode: m.Vnode) {
+    view(vnode: m.Vnode): Array<m.Vnode> {
         const attrs = vnode.attrs as m.Attributes;
         const shortcutService = attrs.shortcutService as ShortcutService;
         return [

@@ -5,37 +5,37 @@ import messageListMessage from './message-list-message';
 import Cache from '../models/Cache';
 
 let isOffline = false;
-let redrawTimer: number = 0;
+let redrawTimer = 0;
 
 export default {
-    oninit(vnode: m.Vnode) {
+    oninit(vnode: m.Vnode): void {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
         cache.fill();
     },
 
-    oncreate(vnode: m.Vnode) {
+    oncreate(vnode: m.Vnode): void {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
 
         document.addEventListener(
             'visibilitychange',
-            cache.deselect.bind(cache),
+            () => cache.deselect(),
         );
 
         window.addEventListener(
             'offline',
-            cache.goOffline.bind(cache),
+            () => cache.goOffline(),
         );
 
         window.addEventListener(
             'online',
-            cache.goOnline.bind(cache),
+            () => cache.goOffline(),
         );
 
         window.addEventListener(
             'blur',
-            cache.deselect.bind(cache),
+            () => cache.deselect(),
         );
 
         redrawTimer = setInterval(() => {
@@ -58,39 +58,39 @@ export default {
         }, 1000);
     },
 
-    onremove(vnode: m.Vnode) {
+    onremove(vnode: m.Vnode): void {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
 
         document.removeEventListener(
             'visibilitychange',
-            cache.deselect.bind(cache),
+            () => cache.deselect(),
         );
 
         window.removeEventListener(
             'blur',
-            cache.deselect.bind(cache),
+            () => cache.deselect(),
         );
 
         window.removeEventListener(
             'online',
-            cache.goOnline.bind(cache),
+            () => cache.goOnline(),
         );
 
         window.removeEventListener(
             'offline',
-            cache.goOffline.bind(cache),
+            () => cache.goOffline(),
         );
 
         clearInterval(redrawTimer);
     },
 
-    view(vnode: m.Vnode) {
+    view(vnode: m.Vnode): Array<m.Vnode> {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
 
         if (cache.hasFilled === false) {
-            return;
+            return [];
         }
 
         const nodes: m.Vnode[] = [];

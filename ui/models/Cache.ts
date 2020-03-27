@@ -1,6 +1,15 @@
-import Command from '../worker/command';
+import Command from '../../worker/command';
 import Message from './Message';
 import m from 'mithril';
+
+type ItemMap = Map<string, Message>;
+
+type ItemIterator = IterableIterator<[string, Message]>;
+
+type ItemIteratorResult = {
+    done: boolean;
+    value: Message;
+}
 
 /**
  * A container to hold notification messages.
@@ -10,7 +19,7 @@ export default class Cache {
 
     public isOffline = false;
 
-    public items: Map<string, Message> = new Map();
+    public items: ItemMap = new Map();
 
     public undoQueue: string[] = [];
 
@@ -19,42 +28,42 @@ export default class Cache {
     /**
      * Attach the instance to a web worker for push-based updates.
      *
-     * A custom iterator is attached to the item map so that messages
+     * A custom iterator is used on the item map so that messages
      * can be displayed in reverse-chronological order.
      */
     public constructor() {
         this.startWorker();
 
-        this.items[Symbol.iterator] = function() {
-            const entries = Array.from(this.entries());
+        const reverseIterator = function(this: ItemMap): ItemIterator {
+            const pairs = Array.from(this.entries());
 
-            let index = entries.length;
+            let index = pairs.length;
 
             return {
-                [Symbol.iterator]() { return this; },
-                next() {
+                [Symbol.iterator](): ItemIterator { return this; },
+                next(): ItemIteratorResult {
                     return {
                         done: index === 0,
-                        value: entries[--index],
+                        value: pairs[--index],
                     };
                 },
             };
-        };
+        }
+
+        this.items[Symbol.iterator] = reverseIterator;
     }
 
-    public canRestore() {
+    public canRestore(): boolean {
         return this.undoQueue.length > 0;
     }
 
-    public goOnline() {
-        console.log('going online');
+    public goOnline(): void {
         this.isOffline = false;
         this.startWorker();
         m.redraw();
     }
 
-    public goOffline(attemptReconnect: boolean = false) {
-        console.log('going offline');
+    public goOffline(attemptReconnect = false): void {
         this.isOffline = true;
 
         if (attemptReconnect === false) {
@@ -64,20 +73,21 @@ export default class Cache {
         m.redraw();
     }
 
-    public impendingExpirations() {
+    public impendingExpirations(): Map<string, Date> {
         const expirations: Map<string, Date> = new Map();
         const now = new Date();
         this.items.forEach((item) => {
-            if (!item.expiringSoon()) {
+            if (!item.expiration) {
                 return;
             }
 
-            if (item.expiration! < now) {
-                this.retract(item.publicId!);
+            if (item.expiration < now) {
+                this.retract(item.publicId);
             }
 
-            expirations.set(item.publicId!, item.expiration!);
-
+            if (item.expiringSoon()) {
+                expirations.set(item.publicId, item.expiration);
+            }
         });
 
         return expirations;
@@ -86,7 +96,7 @@ export default class Cache {
     /**
      * Mark a message as being in-focus by the UI.
      */
-    public select(publicId: string) {
+    public select(publicId: string): void {
         this.items.forEach((value: Message) => {
             value.selected = (value.publicId === publicId);
         });
@@ -103,7 +113,7 @@ export default class Cache {
         const reverseIndex = this.items.size - index;
         let counter = 0;
 
-        for (const message: Message of this.items.values()) {
+        for (const message of this.items.values()) {
             message.selected = (counter === reverseIndex);
             counter++;
         }
@@ -156,17 +166,17 @@ export default class Cache {
         this.selectByReverseIndex(targetIndex);
     }
 
-    public startWorker() {
+    public startWorker(): void {
         if (this.worker) {
             return;
         }
 
-        this.worker = new Worker('../worker/worker.ts');
+        this.worker = new Worker('../../worker/worker.ts');
         this.worker.onmessage = this.onWorkerPush.bind(this);
         this.worker.postMessage(Command.connect);
     }
 
-    public stopWorker() {
+    public stopWorker(): void {
         if (!this.worker) {
             return;
         }
@@ -174,25 +184,25 @@ export default class Cache {
         this.worker.terminate();
     }
 
-    public deselect() {
+    public deselect(): void {
         for (const message of this.items.values()) {
             message.selected = false;
         }
         m.redraw();
     }
 
-    public add(message: Message, withStorage: boolean = true) {
-        this.items.set(message.publicId!, message);
+    public add(message: Message, withStorage = true): void {
+        this.items.set(message.publicId, message);
 
         if (withStorage) {
-            sessionStorage.setItem(message.publicId!, JSON.stringify(message));
+            sessionStorage.setItem(message.publicId, JSON.stringify(message));
         }
     }
 
     /**
      * Mark a message as read and remove it from the container.
      */
-    public remove(publicId: string) {
+    public remove(publicId: string): void {
         if (!this.items.has(publicId)) {
             return;
         }
@@ -207,26 +217,27 @@ export default class Cache {
             this.undoQueue.push(publicId);
         }).catch(() => {
             const message = this.items.get(publicId);
-            message!.state = 'stuck';
-            console.log('Message could not be cleared');
+            if (message) {
+                message.state = 'stuck';
+                console.log('Message could not be cleared');
+            }
         });
     }
 
     /**
-     * Open the URL of the selected message.
+     * Mark the selected message as read.
      */
-    public removeSelected() {
+    public removeSelected(): void {
         const message = this.selected();
-        if (!message) {
-            return;
+        if (message) {
+            this.remove(message.publicId)
         }
-        this.remove(message.publicId!);
     }
 
     /**
      * Bring back a previously-removed message.
      */
-    public restore() {
+    public restore(): void {
         if (this.undoQueue.length === 0) {
             return;
         }
@@ -249,7 +260,7 @@ export default class Cache {
     /**
      * Remove a message from the container.
      */
-    public retract(publicId: string) {
+    public retract(publicId: string): void {
         if (!this.items.has(publicId)) {
             return;
         }
@@ -268,7 +279,7 @@ export default class Cache {
     /**
      * Add notifications via HTTP request.
      */
-    public fill() {
+    public fill(): void {
         this.fillFromStorage();
 
         m.request('archive', {
@@ -286,21 +297,19 @@ export default class Cache {
         });
     }
 
-    public flushStorage() {
+    public flushStorage(): void {
         sessionStorage.clear();
     }
 
     /**
      * Open the URL of the selected message.
      */
-    public visitSelected() {
+    public visitSelected(): void {
         const message = this.selected();
 
-        if (!message) {
-            return;
+        if (message) {
+            message.visit();
         }
-
-        message.visit();
     }
 
     /**
@@ -322,7 +331,7 @@ export default class Cache {
         return counter;
     }
 
-    private fillFromStorage() {
+    private fillFromStorage(): void {
         const messages: Message[] = [];
         for (let i = 0; i < sessionStorage.length; i++) {
             const key = sessionStorage.key(i) as string;
@@ -373,7 +382,7 @@ export default class Cache {
         const message = Message.fromJson(e.data);
 
         if (message.isExpired()) {
-            this.retract(message.publicId!);
+            this.retract(message.publicId);
             return;
         }
 
@@ -389,7 +398,7 @@ export default class Cache {
     /**
      * Convert an XHR response to a list of Message instances.
      */
-    private extract(xhr: XMLHttpRequest) {
+    private extract(xhr: XMLHttpRequest): Array<Message> {
         if (xhr.status === 401) {
             throw new Error(xhr.responseText);
         }

@@ -2,12 +2,13 @@
   "compilerOptions": {
     "lib": [
       "dom",
-      "es6"
+      "dom.iterable",
+      "es2019"
     ],
     "sourceMap": false,
     "strictFunctionTypes": false,
     "outDir": "../build/public",
-    "target": "ES6",
+    "target": "es2019",
     "types": [],
     "esModuleInterop": true
   },

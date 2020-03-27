@@ -3,7 +3,7 @@ import m from 'mithril';
 import User from '../models/User';
 
 export default {
-    view() {
+    view(): Array<m.Vnode> {
         return [
             m('header'),
             m('form#login', {

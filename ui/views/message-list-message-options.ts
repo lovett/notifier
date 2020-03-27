@@ -1,7 +1,7 @@
 import m from 'mithril';
 
 export default {
-    view(vnode: m.Vnode) {
+    view(vnode: m.Vnode): m.Vnode {
         const attrs = vnode.attrs as m.Attributes;
         const message = attrs.message;
         const cache = attrs.cache;

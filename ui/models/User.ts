@@ -17,7 +17,7 @@ export interface UserFields {
     username?: string;
     errorMessage?: string;
     successMessage?: string;
-    settings?: Settings;
+    settings: Settings;
 }
 
 const currentUser: UserFields = {
@@ -31,17 +31,21 @@ const currentUser: UserFields = {
     },
 };
 
+interface MithrilRequestError extends Error {
+    code: number;
+};
+
 let loginUnderway = false;
 
 export default {
     current: currentUser,
 
-    discardCookie() {
+    discardCookie(): void {
         console.log('discarding token cookie');
         document.cookie = `token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     },
 
-    getServices() {
+    getServices(): void {
         m.request({
             body: currentUser,
             method: 'GET',
@@ -49,7 +53,7 @@ export default {
             withCredentials: true,
         }).then((services: Service[]) => {
             for (const service of services) {
-                currentUser.settings![service.key] = service.value;
+                currentUser.settings[service.key] = service.value;
             }
         }).catch((e) => {
             if (e.code === 401) {
@@ -92,7 +96,7 @@ export default {
         return !this.isLoggedIn();
     },
 
-    logIn() {
+    logIn(): void {
         if (this.isLoggedIn()) {
             return;
         }
@@ -104,7 +108,7 @@ export default {
             method: 'POST',
             url: 'auth',
             withCredentials: true,
-        }).then((_) => {
+        }).then(() => {
             loginUnderway = false;
             m.route.set('/');
         }).catch(() => {
@@ -115,7 +119,7 @@ export default {
 
     loginUnderway: false,
 
-    logOut() {
+    logOut(): void {
         if (this.isLoggedOut()) {
             return;
         }
@@ -129,14 +133,14 @@ export default {
             currentUser.password = undefined;
             currentUser.persist = false;
             currentUser.username = undefined;
-        }).catch((e: Error) => {
+        }).catch((e: MithrilRequestError) => {
             if (e.code === 401) {
                 this.discardCookie();
             }
         });
     },
 
-    saveServices(data: FormData) {
+    saveServices(data: FormData): void {
         m.request({
             body: Object.fromEntries(data),
             method: 'POST',

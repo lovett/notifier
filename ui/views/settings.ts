@@ -3,12 +3,12 @@ import User from '../models/User';
 import * as bns from '../models/BrowserNotificationService';
 
 export default {
-    oninit() {
+    oninit(): void {
         User.getServices();
         bns.prompt();
     },
 
-    view() {
+    view(): Array<m.Vnode> {
         return [
             m('header'),
             m('form#settings', {
@@ -35,8 +35,8 @@ export default {
                         bns.isGranted() ? m('p', bns.notificationsEnabledMessage) : null,
                     ]),
 
-                    Object.keys(User.current.settings!).map((name: string) => {
-                        const value = User.current.settings![name];
+                    Object.keys(User.current.settings).map((name: string) => {
+                        const value = User.current.settings[name];
 
                         return m('.field', [
                             m('label', { for: name }, name),

@@ -38,20 +38,20 @@ export default class Message {
         return m;
     }
 
-    public selected: boolean = false;
-    public extended: boolean = false;
-    public title?: string;
-    public body?: string;
-    public group?: string;
-    public publicId?: string;
-    public domain?: string;
+    public selected = false;
+    public extended = false;
+    public title = '';
+    public body = '';
+    public group = '';
+    public publicId = '';
+    public domain = '';
     public expiration?: Date;
-    public badge?: string;
+    public badge = '';
     public browserNotification?: Notification;
-    public state?: string;
-    public url?: string;
+    public state = '';
+    public url = '';
     public received: Date;
-    public localId?: string;
+    public localId = '';
 
     constructor() {
         this.received = new Date();

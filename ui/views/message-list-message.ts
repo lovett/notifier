@@ -4,7 +4,7 @@ import Cache from '../models/Cache';
 import messageListMessageOptions from './message-list-message-options';
 
 export default {
-    oncreate(vnode: m.VnodeDOM) {
+    oncreate(vnode: m.VnodeDOM): void {
         const attrs = vnode.attrs as m.Attributes;
         const message = attrs.message as Message;
 
@@ -29,7 +29,7 @@ export default {
         });
     },
 
-    view(vnode: m.Vnode) {
+    view(vnode: m.Vnode): m.Vnode {
         const attrs = vnode.attrs as m.Attributes;
         const message = attrs.message as Message;
         const index = attrs.index as number;
