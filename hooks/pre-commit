@@ -1,29 +1,51 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 set -eu
 
-ROOT=$(mktemp -d)
-CHANGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+WORK_DIR=$(mktemp -p . -d)
 
-staged () {
-    echo "$CHANGED_FILES" | grep --quiet "$1"
-    return $?
+cleanup() {
+    rm -rf "$WORK_DIR"
 }
 
+LINT_TS=0
+
 echo "Runing pre-commit hook..."
-mkdir -p $ROOT
-git checkout-index --prefix=$ROOT/ -af
 
-if staged "package.json"; then
-    echo "Checking package.json"
-    node "$ROOT/package.json"
-    echo "...ok"
+# Copy staged files to the work directory.
+#
+# This ensures the files being checked are the files being committed.
+git checkout-index --prefix="$WORK_DIR/" -af
+
+
+# Walk through the staged files and lint the copies in the work
+# directory.  The filter argument excludes deleted, copied, and
+# renamed files.
+for STAGED_FILE in $(git diff --cached --name-only --diff-filter=dcr); do
+    FILE_EXTENSION="${STAGED_FILE##*.}"
+
+    # JSON
+    if [[ "$FILE_EXTENSION" == "json" ]]; then
+        node "$WORK_DIR/$STAGED_FILE"
+    fi
+
+    # Less
+    if [[ "$FILE_EXTENSION" == "less" ]]; then
+        node_modules/.bin/stylelint "$WORK_DIR/$STAGED_FILE"
+    fi
+
+    # Typescript
+    if [[ "$FILE_EXTENSION" == "ts" ]]; then
+        LINT_TS=1
+    fi
+done
+
+if [ "$LINT_TS" = 1 ]; then
+	tsc --noEmit -p "$WORK_DIR/server"
+	eslint "$WORK_DIR/server" --ext .ts
+
+	tsc --noEmit -p "$WORK_DIR/ui"
+	eslint "$WORK_DIR/ui" --ext .ts
 fi
 
-if staged "less"; then
-    echo "Checking less files..."
-    node_modules/.bin/stylelint app/less/*.less
-    echo "...ok"
-fi
-
-rm -rf $ROOT
+trap "cleanup" EXIT

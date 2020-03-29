@@ -41,6 +41,7 @@ build: setup
 	# rm -f "notifier.tar.gz"
 	# tar --create --gzip --file="notifier.tar.gz" notifier
 
+# Install git hook scripts.
 hooks: dummy
 	cp hooks/* .git/hooks/
 
@@ -125,10 +126,15 @@ install:
 # Lint the source files for the server.
 lint-server:
 	tsc --noEmit -p server
+	eslint server --ext .ts
 
 # Lint the source files for the browser UI.
 lint-ui:
 	tsc --noEmit -p ui
+	eslint ui --ext .ts
+
+# Lint everything.
+lint: lint-ui lint-server
 
 # Local Variables:
 # truncate-lines: t
