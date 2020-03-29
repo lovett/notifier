@@ -13,7 +13,7 @@ import User from './models/User';
 
 const root = document.getElementById('app-container') as HTMLElement;
 
-const loginRequired = () => {
+const loginRequired = (): void => {
     if (User.isLoggedOut()) {
         m.route.set('/login');
     }

@@ -12,7 +12,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user as User;
 
     let label = req.body.label || '';
-    label = label.replace(/[^a-zA-Z0-9-\.\/ ]/, '');
+    label = label.replace(/[^a-zA-Z0-9-./ ]/, '');
 
     if (label === '') {
         label = useragent.parse(req.get('user-agent')).toString();

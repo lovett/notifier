@@ -1,5 +1,6 @@
 export default class Message {
-    public static fromJson(json: any) {
+    /* eslint @typescript-eslint/no-explicit-any: "off" */
+    public static fromJson(json: any): Message {
         const m = new Message();
 
         m.badge = json.badge;
@@ -133,7 +134,7 @@ export default class Message {
     /**
      * Format the expiration date as a human-readable string.
      */
-    public expiresAt() {
+    public expiresAt(): string {
         if (!this.expiration) {
             return '';
         }
@@ -169,15 +170,15 @@ export default class Message {
         return message;
     }
 
-    public closeBrowserNotification() {
+    public closeBrowserNotification(): void {
         if (this.browserNotification) {
             this.browserNotification.close();
         }
     }
 
-    public expiringSoon() {
+    public expiringSoon(): boolean {
         if (!this.expiration) {
-            return '';
+            return false;
         }
 
         const seconds = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
@@ -186,7 +187,7 @@ export default class Message {
         return minutes <= 10;
     }
 
-    public sendBrowserNotification() {
+    public sendBrowserNotification(): void {
         let body: string = this.body || '';
 
         // Truncation avoids unwanted whitespace in Chrome
@@ -201,7 +202,7 @@ export default class Message {
         };
 
         this.browserNotification = new Notification(
-            this.title!,
+            this.title,
             opts,
         );
     }
@@ -230,7 +231,7 @@ export default class Message {
         return this.extended;
     }
 
-    public visit() {
+    public visit(): void {
         if (this.hasLink()) {
             window.open(this.url);
         }

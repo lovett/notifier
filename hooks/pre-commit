@@ -41,11 +41,11 @@ for STAGED_FILE in $(git diff --cached --name-only --diff-filter=dcr); do
 done
 
 if [ "$LINT_TS" = 1 ]; then
-	tsc --noEmit -p "$WORK_DIR/server"
-	eslint "$WORK_DIR/server" --ext .ts
+	node_modules/.bin/tsc --noEmit -p "$WORK_DIR/server"
+	node_modules/.bin/eslint "$WORK_DIR/server" --ext .ts
 
-	tsc --noEmit -p "$WORK_DIR/ui"
-	eslint "$WORK_DIR/ui" --ext .ts
+	node_modules/.bin/tsc --noEmit -p "$WORK_DIR/ui"
+	node_modules/.bin/eslint "$WORK_DIR/ui" --ext .ts
 fi
 
 trap "cleanup" EXIT

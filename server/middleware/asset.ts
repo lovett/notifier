@@ -1,6 +1,6 @@
 import * as express from 'express';
 
-export default (publicDir: string) => {
+export default (publicDir: string): express.RequestHandler => {
     return express.static(
         publicDir,
         {

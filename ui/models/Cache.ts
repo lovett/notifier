@@ -8,7 +8,7 @@ type ItemIterator = IterableIterator<[string, Message]>;
 
 type ItemIteratorResult = {
     done: boolean;
-    value: Message;
+    value: [string, Message];
 }
 
 /**

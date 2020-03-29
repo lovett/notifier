@@ -1,13 +1,13 @@
+import { NextFunction, Request, Response } from 'express';
 import * as url from 'url';
 import * as util from 'util';
-import * as express from 'express';
 
 interface CspParams {
     [key: string]: string[];
 }
 
 
-export default function(req: express.Request, res: express.Response, next: express.NextFunction) {
+export default function(req: Request, res: Response, next: NextFunction): void {
     const config = req.app.locals.config;
 
     const forceHttps = Boolean(config.get('NOTIFIER_FORCE_HTTPS'));
@@ -16,12 +16,6 @@ export default function(req: express.Request, res: express.Response, next: expre
     res.setHeader('X-Frame-Options', 'DENY');
 
     // Content security policy - http://content-security-policy.com
-    let scheme = req.get('x-forwarded-proto');
-    scheme = (scheme === 'https' || req.get('x-https') === 'On' || forceHttps) ? 'https' : 'http';
-
-    let hostname = (req.get('x-forwarded-server') || req.get('x-forwarded-host') || req.headers.host) as string;
-    hostname = hostname.replace(/:[0-9]+$/, '');
-
     const csp: CspParams = {
         'connect-src': ['self', 'data:', 'unsafe-inline'],
         'default-src': ['self'],

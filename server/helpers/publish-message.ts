@@ -3,25 +3,23 @@ import * as needle from 'needle';
 import * as db from '../db';
 import Message from '../Message';
 
-function publishWebhook(message: Message, url: string) {
+function publishWebhook(message: Message, url: string): void {
     const options = {
         json: true,
     };
 
     needle.post(url, message, options, (err, res) => {
         if (err) {
-            return false;
+            return;
         }
 
         if (res.body && res.body.error) {
-            return false;
+            return;
         }
-
-        return true;
     });
 }
 
-export default (app: express.Application, userId: number, message: Message | null, retractionId?: string) => {
+export default (app: express.Application, userId: number, message: Message | null, retractionId?: string): void => {
 
     let jsonMessage: string | undefined;
 
@@ -51,10 +49,12 @@ export default (app: express.Application, userId: number, message: Message | nul
         return;
     }
 
-    (async () => {
-        const urls = await db.getWebhookUrls(userId);
-        for (const url of urls) {
-            publishWebhook(message!, url);
-        }
-    })();
+    if (message) {
+        (async (): Promise<void> => {
+            const urls = await db.getWebhookUrls(userId);
+            for (const url of urls) {
+                publishWebhook(message, url);
+            }
+        })();
+    }
 };

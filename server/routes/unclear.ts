@@ -9,7 +9,7 @@ const router = PromiseRouter();
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user as User;
 
-    if (!req.body.hasOwnProperty('publicId')) {
+    if (!req.body.publicId) {
         const err = new Error('Request lacked a publicId');
         res.status(400);
         return next(err);

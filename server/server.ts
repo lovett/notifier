@@ -26,8 +26,8 @@ import push from './routes/push';
 import security from './middleware/security';
 import services from './routes/services';
 
-let app: express.Application;
-let router: express.Router;
+const app = express();
+const router = express.Router();
 
 /**
  * Application configuration
@@ -59,8 +59,6 @@ nconf.defaults({
     NOTIFIER_HTTP_PORT: 8080,
     NOTIFIER_PUBLIC_DIR: path.resolve(__dirname, './public'),
 });
-
-app = express();
 
 app.disable('x-powered-by');
 
@@ -102,8 +100,6 @@ passport.use(authCookie());
 
 app.use(passport.initialize());
 
-router = express.Router();
-
 router.use(asset(nconf.get('NOTIFIER_PUBLIC_DIR')));
 
 router.use(/^\/(login|logout)?$/, index);
@@ -128,7 +124,7 @@ app.use(nconf.get('NOTIFIER_BASE_URL'), router);
 
 app.use(jsonError);
 
-async function scheduler() {
+async function scheduler(): Promise<void> {
     const now = new Date();
 
     if (app.locals.expirationCache === undefined) {

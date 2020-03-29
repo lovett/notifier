@@ -4,24 +4,21 @@ export default class Message {
     public readonly body?: string = undefined;
     public readonly deliveryStyle: string = 'normal';
     public readonly expiresAt?: Date = undefined;
-    public readonly localId?: string = undefined;
-    public readonly title?: string = undefined;
-    public readonly group?: string = undefined;
-    public readonly source?: string = undefined;
-    public readonly url?: string = undefined;
-    public readonly received?: Date = undefined;
-    public readonly publicId?: string = undefined;
-    public badge?: string = undefined;
+    public readonly localId: string = '';
+    public readonly title: string = '';
+    public readonly group: string = '';
+    public readonly source: string = '';
+    public readonly url: string = '';
+    public readonly received: Date = new Date();
+    public readonly publicId: string = '';
+    public badge = '';
 
+    /* eslint @typescript-eslint/no-explicit-any: "off" */
     constructor(bag: any) {
         for (const key in this) {
-            if (bag.hasOwnProperty(key)) {
+            if (bag[key]) {
                 this[key] = bag[key];
             }
-        }
-
-        if (!this.received) {
-            this.received = new Date();
         }
 
         if (!this.publicId) {
@@ -29,7 +26,7 @@ export default class Message {
         }
     }
 
-    public urlizeBadge(baseUrl: string) {
+    public urlizeBadge(baseUrl: string): void {
         if (!this.badge) {
             return;
         }

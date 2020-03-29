@@ -91,7 +91,7 @@ export class ShortcutService {
      * mapped to the digit shortcut and involve a timer delay to allow
      * for multi-digit values.
      */
-    public match(key: string) {
+    public match(key: string): void {
         let shortcut = this.bag.get(key);
 
         if (shortcut) {

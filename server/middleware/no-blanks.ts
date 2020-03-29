@@ -5,7 +5,7 @@ import { NextFunction, Request, Response } from 'express';
  *
  * If there keys in the body with no value, they are set to null.
  */
-export default (req: Request, _: Response, next: NextFunction) => {
+export default (req: Request, _: Response, next: NextFunction): void => {
     Object.keys(req.body).forEach((key) => {
         const value = req.body[key];
         if (typeof value !== 'string') {

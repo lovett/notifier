@@ -8,7 +8,7 @@ import Message from '../Message';
 
 const router = PromiseRouter();
 
-async function validate(req: Request, res: Response, next: NextFunction) {
+async function validate(req: Request, res: Response, next: NextFunction): Promise<NextFunction|void> {
     if (Object.keys(req.body).length === 0) {
         res.status(400);
         throw new Error('No message fields specified');
@@ -33,7 +33,7 @@ async function validate(req: Request, res: Response, next: NextFunction) {
  * This enforces uniqueness from the client's perspective. From the
  * perspective of the database, localIds are not unique.
  */
-async function retract(req: Request, res: Response, next: NextFunction) {
+async function retract(req: Request, res: Response, next: NextFunction): Promise<NextFunction|void> {
     const message: Message = req.body.message;
 
     if (!message.localId) {
@@ -44,15 +44,15 @@ async function retract(req: Request, res: Response, next: NextFunction) {
         const user = req.user as User;
 
         const messageIds = await db.getRetractableMessageIds(
-            user.id!,
-            message.localId!,
+            user.id,
+            message.localId,
         );
 
-        await db.markMessagesRead(user.id!, messageIds);
+        await db.markMessagesRead(user.id, messageIds);
 
         for (const id of messageIds) {
             delete req.app.locals.expirationCache[id];
-            publishMessage(req.app, user.id!, null, id);
+            publishMessage(req.app, user.id, null, id);
         }
     } catch (err) {
         res.status(500);
@@ -62,7 +62,7 @@ async function retract(req: Request, res: Response, next: NextFunction) {
     next();
 }
 
-async function save(req: Request, res: Response, next: NextFunction) {
+async function save(req: Request, res: Response, next: NextFunction): Promise<NextFunction|void> {
     const user = req.user as User;
     const message: Message = req.body.message;
 
@@ -74,13 +74,13 @@ async function save(req: Request, res: Response, next: NextFunction) {
     }
 
     if (message.expiresAt) {
-        req.app.locals.expirationCache[message.publicId!] = [req.user, message.expiresAt];
+        req.app.locals.expirationCache[message.publicId] = [req.user, message.expiresAt];
     }
 
     next();
 }
 
-async function publish(req: Request, res: Response, next: NextFunction) {
+async function publish(req: Request, res: Response, next: NextFunction): Promise<NextFunction|void> {
     const message: Message = req.body.message;
     const user = req.user as User;
 

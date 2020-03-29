@@ -6,7 +6,7 @@ export default class Token {
     public readonly label: string;
     public readonly persist: boolean;
 
-    constructor(label: string, persist: boolean = false, key?: string, value?: string) {
+    constructor(label: string, persist = false, key?: string, value?: string) {
         this.label = label;
         this.persist = persist;
 

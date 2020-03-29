@@ -56,8 +56,8 @@ router.post('/', async (req: Request, res: Response) => {
 
     try {
         const user = req.user as User;
-        await db.deleteTokensByKey(user.id!, removals);
-        await db.addTokens(user.id!, additions);
+        await db.deleteTokensByKey(user.id, removals);
+        await db.addTokens(user.id, additions);
         return res.sendStatus(200);
     } catch (e) {
         return res.status(500).json(e);

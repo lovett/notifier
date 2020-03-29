@@ -33,7 +33,7 @@ const currentUser: UserFields = {
 
 interface MithrilRequestError extends Error {
     code: number;
-};
+}
 
 let loginUnderway = false;
 

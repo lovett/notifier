@@ -3,11 +3,11 @@ import * as sanitizeHtml from 'sanitize-html';
 /**
  * Remove all markup from a value
  */
-export function strictSanitize(value: string) {
+export function strictSanitize(value: string): string {
     const config = {
         allowedAttributes: {},
         allowedTags: [] as string[],
-        textFilter(text: string) {
+        textFilter(text: string): string {
             return text.replace(/&quot;/g, '"');
         },
     };
@@ -18,14 +18,14 @@ export function strictSanitize(value: string) {
 /**
  * Filter markup from a value based on a whitelist
  */
-export function tolerantSanitize(value: string) {
+export function tolerantSanitize(value: string): string {
     const config = {
         allowedAttributes: {
             a: ['href'],
         },
         allowedSchemes: ['http', 'https', 'mailto'],
         allowedTags: ['b', 'i', 'em', 'strong', 'a', 'p'],
-        textFilter(text: string) {
+        textFilter(text: string): string {
             return text.replace(/&quot;/g, '"');
         },
     };
