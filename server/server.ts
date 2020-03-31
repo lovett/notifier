@@ -58,6 +58,8 @@ nconf.defaults({
     NOTIFIER_HTTP_IP: '127.0.0.1',
     NOTIFIER_HTTP_PORT: 8080,
     NOTIFIER_PUBLIC_DIR: path.resolve(__dirname, './public'),
+    NOTIFIER_DEFAULT_USER: '',
+    NOTIFIER_DEFAULT_USER_PASSWORD: '',
 });
 
 app.disable('x-powered-by');
@@ -153,7 +155,6 @@ async function scheduler(): Promise<void> {
  * Server startup
  */
 if (!module.parent) {
-
     const server = app.listen(
         nconf.get('NOTIFIER_HTTP_PORT'),
         nconf.get('NOTIFIER_HTTP_IP'),
@@ -168,5 +169,12 @@ if (!module.parent) {
         }
 
         setInterval(scheduler, 2_000);
+
+        db.createSchema().then(() => {
+            db.addUser(
+                nconf.get('NOTIFIER_DEFAULT_USER'),
+                nconf.get('NOTIFIER_DEFAULT_USER_PASSWORD')
+            );
+        })
     });
 }

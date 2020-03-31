@@ -40,10 +40,6 @@ export default class User {
             return false;
         }
 
-        if (this.passwordHash === '') {
-            return true;
-        }
-
         const [salt, storedKey] = this.passwordHash.split('::', 2);
 
         const derivedKey = await pbkdf2(

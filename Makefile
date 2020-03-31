@@ -136,6 +136,12 @@ lint-ui:
 # Lint everything.
 lint: lint-ui lint-server
 
+
+# Recreate the dev database.
+resetdb:
+	dropdb -U postgres notifier_dev
+	createdb -U postgres notifier_dev
+
 # Local Variables:
 # truncate-lines: t
 # End:

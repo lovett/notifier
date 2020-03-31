@@ -41,6 +41,25 @@ Default: `8080`.
 `NOTIFIER_PUBLIC_DIR`: The filesystem path of the public directory.
 Default: `./public`.
 
+`NOTIFIER_DEFAULT_USER`: A user account to be created automatically.
+Default: _not specified_.
+
+`NOTIFIER_DEFAULT_USER_PASSWORD`: The password for the default user.
+Default: _not specified_.
+
+## Database setup
+
+The application will create the database schema automatically at
+startup. But the database itself must already exist.
+
+Using the default value for `NOTIFIER_DB_DSN` described above:
+
+```
+createdb -U postgres notifier
+```
+
+If the configuration specifies a default user, it will similarly be
+created automatically at server startup.
 
 ## What it's made of
 The browser UI uses Mithril.

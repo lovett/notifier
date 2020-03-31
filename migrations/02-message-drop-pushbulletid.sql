@@ -1,5 +1,0 @@
-BEGIN TRANSACTION;
-
-ALTER TABLE `Messages` DROP COLUMN `pushbulletId`;
-
-COMMIT;

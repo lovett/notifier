@@ -12,6 +12,7 @@ export default (): Strategy => {
 
                 if (validPassword) {
                     done(null, user);
+                    return;
                 }
             }
 

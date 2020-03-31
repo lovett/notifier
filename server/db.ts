@@ -2,6 +2,8 @@ import { Pool } from 'pg';
 import Message from './Message';
 import User from './User';
 import Token from './Token';
+import * as util from 'util';
+import * as fs from 'fs';
 
 let pool: Pool;
 
@@ -13,6 +15,35 @@ export function connect(dsn: string): void {
     pool = new Pool({
         connectionString: dsn,
     });
+}
+
+/**
+ * Define the database schema.
+ *
+ * Looks for SQL files in the schema directory and executes their
+ * contents. Queries should be rerunnable, since this normally gets
+ * called every time the server starts.
+ */
+export async function createSchema(): Promise<void> {
+    const readDir = util.promisify(fs.readdir);
+    const readFile = util.promisify(fs.readFile);
+
+    const schemaFiles = await readDir(__dirname + '/schema');
+
+    for (const schemaFile of schemaFiles) {
+        if (schemaFile.endsWith('.sql') === false) {
+            continue;
+        }
+
+        const sql = await readFile(__dirname + '/schema/' + schemaFile);
+
+        try {
+            await pool.query(sql.toString());
+        } catch (err) {
+            console.log(err);
+            return;
+        }
+    }
 }
 
 export async function getUser(username: string): Promise<User | null> {
@@ -57,9 +88,13 @@ export async function getUserByToken(key: string, value: string): Promise<User |
 export async function addUser(username: string, password: string): Promise<User | null> {
     const sql = `INSERT INTO "Users"
     (username, "passwordHash", "createdAt", "updatedAt")
-    VALUES ($1, $2, NOW(), NOW())`;
+    VALUES ($1, $2, NOW(), NOW()) ON CONFLICT DO NOTHING`;
 
     const passwordHash = User.hashPassword(password);
+
+    if (username.trim() === '' || password.trim() === '') {
+        return null;
+    }
 
     try {
         const res = await pool.query(sql, [username, passwordHash]);
