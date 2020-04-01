@@ -21,15 +21,13 @@ export default class User {
     private static hashKeylength = 64;
     private static hashDigest = 'sha1';
 
-    public readonly id: number;
-    public readonly username: string;
+    public readonly id: number = 0;
+    public readonly username: string = '';
     public readonly createdAt?: Date;
     public readonly updatedAt?: Date;
     private readonly passwordHash: string = '';
 
     constructor(data: Partial<User>) {
-        this.id = 0;
-        this.username = '';
         Object.assign(this, data);
     }
 

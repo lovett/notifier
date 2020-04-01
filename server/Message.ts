@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 
 export default class Message {
-    public readonly body?: string = undefined;
+    public readonly body: string = '';
     public readonly deliveryStyle: string = 'normal';
     public readonly expiresAt?: Date = undefined;
     public readonly localId: string = '';
@@ -13,13 +13,8 @@ export default class Message {
     public readonly publicId: string = '';
     public badge = '';
 
-    /* eslint @typescript-eslint/no-explicit-any: "off" */
-    constructor(bag: any) {
-        for (const key in this) {
-            if (bag[key]) {
-                this[key] = bag[key];
-            }
-        }
+    constructor(data: Partial<Message>) {
+        Object.assign(this, data);
 
         if (!this.publicId) {
             this.publicId = uuid();
