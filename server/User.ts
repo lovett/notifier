@@ -24,7 +24,6 @@ export default class User {
     public readonly id: number = 0;
     public readonly username: string = '';
     public readonly createdAt?: Date;
-    public readonly updatedAt?: Date;
     private readonly passwordHash: string = '';
 
     constructor(data: Partial<User>) {

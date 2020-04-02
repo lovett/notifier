@@ -2,8 +2,7 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     password_hash varchar(258) NOT NULL,
     username varchar(20) NOT NULL UNIQUE,
-    created_at timestamp DEFAULT NOW(),
-    updated_at timestamp DEFAULT NULL
+    created_at timestamp DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS messages (
@@ -32,7 +31,6 @@ CREATE TABLE IF NOT EXISTS tokens (
     persist boolean DEFAULT false NOT NULL,
     value text NOT NULL,
     created_at timestamp DEFAULT NOW(),
-    updated_at timestamp DEFAULT NULL,
     user_id integer,
     FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE SET NULL
 );

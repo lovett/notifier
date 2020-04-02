@@ -141,6 +141,7 @@ lint: lint-ui lint-server
 resetdb:
 	dropdb -U postgres notifier_dev
 	createdb -U postgres notifier_dev
+	rm -f .cookiejar
 
 # Local Variables:
 # truncate-lines: t

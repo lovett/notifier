@@ -47,7 +47,7 @@ export async function createSchema(): Promise<void> {
 }
 
 export async function getUser(username: string): Promise<User | null> {
-    const sql = `SELECT id, username, password_hash as "passwordHash", created_at as "createdAt", updated_at as "updatedAt"
+    const sql = `SELECT id, username, password_hash as "passwordHash", created_at as "createdAt"
     FROM users
     WHERE username=$1`;
 
@@ -86,9 +86,8 @@ export async function getUserByToken(key: string, value: string): Promise<User |
 }
 
 export async function addUser(username: string, password: string): Promise<User | null> {
-    const sql = `INSERT INTO users
-    (username, password_hash, created_at, updated_at)
-    VALUES ($1, $2, NOW(), NOW()) ON CONFLICT DO NOTHING`;
+    const sql = `INSERT INTO users (username, password_hash)
+    VALUES ($1, $2) ON CONFLICT DO NOTHING`;
 
     const passwordHash = User.hashPassword(password);
 
@@ -160,9 +159,7 @@ export async function deleteTokensByKey(userId: number, records: string[]): Prom
 }
 
 export async function deleteToken(key: string, value: string): Promise<boolean> {
-    const sql = `DELETE FROM tokens
-    WHERE key = $1
-    AND value = $2`;
+    const sql = 'DELETE FROM tokens WHERE key = $1 AND value = $2';
 
     try {
         await pool.query(sql, [key, value]);
@@ -175,8 +172,8 @@ export async function deleteToken(key: string, value: string): Promise<boolean> 
 
 export async function addTokens(userId: number, tokens: Token[]): Promise<void> {
     const sql = `INSERT INTO tokens
-    (user_id, key, value, label, persist, created_at, updated_at)
-    VALUES ($1, $2, $3, $4, $5, NOW(), NOW())`;
+    (user_id, key, value, label, persist)
+    VALUES ($1, $2, $3, $4, $5)`;
 
     (async (): Promise<void> => {
         const client = await pool.connect();
