@@ -4,6 +4,7 @@ import * as bns from '../models/BrowserNotificationService';
 
 export default {
     oninit(): void {
+        User.clearMessages();
         User.getServices();
         bns.prompt();
     },
@@ -40,7 +41,7 @@ export default {
 
                         return m('.field', [
                             m('label', { for: name }, name),
-                            m('input', { name, type: 'text', value, autocomplet: 'off' }),
+                            m('input', { name, type: 'text', value, autocomplete: 'off' }),
                             m('.shortcuts', [
                                 m('a', {
                                     href: '#',

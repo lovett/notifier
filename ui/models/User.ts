@@ -15,19 +15,19 @@ export interface UserFields {
     password?: string;
     persist: boolean;
     username?: string;
-    errorMessage?: string;
-    successMessage?: string;
+    errorMessage: string;
+    successMessage: string;
     settings: Settings;
 }
 
 const currentUser: UserFields = {
-    errorMessage: undefined,
-    successMessage: undefined,
-    password: undefined,
+    errorMessage: '',
+    successMessage: '',
+    password: '',
     persist: false,
-    username: undefined,
+    username: '',
     settings: {
-        webhook: undefined,
+        webhook: '',
     },
 };
 
@@ -39,6 +39,11 @@ let loginUnderway = false;
 
 export default {
     current: currentUser,
+
+    clearMessages(): void {
+        currentUser.errorMessage = '';
+        currentUser.successMessage = '';
+    },
 
     discardCookie(): void {
         console.log('discarding token cookie');
@@ -63,7 +68,7 @@ export default {
     },
 
     hasErrorMessage(): boolean {
-        return currentUser.errorMessage !== undefined;
+        return currentUser.errorMessage !== '';
     },
 
     hasNoErrorMessage(): boolean {
@@ -71,7 +76,7 @@ export default {
     },
 
     hasSuccessMessage(): boolean {
-        return currentUser.successMessage !== undefined;
+        return currentUser.successMessage !== '';
     },
 
     hasNoSuccessMessage(): boolean {
@@ -130,9 +135,9 @@ export default {
             url: 'deauth',
             withCredentials: true,
         }).then(() => {
-            currentUser.password = undefined;
+            currentUser.password = '';
             currentUser.persist = false;
-            currentUser.username = undefined;
+            currentUser.username = '';
         }).catch((e: MithrilRequestError) => {
             if (e.code === 401) {
                 this.discardCookie();
@@ -141,13 +146,15 @@ export default {
     },
 
     saveServices(data: FormData): void {
+        const settings = Object.fromEntries(data) as Settings;
         m.request({
-            body: Object.fromEntries(data),
+            body: settings,
             method: 'POST',
             url: 'services',
             withCredentials: true,
         }).then(() => {
             currentUser.successMessage = 'Settings saved.';
+            currentUser.settings = settings;
         }).catch(() => {
             currentUser.errorMessage = 'Please try again.';
         });
