@@ -1,7 +1,6 @@
 --ignore-dir=coverage
 --ignore-dir=.cache
---ignore-dir=build/public
---ignore-dir=build/server
+--ignore-dir=public
 --ignore-dir=notifier
 --ignore-file=is:package-lock.json
 --ignore-file=ext:log
