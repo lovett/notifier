@@ -60,6 +60,7 @@ export default class Cache {
     public goOnline(): void {
         this.isOffline = false;
         this.startWorker();
+        this.fill();
         m.redraw();
     }
 
@@ -191,12 +192,8 @@ export default class Cache {
         m.redraw();
     }
 
-    public add(message: Message, withStorage = true): void {
+    public add(message: Message): void {
         this.items.set(message.publicId, message);
-
-        if (withStorage) {
-            sessionStorage.setItem(message.publicId, JSON.stringify(message));
-        }
     }
 
     /**
@@ -272,15 +269,14 @@ export default class Cache {
         }
 
         this.items.delete(publicId);
-        sessionStorage.removeItem(publicId);
         m.redraw();
     }
 
     /**
-     * Add notifications via HTTP request.
+     * Load notifications via HTTP request.
      */
     public fill(): void {
-        this.fillFromStorage();
+        this.clear();
 
         m.request('archive', {
             extract: this.extract,
@@ -297,8 +293,8 @@ export default class Cache {
         });
     }
 
-    public flushStorage(): void {
-        sessionStorage.clear();
+    public clear(): void {
+        this.items.clear();
     }
 
     /**
@@ -329,40 +325,6 @@ export default class Cache {
         }
 
         return counter;
-    }
-
-    private fillFromStorage(): void {
-        const messages: Message[] = [];
-        for (let i = 0; i < sessionStorage.length; i++) {
-            const key = sessionStorage.key(i) as string;
-            const value = sessionStorage.getItem(key);
-
-            if (!value) {
-                return;
-            }
-
-            const json = JSON.parse(value);
-            const message = Message.fromJson(json);
-            messages.push(message);
-        }
-
-        messages.sort((a: Message, b: Message) => {
-            if (a.received > b.received) {
-                return 1;
-            }
-
-            return -1;
-        });
-
-        messages.forEach((message) => {
-            this.add(message, false);
-        });
-
-        if (this.items.size > 0) {
-            this.hasFilled = true;
-        }
-
-        m.redraw();
     }
 
     /**

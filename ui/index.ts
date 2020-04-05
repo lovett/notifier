@@ -80,7 +80,7 @@ m.route(root, '/', {
             }
 
             if (cache) {
-                cache.flushStorage();
+                cache.clear();
                 cache.stopWorker();
             }
 
