@@ -25,7 +25,7 @@ let shortcutService: ShortcutService | null = null;
 document.addEventListener('keydown', (e: KeyboardEvent) => {
     const charCode: number = e.which || e.keyCode;
 
-    if (!cache || cache.isOffline) {
+    if (e.target && (e.target as HTMLElement).nodeName === 'INPUT') {
         return;
     }
 
