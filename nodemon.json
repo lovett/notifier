@@ -1,8 +1,0 @@
-{
-  "ignore": ["**/*/flycheck_*.js"],
-  "verbose": false,
-  "watch": ["build/server"],
-  "ext": "js",
-  "exec": "cd build; node server/server.js",
-  "signal": "SIGHUP"
-}
