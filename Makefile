@@ -46,7 +46,7 @@ hooks: dummy
 	cp hooks/* .git/hooks/
 
 # Check for outdated NPM packages.
-outdated: dummy
+outdated:
 	npm outdated || true
 
 # Install NPM packages quietly.
@@ -54,7 +54,7 @@ setup:
 	DISABLE_OPENCOLLECTIVE=1 NODE_ENV=dev npm install
 
 # Start a server instance for development.
-devserver: dummy
+devserver:
 	ts-node-dev --respawn --transpileOnly --ignore-watch node_modules server/server.ts
 
 # Build front-end assets for the browser UI.
@@ -74,11 +74,11 @@ onemessage-retract: .cookiejar
 	curl -b .cookiejar -d "localId=onemessage" $(DEV_URL)/message/clear
 
 # Send a test message with a custom badge.
-badgemessage: dummy
+badgemessage:
 	curl -b .cookiejar -d "title=custom badge test message" -d "body=Custom message" -d "localId=badgemessage" -d "badge=test.svg"  $(DEV_URL)/message
 
 # Send a batch of serveral messages.
-multimessage: dummy
+multimessage:
 	curl -b .cookiejar -d "title=email group test message"     -d "group=email"     -d "body=Message 1"	 -d "localId=multi-email"     $(DEV_URL)/message
 	curl -b .cookiejar -d "title=phone group test message"     -d "group=phone"     -d "body=Message 2"	 -d "localId=multi-phone"     $(DEV_URL)/message
 	curl -b .cookiejar -d "title=web group test message"       -d "group=web"       -d "body=Message 3"	 -d "localId=multi-web"       $(DEV_URL)/message
