@@ -1,45 +1,45 @@
 .PHONY: dummy
 
+BUILD_ARTIFACT := notifier.tar.gz
 DEV_URL := http://localhost:8080
 TMUX_SESSION_NAME := notifier
 
 export PATH := ./node_modules/.bin:$(PATH)
 
 build: export NODE_ENV = production
-build: setup
+build: dummy
+	rm -f $(BUILD_ARTIFACT)
 	rsync -ar \
-	--exclude='***/.bin' \
-	--exclude='***/test' \
-	--exclude='***/tests' \
-	--exclude='***/doc' \
-	--exclude='***/docs' \
 	--exclude='***/*.md' \
-	--exclude='***/Makefile' \
-	--exclude='***/CHANGES' \
-	--exclude='***/AUTHORS' \
-	--exclude='***/bower.json' \
 	--exclude='***/*.ts' \
-	--exclude='***/.coverage' \
-	--exclude='***/.travis.yml' \
+	--exclude='***/*.yml' \
+	--exclude='***/.bin' \
+	--exclude='***/.eslintcache' \
 	--exclude='***/.eslintrc' \
 	--exclude='***/.grunt' \
-	--exclude='***/.sass-cache' \
 	--exclude='***/.idea' \
-	--exclude='***/docs-build' \
-	--exclude='config-*.json' \
-	--include='package.json' \
-	--include='README.md' \
-	--include='node_modules/***' \
-	--include='migrations/***' \
-	--exclude='*' \
+	--exclude='***/Jenkinsfile' \
+	--exclude='***/Makefile' \
+	--exclude='***/doc*' \
+	--exclude='***/test*' \
+	--exclude='***/tsconfig.json' \
+	--exclude='.cache' \
+	--exclude='ansible' \
+	--exclude='build' \
+	--exclude='config*.json' \
+	--exclude='hooks' \
+	--exclude='server' \
+	--exclude='ui' \
+	--exclude='worker' \
 	--delete \
 	--delete-excluded \
-	. notifier
-	tsc -p server
-	parcel build ui/index.html --out-dir notifier/public
-	# cd notifier; npm prune --production
-	# rm -f "notifier.tar.gz"
-	# tar --create --gzip --file="notifier.tar.gz" notifier
+	. build
+	tsc -p server --outDir build
+	parcel build ui/index.html --out-dir build/public
+	cd build && npm prune
+	tar --create  --gzip \
+	--file=$(BUILD_ARTIFACT) \
+	--transform 's/^build/notifier/' build
 
 # Install git hook scripts.
 hooks: dummy
@@ -74,10 +74,10 @@ onemessage-retract: .cookiejar
 	curl -b .cookiejar -d "localId=onemessage" $(DEV_URL)/message/clear
 
 # Send a test message with a custom badge.
-badgemessage:
+badgemessage: .cookiejar
 	curl -b .cookiejar -d "title=custom badge test message" -d "body=Custom message" -d "localId=badgemessage" -d "badge=test.svg"  $(DEV_URL)/message
 
-# Send a batch of serveral messages.
+# Send a batch of messages.
 multimessage:
 	curl -b .cookiejar -d "title=email group test message"     -d "group=email"     -d "body=Message 1"	 -d "localId=multi-email"     $(DEV_URL)/message
 	curl -b .cookiejar -d "title=phone group test message"     -d "group=phone"     -d "body=Message 2"	 -d "localId=multi-phone"     $(DEV_URL)/message
@@ -92,7 +92,6 @@ multimessage:
 	curl -b .cookiejar -d "title=computer group test message"  -d "group=computer"  -d "body=Message 11" -d "localId=multi-computer"  $(DEV_URL)/message
 	curl -b .cookiejar -d "title=financial group test message" -d "group=financial" -d "body=Message 12" -d "localId=multi-financial" $(DEV_URL)/message
 	curl -b .cookiejar -d "title=timer group test message"     -d "group=timer"     -d "body=Message 13" -d "localId=multi-timer"     $(DEV_URL)/message
-
 
 # Create a package upgrade commit.
 puc:
@@ -135,7 +134,6 @@ lint-ui:
 
 # Lint everything.
 lint: lint-ui lint-server
-
 
 # Recreate the dev database.
 resetdb:
