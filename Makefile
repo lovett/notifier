@@ -45,10 +45,6 @@ build: dummy
 hooks: dummy
 	cp hooks/* .git/hooks/
 
-# Check for outdated NPM packages.
-outdated:
-	npm outdated || true
-
 # Install NPM packages quietly.
 setup:
 	DISABLE_OPENCOLLECTIVE=1 NODE_ENV=dev npm install
@@ -92,12 +88,6 @@ multimessage:
 	curl -b .cookiejar -d "title=computer group test message"  -d "group=computer"  -d "body=Message 11" -d "localId=multi-computer"  $(DEV_URL)/message
 	curl -b .cookiejar -d "title=financial group test message" -d "group=financial" -d "body=Message 12" -d "localId=multi-financial" $(DEV_URL)/message
 	curl -b .cookiejar -d "title=timer group test message"     -d "group=timer"     -d "body=Message 13" -d "localId=multi-timer"     $(DEV_URL)/message
-
-# Create a package upgrade commit.
-puc:
-	git checkout master
-	git add package.json package-lock.json
-	git commit -m "Upgrade npm packages"
 
 # Automation for setting up a tmux session.
 workspace:
