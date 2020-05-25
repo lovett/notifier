@@ -4,8 +4,8 @@
       "es6",
       "webworker"
     ],
-    "outDir": "../../build/public",
+    "outDir": "../build/public",
     "typeRoots": []
   },
-  "extends": "../../tsconfig.json"
+  "extends": "../tsconfig.json"
 }

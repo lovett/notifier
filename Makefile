@@ -122,8 +122,13 @@ lint-ui:
 	tsc --noEmit -p ui
 	eslint ui --ext .ts
 
+# Lint the source files for the UI web worker..
+lint-worker:
+	tsc --noEmit -p worker
+	eslint worker --ext .ts
+
 # Lint everything.
-lint: lint-ui lint-server
+lint: lint-ui lint-server lint-worker
 
 # Recreate the dev database.
 resetdb:
