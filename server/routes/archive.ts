@@ -14,7 +14,7 @@ router.get('/:count?', async (req: express.Request, res: express.Response) => {
         count = Math.min(parseInt(req.params.count, 10), maxCount);
     }
 
-    const since = parseInt(req.query.since, 10) || 0;
+    const since = parseInt(req.query.since as string, 10) || 0;
 
     const startDate = new Date(since);
 
