@@ -1,45 +1,19 @@
 .PHONY: dummy
 
-BUILD_ARTIFACT := notifier.tar.gz
 DEV_URL := http://localhost:8080
 TMUX_SESSION_NAME := notifier
 
 export PATH := ./node_modules/.bin:$(PATH)
 
-build: export NODE_ENV = production
-build: dummy
-	rm -f $(BUILD_ARTIFACT)
-	rsync -ar \
-	--exclude='***/*.md' \
-	--exclude='***/*.ts' \
-	--exclude='***/*.yml' \
-	--exclude='***/.bin' \
-	--exclude='***/.eslintcache' \
-	--exclude='***/.eslintrc' \
-	--exclude='***/.grunt' \
-	--exclude='***/.idea' \
-	--exclude='***/Jenkinsfile' \
-	--exclude='***/Makefile' \
-	--exclude='***/doc*' \
-	--exclude='***/test*' \
-	--exclude='***/tsconfig.json' \
-	--exclude='.cache' \
-	--exclude='ansible' \
-	--exclude='build' \
-	--exclude='config*.json' \
-	--exclude='hooks' \
-	--exclude='server' \
-	--exclude='ui' \
-	--exclude='worker' \
-	--delete \
-	--delete-excluded \
-	. build
+# Gather and compile the server and UI files in preparation for deployment.
+build: setup
+	rm -rf build
 	tsc -p server --outDir build
-	parcel build ui/index.html --out-dir build/public
-	cd build && npm prune
-	tar --create  --gzip \
-	--file=$(BUILD_ARTIFACT) \
-	--transform 's/^build/notifier/' build
+	parcel build --out-dir build/public --no-source-maps --log-level=1 ui/index.html
+	cp -r schema build/
+	cp package.json package-lock.json .npmrc build/
+	cd build && npm ci --production
+	cd build && rm package.json package-lock.json .npmrc
 
 # Install git hook scripts.
 hooks: dummy
@@ -47,7 +21,7 @@ hooks: dummy
 
 # Install NPM packages quietly.
 setup:
-	DISABLE_OPENCOLLECTIVE=1 NODE_ENV=dev npm install
+	DISABLE_OPENCOLLECTIVE=1 npm install
 
 # Start a server instance for development.
 devserver:
