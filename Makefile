@@ -115,17 +115,17 @@ install:
 # Lint the source files for the server.
 lint-server:
 	tsc --noEmit -p server
-	eslint server --ext .ts
+	eslint --max-warnings=0 --ext=.ts server
 
 # Lint the source files for the browser UI.
 lint-ui:
 	tsc --noEmit -p ui
-	eslint ui --ext .ts
+	eslint --max-warnings=0 --ext=.ts ui
 
-# Lint the source files for the UI web worker..
+# Lint the source files for the UI web worker.
 lint-worker:
 	tsc --noEmit -p worker
-	eslint worker --ext .ts
+	eslint --max-warnings=0 --ext=.ts worker
 
 # Lint everything.
 lint: lint-ui lint-server lint-worker

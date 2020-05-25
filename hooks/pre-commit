@@ -57,18 +57,18 @@ done
 
 if [ "$LINT_TS_UI" = 1 ]; then
     echo "Linting ui..."
-    node_modules/.bin/tsc --noEmit -p "$WORK_DIR/ui"
-	node_modules/.bin/eslint "$WORK_DIR/ui" --ext .ts
+    node_modules/.bin/tsc --noEmit --pretty false -p "$WORK_DIR/ui"
+	node_modules/.bin/eslint --max-warnings=0 --ext=.ts "$WORK_DIR/ui"
 fi
 
 if [ "$LINT_TS_SERVER" = 1 ]; then
     echo "Linting server..."
-	node_modules/.bin/tsc --noEmit -p "$WORK_DIR/server"
-	node_modules/.bin/eslint "$WORK_DIR/server" --ext .ts
+	node_modules/.bin/tsc --noEmit --pretty false -p "$WORK_DIR/server"
+	node_modules/.bin/eslint --max-warnings=0 --ext=.ts "$WORK_DIR/server"
 fi
 
 if [ "$LINT_TS_WORKER" = 1 ]; then
     echo "Linting worker..."
-	node_modules/.bin/tsc --noEmit -p "$WORK_DIR/worker"
-	node_modules/.bin/eslint "$WORK_DIR/worker" --ext .ts
+	node_modules/.bin/tsc --noEmit --pretty false -p "$WORK_DIR/worker"
+	node_modules/.bin/eslint --max-warnings=0 --ext=.ts "$WORK_DIR/worker"
 fi
