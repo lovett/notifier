@@ -5,6 +5,7 @@
     ],
     "sourceMap": false,
     "strictFunctionTypes": false,
+    "outDir": "../build",
     "target": "ES6",
     "types": []
   },
