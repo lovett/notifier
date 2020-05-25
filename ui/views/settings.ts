@@ -47,8 +47,10 @@ export default {
                                     href: '#',
                                     onclick: (e: Event) => {
                                         e.preventDefault();
+                                        User.current.settings[name] = '';
+
                                         const field = document.querySelector(`input[name=${name}]`) as HTMLInputElement;
-                                        field.value = '';
+                                        field.focus();
                                     },
                                 }, 'Clear'),
                             ]),
