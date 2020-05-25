@@ -1,12 +1,11 @@
 import * as db from '../db';
 import User from '../User';
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import * as useragent from 'useragent';
 import Token from '../Token';
-import PromiseRouter from 'express-promise-router';
 import { CookieOptions } from 'express-serve-static-core';
 
-const router = PromiseRouter();
+const router = Router();
 
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user as User;

@@ -1,10 +1,9 @@
 import * as db from '../db';
 import User from '../User';
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, Response, Router } from 'express';
 import publishMessage from '../helpers/publish-message';
-import PromiseRouter from 'express-promise-router';
 
-const router = PromiseRouter();
+const router = Router();
 
 /**
  * Endpoint for marking a message as read.

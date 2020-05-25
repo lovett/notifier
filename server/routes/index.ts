@@ -1,8 +1,7 @@
-import { Response } from 'express';
-import PromiseRouter from 'express-promise-router';
+import { Response, Router } from 'express';
 import * as path from 'path';
 
-const router = PromiseRouter();
+const router = Router();
 
 /**
  * The homepage is an HTML shell that loads the JavaScript UI.

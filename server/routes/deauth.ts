@@ -1,8 +1,7 @@
 import * as db from '../db';
-import { NextFunction, Request, Response } from 'express';
-import PromiseRouter from 'express-promise-router';
+import { NextFunction, Request, Response, Router } from 'express';
 
-const router = PromiseRouter();
+const router = Router();
 
 /**
  * Remove an access token

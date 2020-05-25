@@ -1,10 +1,9 @@
 import * as db from '../db';
 import User from '../User';
-import { Request, Response } from 'express';
-import PromiseRouter from 'express-promise-router';
+import { Request, Response, Router } from 'express';
 import Token from '../Token';
 
-const router = PromiseRouter();
+const router = Router();
 
 /**
  * Return a list of additional functionality the user has opted into

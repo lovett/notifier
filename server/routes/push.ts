@@ -1,11 +1,10 @@
-import * as express from 'express';
+import { Request, Response, Router } from 'express';
 import User from '../User';
 import * as uuid from 'uuid';
-import PromiseRouter from 'express-promise-router';
 
-const router = PromiseRouter();
+const router = Router();
 
-router.get('/', async (req: express.Request, res: express.Response) => {
+router.get('/', async (req: Request, res: Response) => {
     const user = req.user as User;
     const clientId = uuid.v4();
 

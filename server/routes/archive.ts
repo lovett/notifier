@@ -1,11 +1,10 @@
 import * as db from '../db';
 import User from '../User';
-import * as express from 'express';
-import PromiseRouter from 'express-promise-router';
+import { Request, Response, Router } from 'express';
 
-const router = PromiseRouter();
+const router = Router();
 
-router.get('/:count?', async (req: express.Request, res: express.Response) => {
+router.get('/:count?', async (req: Request, res: Response) => {
     const user = req.user as User;
     const maxCount = 50;
 

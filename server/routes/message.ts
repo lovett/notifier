@@ -1,12 +1,11 @@
 import * as db from '../db';
 import User from '../User';
-import { NextFunction, Request, Response } from 'express';
-import PromiseRouter from 'express-promise-router';
+import { NextFunction, Request, Response, Router } from 'express';
 import * as dateparser from 'dateparser';
 import publishMessage from '../helpers/publish-message';
 import Message from '../Message';
 
-const router = PromiseRouter();
+const router = Router();
 
 async function validate(req: Request, res: Response, next: NextFunction): Promise<NextFunction|void> {
     if (Object.keys(req.body).length === 0) {
