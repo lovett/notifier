@@ -8,7 +8,12 @@ cleanup() {
     rm -rf "$WORK_DIR"
 }
 
-LINT_TS=0
+trap "cleanup" EXIT
+
+
+LINT_TS_UI=0
+LINT_TS_SERVER=0
+LINT_TS_WORKER=0
 
 echo "Runing pre-commit hook..."
 
@@ -36,16 +41,34 @@ for STAGED_FILE in $(git diff --cached --name-only --diff-filter=dcr); do
 
     # Typescript
     if [[ "$FILE_EXTENSION" == "ts" ]]; then
-        LINT_TS=1
+        if [[ "$STAGED_FILE" == ui/* ]]; then
+            LINT_TS_UI=1
+        fi
+
+        if [[ "$STAGED_FILE" == server/* ]]; then
+            LINT_TS_SERVER=1
+        fi
+
+        if [[ "$STAGED_FILE" == worker/* ]]; then
+            LINT_TS_WORKER=1
+        fi
     fi
 done
 
-if [ "$LINT_TS" = 1 ]; then
-	node_modules/.bin/tsc --noEmit -p "$WORK_DIR/server"
-	node_modules/.bin/eslint "$WORK_DIR/server" --ext .ts
-
-	node_modules/.bin/tsc --noEmit -p "$WORK_DIR/ui"
+if [ "$LINT_TS_UI" = 1 ]; then
+    echo "Linting ui..."
+    node_modules/.bin/tsc --noEmit -p "$WORK_DIR/ui"
 	node_modules/.bin/eslint "$WORK_DIR/ui" --ext .ts
 fi
 
-trap "cleanup" EXIT
+if [ "$LINT_TS_SERVER" = 1 ]; then
+    echo "Linting server..."
+	node_modules/.bin/tsc --noEmit -p "$WORK_DIR/server"
+	node_modules/.bin/eslint "$WORK_DIR/server" --ext .ts
+fi
+
+if [ "$LINT_TS_WORKER" = 1 ]; then
+    echo "Linting worker..."
+	node_modules/.bin/tsc --noEmit -p "$WORK_DIR/worker"
+	node_modules/.bin/eslint "$WORK_DIR/worker" --ext .ts
+fi
