@@ -4,6 +4,7 @@ import User from './User';
 import Token from './Token';
 import * as util from 'util';
 import * as fs from 'fs';
+import * as path from 'path';
 
 let pool: Pool;
 
@@ -28,14 +29,15 @@ export async function createSchema(): Promise<void> {
     const readDir = util.promisify(fs.readdir);
     const readFile = util.promisify(fs.readFile);
 
-    const schemaFiles = await readDir(__dirname + '/schema');
+    const schemaDir = path.join(__dirname, '..', 'schema');
+    const schemaFiles = await readDir(schemaDir);
 
     for (const schemaFile of schemaFiles) {
         if (schemaFile.endsWith('.sql') === false) {
             continue;
         }
 
-        const sql = await readFile(__dirname + '/schema/' + schemaFile);
+        const sql = await readFile(path.join(schemaDir, schemaFile));
 
         try {
             await pool.query(sql.toString());
