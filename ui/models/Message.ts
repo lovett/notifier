@@ -1,5 +1,5 @@
 export default class Message {
-    /* eslint @typescript-eslint/no-explicit-any: "off" */
+    /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types */
     public static fromJson(json: any): Message {
         const m = new Message();
 

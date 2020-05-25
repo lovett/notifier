@@ -367,7 +367,7 @@ export default class Cache {
 
         try {
             const json = JSON.parse(xhr.responseText);
-            return json.reduce((accumulator: Message[], item: object) => {
+            return json.reduce((accumulator: Message[], item: unknown) => {
                 accumulator.push(Message.fromJson(item));
                 return accumulator;
             }, []);
