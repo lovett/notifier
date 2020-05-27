@@ -115,6 +115,7 @@ export default {
             withCredentials: true,
         }).then(() => {
             loginUnderway = false;
+            currentUser.errorMessage = '';
             m.route.set('/');
         }).catch(() => {
             loginUnderway = false;
