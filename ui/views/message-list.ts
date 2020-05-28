@@ -18,11 +18,6 @@ export default {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
 
-        document.addEventListener(
-            'visibilitychange',
-            () => cache.deselect(),
-        );
-
         window.addEventListener(
             'offline',
             () => cache.goOffline(),
@@ -31,11 +26,6 @@ export default {
         window.addEventListener(
             'online',
             () => cache.goOffline(),
-        );
-
-        window.addEventListener(
-            'blur',
-            () => cache.deselect(),
         );
 
         redrawTimer = setInterval(() => {
