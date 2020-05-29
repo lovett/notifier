@@ -1,5 +1,4 @@
 import * as db from '../db';
-import User from '../User';
 import { NextFunction, Request, Response, Router } from 'express';
 import * as useragent from 'useragent';
 import Token from '../Token';
@@ -8,7 +7,19 @@ import { CookieOptions } from 'express-serve-static-core';
 const router = Router();
 
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
-    const user = req.user as User;
+    const user = await db.getUser(req.body.username);
+
+    if (!user) {
+        res.sendStatus(401);
+        return;
+    }
+
+    const validPassword = await user.testPassword(req.body.password);
+
+    if (!validPassword) {
+        res.sendStatus(401);
+        return;
+    }
 
     let label = req.body.label || '';
     label = label.replace(/[^a-zA-Z0-9-./ ]/, '');

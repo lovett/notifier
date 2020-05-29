@@ -4,16 +4,12 @@ import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import * as nconf from 'nconf';
-import * as passport from 'passport';
 import * as path from 'path';
 
 import * as db from './db';
 import archive from './routes/archive';
 import asset from './middleware/asset';
 import auth from './routes/auth';
-import authCookie from './auth/cookie';
-import authBasic from './auth/basic';
-import authLocal from './auth/local';
 import deauth from './routes/deauth';
 import index from './routes/index';
 import jsonError from './middleware/error-json';
@@ -25,6 +21,7 @@ import publishMessage from './helpers/publish-message';
 import push from './routes/push';
 import security from './middleware/security';
 import services from './routes/services';
+import verify from './middleware/verify';
 
 const app = express();
 const router = express.Router();
@@ -66,8 +63,6 @@ app.disable('x-powered-by');
 
 app.locals.config = nconf;
 
-app.locals.protected = passport.authenticate(['cookie', 'basic', 'local'], { session: false });
-
 app.locals.pushClients = new Map();
 
 app.locals.maintenanceTimestamp = new Date();
@@ -94,33 +89,25 @@ db.connect(nconf.get('NOTIFIER_DB_DSN'));
 /**
  * Routes
  */
-passport.use(authLocal());
-
-passport.use(authBasic());
-
-passport.use(authCookie());
-
-app.use(passport.initialize());
-
 router.use(asset(nconf.get('NOTIFIER_PUBLIC_DIR')));
 
 router.use(/^\/(login|logout)?$/, index);
 
 router.use('/deauth', deauth);
 
-router.use('/services', app.locals.protected, services);
+router.use('/services', verify, services);
 
-router.use('/auth', passport.authenticate('local', { session: false }), auth);
+router.use('/auth', auth);
 
-router.use('/message', app.locals.protected, message);
+router.use('/message', verify, message);
 
-router.use('/archive', app.locals.protected, archive);
+router.use('/archive', verify, archive);
 
-router.use('/message/clear', app.locals.protected, clear);
+router.use('/message/clear', verify, clear);
 
-router.use('/message/unclear', app.locals.protected, unclear);
+router.use('/message/unclear', verify, unclear);
 
-router.use('/push', app.locals.protected, push);
+router.use('/push', verify, push);
 
 app.use(nconf.get('NOTIFIER_BASE_URL'), router);
 
