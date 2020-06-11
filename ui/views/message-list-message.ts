@@ -47,6 +47,7 @@ export default {
             rootAttrs.href = message.url;
             rootAttrs.rel = 'noopener noreferrer';
             rootAttrs.target = '_blank';
+            rootAttrs.title = (message.localId)? `#${message.localId}` : '';
         }
 
 
@@ -67,10 +68,7 @@ export default {
 
             m(messageListMessageOptions, { message, cache } as m.Attributes),
 
-            m('.index', [
-                (message.localId) ? `#${message.localId} / ` : '',
-                index + 1,
-            ]),
+            m('.index', index + 1),
         ]);
     },
 };
