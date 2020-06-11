@@ -24,27 +24,6 @@
       dest: "{{ installation_directory }}"
       delete: yes
       recursive: true
-      rsync_opts:
-        - "--exclude=node_modules"
-        - "--exclude=package.json"
-        - "--exclude=package-lock.json"
-
-  - name: Copy package.json
-    become: true
-    copy:
-      src: "{{ item }}"
-      dest: "{{ installation_directory }}"
-    with_items:
-      - ../package.json
-      - ../package-lock.json
-
-  - name: Install NPM packages
-    become: true
-    npm:
-      global: no
-      ignore_scripts: yes
-      path: "{{ installation_directory }}"
-      production: yes
 
   - name: Set permissions on application root
     become: true
