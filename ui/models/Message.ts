@@ -139,35 +139,47 @@ export default class Message {
             return '';
         }
 
-        const message = 'Due at ' + new Intl.DateTimeFormat(
-            undefined,
-            { hour: 'numeric', minute: '2-digit' },
-        ).format(this.expiration);
-
         const seconds = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
         const minutes = Math.floor(seconds / 60);
+        const hours  = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
 
         if (seconds === 0) {
-            return 'Expires now!';
+            return 'Expired!';
         }
 
         if (seconds === 1) {
             return 'Expires in 1 second';
         }
 
-        if (seconds < 10) {
+        if (seconds <= 10) {
             return `Expires in ${seconds} seconds`;
         }
 
         if (seconds < 60) {
-            return `Less than a minute remaining. ${message}.`;
+            return `Expires in less than a minute`;
+        }
+
+        if (minutes === 1) {
+            return 'Expires in 1 minute';
         }
 
         if (minutes < 60) {
-            return `${minutes} minutes remaining. ${message}.`;
+            return `Expires in ${minutes} minutes`;
         }
 
-        return message;
+        if (hours < 12) {
+            return 'Expires at ' + new Intl.DateTimeFormat(
+                undefined,
+                { hour: 'numeric', minute: '2-digit' },
+            ).format(this.expiration);
+        }
+
+        if (days === 1) {
+            return 'Expires in 1 day';
+        }
+
+        return `Expires in ${days} days`;
     }
 
     public closeBrowserNotification(): void {
