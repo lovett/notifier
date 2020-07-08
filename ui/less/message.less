@@ -1,38 +1,22 @@
 .message {
+    outline: 0;
     min-height: 6em;
     box-sizing: border-box;
     border: 0.25em solid transparent;
     background-color: white;
     overflow: hidden;
     position: relative;
-    padding: 0.5em 6em;
+    padding: 0.5em 3em 0.5em 5.5em;
     display: block;
     color: black;
     break-inside: avoid;
     page-break-inside: avoid;
     vertical-align: top;
     line-height: 1.5;
-    touch-action: none;
 
     &.online {
-        &:hover .options {
-            display: block;
-        }
-
-        &.extended {
-            margin-left: -4em;
-
-            .options {
-                display: block;
-            }
-        }
-
         &.stuck {
             opacity: 0.1;
-
-            .options {
-                display: none;
-            }
         }
     }
 
@@ -45,52 +29,35 @@
     .index {
         position: absolute;
         top: 0;
-        right: 0;
+        left: 0;
         font-size: 0.5em;
         padding: 0.5em 0.75em;
     }
 
-    .options {
+    .close {
         position: absolute;
-        top: 0;
-        right: 0;
-        height: 101%;
-        width: 8em;
-        display: none;
+        top: 0.25em;
+        right: 0.25em;
+        display: block;
         transition: opacity 0.1s 0.2s;
+        outline: 0;
 
-        a {
-            height: 100%;
-            float: right;
-            font-size: 0.75em;
-            text-transform: uppercase;
-            margin-left: 0.25em;
-            padding: 0 1.5em;
-            display: table;
-
-            span {
-                display: table-cell;
-                background: transparent url(../svg/close.svg) no-repeat center;
-                background-size: contain;
-            }
-
-            .icon {
-                width: 4em;
-                height: 4em;
-                fill: black;
-            }
+        span {
+            display: block;
+            background: transparent url(../svg/close.svg) no-repeat center;
+            background-size: contain;
+            width: 2.5em;
+            height: 2.5em;
+            fill: black;
         }
     }
 
     h1 {
         font-size: 1.1em;
         font-weight: bold;
-        margin: 0;
+        margin: 0 0 0.25em 0;
         padding: 0;
-
-        a {
-            color: black;
-        }
+        line-height: 1.1;
     }
 
     p {
@@ -107,11 +74,6 @@
     .expiration {
         font-size: 0.7em;
     }
-
-    .right {
-        margin-right: -0.5em;
-        margin-top: -0.5em;
-    }
 }
 
 .message.expired {
@@ -119,16 +81,7 @@
     color: #666;
 }
 
-.message.selected,
-.message:focus {
-    outline: 0;
-
-    .options {
-        opacity: 1;
-    }
-
-    .index {
-        background-color: black;
-        color: #fff;
-    }
+.message.selected .index {
+    background-color: black;
+    color: #fff;
 }

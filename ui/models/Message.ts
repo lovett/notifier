@@ -40,7 +40,6 @@ export default class Message {
     }
 
     public selected = false;
-    public extended = false;
     public title = '';
     public body = '';
     public group = '';
@@ -93,13 +92,7 @@ export default class Message {
             classes.push('selected');
         }
 
-        if (this.extended) {
-            classes.push('extended');
-        }
-
-        const tag = (this.url) ? 'a' : 'div';
-
-        return `${tag}.${classes.join('.')}`;
+        return `div.${classes.join('.')}`;
     }
 
     /**
