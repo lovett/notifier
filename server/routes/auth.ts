@@ -36,6 +36,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 
     const cookieOptions: CookieOptions = {
         path: req.app.locals.config.get('NOTIFIER_BASE_URL'),
+        sameSite: 'strict',
     };
 
     if (token.persist) {
