@@ -59,7 +59,7 @@ export default {
             m('header', [
                 m('h1', message.title),
 
-                m('time', (message.hasExpiration()) ? message.expiresAt() : message.receivedAt()),
+                m('time', (message.expiration) ? message.expiresAt() : message.receivedAt()),
 
                 (message.domain) ? m('p.domain', message.domain) : null,
             ]),

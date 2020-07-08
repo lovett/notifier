@@ -75,23 +75,29 @@ export default class Message {
      * The message's visual state when rendered as HTML.
      */
     public rootTag(): string {
-        const classes = ['message', this.group, this.state];
+        const classes = ['message'];
+
+        if (this.state) {
+            classes.push(this.state);
+        }
+
+        if (this.group) {
+            classes.push(this.group);
+        }
+
         if (this.isExpired()) {
             classes.push('expired');
         }
 
-        if (this.isSelected()) {
+        if (this.selected) {
             classes.push('selected');
         }
 
-        if (this.isExtended()) {
+        if (this.extended) {
             classes.push('extended');
         }
 
-        let tag = 'div';
-        if (this.hasLink()) {
-            tag = 'a';
-        }
+        const tag = (this.url) ? 'a' : 'div';
 
         return `${tag}.${classes.join('.')}`;
     }
@@ -219,18 +225,6 @@ export default class Message {
         );
     }
 
-    public hasExpiration(): boolean {
-        return this.expiration !== undefined;
-    }
-
-    public hasLink(): boolean {
-        return this.url !== undefined;
-    }
-
-    public isSelected(): boolean {
-        return this.selected;
-    }
-
     public isExpired(): boolean {
         if (!this.expiration) {
             return false;
@@ -239,12 +233,8 @@ export default class Message {
         return this.expiration < new Date();
     }
 
-    public isExtended(): boolean {
-        return this.extended;
-    }
-
     public visit(): void {
-        if (this.hasLink()) {
+        if (this.url) {
             window.open(this.url);
         }
     }
