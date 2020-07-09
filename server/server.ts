@@ -17,8 +17,8 @@ import clear from './routes/clear';
 import message from './routes/message';
 import unclear from './routes/unclear';
 import noBlanks from './middleware/no-blanks';
-import publishMessage from './helpers/publish-message';
 import push from './routes/push';
+import scheduler from './scheduler';
 import security from './middleware/security';
 import services from './routes/services';
 import verify from './middleware/verify';
@@ -62,6 +62,8 @@ nconf.defaults({
 app.disable('x-powered-by');
 
 app.locals.config = nconf;
+
+app.locals.expirationCache = new Map();
 
 app.locals.pushClients = new Map();
 
@@ -113,31 +115,6 @@ app.use(nconf.get('NOTIFIER_BASE_URL'), router);
 
 app.use(jsonError);
 
-async function scheduler(): Promise<void> {
-    const now = new Date();
-
-    if (app.locals.expirationCache === undefined) {
-        app.locals.expirationCache = await db.getExpiringMessages();
-    }
-
-    app.locals.expirationCache.forEach((value: [number, Date], key: string) => {
-        const [userId, expiration] = value;
-        if (expiration < now) {
-            publishMessage(app, userId, null, key);
-            app.locals.expirationCache.delete(key);
-        }
-    });
-
-    const elapsedTime = now.getTime() - app.locals.maintenanceTimestamp.getTime();
-
-    // Clean up old tokens once per hour.
-    const oneHourMs = 1_000 * 60 * 60;
-    if (elapsedTime / oneHourMs > 1) {
-        await db.pruneStaleTokens();
-        app.locals.maintenanceTimestamp = now;
-    }
-}
-
 /**
  * Server startup
  */
@@ -147,21 +124,23 @@ if (!module.parent) {
         nconf.get('NOTIFIER_HTTP_IP'),
     );
 
-    server.on('listening', () => {
+    server.on('listening', async () => {
         process.stdout.write(`Listening on ${nconf.get('NOTIFIER_HTTP_IP')}:${nconf.get('NOTIFIER_HTTP_PORT')}\n`);
+
+        await db.createSchema();
+
+        await db.addUser(
+            nconf.get('NOTIFIER_DEFAULT_USER'),
+            nconf.get('NOTIFIER_DEFAULT_USER_PASSWORD')
+        );
+
+        app.locals.expirationCache = await db.getExpiringMessages();
+
+        setInterval(scheduler, 1_000, app);
 
         // Tell systemd that startup has completed and all systems are go.
         if (process.env.NODE_ENV === 'production') {
             childProcess.exec(`/bin/systemd-notify --ready --pid=${process.pid}`);
         }
-
-        setInterval(scheduler, 2_000);
-
-        db.createSchema().then(() => {
-            db.addUser(
-                nconf.get('NOTIFIER_DEFAULT_USER'),
-                nconf.get('NOTIFIER_DEFAULT_USER_PASSWORD')
-            );
-        })
     });
 }

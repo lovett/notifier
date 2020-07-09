@@ -73,7 +73,7 @@ async function save(req: Request, res: Response, next: NextFunction): Promise<Ne
     }
 
     if (message.expiresAt) {
-        req.app.locals.expirationCache[message.publicId] = [req.user, message.expiresAt];
+        req.app.locals.expirationCache.set(message.publicId, [req.user, message.expiresAt]);
     }
 
     next();
