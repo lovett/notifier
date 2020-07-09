@@ -3,6 +3,65 @@ import Message from '../models/Message';
 import Cache from '../models/Cache';
 
 export default {
+    expirationTimer: 0,
+    expiresAt: '',
+
+    startExpirationTimer(vnode: m.Vnode): void {
+        const attrs = vnode.attrs as m.Attributes;
+        const message = attrs.message as Message;
+        const cache = attrs.cache as Cache;
+
+        if (this.expirationTimer) {
+            return;
+        }
+
+        this.expirationTimer = setInterval(() => {
+            if (message.isExpired()) {
+                cache.retract(message.publicId);
+                return;
+            }
+
+            const expiresAt = message.expiresAt();
+
+            if (this.expiresAt !== expiresAt) {
+                m.redraw();
+            }
+
+            this.expiresAt = expiresAt;
+        }, 1000);
+    },
+
+    stopExpirationTimer(): void {
+        clearInterval(this.expirationTimer);
+        delete this.expirationTimer;
+    },
+
+    oninit(vnode: m.Vnode): void {
+        const attrs = vnode.attrs as m.Attributes;
+        const message = attrs.message as Message;
+
+        if (message.expiration) {
+            this.startExpirationTimer(vnode);
+        }
+    },
+
+    // When a message arrives via push...
+    onupdate(vnode: m.Vnode): void {
+        const attrs = vnode.attrs as m.Attributes;
+        const message = attrs.message as Message;
+
+        this.stopExpirationTimer();
+
+        if (message.expiration) {
+            this.startExpirationTimer(vnode);
+        }
+
+    },
+
+    onremove(): void {
+        this.stopExpirationTimer();
+    },
+
     view(vnode: m.Vnode): m.Vnode {
         const attrs = vnode.attrs as m.Attributes;
         const message = attrs.message as Message;

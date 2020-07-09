@@ -4,9 +4,6 @@ import messageListFooter from './message-list-footer';
 import messageListMessage from './message-list-message';
 import Cache from '../models/Cache';
 
-let isOffline = false;
-let redrawTimer = 0;
-
 export default {
     oncreate(vnode: m.Vnode): void {
         const attrs = vnode.attrs as m.Attributes;
@@ -19,27 +16,8 @@ export default {
 
         window.addEventListener(
             'online',
-            () => cache.goOffline(),
+            () => cache.goOnline(),
         );
-
-        redrawTimer = setInterval(() => {
-            const expirations = cache.impendingExpirations();
-            let shouldRedraw = false;
-
-            if (cache.isOffline !== isOffline) {
-                isOffline = cache.isOffline;
-                shouldRedraw = true;
-            }
-
-            if (expirations.size > 0) {
-                shouldRedraw = true;
-            }
-
-            if (shouldRedraw) {
-                m.redraw();
-            }
-
-        }, 1000);
     },
 
     onremove(vnode: m.Vnode): void {
@@ -65,8 +43,6 @@ export default {
             'offline',
             () => cache.goOffline(),
         );
-
-        clearInterval(redrawTimer);
     },
 
     view(vnode: m.Vnode): Array<m.Vnode> {
