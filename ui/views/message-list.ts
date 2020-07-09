@@ -8,12 +8,6 @@ let isOffline = false;
 let redrawTimer = 0;
 
 export default {
-    oninit(vnode: m.Vnode): void {
-        const attrs = vnode.attrs as m.Attributes;
-        const cache = attrs.cache as Cache;
-        cache.fill();
-    },
-
     oncreate(vnode: m.Vnode): void {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
@@ -78,10 +72,6 @@ export default {
     view(vnode: m.Vnode): Array<m.Vnode> {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
-
-        if (cache.hasFilled === false) {
-            return [];
-        }
 
         const nodes: m.Vnode[] = [];
 
