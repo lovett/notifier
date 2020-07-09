@@ -74,26 +74,6 @@ export default class Cache {
         m.redraw();
     }
 
-    public impendingExpirations(): Map<string, Date> {
-        const expirations: Map<string, Date> = new Map();
-        const now = new Date();
-        this.items.forEach((item) => {
-            if (!item.expiration) {
-                return;
-            }
-
-            if (item.expiration < now) {
-                this.retract(item.publicId);
-            }
-
-            if (item.expiringSoon()) {
-                expirations.set(item.publicId, item.expiration);
-            }
-        });
-
-        return expirations;
-    }
-
     /**
      * Mark a message as being in-focus by the UI.
      */

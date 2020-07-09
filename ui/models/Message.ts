@@ -187,17 +187,6 @@ export default class Message {
         }
     }
 
-    public expiringSoon(): boolean {
-        if (!this.expiration) {
-            return false;
-        }
-
-        const seconds = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
-        const minutes = Math.floor(seconds / 60);
-
-        return minutes <= 10;
-    }
-
     public sendBrowserNotification(): void {
         let body: string = this.body || '';
 
