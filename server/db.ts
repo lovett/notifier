@@ -327,22 +327,25 @@ export async function getRetractableMessageIds(userId: number, localId: string):
     }
 }
 
-export async function getExpiringMessages(): Promise<Message[]> {
+export async function getExpiringMessages(): Promise<Map<string, [number, Date]>> {
     const sql = `SELECT public_id as "publicId", user_id as "userId", expires_at as "expiresAt"
     FROM messages
     WHERE unread=true
     AND expires_at > NOW()`;
 
+
+    const messages: Map<string, [number, Date]> = new Map();
+
     try {
         const res = await pool.query(sql);
 
         return res.rows.reduce((accumulator, row) => {
-            accumulator.set(row.publicId, [row.UserId, row.expiresAt]);
+            accumulator.set(row.publicId, [row.userId, row.expiresAt]);
             return accumulator;
-        }, new Map());
+        }, messages);
     } catch (err) {
         console.log(err);
-        return [];
+        return messages;
     }
 }
 
