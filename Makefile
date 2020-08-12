@@ -110,6 +110,10 @@ resetdb:
 	createdb -U postgres notifier_dev
 	rm -f .cookiejar
 
+# Push the repository to GitHub.
+mirror:
+	git push --force git@github.com:lovett/notifier.git master:master
+
 # Local Variables:
 # truncate-lines: t
 # End:
