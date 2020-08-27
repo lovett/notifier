@@ -24,8 +24,11 @@ setup:
 	DISABLE_OPENCOLLECTIVE=1 npm install
 
 # Start a server instance for development.
-devserver:
-	ts-node-dev --respawn --transpile-only --ignore-watch node_modules server/server.ts
+backend-server:
+	ls build/***.js | entr -r node build/server.js
+
+backend-tsc:
+	tsc -p server --outDir build --watch
 
 # Build front-end assets for the browser UI.
 ui: dummy
@@ -76,10 +79,13 @@ workspace:
 	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "ui" "make ui"
 
 ## 3: Dev server
-	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "server" "make devserver"
+	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "backend-server" "make backend-server"
 
+## 4: TSC
+	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "backend-tsc" "make backend-tsc"
+
+## Activate
 	tmux select-window -t "$(TMUX_SESSION_NAME)":0
-
 	tmux attach-session -t "$(TMUX_SESSION_NAME)"
 
 # Install the application on the production host via Ansible.
