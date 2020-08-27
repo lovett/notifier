@@ -24,10 +24,16 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 
         const message = await db.getMessage(user.id, publicId);
 
+        if (!message) {
+            res.sendStatus(404);
+            return;
+        }
+
+        message.deliveryStyle = 'whisper';
+
         publishMessage(req.app, user.id, message);
 
         res.sendStatus(204);
-        return;
     } catch (e) {
         return res.status(500).json(e);
     }
