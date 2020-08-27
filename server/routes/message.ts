@@ -1,11 +1,33 @@
 import * as db from '../db';
 import User from '../User';
 import { NextFunction, Request, Response, Router } from 'express';
-import * as dateparser from 'dateparser';
 import publishMessage from '../helpers/publish-message';
 import Message from '../Message';
 
 const router = Router();
+
+function parseRelativeDate(value: string) {
+    const units: Record<string, number> = {
+        'second': 1,
+        'minute': 60,
+        'hour': 3600,
+        'day': 86400
+    }
+
+    let totalMs = 0;
+
+    for (const unit of Object.keys(units)) {
+        const regex = new RegExp('(?<quantity>\\d+)\\s+' + unit + 's?', 'i');
+        const matches = value.trim().match(regex);
+
+        if (matches && matches.groups) {
+            totalMs += parseInt(matches.groups.quantity, 10) * units[unit] * 1000;
+        }
+    }
+
+    return totalMs;
+
+}
 
 async function validate(req: Request, res: Response, next: NextFunction): Promise<NextFunction|void> {
     if (Object.keys(req.body).length === 0) {
@@ -14,9 +36,9 @@ async function validate(req: Request, res: Response, next: NextFunction): Promis
     }
 
     if (req.body.expiresAt) {
-        const parsedExpiration = dateparser.parse(req.body.expiresAt);
-        if (parsedExpiration) {
-            req.body.expiresAt = new Date(Date.now() + parsedExpiration.value);
+        const parsedExpiration = parseRelativeDate(req.body.expiresAt);
+        if (parsedExpiration > 0) {
+            req.body.expiresAt = new Date(Date.now() + parsedExpiration);
         }
     }
 
