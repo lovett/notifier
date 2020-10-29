@@ -2,7 +2,6 @@
 ._*
 .\#*
 \#*
-TAGS
 node_modules
 build
 *.log
@@ -14,14 +13,5 @@ ansible/*.retry
 ansible/inventory
 ansible/vars.yml
 .vscode
-modules/**/*.js
-app/scripts/**/*.js
-notifier.js
-server/public/*
-!server/public/app-icon.png
-!server/public/favicon.ico
-!server/public/favicon.png
-!server/public/robots.txt
-!server/public/index.html
 .cache
 .cookiejar

@@ -32,7 +32,7 @@ backend-tsc:
 
 # Build front-end assets for the browser UI.
 ui: dummy
-	parcel watch ui/index.html --out-dir server/public --no-hmr
+	parcel watch ui/index.html --out-dir build/public --no-hmr
 
 # Authenticate with the server as the default user.
 .cookiejar:
