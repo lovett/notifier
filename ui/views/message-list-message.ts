@@ -33,7 +33,6 @@ export default {
 
     stopExpirationTimer(): void {
         clearInterval(this.expirationTimer);
-        delete this.expirationTimer;
     },
 
     oninit(vnode: m.Vnode): void {

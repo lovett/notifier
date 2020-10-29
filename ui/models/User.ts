@@ -56,8 +56,8 @@ export default {
             method: 'GET',
             url: 'services',
             withCredentials: true,
-        }).then((services: Service[]) => {
-            for (const service of services) {
+        }).then((services: unknown) => {
+            for (const service of services as Service[]) {
                 currentUser.settings[service.key] = service.value;
             }
         }).catch((e) => {
