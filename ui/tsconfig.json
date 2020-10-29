@@ -1,16 +1,8 @@
 {
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "es2019"
-    ],
-    "sourceMap": false,
-    "strictFunctionTypes": false,
-    "outDir": "../build/public",
-    "target": "es2019",
-    "types": [],
-    "esModuleInterop": true
-  },
-  "extends": "../tsconfig.json"
+    "esModuleInterop": true,
+    "strict": true,
+    "target": "ES2020",
+    "types": []
+  }
 }
