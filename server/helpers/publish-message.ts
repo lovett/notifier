@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as needle from 'needle';
-import * as db from '../db';
+import db from '../db';
 import Message from '../Message';
 
 function publishWebhook(message: Message, url: string): void {

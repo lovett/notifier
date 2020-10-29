@@ -6,7 +6,7 @@ import express from 'express';
 import nconf from 'nconf';
 import path from 'path';
 
-import { connect, createSchema, addUser, getExpiringMessages } from './db';
+import db from './db';
 import archive from './routes/archive';
 import asset from './middleware/asset';
 import auth from './routes/auth';
@@ -86,7 +86,7 @@ app.use(bodyParser.json({
 
 app.use(noBlanks);
 
-connect(nconf.get('NOTIFIER_DB_DSN'));
+db.connect(nconf.get('NOTIFIER_DB_DSN'));
 
 /**
  * Routes
@@ -127,14 +127,14 @@ if (!module.parent) {
     server.on('listening', async () => {
         process.stdout.write(`Listening on ${nconf.get('NOTIFIER_HTTP_IP')}:${nconf.get('NOTIFIER_HTTP_PORT')}\n`);
 
-        await createSchema();
+        await db.createSchema();
 
-        await addUser(
+        await db.addUser(
             nconf.get('NOTIFIER_DEFAULT_USER'),
             nconf.get('NOTIFIER_DEFAULT_USER_PASSWORD')
         );
 
-        app.locals.expirationCache = await getExpiringMessages();
+        app.locals.expirationCache = await db.getExpiringMessages();
 
         setInterval(scheduler, 1_000, app);
 

@@ -1,4 +1,4 @@
-import * as db from '../db';
+import db from '../db';
 import User from '../User';
 import { Request, Response, Router } from 'express';
 import Token from '../Token';

@@ -1,4 +1,4 @@
-import * as db from './db';
+import db from './db';
 import publishMessage from './helpers/publish-message';
 import { Application } from 'express';
 
