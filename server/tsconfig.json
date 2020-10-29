@@ -1,13 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "es6"
-    ],
-    "sourceMap": false,
-    "strictFunctionTypes": false,
-    "outDir": "../build",
-    "target": "ES6",
-    "types": []
-  },
-  "extends": "../tsconfig.json"
+    "strict": true,
+    "esModuleInterop": true
+  }
 }

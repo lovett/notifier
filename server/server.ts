@@ -1,12 +1,12 @@
-import * as bodyParser from 'body-parser';
-import * as childProcess from 'child_process';
-import * as compression from 'compression';
-import * as cookieParser from 'cookie-parser';
-import * as express from 'express';
-import * as nconf from 'nconf';
-import * as path from 'path';
+import bodyParser from 'body-parser';
+import childProcess from 'child_process';
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import express from 'express';
+import nconf from 'nconf';
+import path from 'path';
 
-import * as db from './db';
+import { connect, createSchema, addUser, getExpiringMessages } from './db';
 import archive from './routes/archive';
 import asset from './middleware/asset';
 import auth from './routes/auth';
@@ -86,7 +86,7 @@ app.use(bodyParser.json({
 
 app.use(noBlanks);
 
-db.connect(nconf.get('NOTIFIER_DB_DSN'));
+connect(nconf.get('NOTIFIER_DB_DSN'));
 
 /**
  * Routes
@@ -127,14 +127,14 @@ if (!module.parent) {
     server.on('listening', async () => {
         process.stdout.write(`Listening on ${nconf.get('NOTIFIER_HTTP_IP')}:${nconf.get('NOTIFIER_HTTP_PORT')}\n`);
 
-        await db.createSchema();
+        await createSchema();
 
-        await db.addUser(
+        await addUser(
             nconf.get('NOTIFIER_DEFAULT_USER'),
             nconf.get('NOTIFIER_DEFAULT_USER_PASSWORD')
         );
 
-        app.locals.expirationCache = await db.getExpiringMessages();
+        app.locals.expirationCache = await getExpiringMessages();
 
         setInterval(scheduler, 1_000, app);
 

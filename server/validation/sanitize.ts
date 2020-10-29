@@ -1,4 +1,4 @@
-import * as sanitizeHtml from 'sanitize-html';
+import sanitizeHtml from 'sanitize-html';
 
 /**
  * Remove all markup from a value
