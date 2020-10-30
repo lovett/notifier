@@ -28,7 +28,7 @@ backend-server:
 	ls build/***.js | entr -r node build/server.js
 
 backend-tsc:
-	tsc -p server --outDir build --watch
+	tsc -p server --watch
 
 # Build front-end assets for the browser UI.
 ui: dummy
