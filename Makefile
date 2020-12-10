@@ -6,7 +6,7 @@ TMUX_SESSION_NAME := notifier
 export PATH := ./node_modules/.bin:$(PATH)
 
 # Gather and compile the server and UI files in preparation for deployment.
-build: setup
+build: dummy setup
 	rm -rf build
 	tsc -p server --outDir build
 	parcel build --out-dir build/public --no-source-maps --log-level=1 ui/index.html
@@ -89,7 +89,7 @@ workspace:
 	tmux attach-session -t "$(TMUX_SESSION_NAME)"
 
 # Install the application on the production host via Ansible.
-install:
+install: build
 	ansible-playbook ansible/install.yml
 
 # Lint the source files for the server.
