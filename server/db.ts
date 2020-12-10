@@ -30,7 +30,8 @@ export default {
         const readDir = util.promisify(fs.readdir);
         const readFile = util.promisify(fs.readFile);
 
-        const schemaDir = path.join(__dirname, '..', 'schema');
+        const schemaDir = path.join(__dirname, 'schema');
+
         const schemaFiles = await readDir(schemaDir);
 
         for (const schemaFile of schemaFiles) {

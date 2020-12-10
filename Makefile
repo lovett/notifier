@@ -10,7 +10,7 @@ build: dummy setup
 	rm -rf build
 	tsc -p server --outDir build
 	parcel build --out-dir build/public --no-source-maps --log-level=1 ui/index.html
-	cp -r schema build/
+	cp -r server/schema build/
 	cp package.json package-lock.json .npmrc build/
 	cd build && npm ci --production
 	cd build && rm package.json package-lock.json .npmrc
