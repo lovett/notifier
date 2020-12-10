@@ -25,7 +25,7 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
         if (authType.toLowerCase() === 'basic') {
             const [authUser, authPass] = Buffer.from(
                 credential, 'base64'
-            ).toString().split(':', 1);
+            ).toString().split(':', 2);
 
             user = await db.getUserByToken(authUser, authPass);
         }
