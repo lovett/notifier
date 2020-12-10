@@ -4,7 +4,7 @@
     application_user: notifier
     application_group: notifier
     installation_directory: /srv/notifier
-    nodejs_path: /usr/bin/node
+    nodejs_path: /usr/local/bin/node
   tasks:
   - name: Create the application user
     become: true
