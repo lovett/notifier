@@ -80,32 +80,29 @@ export default {
         }
 
         return m(rootTag, rootAttrs, [
-            m('.badge', [
-                (message.badge) ? m('img', { src: message.badge }) : m('div'),
-            ]),
+            (message.badge) ? m('img.badge', { src: message.badge }) : m('.badge'),
 
-            m('header', [
-                m('h1', message.title),
+            m('.details', [
+                m('.title', message.title),
 
                 m('time', (message.expiration) ? message.expiresAt() : message.receivedAt()),
 
-                (message.domain) ? m('p.domain', message.domain) : null,
+                (message.domain) ? m('.domain', message.domain) : null,
+                m('.body', message.body),
             ]),
 
-            m('p', message.body),
+            m('.index', index + 1),
 
-            m('a.close', {
+            m('a.closer', {
                 href: '#',
                 onclick: (e: Event) => {
                     e.preventDefault();
                     e.stopPropagation();
                     cache.remove(message.publicId);
                 },
-            }, [
-                m('span'),
-            ]),
+            }),
 
-            m('.index', index + 1),
+
         ]);
     },
 };

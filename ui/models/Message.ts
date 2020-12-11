@@ -92,6 +92,10 @@ export default class Message {
             classes.push('selected');
         }
 
+        if (this.url) {
+            classes.push('linked');
+        }
+
         return `div.${classes.join('.')}`;
     }
 

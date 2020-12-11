@@ -1,17 +1,13 @@
 .message {
-    outline: 0;
-    box-sizing: border-box;
-    border: 0.25em solid transparent;
+    display: grid;
+    grid-template-columns: 3.5em auto 2em;
+    grid-template-rows: 1.5em 1fr;
     background-color: white;
-    overflow: hidden;
-    position: relative;
-    padding: 0.75em 3.5em 0.75em 4em;
-    display: block;
     color: black;
     break-inside: avoid;
     page-break-inside: avoid;
     vertical-align: top;
-    line-height: 1.5;
+    min-height: 5em;
 
     &.online {
         &.stuck {
@@ -25,44 +21,49 @@
         }
     }
 
-    .index {
-        position: absolute;
-        top: 0;
-        left: 0;
-        font-size: 0.5em;
-        padding: 0.5em 0.75em;
+    &.linked:hover {
+        cursor: pointer;
     }
 
-    .close {
-        position: absolute;
-        top: 0;
-        right: 0;
-        display: block;
+    .badge {
+        grid-row: 1 / span 2;
+        background: transparent url('../svg/default.svg') no-repeat center;
+        background-size: 60%;
+        width: 100%;
         height: 100%;
-        transition: opacity 0.1s 0.2s;
-        outline: 0;
-
-        span {
-            display: block;
-            background: transparent url(../svg/close.svg) no-repeat center;
-            background-size: contain;
-            width: 3em;
-            height: 100%;
-            fill: black;
-        }
     }
 
-    h1 {
+    img.badge {
+        grid-row: 1 / span 2;
+        width: 60%;
+        height: auto;
+        display: block;
+        margin: auto;
+    }
+
+    .details {
+        padding: 0.5em;
+        grid-row: 1 / span 2;
+    }
+
+    .index {
+        font-size: 0.75em;
+        text-align: center;
+        padding: 0.25em 0;
+    }
+
+    .closer {
+        background: transparent url(../svg/close.svg) no-repeat center;
+        background-size: contain;
+        width: 2em;
+        height: 2em;
+        align-self: end;
+        justify-self: center;
+    }
+
+    .title {
         font-size: 1.1em;
         font-weight: bold;
-        margin: 0 0 0.25em 0;
-        padding: 0;
-        line-height: 1.2;
-    }
-
-    p {
-        margin: 0;
-        padding: 0;
     }
 
     time {
