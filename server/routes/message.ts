@@ -59,6 +59,7 @@ async function retract(req: Request, res: Response, next: NextFunction): Promise
 
     if (!message.localId) {
         next();
+        return;
     }
 
     try {
