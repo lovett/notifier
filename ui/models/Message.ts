@@ -67,7 +67,7 @@ export default class Message {
         const now = new Date();
         now.setHours(0, 0, 0, 0);
 
-        return (now.getTime() - received.getTime()) / 86400_000;
+        return Math.ceil((now.getTime() - received.getTime()) / 86400_000);
     }
 
     /**
@@ -105,33 +105,33 @@ export default class Message {
     public receivedAt(): string {
         const age = this.ageInDays();
         const options: Intl.DateTimeFormatOptions = {};
+        let prefix = '';
 
-        if (age < 1) {
+        if (age <= 1) {
+            prefix = 'Today ';
             options.hour = 'numeric';
             options.minute = '2-digit';
         }
 
-        if (age >= 1 && age < 7) {
+        if (age === 1) {
+            prefix = 'Yesterday ';
+        }
+
+        if (age >= 2 && age < 7) {
             options.weekday = 'long';
             options.hour = 'numeric';
             options.minute = '2-digit';
         }
 
         if (age >= 7) {
-            options.weekday = 'long';
             options.month = 'long';
             options.day = '2-digit';
         }
 
-        let suffix = '';
-        if (age === 1) {
-            suffix = ' yesterday';
-        }
-
-        return new Intl.DateTimeFormat(
+        return prefix + new Intl.DateTimeFormat(
             undefined,
             options,
-        ).format(this.received) + suffix;
+        ).format(this.received);
     }
 
     /**
