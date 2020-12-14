@@ -72,4 +72,4 @@ The browser UI and the server are both written in Typescript.
 
 
 ## Attribution
-This project uses icons from the [Typicons](http://typicons.com) library.
+This project uses icons from the [Typicons](https://www.s-ings.com/typicons/) library.
