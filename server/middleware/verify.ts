@@ -36,5 +36,6 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
         return next();
     }
 
+    res.setHeader('WWW-Authenticate', 'Basic realm="notifier"');
     res.sendStatus(401);
 };
