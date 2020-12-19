@@ -17,6 +17,7 @@ export default {
 
         this.expirationTimer = setInterval(() => {
             if (message.isExpired()) {
+                this.stopExpirationTimer();
                 cache.retract(message.publicId);
                 return;
             }
@@ -48,8 +49,6 @@ export default {
     onupdate(vnode: m.Vnode): void {
         const attrs = vnode.attrs as m.Attributes;
         const message = attrs.message as Message;
-
-        this.stopExpirationTimer();
 
         if (message.expiration) {
             this.startExpirationTimer(vnode);
