@@ -135,6 +135,27 @@ export default class Message {
     }
 
     /**
+     * Determine how soon to recheck for expiration.
+     */
+    public expirationRecheckInterval(): number {
+        if (!this.expiration) {
+            return 0;
+        }
+
+        const seconds = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
+
+        if (seconds <= 10) {
+            return 1;
+        }
+
+        if (seconds <= 60) {
+            return seconds - 10;
+        }
+
+        return seconds % 60;
+    }
+
+    /**
      * Format the expiration date as a human-readable string.
      */
     public expiresAt(): string {
@@ -159,7 +180,7 @@ export default class Message {
             return `Expires in ${seconds} seconds`;
         }
 
-        if (seconds < 60) {
+        if (seconds <= 60) {
             return `Expires in less than a minute`;
         }
 
