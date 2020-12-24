@@ -38,9 +38,13 @@ ui: dummy
 .cookiejar:
 	curl -c .cookiejar -d "username=notifier" -d "password=notifier" $(DEV_URL)/auth
 
-# Send a single test message.
+# Send a single test message in normal mode
 onemessage: .cookiejar
-	curl -b .cookiejar -d "title=Single test message" -d "expiresAt=10 minutes" -d "url=http://example.com" -d "localId=onemessage" $(DEV_URL)/message
+	curl -b .cookiejar -d "title=Single test message, normal mode" -d "expiresAt=10 minutes" -d "url=http://example.com" -d "localId=onemessage" $(DEV_URL)/message
+
+# Send a single test message in whisper mode.
+onemessage-whisper: .cookiejar
+	curl -b .cookiejar -d "deliveryStyle=whisper" -d "title=Single test message, whisper mode" -d "expiresAt=10 minutes" -d "url=http://example.com" -d "localId=onemessage" $(DEV_URL)/message
 
 # Retract a previously-sent test message.
 onemessage-retract: .cookiejar

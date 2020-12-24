@@ -32,6 +32,10 @@ export default class Message {
             m.body = json.body.replace(/\n/g, '<br/>');
         }
 
+        if (json.deliveryStyle) {
+            m.deliveryStyle = json.deliveryStyle;
+        }
+
         if (json.localId) {
             m.localId = json.localId;
         }
@@ -44,6 +48,7 @@ export default class Message {
     public body = '';
     public group = '';
     public publicId = '';
+    public deliveryStyle = 'normal';
     public domain = '';
     public expiration?: Date;
     public badge = '';

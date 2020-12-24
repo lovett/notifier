@@ -330,7 +330,7 @@ export default class Cache {
 
         this.add(message);
 
-        if (!document.hasFocus()) {
+        if (message.deliveryStyle === 'normal' && !document.hasFocus()) {
             message.sendBrowserNotification();
         }
 
