@@ -1,4 +1,5 @@
 import db from './db';
+import User from './User';
 import publishMessage from './helpers/publish-message';
 import { Application } from 'express';
 
@@ -18,10 +19,11 @@ async function scheduler(app: Application): Promise<void> {
         return;
     }
 
-    app.locals.expirationCache.forEach((value: [number, Date], publicId: string) => {
-        const [userId, expiration] = value;
+    app.locals.expirationCache.forEach(async (value: [User, Date], publicId: string) => {
+        const [user, expiration] = value;
         if (expiration < now) {
-            publishMessage(app, userId, null, publicId);
+            await db.markMessagesRead(user.id, [publicId]);
+            publishMessage(app, user.id, null, publicId);
             app.locals.expirationCache.delete(publicId);
         }
     });
