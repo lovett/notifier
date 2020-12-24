@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS messages (
     FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
-CREATE INDEX IF NOT EXISTS messages_unread ON messages (unread);
+CREATE INDEX IF NOT EXISTS messages_unread ON messages ((1)) WHERE unread=true;
 
 CREATE TABLE IF NOT EXISTS tokens (
     id SERIAL PRIMARY KEY,
