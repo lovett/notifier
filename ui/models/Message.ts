@@ -172,6 +172,10 @@ export default class Message {
         const minutes = Math.floor(seconds / 60);
         const hours  = Math.floor(minutes / 60);
         const days = Math.floor(hours / 24);
+        const expireTime = new Intl.DateTimeFormat(
+            undefined,
+            { hour: 'numeric', minute: '2-digit'},
+        ).format(this.expiration)
 
         if (seconds === 0) {
             return 'Expired!';
@@ -194,14 +198,11 @@ export default class Message {
         }
 
         if (minutes < 60) {
-            return `Expires in ${minutes} minutes`;
+            return `Expires in ${minutes} minutes at ${expireTime}`;
         }
 
         if (hours < 12) {
-            return 'Expires at ' + new Intl.DateTimeFormat(
-                undefined,
-                { hour: 'numeric', minute: '2-digit' },
-            ).format(this.expiration);
+            return `Expires in ${hours} hours at ${expireTime}`;
         }
 
         if (days === 1) {
