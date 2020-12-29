@@ -147,17 +147,17 @@ export default class Message {
             return 0;
         }
 
-        const seconds = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
+        const secondsLeft = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
 
-        if (seconds <= 10) {
+        if (secondsLeft <= 10) {
             return 1;
         }
 
-        if (seconds <= 60) {
-            return seconds - 10;
+        if (secondsLeft <= 60) {
+            return secondsLeft - 10;
         }
 
-        return seconds % 60;
+        return 60 - (new Date()).getSeconds();
     }
 
     /**
