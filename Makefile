@@ -45,8 +45,8 @@ server: dummy
 # Compile the frontend.
 ui: dummy
 	@echo Building UI
-	esbuild --bundle --outdir=build/public ui/index.ts
-	esbuild --bundle --outdir=build/public worker/worker.ts
+	esbuild --bundle --minify --outdir=build/public ui/index.ts
+	esbuild --bundle --minify --outdir=build/public worker/worker.ts
 	cp ui/index.html build/public/
 	cp ui/favicon.ico build/public/favicon.ico
 	cp ui/favicon.png build/public/favicon.png
