@@ -24,13 +24,22 @@ setup:
 dev-server: dummy
 	find server -type f | entr -c -r -s 'make server && node build/server.js'
 
-# Build the frontend when files are modified.
+# Watch for changes to the UI and recompile.
 dev-ui: dummy
 	find ui -type f | entr -c make ui
 
 # Compile the backend.
 server: dummy
-	tsc -p server --outDir build
+	@echo Building Server
+	esbuild --bundle \
+		--outdir=build \
+		--platform=node \
+		--external:pg-native \
+		--external:nconf \
+		--external:express \
+		--external:request \
+		--external:yamlparser \
+		server/server.ts
 	cp -r server/schema build/
 
 # Compile the frontend.
