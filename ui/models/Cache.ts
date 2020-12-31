@@ -152,7 +152,7 @@ export default class Cache {
             return;
         }
 
-        this.worker = new Worker('../../worker/worker.ts');
+        this.worker = new Worker('worker.js');
         this.worker.onmessage = this.onWorkerPush.bind(this);
         this.worker.postMessage(Command.connect);
     }

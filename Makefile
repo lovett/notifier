@@ -2,18 +2,15 @@
 
 DEV_URL := http://localhost:8080
 TMUX_SESSION_NAME := notifier
+NPM_FILES := package.json package-lock.json .npmrc
 
 export PATH := ./node_modules/.bin:$(PATH)
 
 # Gather and compile the server and UI files in preparation for deployment.
-build: dummy setup
-	rm -rf build
-	tsc -p server --outDir build
-	parcel build --out-dir build/public --no-source-maps --log-level=1 ui/index.html
-	cp -r server/schema build/
-	cp package.json package-lock.json .npmrc build/
+build: dummy setup server ui
+	cp $(NPM_FILES) build/
 	cd build && npm ci --production
-	cd build && rm package.json package-lock.json .npmrc
+	cd build && rm $(NPM_FILES)
 
 # Install git hook scripts.
 hooks: dummy
@@ -23,16 +20,29 @@ hooks: dummy
 setup:
 	DISABLE_OPENCOLLECTIVE=1 npm install
 
-# Start a server instance for development.
-backend-server:
-	ls build/***.js | entr -r node build/server.js
+# Launch a server that restarts when files are modified.
+dev-server: dummy
+	find server -type f | entr -c -r -s 'make server && node build/server.js'
 
-backend-tsc:
-	tsc -p server --watch
+# Build the frontend when files are modified.
+dev-ui: dummy
+	find ui -type f | entr -c make ui
 
-# Build front-end assets for the browser UI.
+# Compile the backend.
+server: dummy
+	tsc -p server --outDir build
+	cp -r server/schema build/
+
+# Compile the frontend.
 ui: dummy
-	parcel watch ui/index.html --out-dir build/public --no-hmr
+	@echo Building UI
+	esbuild --bundle --outdir=build/public ui/index.ts
+	esbuild --bundle --outdir=build/public worker/worker.ts
+	cp ui/index.html build/public/
+	cp ui/favicon.ico build/public/favicon.ico
+	cp ui/favicon.png build/public/favicon.png
+	cp -r ui/svg build/public/svg
+	lessc ui/less/app.less build/public/app.css
 
 # Authenticate with the server as the default user.
 .cookiejar:
@@ -80,13 +90,10 @@ workspace:
 	tmux new-window -a -t "$(TMUX_SESSION_NAME)" "$$SHELL"
 
 ## 2: UI
-	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "ui" "make ui"
+	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "dev-ui" "make dev-ui"
 
-## 3: Dev server
-	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "backend-server" "make backend-server"
-
-## 4: TSC
-	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "backend-tsc" "make backend-tsc"
+## 3: Server
+	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "dev-server" "make dev-server"
 
 ## Activate
 	tmux select-window -t "$(TMUX_SESSION_NAME)":0
