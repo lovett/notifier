@@ -163,6 +163,7 @@ export default class Cache {
         }
         this.worker.postMessage(Command.disconnect);
         this.worker.terminate();
+        this.worker = undefined;
     }
 
     public deselect(): void {
