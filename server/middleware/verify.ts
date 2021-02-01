@@ -10,11 +10,12 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
     if ('token' in req.cookies) {
         const [key, value] = req.cookies.token.split(',', 2);
         user = await db.getUserByToken(key, value);
-    }
 
-    if (user) {
-        req.user = user;
-        return next();
+        if (user) {
+            await db.markTokenSeen(key, value);
+            req.user = user;
+            return next();
+        }
     }
 
     if ('authorization' in req.headers) {
@@ -28,12 +29,13 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
             ).toString().split(':', 2);
 
             user = await db.getUserByToken(authUser, authPass);
-        }
-    }
 
-    if (user) {
-        req.user = user;
-        return next();
+            if (user) {
+                await db.markTokenSeen(authUser, authPass);
+                req.user = user;
+                return next();
+            }
+        }
     }
 
     res.setHeader('WWW-Authenticate', 'Basic realm="notifier"');

@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS tokens (
     persist boolean DEFAULT false NOT NULL,
     value text NOT NULL,
     created_at timestamp DEFAULT NOW(),
+    last_seen timestamp DEFAULT NOW(),
     user_id integer,
     FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE SET NULL
 );

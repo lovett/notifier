@@ -89,6 +89,19 @@ export default {
         }
     },
 
+    markTokenSeen: async function (key: string, value: string): Promise<null> {
+        const sql = `UPDATE tokens SET last_seen=NOW() ` +
+            `WHERE key=$1 AND value=$2`;
+
+        try {
+            await pool.query(sql, [key, value]);
+        } catch (err) {
+            console.log(err);
+        }
+
+        return null;
+    },
+
     addUser: async function (username: string, password: string): Promise<User | null> {
         const sql = `INSERT INTO users (username, password_hash) ` +
             `VALUES ($1, $2) ON CONFLICT DO NOTHING`;
