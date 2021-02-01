@@ -22,7 +22,7 @@ setup:
 
 # Launch a server that restarts when files are modified.
 dev-server: dummy
-	find server -type f | entr -c -r -s 'make server && node build/server.js'
+	find server -type f | entr -c -r -s 'make server && node --trace-warnings build/server.js'
 
 # Watch for changes to the UI and recompile.
 dev-ui: dummy
