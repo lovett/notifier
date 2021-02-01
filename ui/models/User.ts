@@ -46,7 +46,6 @@ export default {
     },
 
     discardCookie(): void {
-        console.log('discarding token cookie');
         document.cookie = `token=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT`;
     },
 
