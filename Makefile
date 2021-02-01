@@ -26,7 +26,7 @@ dev-server: dummy
 
 # Watch for changes to the UI and recompile.
 dev-ui: dummy
-	find ui -type f | entr -c make ui
+	find ui worker -type f | entr -c make ui
 
 # Compile the backend.
 server: dummy
