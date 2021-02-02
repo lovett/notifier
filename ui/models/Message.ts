@@ -248,7 +248,7 @@ export default class Message {
 
     public visit(): void {
         if (this.url) {
-            window.open(this.url);
+            window.open(this.url, '_blank', 'noreferrer');
         }
     }
 }
