@@ -71,7 +71,7 @@ export default {
     },
 
     getUserByToken: async function(key: string, value: string): Promise<User | null> {
-        const sql = `SELECT user_id as id ` +
+        const sql = `SELECT user_id, label, persist ` +
             `FROM tokens ` +
             `WHERE key=$1 ` +
             `AND value=$2`;
@@ -82,19 +82,29 @@ export default {
                 return null;
             }
 
-            return new User(res.rows[0]);
+            const token = new Token(
+                res.rows[0].label,
+                res.rows[0].persist,
+                key,
+                value
+            );
+
+            return new User({
+                id: res.rows[0].user_id,
+                token,
+            });
         } catch (err) {
             console.log(err);
             return null;
         }
     },
 
-    markTokenSeen: async function (key: string, value: string): Promise<null> {
+    markTokenSeen: async function (token: Token): Promise<null> {
         const sql = `UPDATE tokens SET last_seen=NOW() ` +
             `WHERE key=$1 AND value=$2`;
 
         try {
-            await pool.query(sql, [key, value]);
+            await pool.query(sql, [token.key, token.value]);
         } catch (err) {
             console.log(err);
         }

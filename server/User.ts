@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import * as util from 'util';
+import Token from './Token';
 
 export default class User {
     public static hashPassword(password: string): string {
@@ -22,6 +23,7 @@ export default class User {
     private static hashDigest = 'sha1';
 
     public readonly id: number = 0;
+    public readonly token?: Token;
     public readonly username: string = '';
     public readonly createdAt?: Date;
     private readonly passwordHash: string = '';

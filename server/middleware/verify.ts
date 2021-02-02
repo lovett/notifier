@@ -1,5 +1,7 @@
 import db from '../db';
+import Token from '../Token';
 import { NextFunction, Request, Response } from 'express';
+import { CookieOptions } from 'express-serve-static-core'
 
 /**
  * Identify a user based on cookie or basic auth.
@@ -12,7 +14,19 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
         user = await db.getUserByToken(key, value);
 
         if (user) {
-            await db.markTokenSeen(key, value);
+            const token = user.token as Token;
+            if (token.persist) {
+                await db.markTokenSeen(token);
+
+                const cookieOptions: CookieOptions = {
+                    path: req.app.locals.config.get('NOTIFIER_BASE_URL'),
+                    sameSite: 'strict',
+                    expires: new Date(Date.now() + (86400000 * 30))
+                }
+
+                res.cookie('token', `${token.key},${token.value}`, cookieOptions);
+            }
+
             req.user = user;
             return next();
         }
@@ -31,7 +45,8 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
             user = await db.getUserByToken(authUser, authPass);
 
             if (user) {
-                await db.markTokenSeen(authUser, authPass);
+                const token = user.token as Token;
+                await db.markTokenSeen(token);
                 req.user = user;
                 return next();
             }
