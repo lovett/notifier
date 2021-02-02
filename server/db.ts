@@ -377,8 +377,7 @@ export default {
 
     pruneStaleTokens: async function (): Promise<boolean> {
         const sql = `DELETE FROM tokens ` +
-            `WHERE DATE_PART('day', now() - created_at) > 7 ` +
-            `AND persist=False`;
+            `WHERE DATE_PART('day', now() - last_seen) > 14`;
 
         try {
             await pool.query(sql);
