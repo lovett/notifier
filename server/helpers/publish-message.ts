@@ -9,12 +9,14 @@ function publishWebhook(message: Message, url: string): void {
     };
 
     needle.post(url, message, options, (err, res) => {
+        console.log(`Webhook POST to {$url} returned ${res.statusCode}`);
+
         if (err) {
-            return;
+            console.log(err.message);
         }
 
         if (res.body && res.body.error) {
-            return;
+            console.log(res.body.error);
         }
     });
 }
