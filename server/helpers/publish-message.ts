@@ -1,26 +1,37 @@
 import * as express from 'express';
-import * as needle from 'needle';
+import * as http from 'http';
+import * as https from 'https';
 import db from '../db';
 import Message from '../Message';
 
 function publishWebhook(message: Message, url: string): void {
+    const payload = JSON.stringify(message);
+    const endpoint = new URL(url);
+
     const options = {
-        json: true,
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': payload.length,
+            'User-Agent': 'notifier'
+        }
     };
 
-    needle.post(url, message, options, (err, res) => {
-        if (res && res.statusCode) {
-            console.log(`Webhook POST to ${url} returned ${res.statusCode}`);
-        }
+    let req = https.request(endpoint, options);
 
-        if (err) {
-            console.error(err.message);
-        }
+    if (endpoint.protocol === 'http:') {
+        req = http.request(endpoint, options);
+    }
 
-        if (res.body && res.body.error) {
-            console.error(res.body.error);
-        }
+    req.on('error', (err) => {
+        console.error(`Webhook POST to ${url} failed: ${err.message}`);
     });
+
+    req.once('response', (res: http.IncomingMessage) => {
+        console.log(`Webhook POST to ${url} returned ${res.statusCode}`);
+    });
+
+    req.end(payload);
 }
 
 export default (app: express.Application, userId: number, message: Message | null, retractionId?: string): void => {
@@ -40,20 +51,15 @@ export default (app: express.Application, userId: number, message: Message | nul
         return;
     }
 
-    if (!app.locals.pushClients.has(userId)) {
-        return;
+    const pushClients = app.locals.pushClients.get(userId);
+
+    if (pushClients) {
+        for (const res of pushClients.values()) {
+            res.write(`event: message\ndata: ${jsonMessage}\n\n`);
+        }
     }
 
-    const clients = app.locals.pushClients.get(userId);
-    for (const res of clients.values()) {
-        res.write(`event: message\ndata: ${jsonMessage}\n\n`);
-    }
-
-    if (message && message.deliveryStyle === 'whisper') {
-        return;
-    }
-
-    if (message) {
+    if (message && message.deliveryStyle !== 'whisper') {
         (async (): Promise<void> => {
             const urls = await db.getWebhookUrls(userId);
             for (const url of urls) {
