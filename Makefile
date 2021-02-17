@@ -6,8 +6,12 @@ NPM_FILES := package.json package-lock.json .npmrc
 
 export PATH := ./node_modules/.bin:$(PATH)
 
+# Reset the build directory to a pristine state.
+clean: dummy
+	rm -rf build
+
 # Gather and compile the server and UI files in preparation for deployment.
-build: dummy setup server ui
+build: dummy clean setup server ui
 	cp $(NPM_FILES) build/
 	cd build && npm ci --production
 	cd build && rm $(NPM_FILES)
