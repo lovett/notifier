@@ -377,7 +377,8 @@ export default {
 
     pruneStaleTokens: async function (): Promise<boolean> {
         const sql = `DELETE FROM tokens ` +
-            `WHERE DATE_PART('day', now() - last_seen) > 14`;
+            `WHERE DATE_PART('day', now() - last_seen) > 14
+             AND key <> 'webhook'`;
 
         try {
             await pool.query(sql);
