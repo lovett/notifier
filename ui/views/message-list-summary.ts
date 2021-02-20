@@ -6,19 +6,20 @@ export default {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
         const selector = 'header#messageListSummary';
+        const count = cache.messageCount();
 
         if (cache.isOffline) {
             return m(selector, { class: 'offline' }, 'Disconnected');
         }
 
-        if (cache.items.size === 0) {
+        if (count === 0) {
             return m(selector, '');
         }
 
-        if (cache.items.size === 1) {
+        if (count === 1) {
             return m(selector, '1 message');
         }
 
-        return m(selector, `${cache.items.size} messages`);
+        return m(selector, `${count} messages`);
     },
 };

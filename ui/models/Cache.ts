@@ -2,13 +2,15 @@ import Command from '../../worker/command';
 import Message from './Message';
 import m from 'mithril';
 
-type ItemMap = Map<string, Message>;
+type ItemMap = Map<string, Message|null>;
 
-type ItemIterator = IterableIterator<[string, Message]>;
+type ItemIterator = IterableIterator<[string, Message|null]>;
+
+type MessageIterator = IterableIterator<Message>;
 
 type ItemIteratorResult = {
     done: boolean;
-    value: [string, Message];
+    value: [string, Message|null];
 }
 
 /**
@@ -19,9 +21,9 @@ export default class Cache {
 
     public isOffline = false;
 
-    public items: ItemMap = new Map();
+    private items: ItemMap = new Map();
 
-    public undoQueue: string[] = [];
+    private undoQueue: string[] = [];
 
     private worker?: Worker;
 
@@ -44,7 +46,7 @@ export default class Cache {
                 next(): ItemIteratorResult {
                     return {
                         done: index === 0,
-                        value: pairs[--index],
+                        value: pairs[--index]
                     };
                 },
             };
@@ -74,28 +76,34 @@ export default class Cache {
         m.redraw();
     }
 
+    public *messages(): MessageIterator {
+        for (const [, value] of this.items) {
+            if (!value) continue;
+            yield value;
+        }
+    }
+
+    public messageCount(): number {
+        return this.items.size - this.undoQueue.length;
+    }
+
     /**
      * Mark a message as being in-focus by the UI.
      */
     public select(publicId: string): void {
-        this.items.forEach((value: Message) => {
-            value.selected = (value.publicId === publicId);
-        });
+        for (const message of this.messages()) {
+            message.selected = (message.publicId === publicId);
+        }
         m.redraw();
     }
 
     /**
-     * Select a message based on its reverse index in the container.
-     *
-     * It's a reverse index because the container is displayed in
-     * newest-first order, but its insertion order is oldest-first.
+     * Select a message based on its index in the container.
      */
-    public selectByReverseIndex(index: number): void {
-        const reverseIndex = this.items.size - index;
-        let counter = 0;
-
-        for (const message of this.items.values()) {
-            message.selected = (counter === reverseIndex);
+    public selectByIndex(index: number): void {
+        let counter = 1;
+        for (const message of this.messages()) {
+            message.selected = (counter === index);
             counter++;
         }
 
@@ -106,7 +114,7 @@ export default class Cache {
      * Locate the selected message.
      */
     public selected(): Message | null {
-        for (const message of this.items.values()) {
+        for (const message of this.messages()) {
             if (message.selected) {
                 return message;
             }
@@ -144,7 +152,7 @@ export default class Cache {
             targetIndex = 1;
         }
 
-        this.selectByReverseIndex(targetIndex);
+        this.selectByIndex(targetIndex);
     }
 
     public startWorker(): void {
@@ -167,7 +175,7 @@ export default class Cache {
     }
 
     public deselect(): void {
-        for (const message of this.items.values()) {
+        for (const message of this.messages()) {
             message.selected = false;
         }
         m.redraw();
@@ -239,17 +247,17 @@ export default class Cache {
      * Remove a message from the container.
      */
     public retract(publicId: string): void {
-        if (!this.items.has(publicId)) {
+        const message = this.items.get(publicId);
+
+        if (!message)  {
             return;
         }
-
-        const message = this.items.get(publicId) as Message;
 
         if (message.browserNotification) {
             message.browserNotification.close();
         }
 
-        this.items.delete(publicId);
+        this.items.set(publicId, null);
         m.redraw();
     }
 

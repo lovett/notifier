@@ -53,7 +53,7 @@ export default {
 
         nodes.push(m(messageListSummary, { cache } as m.Attributes));
 
-        if (cache.items.size === 0) {
+        if (cache.messageCount() === 0) {
             nodes.push(m('main#messageListEmptyBody', [
                 m('.icon'),
                 m('p', 'You have no messages.'),
@@ -62,7 +62,7 @@ export default {
             const messageList: m.Vnode[] = [];
 
             let index = 0;
-            for (const [, message] of cache.items) {
+            for (const message of cache.messages()) {
                 messageList.push(m(messageListMessage, { message, index, cache } as m.Attributes));
                 index++;
             }
