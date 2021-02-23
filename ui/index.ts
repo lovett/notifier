@@ -12,15 +12,30 @@ import { ShortcutService } from './models/ShortcutService';
 import User from './models/User';
 
 const root = document.getElementById('app-container') as HTMLElement;
+let cache: Cache | null = null;
+let shortcutService: ShortcutService | null = null;
 
-const loginRequired = (): void => {
+function loginRequired() {
     if (User.isLoggedOut()) {
         m.route.set('/login');
     }
-};
+}
 
-let cache: Cache | null = null;
-let shortcutService: ShortcutService | null = null;
+function onOffline() {
+    if (cache) {
+        cache.goOffline();
+    }
+}
+
+function onOnline() {
+    if (cache) {
+        cache.goOnline();
+    }
+}
+
+window.addEventListener('offline', onOffline);
+
+window.addEventListener('online', onOnline);
 
 document.addEventListener('keydown', (e: KeyboardEvent) => {
     const charCode: number = e.which || e.keyCode;

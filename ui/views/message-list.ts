@@ -5,46 +5,6 @@ import messageListMessage from './message-list-message';
 import Cache from '../models/Cache';
 
 export default {
-    oncreate(vnode: m.Vnode): void {
-        const attrs = vnode.attrs as m.Attributes;
-        const cache = attrs.cache as Cache;
-
-        window.addEventListener(
-            'offline',
-            () => cache.goOffline(),
-        );
-
-        window.addEventListener(
-            'online',
-            () => cache.goOnline(),
-        );
-    },
-
-    onremove(vnode: m.Vnode): void {
-        const attrs = vnode.attrs as m.Attributes;
-        const cache = attrs.cache as Cache;
-
-        document.removeEventListener(
-            'visibilitychange',
-            () => cache.deselect(),
-        );
-
-        window.removeEventListener(
-            'blur',
-            () => cache.deselect(),
-        );
-
-        window.removeEventListener(
-            'online',
-            () => cache.goOnline(),
-        );
-
-        window.removeEventListener(
-            'offline',
-            () => cache.goOffline(),
-        );
-    },
-
     view(vnode: m.Vnode): Array<m.Vnode> {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
