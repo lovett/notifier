@@ -17,8 +17,6 @@ type ItemIteratorResult = {
  * A container to hold notification messages.
  */
 export default class Cache {
-    public hasFilled = false;
-
     public isOffline = false;
 
     private items: ItemMap = new Map();
@@ -34,6 +32,7 @@ export default class Cache {
      * can be displayed in reverse-chronological order.
      */
     public constructor() {
+        this.fill();
         this.startWorker();
 
         const reverseIterator = function(this: ItemMap): ItemIterator {
@@ -61,6 +60,11 @@ export default class Cache {
 
     public goOnline(): void {
         this.isOffline = false;
+
+        if (this.worker) {
+            return;
+        }
+
         this.startWorker();
         this.fill();
         m.redraw();
@@ -156,10 +160,6 @@ export default class Cache {
     }
 
     public startWorker(): void {
-        if (this.worker) {
-            return;
-        }
-
         this.worker = new Worker('worker.js');
         this.worker.onmessage = this.onWorkerPush.bind(this);
         this.worker.postMessage(Command.connect);
@@ -275,8 +275,6 @@ export default class Cache {
             for (const message of messages) {
                 this.add(message);
             }
-
-            this.hasFilled = true;
         }).catch(() => {
             m.route.set('/logout');
         });
@@ -350,7 +348,7 @@ export default class Cache {
      * Convert an XHR response to a list of Message instances.
      */
     private extract(xhr: XMLHttpRequest): Array<Message> {
-        if (xhr.status === 401) {
+        if (xhr.status === 403) {
             throw new Error(xhr.responseText);
         }
 
