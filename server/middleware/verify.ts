@@ -30,6 +30,9 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
             req.user = user;
             return next();
         }
+
+        res.sendStatus(403);
+        return;
     }
 
     if ('authorization' in req.headers) {
@@ -51,6 +54,9 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
                 return next();
             }
         }
+
+        res.sendStatus(403);
+        return;
     }
 
     res.setHeader('WWW-Authenticate', 'Basic realm="notifier"');
