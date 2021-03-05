@@ -88,7 +88,13 @@ export default class Cache {
     }
 
     public messageCount(): number {
-        return this.items.size - this.undoQueue.length;
+        let counter = 0;
+        for (const message of this.messages()) {
+            if (message) {
+                counter++;
+            }
+        }
+        return counter;
     }
 
     /**
