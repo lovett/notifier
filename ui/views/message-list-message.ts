@@ -15,7 +15,7 @@ export default {
 
         setTimeout(() => {
             if (message.isExpired()) {
-                attrs.cache.retract(message);
+                attrs.cache.drop(message);
             }
 
             m.redraw();
@@ -68,7 +68,7 @@ export default {
                 onclick: (e: Event) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    cache.remove(message);
+                    cache.clear(message);
                 },
             }),
 

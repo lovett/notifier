@@ -23,7 +23,7 @@ export default class Cache {
         this._messages = new Map();
 
         // The messages map gets a custom iterator so that it is easier
-        // to present messages in newest-first order.
+        // to display messages in newest-first order.
         this._messages[Symbol.iterator] = function(this): MessageIterator {
             const pairs = Array.from(this.entries());
 
@@ -135,8 +135,8 @@ export default class Cache {
     /**
      * Tell the server to mark a message as read.
      */
-    public remove(message: Message): void {
-        this.retract(message);
+    public clear(message: Message): void {
+        this.drop(message);
 
         m.request('message/clear', {
             body: { publicId: message.publicId },
@@ -174,7 +174,7 @@ export default class Cache {
      * This is more elaborate than just deleting from the messages map
      * so that undo is easier.
      */
-    public retract(message: Message): void {
+    public drop(message: Message): void {
         if (message.browserNotification) {
             message.browserNotification.close();
         }
@@ -191,7 +191,7 @@ export default class Cache {
             method: 'GET',
             withCredentials: true,
         } as m.RequestOptions<Message[]>).then((messages: Message[]) => {
-            this.clear();
+            this.empty();
 
             for (const message of messages) {
                 this.add(message);
@@ -204,7 +204,7 @@ export default class Cache {
     /**
      * Empty out the messages map.
      */
-    public clear(): void {
+    public empty(): void {
         this._messages.clear();
         this.undoQueue = [];
     }

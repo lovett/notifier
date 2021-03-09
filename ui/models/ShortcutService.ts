@@ -40,7 +40,7 @@ export class ShortcutService {
             run() {
                 const message = cache.selected();
                 if (message) {
-                    cache.remove(message);
+                    cache.clear(message);
                 }
             },
             description: 'Mark the selected message as read and remove it',

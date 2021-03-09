@@ -47,7 +47,7 @@ function onMessage(e: MessageEvent): void {
     const message = Message.fromJson(e.data);
 
     if (message.isExpired()) {
-        cache.retract(message);
+        cache.drop(message);
         m.redraw();
         return;
     }
@@ -122,7 +122,7 @@ m.route(root, '/', {
                 User.logOut();
             }
 
-            cache.clear();
+            cache.empty();
             worker.postMessage(Command.disconnect);
         },
         render() {
