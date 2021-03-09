@@ -136,16 +136,6 @@ export default class Cache {
     }
 
     /**
-     * Remove focus from all messages.
-     */
-    public deselect(): void {
-        for (const message of this.messages()) {
-            message.selected = false;
-        }
-        m.redraw();
-    }
-
-    /**
      * Append a message to the messages map.
      *
      * Messages should be added in oldest-first order.

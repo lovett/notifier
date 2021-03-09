@@ -71,7 +71,11 @@ export class ShortcutService {
         this.bag.set('Escape', {
             run() {
                 m.route.set('/');
-                cache.deselect();
+                const message = cache.selected();
+                if (message) {
+                    message.selected = false;
+                    m.redraw();
+                }
             },
             description: 'Hide the shortcut list',
         });
