@@ -160,16 +160,6 @@ export default class Cache {
     }
 
     /**
-     * Mark the picked message as read.
-     */
-    public removeSelected(): void {
-        const message = this.selected();
-        if (message) {
-            this.remove(message.publicId)
-        }
-    }
-
-    /**
      * Bring back a previously-removed message.
      */
     public restore(): void {

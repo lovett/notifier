@@ -38,7 +38,10 @@ export class ShortcutService {
 
         this.bag.set('x', {
             run() {
-                cache.removeSelected();
+                const message = cache.selected();
+                if (message) {
+                    cache.remove(message.publicId);
+                }
             },
             description: 'Mark the selected message as read and remove it',
         });
