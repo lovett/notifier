@@ -7,35 +7,61 @@ import messageList from './views/message-list';
 import settings from './views/settings';
 import shortcuts from './views/shortcuts';
 
+import Message from './models/Message';
 import Cache from './models/Cache';
 import { ShortcutService } from './models/ShortcutService';
 import User from './models/User';
+import {Command, Event} from '../worker/postmessage';
 
 const root = document.getElementById('app-container') as HTMLElement;
-let cache: Cache | null = null;
-let shortcutService: ShortcutService | null = null;
+const cache = new Cache();
+const shortcutService = new ShortcutService(cache);
+const worker = new Worker('worker.js');
 
 function loginRequired() {
     if (User.isLoggedOut()) {
+        console.log('user is not logged in');
         m.route.set('/login');
     }
 }
 
-function onOffline() {
-    if (cache) {
-        cache.goOffline();
+function onMessage(e: MessageEvent): void {
+    cache.isOffline = false;
+
+    if (e.data === Event.connected) {
+        cache.fill();
+        return;
     }
+
+    if (e.data === Event.disconnected) {
+        cache.isOffline = true;
+        return;
+    }
+
+    if (e.data === Event.error) {
+        cache.isOffline = true;
+        m.redraw();
+        return;
+    }
+
+    const message = Message.fromJson(e.data);
+
+    if (message.isExpired()) {
+        cache.retract(message.publicId);
+        return;
+    }
+
+    cache.add(message);
+
+    if (message.deliveryStyle === 'normal' && !document.hasFocus()) {
+        message.sendBrowserNotification();
+    }
+
+    m.redraw();
+
 }
 
-function onOnline() {
-    if (cache) {
-        cache.goOnline();
-    }
-}
-
-window.addEventListener('offline', onOffline);
-
-window.addEventListener('online', onOnline);
+worker.addEventListener('message', onMessage);
 
 document.addEventListener('keydown', (e: KeyboardEvent) => {
     const charCode: number = e.which || e.keyCode;
@@ -54,19 +80,20 @@ document.addEventListener('keydown', (e: KeyboardEvent) => {
         return;
     }
 
-    if (shortcutService) {
-        shortcutService.match(e.key);
-    }
+    shortcutService.match(e.key);
 });
 
 m.route(root, '/', {
     '/': {
-        onmatch: loginRequired,
-        render() {
-            if (!cache) {
-                cache = new Cache();
-                shortcutService = new ShortcutService(cache);
+        onmatch() {
+            if (User.isLoggedOut()) {
+                m.route.set('/login');
+                return;
             }
+
+            worker.postMessage(Command.connect);
+        },
+        render() {
             return m(messageList, { cache } as m.Attributes);
         },
     } as m.RouteResolver,
@@ -94,13 +121,8 @@ m.route(root, '/', {
                 User.logOut();
             }
 
-            if (cache) {
-                cache.clear();
-                cache.stopWorker();
-            }
-
-            cache = null;
-            shortcutService = null;
+            cache.clear();
+            worker.postMessage(Command.disconnect);
         },
         render() {
             return m(logout);

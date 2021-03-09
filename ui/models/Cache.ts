@@ -1,48 +1,37 @@
-import Command from '../../worker/command';
 import Message from './Message';
 import m from 'mithril';
 
-type ItemMap = Map<string, Message|null>;
+type MessageIterator = IterableIterator<[string, Message|null]>;
 
-type ItemIterator = IterableIterator<[string, Message|null]>;
-
-type MessageIterator = IterableIterator<Message>;
-
-type ItemIteratorResult = {
+type MessageIteratorResult = {
     done: boolean;
     value: [string, Message|null];
 }
 
 /**
- * A container to hold notification messages.
+ * A container for a set of messages.
  */
 export default class Cache {
     public isOffline = false;
 
-    private items: ItemMap = new Map();
+    private undoQueue: string[];
 
-    private undoQueue: string[] = [];
+    private _messages: Map<string, Message|null>;
 
-    private worker?: Worker;
-
-    /**
-     * Attach the instance to a web worker for push-based updates.
-     *
-     * A custom iterator is used on the item map so that messages
-     * can be displayed in reverse-chronological order.
-     */
     public constructor() {
-        this.fill();
-        this.startWorker();
+        this.undoQueue = [];
+        this._messages = new Map();
 
-        const reverseIterator = function(this: ItemMap): ItemIterator {
+        // The messages map gets a custom iterator so that it is easier
+        // to present messages in newest-first order.
+        this._messages[Symbol.iterator] = function(this): MessageIterator {
             const pairs = Array.from(this.entries());
 
             let index = pairs.length;
 
             return {
-                [Symbol.iterator](): ItemIterator { return this; },
-                next(): ItemIteratorResult {
+                [Symbol.iterator](): MessageIterator { return this; },
+                next(): MessageIteratorResult {
                     return {
                         done: index === 0,
                         value: pairs[--index]
@@ -50,43 +39,28 @@ export default class Cache {
                 },
             };
         }
-
-        this.items[Symbol.iterator] = reverseIterator;
     }
 
+    /**
+     * Whether there are messages that can be marked unread.
+     */
     public canRestore(): boolean {
         return this.undoQueue.length > 0;
     }
 
-    public goOnline(): void {
-        this.isOffline = false;
-
-        if (this.worker) {
-            return;
-        }
-
-        this.startWorker();
-        this.fill();
-        m.redraw();
-    }
-
-    public goOffline(attemptReconnect = false): void {
-        this.isOffline = true;
-
-        if (attemptReconnect === false) {
-            this.stopWorker();
-        }
-
-        m.redraw();
-    }
-
-    public *messages(): MessageIterator {
-        for (const [, value] of this.items) {
+    /**
+     * Iterate unread messages.
+     */
+    public *messages(): IterableIterator<Message> {
+        for (const [, value] of this._messages) {
             if (!value) continue;
             yield value;
         }
     }
 
+    /**
+     * Tally unread messages.
+     */
     public messageCount(): number {
         let counter = 0;
         for (const message of this.messages()) {
@@ -98,7 +72,7 @@ export default class Cache {
     }
 
     /**
-     * Mark a message as being in-focus by the UI.
+     * Pick a message by its public ID.
      */
     public select(publicId: string): void {
         for (const message of this.messages()) {
@@ -108,7 +82,7 @@ export default class Cache {
     }
 
     /**
-     * Select a message based on its index in the container.
+     * Pick a message by its index in the messages map.
      */
     public selectByIndex(index: number): void {
         let counter = 1;
@@ -121,7 +95,7 @@ export default class Cache {
     }
 
     /**
-     * Locate the selected message.
+     * Locate the picked message.
      */
     public selected(): Message | null {
         for (const message of this.messages()) {
@@ -134,52 +108,36 @@ export default class Cache {
     }
 
     /**
-     * Select a message by its distance from the currently-selected message.
-     *
-     * If no message is currently selected, infer which end of the
-     * list to select from based on whether the step is positive or
-     * negative.
+     * Pick a message by its distance from the current pick.
      */
     public selectRelative(step: number): void {
         const selectedMessage = this.selected();
         let targetIndex: number;
 
         if (selectedMessage) {
-            targetIndex = this.items.size - this.indexOfKey(selectedMessage.publicId) - step;
+            targetIndex = this._messages.size - this.indexOfKey(selectedMessage.publicId) - step;
         } else {
             if (step < 0) {
                 targetIndex = 1;
             } else {
-                targetIndex = this.items.size;
+                targetIndex = this._messages.size;
             }
         }
 
         if (targetIndex < 1) {
-            targetIndex = this.items.size;
+            targetIndex = this._messages.size;
         }
 
-        if (targetIndex > this.items.size) {
+        if (targetIndex > this._messages.size) {
             targetIndex = 1;
         }
 
         this.selectByIndex(targetIndex);
     }
 
-    public startWorker(): void {
-        this.worker = new Worker('worker.js');
-        this.worker.onmessage = this.onWorkerPush.bind(this);
-        this.worker.postMessage(Command.connect);
-    }
-
-    public stopWorker(): void {
-        if (!this.worker) {
-            return;
-        }
-        this.worker.postMessage(Command.disconnect);
-        this.worker.terminate();
-        this.worker = undefined;
-    }
-
+    /**
+     * Remove focus from all messages.
+     */
     public deselect(): void {
         for (const message of this.messages()) {
             message.selected = false;
@@ -187,15 +145,20 @@ export default class Cache {
         m.redraw();
     }
 
+    /**
+     * Append a message to the messages map.
+     *
+     * Messages should be added in oldest-first order.
+     */
     public add(message: Message): void {
-        this.items.set(message.publicId, message);
+        this._messages.set(message.publicId, message);
     }
 
     /**
-     * Mark a message as read and remove it from the container.
+     * Mark a message as read by its public ID.
      */
     public remove(publicId: string): void {
-        if (!this.items.has(publicId)) {
+        if (!this._messages.has(publicId)) {
             return;
         }
 
@@ -208,16 +171,16 @@ export default class Cache {
         }).then(() => {
             this.undoQueue.push(publicId);
         }).catch(() => {
-            const message = this.items.get(publicId);
+            const message = this._messages.get(publicId);
             if (message) {
                 message.state = 'stuck';
-                console.log('Message could not be cleared');
+                console.error('Message could not be cleared');
             }
         });
     }
 
     /**
-     * Mark the selected message as read.
+     * Mark the picked message as read.
      */
     public removeSelected(): void {
         const message = this.selected();
@@ -245,15 +208,15 @@ export default class Cache {
             m.redraw();
         }).catch(() => {
             this.undoQueue.push(publicId);
-            console.log('Message could not be restored');
+            console.error('Message could not be restored');
         });
     }
 
     /**
-     * Remove a message from the container.
+     * Remove a message from the messages map.
      */
     public retract(publicId: string): void {
-        const message = this.items.get(publicId);
+        const message = this._messages.get(publicId);
 
         if (!message)  {
             return;
@@ -263,21 +226,21 @@ export default class Cache {
             message.browserNotification.close();
         }
 
-        this.items.set(publicId, null);
+        this._messages.set(publicId, null);
         m.redraw();
     }
 
     /**
-     * Load notifications via HTTP request.
+     * Populate the messages map from the server.
      */
     public fill(): void {
-        this.clear();
-
         m.request('archive', {
             extract: this.extract,
             method: 'GET',
             withCredentials: true,
         } as m.RequestOptions<Message[]>).then((messages: Message[]) => {
+            this.clear();
+
             for (const message of messages) {
                 this.add(message);
             }
@@ -286,12 +249,16 @@ export default class Cache {
         });
     }
 
+    /**
+     * Empty out the messages map.
+     */
     public clear(): void {
-        this.items.clear();
+        this._messages.clear();
+        this.undoQueue = [];
     }
 
     /**
-     * Open the URL of the selected message.
+     * Open the URL of the current message.
      */
     public visitSelected(): void {
         const message = this.selected();
@@ -305,12 +272,12 @@ export default class Cache {
      * Find a message index from its key.
      */
     protected indexOfKey(wantedKey: string): number {
-        if (!this.items.has(wantedKey)) {
+        if (!this._messages.has(wantedKey)) {
             return -1;
         }
 
         let counter = 0;
-        for (const currentKey of this.items.keys()) {
+        for (const currentKey of this._messages.keys()) {
             if (currentKey === wantedKey) {
                 break;
             }
@@ -321,37 +288,7 @@ export default class Cache {
     }
 
     /**
-     * Add a notification received by the web worker.
-     */
-    private onWorkerPush(e: MessageEvent): void {
-        if (e.data === Command.offline) {
-            this.goOffline(true);
-            return;
-        }
-
-        if (e.data === Command.online) {
-            this.goOnline();
-            return;
-        }
-
-        const message = Message.fromJson(e.data);
-
-        if (message.isExpired()) {
-            this.retract(message.publicId);
-            return;
-        }
-
-        this.add(message);
-
-        if (message.deliveryStyle === 'normal' && !document.hasFocus()) {
-            message.sendBrowserNotification();
-        }
-
-        m.redraw();
-    }
-
-    /**
-     * Convert an XHR response to a list of Message instances.
+     * Convert an XHR JSON response to a list of messages.
      */
     private extract(xhr: XMLHttpRequest): Array<Message> {
         if (xhr.status === 403) {
@@ -360,8 +297,8 @@ export default class Cache {
 
         try {
             const json = JSON.parse(xhr.responseText);
-            return json.reduce((accumulator: Message[], item: unknown) => {
-                accumulator.push(Message.fromJson(item));
+            return json.reduce((accumulator: Message[], message: unknown) => {
+                accumulator.push(Message.fromJson(message));
                 return accumulator;
             }, []);
         } catch (e) {

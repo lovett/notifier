@@ -1,4 +1,4 @@
-import Command from './command';
+import {Command, Event} from './postmessage';
 
 let eventSource: EventSource;
 let reconnectTimer: number;
@@ -20,9 +20,8 @@ const pollingInterval = 5000;
  * Open a persistent connection to the server for real-time push.
  */
 function connect() {
-
     if (usePolling) {
-        self.postMessage(Command.online);
+        self.postMessage(Event.connected);
         pollingTimer = setInterval(poll, pollingInterval);
         return;
     }
@@ -30,7 +29,7 @@ function connect() {
     eventSource = new EventSource('push');
 
     eventSource.onopen = () => {
-        self.postMessage(Command.online);
+        self.postMessage(Event.connected);
     };
 
     eventSource.onmessage = (e: MessageEvent) => {
@@ -39,7 +38,7 @@ function connect() {
     };
 
     eventSource.onerror = () => {
-        self.postMessage(Command.offline);
+        self.postMessage(Event.error);
 
         clearTimeout(reconnectTimer);
 
@@ -68,6 +67,8 @@ function disconnect() {
     if (eventSource) {
         eventSource.close();
     }
+
+    self.postMessage(Event.disconnected);
 }
 
 /**
