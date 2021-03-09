@@ -14,7 +14,7 @@ type MessageIteratorResult = {
 export default class Cache {
     public isOffline = false;
 
-    private undoQueue: string[];
+    private undoQueue: Message[];
 
     private _messages: Map<string, Message|null>;
 
@@ -135,27 +135,20 @@ export default class Cache {
     }
 
     /**
-     * Mark a message as read by its public ID.
+     * Tell the server to mark a message as read.
      */
-    public remove(publicId: string): void {
-        if (!this._messages.has(publicId)) {
-            return;
-        }
-
-        this.retract(publicId);
+    public remove(message: Message): void {
+        this.retract(message.publicId);
 
         m.request('message/clear', {
-            body: { publicId },
+            body: { publicId: message.publicId },
             method: 'POST',
             withCredentials: true,
         }).then(() => {
-            this.undoQueue.push(publicId);
+            this.undoQueue.push(message);
         }).catch(() => {
-            const message = this._messages.get(publicId);
-            if (message) {
-                message.state = 'stuck';
-                console.error('Message could not be cleared');
-            }
+            message.state = 'stuck';
+            console.error('Message could not be cleared');
         });
     }
 
@@ -163,21 +156,21 @@ export default class Cache {
      * Bring back a previously-removed message.
      */
     public restore(): void {
-        if (this.undoQueue.length === 0) {
+        const message = this.undoQueue.pop();
+
+        if (!message) {
             return;
         }
 
-        const publicId = this.undoQueue.pop() as string;
-
         m.request({
-            body: { publicId },
+            body: { publicId: message.publicId },
             method: 'POST',
             url: 'message/unclear',
             withCredentials: true,
         }).then(() => {
             m.redraw();
         }).catch(() => {
-            this.undoQueue.push(publicId);
+            this.undoQueue.push(message);
             console.error('Message could not be restored');
         });
     }

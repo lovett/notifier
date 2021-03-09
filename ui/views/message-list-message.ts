@@ -69,7 +69,7 @@ export default {
                 onclick: (e: Event) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    cache.remove(message.publicId);
+                    cache.remove(message);
                 },
             }),
 

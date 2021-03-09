@@ -40,7 +40,7 @@ export class ShortcutService {
             run() {
                 const message = cache.selected();
                 if (message) {
-                    cache.remove(message.publicId);
+                    cache.remove(message);
                 }
             },
             description: 'Mark the selected message as read and remove it',
@@ -89,6 +89,7 @@ export class ShortcutService {
         this.bag.set('digit', {
             run(messageIndex?: number) {
                 cache.selectByIndex(messageIndex as number);
+                m.redraw();
             },
             description: 'Select a message by its number',
         });
