@@ -28,7 +28,10 @@ export class ShortcutService {
 
         this.bag.set('o', {
             run() {
-                cache.visitSelected();
+                const message = cache.selected();
+                if (message) {
+                    message.visit();
+                }
             },
             description: 'Visit the link of the selected message',
         });

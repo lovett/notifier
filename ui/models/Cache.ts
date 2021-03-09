@@ -248,17 +248,6 @@ export default class Cache {
     }
 
     /**
-     * Open the URL of the current message.
-     */
-    public visitSelected(): void {
-        const message = this.selected();
-
-        if (message) {
-            message.visit();
-        }
-    }
-
-    /**
      * Find a message index from its key.
      */
     protected indexOfKey(wantedKey: string): number {
