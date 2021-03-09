@@ -20,7 +20,7 @@ export default {
                 href: '#undo',
                 onclick: (e: Event) => {
                     e.preventDefault();
-                    cache.restore();
+                    cache.restore().then(m.redraw);
                 },
             }, 'Undo') : null,
 

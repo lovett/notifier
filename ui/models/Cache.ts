@@ -80,8 +80,6 @@ export default class Cache {
             message.selected = (counter === index);
             counter++;
         }
-
-        m.redraw();
     }
 
     /**
@@ -138,7 +136,7 @@ export default class Cache {
      * Tell the server to mark a message as read.
      */
     public remove(message: Message): void {
-        this.retract(message.publicId);
+        this.retract(message);
 
         m.request('message/clear', {
             body: { publicId: message.publicId },
@@ -153,44 +151,35 @@ export default class Cache {
     }
 
     /**
-     * Bring back a previously-removed message.
+     * Bring back the most recently removed message.
      */
-    public restore(): void {
+    public restore(): Promise<void> {
         const message = this.undoQueue.pop();
 
         if (!message) {
-            return;
+            return Promise.resolve();
         }
 
-        m.request({
+        return m.request({
             body: { publicId: message.publicId },
             method: 'POST',
             url: 'message/unclear',
             withCredentials: true,
-        }).then(() => {
-            m.redraw();
-        }).catch(() => {
-            this.undoQueue.push(message);
-            console.error('Message could not be restored');
         });
     }
 
     /**
-     * Remove a message from the messages map.
+     * Remove a message from display.
+     *
+     * This is more elaborate than just deleting from the messages map
+     * so that undo is easier.
      */
-    public retract(publicId: string): void {
-        const message = this._messages.get(publicId);
-
-        if (!message)  {
-            return;
-        }
-
+    public retract(message: Message): void {
         if (message.browserNotification) {
             message.browserNotification.close();
         }
 
-        this._messages.set(publicId, null);
-        m.redraw();
+        this._messages.set(message.publicId, null);
     }
 
     /**

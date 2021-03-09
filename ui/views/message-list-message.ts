@@ -15,8 +15,7 @@ export default {
 
         setTimeout(() => {
             if (message.isExpired()) {
-                attrs.cache.retract(message.publicId);
-                return;
+                attrs.cache.retract(message);
             }
 
             m.redraw();

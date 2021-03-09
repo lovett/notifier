@@ -62,7 +62,7 @@ export class ShortcutService {
 
         this.bag.set('Z', {
             run() {
-                cache.restore();
+                cache.restore().then(m.redraw);
             },
             description: 'Undo',
         });

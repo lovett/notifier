@@ -47,7 +47,8 @@ function onMessage(e: MessageEvent): void {
     const message = Message.fromJson(e.data);
 
     if (message.isExpired()) {
-        cache.retract(message.publicId);
+        cache.retract(message);
+        m.redraw();
         return;
     }
 
