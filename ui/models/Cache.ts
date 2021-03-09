@@ -72,16 +72,6 @@ export default class Cache {
     }
 
     /**
-     * Pick a message by its public ID.
-     */
-    public select(publicId: string): void {
-        for (const message of this.messages()) {
-            message.selected = (message.publicId === publicId);
-        }
-        m.redraw();
-    }
-
-    /**
      * Pick a message by its index in the messages map.
      */
     public selectByIndex(index: number): void {
