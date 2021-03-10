@@ -8,10 +8,11 @@ export default {
     view(vnode: m.Vnode): Array<m.Vnode> {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
+        const offline = attrs.offline as boolean;
 
         const nodes: m.Vnode[] = [];
 
-        nodes.push(m(messageListSummary, { cache } as m.Attributes));
+        nodes.push(m(messageListSummary, { cache, offline } as m.Attributes));
 
         if (cache.messageCount() === 0) {
             nodes.push(m('main#messageListEmptyBody', [
@@ -32,7 +33,7 @@ export default {
             ]));
         }
 
-        nodes.push(m(messageListFooter, { cache } as m.Attributes));
+        nodes.push(m(messageListFooter, { cache, offline } as m.Attributes));
 
         return nodes;
     },

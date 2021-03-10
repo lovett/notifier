@@ -5,10 +5,11 @@ export default {
     view(vnode: m.Vnode): m.Vnode {
         const attrs = vnode.attrs as m.Attributes;
         const cache = attrs.cache as Cache;
+        const offline = attrs.offline as boolean;
         const selector = 'header#messageListSummary';
         const count = cache.messageCount();
 
-        if (cache.isOffline) {
+        if (offline) {
             return m(selector, { class: 'offline' }, 'Disconnected');
         }
 

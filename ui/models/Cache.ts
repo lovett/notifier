@@ -12,8 +12,6 @@ type MessageIteratorResult = {
  * A container for a set of messages.
  */
 export default class Cache {
-    public isOffline = false;
-
     private undoQueue: Message[];
 
     private _messages: Map<string, Message|null>;

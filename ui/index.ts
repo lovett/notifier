@@ -17,6 +17,7 @@ const root = document.getElementById('app-container') as HTMLElement;
 const cache = new Cache();
 const shortcutService = new ShortcutService(cache);
 const worker = new Worker('worker.js');
+let offline = false;
 
 function loginRequired() {
     if (User.isLoggedOut()) {
@@ -26,7 +27,7 @@ function loginRequired() {
 }
 
 function onMessage(e: MessageEvent): void {
-    cache.isOffline = false;
+    offline = false;
 
     if (e.data === Event.connected) {
         cache.fill();
@@ -34,12 +35,12 @@ function onMessage(e: MessageEvent): void {
     }
 
     if (e.data === Event.disconnected) {
-        cache.isOffline = true;
+        offline = true;
         return;
     }
 
     if (e.data === Event.error) {
-        cache.isOffline = true;
+        offline = true;
         m.redraw();
         return;
     }
@@ -95,7 +96,7 @@ m.route(root, '/', {
             worker.postMessage(Command.connect);
         },
         render() {
-            return m(messageList, { cache } as m.Attributes);
+            return m(messageList, { cache, offline } as m.Attributes);
         },
     } as m.RouteResolver,
 

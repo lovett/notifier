@@ -36,12 +36,13 @@ export default {
         const message = attrs.message as Message;
         const index = attrs.index as number;
         const cache = attrs.cache as Cache;
+        const offline = attrs.offline as boolean;
         const rootTag = message.rootTag();
         const rootAttrs: m.Attributes = {
             class: 'online',
         };
 
-        if (cache.isOffline) {
+        if (offline) {
             rootAttrs.class = 'offline';
         }
 
