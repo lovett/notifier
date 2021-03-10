@@ -14,21 +14,23 @@ export class ShortcutService {
     constructor(cache: Cache) {
         this.bag.set('j', {
             run() {
-                cache.selectRelative(-1);
+                cache.selectRelative(1);
+                m.redraw();
             },
             description: 'Move to previous message',
         });
 
         this.bag.set('k', {
             run() {
-                cache.selectRelative(1);
+                cache.selectRelative(-1);
+                m.redraw();
             },
             description: 'Move to next message',
         });
 
         this.bag.set('o', {
             run() {
-                const message = cache.selected();
+                const [message, _] = cache.selected();
                 if (message) {
                     message.visit();
                 }
@@ -38,7 +40,7 @@ export class ShortcutService {
 
         this.bag.set('x', {
             run() {
-                const message = cache.selected();
+                const [message, _] = cache.selected();
                 if (message) {
                     cache.clear(message);
                 }
@@ -77,7 +79,7 @@ export class ShortcutService {
         this.bag.set('Escape', {
             run() {
                 m.route.set('/');
-                const message = cache.selected();
+                const [message, _] = cache.selected();
                 if (message) {
                     message.selected = false;
                     m.redraw();

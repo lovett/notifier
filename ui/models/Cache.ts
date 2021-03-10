@@ -75,49 +75,44 @@ export default class Cache {
      * Pick a message by its index in the messages map.
      */
     public selectByIndex(index: number): void {
-        let counter = 1;
+        let counter = 0;
         for (const message of this.messages()) {
-            message.selected = (counter === index);
             counter++;
+            message.selected = (counter === index);
         }
     }
 
     /**
      * Locate the picked message.
      */
-    public selected(): Message | null {
+    public selected(): [Message | null, number] {
+        let counter = 0;
         for (const message of this.messages()) {
+            counter++
             if (message.selected) {
-                return message;
+                return [message, counter];
             }
         }
 
-        return null;
+        return [null, 0];
     }
 
     /**
      * Pick a message by its distance from the current pick.
      */
     public selectRelative(step: number): void {
-        const selectedMessage = this.selected();
-        let targetIndex: number;
-
-        if (selectedMessage) {
-            targetIndex = this._messages.size - this.indexOfKey(selectedMessage.publicId) - step;
-        } else {
-            if (step < 0) {
-                targetIndex = 1;
-            } else {
-                targetIndex = this._messages.size;
-            }
-        }
+        const maxIndex = this.messageCount();
+        const [_, selectedIndex] = this.selected();
+        const targetIndex = selectedIndex + step;
 
         if (targetIndex < 1) {
-            targetIndex = this._messages.size;
+            this.selectByIndex(maxIndex - (maxIndex % step));
+            return;
         }
 
-        if (targetIndex > this._messages.size) {
-            targetIndex = 1;
+        if (targetIndex > maxIndex) {
+            this.selectByIndex(1 + maxIndex % step);
+            return;
         }
 
         this.selectByIndex(targetIndex);
