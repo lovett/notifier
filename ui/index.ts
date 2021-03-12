@@ -19,13 +19,6 @@ const shortcutService = new ShortcutService(cache);
 const worker = new Worker('worker.js');
 let offline = false;
 
-function loginRequired() {
-    if (User.isLoggedOut()) {
-        console.log('user is not logged in');
-        m.route.set('/login');
-    }
-}
-
 function onMessage(e: MessageEvent): void {
     offline = false;
 
@@ -132,14 +125,22 @@ m.route(root, '/', {
     } as m.RouteResolver,
 
     '/settings': {
-        onmatch: loginRequired,
+        onmatch: () => {
+            if (User.isLoggedOut()) {
+                m.route.set('/login');
+            }
+        },
         render() {
             return m(settings);
         },
     } as m.RouteResolver,
 
     '/shortcuts': {
-        onmatch: loginRequired,
+        onmatch: () => {
+            if (User.isLoggedOut()) {
+                m.route.set('/login');
+            }
+        },
         render() {
             return m(shortcuts, { shortcutService } as m.Attributes);
         },
