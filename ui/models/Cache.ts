@@ -138,7 +138,6 @@ export default class Cache {
         }).then(() => {
             this.undoQueue.push(message);
         }).catch(() => {
-            message.state = 'stuck';
             console.error('Message could not be cleared');
         });
     }
