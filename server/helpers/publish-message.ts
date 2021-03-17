@@ -12,7 +12,7 @@ function publishWebhook(message: Message, url: string): void {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Content-Length': payload.length,
+            'Content-Length': Buffer.byteLength(payload),
             'User-Agent': 'notifier'
         }
     };
