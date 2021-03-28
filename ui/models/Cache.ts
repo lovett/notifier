@@ -12,6 +12,8 @@ type MessageIteratorResult = {
  * A container for a set of messages.
  */
 export default class Cache {
+    public filledOn?: Date;
+
     private undoQueue: Message[];
 
     private _messages: Map<string, Message|null>;
@@ -188,6 +190,8 @@ export default class Cache {
             for (const message of messages) {
                 this.add(message);
             }
+
+            this.filledOn = new Date();
         }).catch(() => {
             m.route.set('/logout');
         });

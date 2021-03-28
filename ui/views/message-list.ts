@@ -15,9 +15,17 @@ export default {
         nodes.push(m(messageListSummary, { cache, offline } as m.Attributes));
 
         if (cache.messageCount() === 0) {
-            nodes.push(m('main#messageListEmptyBody', [
+            let message = 'Checking…';
+            let cssClass = '.checking';
+
+            if (cache.filledOn) {
+                message = 'You have no messages.';
+                cssClass = '';
+            }
+
+            nodes.push(m(`main#messageListEmptyBody${cssClass}`, [
                 m('.icon'),
-                m('p', 'You have no messages.'),
+                m('p', message),
             ]));
         } else {
             const messageList: m.Vnode[] = [];
