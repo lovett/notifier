@@ -54,6 +54,7 @@ ui: dummy
 	cp ui/index.html build/public/
 	cp ui/favicon.ico build/public/favicon.ico
 	cp ui/favicon.png build/public/favicon.png
+	mkdir -p build/public/svg
 	cp -r ui/svg/*.svg build/public/svg
 	lessc ui/less/app.less build/public/app.css
 
