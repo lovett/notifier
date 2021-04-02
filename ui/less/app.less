@@ -79,15 +79,21 @@ noscript {
     font-size: 1.5em;
 
     .icon {
+        background-color: cyan;
+        -webkit-mask-image: url('svg/umbrella-beach-solid.svg');
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-image: url('svg/umbrella-beach-solid.svg');
+        mask-repeat: no-repeat;
+        mask-position: center;
         display: inline-block;
-        width: 40vw;
+        width: 42vw;
         height: 20vh;
-        background: transparent url('svg/waves.svg') no-repeat center;
-        background-size: contain;
     }
 
     &.checking .icon {
-        background-image: url('svg/arrow-sync.svg');
+        -webkit-mask-image: url('svg/sync-solid.svg');
+        mask-image: url('svg/umbrella-beach-solid.svg');
     }
 }
 
