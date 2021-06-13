@@ -9,7 +9,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "sourceMap": true,
-    "target": "ES5",
+    "target": "ES6",
     "strict": true,
     "noImplicitAny": true
   },
