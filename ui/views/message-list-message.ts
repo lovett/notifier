@@ -71,9 +71,13 @@ export default {
                     e.stopPropagation();
                     cache.clear(message);
                 },
-            }),
-
-
+            }, [
+                m('svg', [
+                    m('use', {
+                        href: '#x',
+                    }),
+                ]),
+            ]),
         ]);
     },
 };

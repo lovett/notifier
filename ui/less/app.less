@@ -1,4 +1,7 @@
 @import "breakpoints.less";
+@import "shortcuts.less";
+@import "message.less";
+@import "badges.less";
 
 @palettePrimary: #006ba6; // Manually sync this value with the theme-color meta tag in index.html.
 
@@ -61,6 +64,10 @@ noscript {
         display: inline-block;
         min-width: 6em;
     }
+}
+
+#svg-defs {
+    display: none;
 }
 
 #messages {
@@ -225,7 +232,3 @@ button {
         color: white;
     }
 }
-
-@import "shortcuts.less";
-@import "message.less";
-@import "badges.less";

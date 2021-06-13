@@ -47,12 +47,23 @@
     }
 
     .closer {
-        background: transparent url(../svg/window-close-regular.svg) no-repeat center;
-        background-size: contain;
-        width: 1.5em;
-        height: 1.5em;
         margin: 0.25em;
         align-self: start;
+
+        svg {
+            width: 0.75em;
+            height: 0.75em;
+            padding: 0.25em;
+            fill: none;
+            stroke: black;
+            stroke-width: 1.5em;
+            border: 3px solid black;
+        }
+
+        &:hover svg {
+            stroke: white;
+            background-color: black;
+        }
     }
 
     .title {
