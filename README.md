@@ -2,13 +2,11 @@
 Notifier is a web service for sending yourself notifications.
 
 It provides an HTTP endpoint you can send messages to, a browser-based
-interface for viewing them, and a hook point for relaying to other
-services.
+interface for viewing them, and a webhook option for relaying messages
+to another service.
 
-Unlike OS- or app-based notifications, Notifier is free-form and
-standalone. You control when a notification is sent, what it says, and
-how it looks.
-
+Unlike OS- or in-app notifications, Notifier is a standalone service
+geared toward self-hosted use. It can run wherever NodeJS runs.
 
 ## Configuration
 The server's default configuration is reasonable for production use.
@@ -60,6 +58,52 @@ createdb -U postgres notifier
 
 If the configuration specifies a default user, it will similarly be
 created automatically at server startup.
+
+## Message Schema
+
+The endpoint for sending messages to a Notifier is `/message`. It
+accepts POST requests with the following fields, all of which are
+optional except for title:
+
+**body**: A short blurb of content.
+
+**deliveryStyle**: If _whisper_, the server should accept and display
+the message but not send webhooks or in-browser notifications that it
+has arrived.
+
+**expiresAt**: The lifetime of the message specified in relative units
+(such as "1 hour" or "45 minutes") from the time it is received. The
+server will clear the message automatically when the expiration is
+reached.
+
+**badge**: The filename of a image to use as the message icon.  This
+file should be available under the base URL defined in
+`NOTIFIER_BADGE_BASE_URL`.
+
+**group**: A keyword used to color-coordinate related
+messages. Notifier has built-in styling for the following values:
+computer, email, phone, web, reminder, calendar, sysdown, sysup,
+chore, education, financial, timer.
+
+**localId**: A semi-unique identifier. Multiple messages can share the
+same localId to allow newer ones to replace older ones (for example, a
+timer that sends one message when it starts and another when it
+finishes).
+
+**title**: The purpose of the message. Similar to the subject line of
+an email. This field is required.
+
+**url**: If provided, the message will be displayed with a link.
+
+
+
+|Name | Required  | |
+--- | --- | ---
+|data1|data2|data3|
+|data11|data12|data13|
+
+
+Messages can be sent to notifier via POST parameters.
 
 ## What it's made of
 The browser UI uses Mithril.
