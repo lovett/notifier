@@ -33,19 +33,19 @@
     "@types/mithril": "2.0.7",
     "@types/nconf": "0.10.0",
     "@types/needle": "2.5.1",
-    "@types/node": "15.12.2",
+    "@types/node": "15.12.3",
     "@types/pg": "8.6.0",
     "@types/sanitize-html": "2.3.1",
     "@types/serve-favicon": "2.5.2",
     "@types/useragent": "2.3.0",
     "@types/uuid": "8.3.0",
-    "@typescript-eslint/eslint-plugin": "4.26.1",
-    "@typescript-eslint/parser": "4.26.1",
-    "esbuild": "0.12.8",
+    "@typescript-eslint/eslint-plugin": "4.27.0",
+    "@typescript-eslint/parser": "4.27.0",
+    "esbuild": "0.12.9",
     "less": "4.1.1",
     "stylelint": "13.13.1",
     "stylelint-config-standard": "22.0.0",
     "ts-node": "10.0.0",
-    "typescript": "4.3.2"
+    "typescript": "4.3.4"
   }
 }
