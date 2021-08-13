@@ -93,6 +93,7 @@ multimessage:
 	curl -b .cookiejar -d "title=computer group test message"  -d "group=computer"  -d "body=Message 11" -d "localId=multi-computer"  $(DEV_URL)/message
 	curl -b .cookiejar -d "title=financial group test message" -d "group=financial" -d "body=Message 12" -d "localId=multi-financial" $(DEV_URL)/message
 	curl -b .cookiejar -d "title=timer group test message"     -d "group=timer"     -d "body=Message 13" -d "localId=multi-timer"     $(DEV_URL)/message
+	curl -b .cookiejar -d "title=warning group test message"   -d "group=warning"   -d "body=Message 13" -d "localId=multi-warning"   $(DEV_URL)/message
 
 # Automation for setting up a tmux session.
 workspace:
