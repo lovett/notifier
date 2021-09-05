@@ -171,11 +171,15 @@ export default class Message {
         const seconds = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
         const minutes = Math.floor(seconds / 60);
         const hours  = Math.floor(minutes / 60);
-        const days = Math.floor(hours / 24);
+        const expireDate = new Intl.DateTimeFormat(
+            undefined,
+            {dateStyle: 'full'}
+        ).format(this.expiration);
+
         const expireTime = new Intl.DateTimeFormat(
             undefined,
-            { hour: 'numeric', minute: '2-digit'},
-        ).format(this.expiration)
+            {hour: 'numeric', minute: '2-digit'},
+        ).format(this.expiration);
 
         if (seconds === 0) {
             return 'Expired!';
@@ -205,11 +209,7 @@ export default class Message {
             return `Expires in ${hours} hours at ${expireTime}`;
         }
 
-        if (days === 1) {
-            return 'Expires in 1 day';
-        }
-
-        return `Expires in ${days} days`;
+        return `Expires on ${expireDate} at ${expireTime}`;
     }
 
     public closeBrowserNotification(): void {
