@@ -22,6 +22,10 @@ let offline = false;
 function onMessage(e: MessageEvent): void {
     offline = false;
 
+    if (e.data === 403) {
+        m.route.set('/logout');
+    }
+
     if (e.data === Event.connected) {
         cache.fill();
         return;

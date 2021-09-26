@@ -31,7 +31,17 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
             return next();
         }
 
-        res.sendStatus(403);
+        if (req.headers['accept'] && req.headers['accept'].indexOf('text/event-stream') === -1) {
+            res.sendStatus(403);
+        } else {
+            res.writeHead(200, {
+                'Cache-Control': 'no-cache, no-transform',
+                'Connection': 'keep-alive',
+                'Content-Type': 'text/event-stream',
+                'X-Accel-Buffering': 'no'
+            });
+            res.write(`event: message\ndata: 403\n\n`);
+        }
         return;
     }
 
