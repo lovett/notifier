@@ -21,6 +21,7 @@ export default {
                         m('label', { for: 'username' }, 'Username'),
                         m('input', {
                             autocapitalize: 'off',
+                            autocomplete: 'username',
                             autocorrect: 'off',
                             autofocus: true,
                             id: 'username',
@@ -38,6 +39,7 @@ export default {
                     m('.field', [
                         m('label', { for: 'password' }, 'Password'),
                         m('input', {
+                            autocomplete: 'current-password',
                             autocorrect: 'off',
                             id: 'password',
                             name: 'password',
