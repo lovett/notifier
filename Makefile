@@ -63,15 +63,15 @@ onemessage:
 	curl -u notifier:notifier -d "title=Single test message, normal mode" -d "expiresAt=10 minutes" -d "url=http://example.com" -d "localId=onemessage" $(DEV_URL)/message
 
 # Send a single test message in whisper mode.
-onemessage-whisper: .cookiejar
+onemessage-whisper:
 	curl -u notifier:notifier -d "deliveryStyle=whisper" -d "title=Single test message, whisper mode" -d "expiresAt=10 minutes" -d "url=http://example.com" -d "localId=onemessage" $(DEV_URL)/message
 
 # Retract a previously-sent test message.
-onemessage-retract: .cookiejar
+onemessage-retract:
 	curl -u notifier:notifier -d "localId=onemessage" $(DEV_URL)/message/clear
 
 # Send a test message with a custom badge.
-badgemessage: .cookiejar
+badgemessage:
 	curl -u notifier:notifier -d "title=custom badge test message" -d "body=Custom message" -d "localId=badgemessage" -d "badge=test.svg"  $(DEV_URL)/message
 
 # Send a batch of messages.
@@ -136,7 +136,6 @@ lint: lint-ui lint-server lint-worker
 resetdb:
 	dropdb -U postgres notifier_dev
 	createdb -U postgres notifier_dev
-	rm -f .cookiejar
 
 # Push the repository to GitHub.
 mirror:

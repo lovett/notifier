@@ -14,4 +14,3 @@ ansible/inventory
 ansible/vars.yml
 .vscode
 .cache
-.cookiejar
