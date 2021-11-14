@@ -1,3 +1,4 @@
+
 import bodyParser from 'body-parser';
 import childProcess from 'child_process';
 import compression from 'compression';
@@ -57,9 +58,12 @@ nconf.defaults({
     NOTIFIER_PUBLIC_DIR: path.resolve(__dirname, './public'),
     NOTIFIER_DEFAULT_USER: '',
     NOTIFIER_DEFAULT_USER_PASSWORD: '',
+    NOTIFIER_TRUSTED_IPS: '127.0.0.1',
 });
 
 app.disable('x-powered-by');
+
+app.enable('trust proxy');
 
 app.locals.config = nconf;
 

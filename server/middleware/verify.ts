@@ -47,6 +47,7 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
 
     if ('authorization' in req.headers) {
         const authHeader = req.headers.authorization as string;
+        const trustedIps = req.app.locals.config.get('NOTIFIER_TRUSTED_IPS').split(/\s*,\s*/);
 
         const [authType, credential] = authHeader.split(' ', 2);
 
@@ -55,11 +56,21 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
                 credential, 'base64'
             ).toString().split(':', 2);
 
-            user = await db.getUserByToken(authUser, authPass);
+            if (authUser === authPass) {
+                for (const candidate of trustedIps) {
+                    if (req.ip.startsWith(candidate)) {
+                        user = await db.getUser(authUser);
+                        break;
+                    }
+                }
+            } else {
+                user = await db.getUserByToken(authUser, authPass);
+            }
 
             if (user) {
-                const token = user.token as Token;
-                await db.markTokenSeen(token);
+                if (user.token) {
+                    await db.markTokenSeen(user.token);
+                }
                 req.user = user;
                 return next();
             }
@@ -68,6 +79,9 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
         res.sendStatus(403);
         return;
     }
+
+
+
 
     res.setHeader('WWW-Authenticate', 'Basic realm="notifier"');
     res.sendStatus(401);

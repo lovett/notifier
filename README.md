@@ -45,6 +45,14 @@ Default: _not specified_.
 `NOTIFIER_DEFAULT_USER_PASSWORD`: The password for the default user.
 Default: _not specified_.
 
+`NOTIFIER_TRUSTED_IPS`: A comma-separated list of IP addresses or
+subnets that are allowed to send messages without providing a
+username/password pair. They can instead use the username as the
+password for Basic Auth. This is meant for server scripts that run
+sporadically and would be inconvenienced by token
+expiration. Addresses are matched by string prefix, so `192.168.0`
+covers that entire subnet.  Default: _127.0.0.1_.
+
 ## Database setup
 
 The application will create the database schema automatically at

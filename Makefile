@@ -58,42 +58,38 @@ ui: dummy
 	cp -r ui/svg/*.svg build/public/svg
 	lessc ui/less/app.less build/public/app.css
 
-# Authenticate with the server as the default user.
-.cookiejar:
-	curl -c .cookiejar -d "username=notifier" -d "password=notifier" $(DEV_URL)/auth
-
 # Send a single test message in normal mode
-onemessage: .cookiejar
-	curl -b .cookiejar -d "title=Single test message, normal mode" -d "expiresAt=10 minutes" -d "url=http://example.com" -d "localId=onemessage" $(DEV_URL)/message
+onemessage:
+	curl -u notifier:notifier -d "title=Single test message, normal mode" -d "expiresAt=10 minutes" -d "url=http://example.com" -d "localId=onemessage" $(DEV_URL)/message
 
 # Send a single test message in whisper mode.
 onemessage-whisper: .cookiejar
-	curl -b .cookiejar -d "deliveryStyle=whisper" -d "title=Single test message, whisper mode" -d "expiresAt=10 minutes" -d "url=http://example.com" -d "localId=onemessage" $(DEV_URL)/message
+	curl -u notifier:notifier -d "deliveryStyle=whisper" -d "title=Single test message, whisper mode" -d "expiresAt=10 minutes" -d "url=http://example.com" -d "localId=onemessage" $(DEV_URL)/message
 
 # Retract a previously-sent test message.
 onemessage-retract: .cookiejar
-	curl -b .cookiejar -d "localId=onemessage" $(DEV_URL)/message/clear
+	curl -u notifier:notifier -d "localId=onemessage" $(DEV_URL)/message/clear
 
 # Send a test message with a custom badge.
 badgemessage: .cookiejar
-	curl -b .cookiejar -d "title=custom badge test message" -d "body=Custom message" -d "localId=badgemessage" -d "badge=test.svg"  $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=custom badge test message" -d "body=Custom message" -d "localId=badgemessage" -d "badge=test.svg"  $(DEV_URL)/message
 
 # Send a batch of messages.
 multimessage:
-	curl -b .cookiejar -d "title=email group test message"     -d "group=email"     -d "body=Message 1"	 -d "localId=multi-email"     $(DEV_URL)/message
-	curl -b .cookiejar -d "title=web group test message"       -d "group=web"       -d "body=Message 3"	 -d "localId=multi-web"       $(DEV_URL)/message
-	curl -b .cookiejar -d "title=reminder group test message"  -d "group=reminder"  -d "body=Message 4"	 -d "localId=multi-reminder"  $(DEV_URL)/message
-	curl -b .cookiejar -d "title=calendar group test message"  -d "group=calendar"  -d "body=Message 5"	 -d "localId=multi-calendar"  $(DEV_URL)/message
-	curl -b .cookiejar -d "title=sysdown group test message"   -d "group=sysdown"   -d "body=Message 6"	 -d "localId=multi-sysdown"   $(DEV_URL)/message
-	curl -b .cookiejar -d "title=sysdown group test message"   -d "group=sysdown"   -d "body=Message 7"	 -d "localId=multi-sysdown"   $(DEV_URL)/message
-	curl -b .cookiejar -d "title=sysup group test message"     -d "group=sysup"     -d "body=Message 8"	 -d "localId=multi-sysup"     $(DEV_URL)/message
-	curl -b .cookiejar -d "title=chore group test message"     -d "group=chore"     -d "body=Message 9"	 -d "localId=multi-chore"     $(DEV_URL)/message
-	curl -b .cookiejar -d "title=education group test message" -d "group=education" -d "body=Message 10" -d "localId=multi-education" $(DEV_URL)/message
-	curl -b .cookiejar -d "title=computer group test message"  -d "group=computer"  -d "body=Message 11" -d "localId=multi-computer"  $(DEV_URL)/message
-	curl -b .cookiejar -d "title=financial group test message" -d "group=financial" -d "body=Message 12" -d "localId=multi-financial" $(DEV_URL)/message
-	curl -b .cookiejar -d "title=timer group test message"     -d "group=timer"     -d "body=Message 13" -d "localId=multi-timer"     $(DEV_URL)/message
-	curl -b .cookiejar -d "title=warning group test message"   -d "group=warning"   -d "body=Message 14" -d "localId=multi-warning"   $(DEV_URL)/message
-	curl -b .cookiejar -d "title=weather group test message"   -d "group=weather"   -d "body=Message 15" -d "localId=multi-weather"   $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=email group test message"     -d "group=email"     -d "body=Message 1"	 -d "localId=multi-email"     $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=web group test message"       -d "group=web"       -d "body=Message 3"	 -d "localId=multi-web"       $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=reminder group test message"  -d "group=reminder"  -d "body=Message 4"	 -d "localId=multi-reminder"  $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=calendar group test message"  -d "group=calendar"  -d "body=Message 5"	 -d "localId=multi-calendar"  $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=sysdown group test message"   -d "group=sysdown"   -d "body=Message 6"	 -d "localId=multi-sysdown"   $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=sysdown group test message"   -d "group=sysdown"   -d "body=Message 7"	 -d "localId=multi-sysdown"   $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=sysup group test message"     -d "group=sysup"     -d "body=Message 8"	 -d "localId=multi-sysup"     $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=chore group test message"     -d "group=chore"     -d "body=Message 9"	 -d "localId=multi-chore"     $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=education group test message" -d "group=education" -d "body=Message 10" -d "localId=multi-education" $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=computer group test message"  -d "group=computer"  -d "body=Message 11" -d "localId=multi-computer"  $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=financial group test message" -d "group=financial" -d "body=Message 12" -d "localId=multi-financial" $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=timer group test message"     -d "group=timer"     -d "body=Message 13" -d "localId=multi-timer"     $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=warning group test message"   -d "group=warning"   -d "body=Message 14" -d "localId=multi-warning"   $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=weather group test message"   -d "group=weather"   -d "body=Message 15" -d "localId=multi-weather"   $(DEV_URL)/message
 
 # Automation for setting up a tmux session.
 workspace:
