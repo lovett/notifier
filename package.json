@@ -14,7 +14,7 @@
   "dependencies": {
     "body-parser": "1.19.0",
     "compression": "1.7.4",
-    "cookie-parser": "1.4.5",
+    "cookie-parser": "1.4.6",
     "eslint": "8.2.0",
     "express": "4.17.1",
     "mithril": "2.0.4",
@@ -26,27 +26,27 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
-    "@types/body-parser": "1.19.1",
+    "@types/body-parser": "1.19.2",
     "@types/compression": "1.7.2",
     "@types/cookie-parser": "1.4.2",
     "@types/express": "4.17.13",
     "@types/mithril": "2.0.8",
     "@types/nconf": "0.10.1",
     "@types/needle": "2.5.2",
-    "@types/node": "16.11.7",
+    "@types/node": "16.11.9",
     "@types/pg": "8.6.1",
     "@types/sanitize-html": "2.5.0",
     "@types/serve-favicon": "2.5.3",
     "@types/useragent": "2.3.1",
-    "@types/uuid": "8.3.1",
-    "@typescript-eslint/eslint-plugin": "5.3.1",
-    "@typescript-eslint/parser": "5.3.1",
-    "esbuild": "0.13.13",
-    "esbuild-linux-64": "0.13.13",
+    "@types/uuid": "8.3.3",
+    "@typescript-eslint/eslint-plugin": "5.4.0",
+    "@typescript-eslint/parser": "5.4.0",
+    "esbuild": "0.13.14",
+    "esbuild-linux-64": "0.13.14",
     "less": "4.1.2",
-    "stylelint": "14.0.1",
-    "stylelint-config-standard": "23.0.0",
+    "stylelint": "14.1.0",
+    "stylelint-config-standard": "24.0.0",
     "ts-node": "10.4.0",
-    "typescript": "4.4.4"
+    "typescript": "4.5.2"
   }
 }
