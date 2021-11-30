@@ -147,17 +147,7 @@ export default class Message {
             return 0;
         }
 
-        const secondsLeft = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
-
-        if (secondsLeft <= 10) {
-            return 1;
-        }
-
-        if (secondsLeft <= 60) {
-            return secondsLeft - 10;
-        }
-
-        return 60 - (new Date()).getSeconds();
+        return 1;
     }
 
     /**
@@ -168,48 +158,21 @@ export default class Message {
             return '';
         }
 
-        const seconds = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const hours  = Math.floor(minutes / 60);
-        const expireDate = new Intl.DateTimeFormat(
-            undefined,
-            {dateStyle: 'full'}
-        ).format(this.expiration);
-
         const expireTime = new Intl.DateTimeFormat(
             undefined,
             {hour: 'numeric', minute: '2-digit'},
         ).format(this.expiration);
 
-        if (seconds === 0) {
-            return 'Expired!';
-        }
+        const seconds = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
 
-        if (seconds === 1) {
-            return 'Expires in 1 second';
-        }
+        const remaining = [
+            Math.floor(seconds / 3600),
+            Math.floor(seconds % 3600 / 60),
+            seconds % 3600 % 60
+        ].map(x => x.toString().padStart(2, "0"));
 
-        if (seconds <= 10) {
-            return `Expires in ${seconds} seconds`;
-        }
 
-        if (seconds <= 60) {
-            return `Expires in less than a minute`;
-        }
-
-        if (minutes === 1) {
-            return 'Expires in 1 minute';
-        }
-
-        if (minutes < 60) {
-            return `Expires in ${minutes} minutes at ${expireTime}`;
-        }
-
-        if (hours < 12) {
-            return `Expires in ${hours} hours at ${expireTime}`;
-        }
-
-        return `Expires on ${expireDate} at ${expireTime}`;
+        return `Expires at ${expireTime} - ${remaining.join(':')} remaining`;
     }
 
     public closeBrowserNotification(): void {
