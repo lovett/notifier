@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS messages (
     url varchar(255),
     received timestamp NOT NULL,
     user_id integer,
-    badge varchar(50) DEFAULT NULL,
+    badge varchar(255) DEFAULT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
