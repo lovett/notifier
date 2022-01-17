@@ -90,8 +90,8 @@ file should be available under the base URL defined in
 
 **group**: A keyword used to color-coordinate related
 messages. Notifier has built-in styling for the following values:
-computer, email, phone, web, reminder, calendar, sysdown, sysup,
-chore, education, financial, timer.
+computer, email, web, reminder, calendar, sysdown, sysup,
+chore, financial, timer.
 
 **localId**: A semi-unique identifier. Multiple messages can share the
 same localId to allow newer ones to replace older ones (for example, a
