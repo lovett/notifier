@@ -191,7 +191,7 @@ export default class Message {
 
         const opts: NotificationOptions = {
             body,
-            icon: 'favicon/favicon.png',
+            icon: 'favicon-white-box.png',
             tag: this.publicId,
         };
 
