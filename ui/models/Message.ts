@@ -158,15 +158,39 @@ export default class Message {
             return '';
         }
 
+        const seconds = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
+
         const expireTime = new Intl.DateTimeFormat(
             undefined,
             {hour: 'numeric', minute: '2-digit'},
         ).format(this.expiration);
 
-        const seconds = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
+        const expireDateShort = new Intl.DateTimeFormat(
+            'en-US',
+            {month: '2-digit', day: '2-digit'}
+        ).format(this.expiration);
+
+        const currentDateShort = new Intl.DateTimeFormat(
+            'en-US',
+            {month: '2-digit', day: '2-digit'}
+        ).format(Date.now());
+
+
+        if (expireDateShort > currentDateShort) {
+            if (seconds < 86400) {
+                return `Expires tomorrow at ${expireTime}`;
+            }
+
+            const expireDateLong = new Intl.DateTimeFormat(
+                undefined,
+                {month: 'long', day: 'numeric'}
+            ).format(this.expiration);
+
+            return `Expires on ${expireDateLong} at ${expireTime}`;
+        }
+
 
         const remaining = [
-            Math.floor(seconds / 3600),
             Math.floor(seconds % 3600 / 60),
             seconds % 3600 % 60
         ].map(x => x.toString().padStart(2, "0"));
