@@ -34,11 +34,6 @@ for STAGED_FILE in $(git diff --cached --name-only --diff-filter=dcr); do
         node "$WORK_DIR/$STAGED_FILE"
     fi
 
-    # Less
-    if [[ "$FILE_EXTENSION" == "less" ]]; then
-        node_modules/.bin/stylelint "$WORK_DIR/$STAGED_FILE"
-    fi
-
     # Typescript
     if [[ "$FILE_EXTENSION" == "ts" ]]; then
         if [[ "$STAGED_FILE" == ui/* ]]; then
