@@ -175,7 +175,6 @@ export default class Message {
             {month: '2-digit', day: '2-digit'}
         ).format(Date.now());
 
-
         if (expireDateShort > currentDateShort) {
             if (seconds < 86400) {
                 return `Expires tomorrow at ${expireTime}`;
@@ -189,14 +188,26 @@ export default class Message {
             return `Expires on ${expireDateLong} at ${expireTime}`;
         }
 
+        const units = ['hour', 'minute', 'second'];
 
-        const remaining = [
+        const hour_min_sec = [
+            Math.floor(seconds / 3600),
             Math.floor(seconds % 3600 / 60),
             seconds % 3600 % 60
-        ].map(x => x.toString().padStart(2, "0"));
+        ];
 
+        return hour_min_sec.reduce((accumulator, x, i) => {
+            let label = '';
+            if (x > 0) {
+                label = `${x} ${units[i]}`;
 
-        return `Expires at ${expireTime} - ${remaining.join(':')} remaining`;
+                if (x > 1) {
+                    label += 's';
+                }
+            }
+
+            return `${accumulator} ${label} `;
+        }, `Expires at ${expireTime} - `) + ' remaining';
     }
 
     public closeBrowserNotification(): void {
