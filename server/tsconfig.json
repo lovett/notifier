@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "esModuleInterop": true,
+    "isolatedModules": true,
     "module": "CommonJS",
     "outDir": "../build",
     "strict": true,
