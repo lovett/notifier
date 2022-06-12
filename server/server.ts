@@ -56,8 +56,6 @@ nconf.defaults({
     NOTIFIER_HTTP_IP: '127.0.0.1',
     NOTIFIER_HTTP_PORT: 8080,
     NOTIFIER_PUBLIC_DIR: path.resolve(__dirname, './public'),
-    NOTIFIER_DEFAULT_USER: '',
-    NOTIFIER_DEFAULT_USER_PASSWORD: '',
     NOTIFIER_TRUSTED_IPS: '127.0.0.1',
 });
 
@@ -120,9 +118,27 @@ app.use(nconf.get('NOTIFIER_BASE_URL'), router);
 app.use(jsonError);
 
 /**
- * Server startup
+ * Command mode
+ *
+ * argv[0] is the node executable
+ * argv[1] is the path to this file
+ * argv[2] indicates a command
+ * argv[3...] indicate command arguments
  */
-if (!module.parent) {
+if (process.argv.length > 2) {
+    if (process.argv[2] === 'adduser' && process.argv.length === 5) {
+        db.addUser(process.argv[3], process.argv[4]).then(() => {
+            console.log('User added');
+        }).finally(() => {
+            process.exit();
+        });
+    }
+}
+
+/**
+ * Server mode
+ */
+if (!module.parent && process.argv.length < 3) {
     const server = app.listen(
         nconf.get('NOTIFIER_HTTP_PORT'),
         nconf.get('NOTIFIER_HTTP_IP'),
@@ -132,11 +148,6 @@ if (!module.parent) {
         process.stdout.write(`Listening on ${nconf.get('NOTIFIER_HTTP_IP')}:${nconf.get('NOTIFIER_HTTP_PORT')}\n`);
 
         await db.createSchema();
-
-        await db.addUser(
-            nconf.get('NOTIFIER_DEFAULT_USER'),
-            nconf.get('NOTIFIER_DEFAULT_USER_PASSWORD')
-        );
 
         app.locals.expirationCache = await db.getExpiringMessages();
 

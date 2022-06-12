@@ -39,12 +39,6 @@ Default: `8080`.
 `NOTIFIER_PUBLIC_DIR`: The filesystem path of the public directory.
 Default: `./public`.
 
-`NOTIFIER_DEFAULT_USER`: A user account to be created automatically.
-Default: _not specified_.
-
-`NOTIFIER_DEFAULT_USER_PASSWORD`: The password for the default user.
-Default: _not specified_.
-
 `NOTIFIER_TRUSTED_IPS`: A comma-separated list of IP addresses or
 subnets that are allowed to send messages without providing a
 username/password pair. They can instead use the username as the
@@ -66,6 +60,16 @@ createdb -U postgres notifier
 
 If the configuration specifies a default user, it will similarly be
 created automatically at server startup.
+
+## User setup
+
+User management occurs from the command line.
+
+To add a user, run:
+
+```
+node server.js adduser myusername mypassword
+```
 
 ## Message Schema
 
@@ -102,14 +106,6 @@ finishes).
 an email. This field is required.
 
 **url**: If provided, the message will be displayed with a link.
-
-
-
-|Name | Required  | |
---- | --- | ---
-|data1|data2|data3|
-|data11|data12|data13|
-
 
 Messages can be sent to notifier via POST parameters.
 
