@@ -52,18 +52,41 @@ covers that entire subnet.  Default: _127.0.0.1_.
 The application will create the database schema automatically at
 startup. But the database itself must already exist.
 
-Using the default value for `NOTIFIER_DB_DSN` described above:
+Based on the default value for `NOTIFIER_DB_DSN` described above,
+database creation would look something like:
 
 ```
-createdb -U postgres notifier
+sudo -u postgres createuser --pwprompt notifier
+sudo -u postgres createdb notifier
 ```
 
-If the configuration specifies a default user, it will similarly be
-created automatically at server startup.
+If the configuration specifies a default user, it will also be created
+automatically at server startup.
+
+The application will connect to the database over a TCP socket, even
+if both are running on the same host. The application doesn't provide
+support for connections over Unix domain sockets.
+
+In order for database authentication to succeed, the Postgrs
+`pg_hba.conf` should have a setup like this:
+
+```
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+host    all             all             127.0.0.1/32            ident
+
+# IPv4 local connections:
+host    notifier        notifier        127.0.0.1/32            md5
+```
+
+The second "host" line is what the application will use. The first one
+is convenient for command-line or other access.
+
+Other approaches are possible, but these are reasonable starting points.
 
 ## User setup
 
-User management occurs from the command line.
+Regular user management (i.e. users other than the default user)
+occurs from the command line.
 
 To add a user, run:
 
