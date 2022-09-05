@@ -5,8 +5,7 @@ After=network.target
 [Service]
 Type=notify
 NotifyAccess=all
-User=notifier
-Group=notifier
+DynamicUser=true
 WorkingDirectory={{ installation_directory }}
 ExecStart={{ nodejs_path }} server.js
 Environment=NODE_ENV=production

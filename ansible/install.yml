@@ -1,22 +1,12 @@
 ---
 - hosts: notifier
   vars:
-    application_user: notifier
-    application_group: notifier
-    installation_directory: /srv/notifier
-    nodejs_path: /usr/local/bin/node
+    application_user: nobody
+    application_group: nobody
+    application_port: 8080
+    installation_directory: /var/www/notifier
+    nodejs_path: /usr/bin/node
   tasks:
-  - name: Create the application user
-    become: true
-    user:
-      state=present
-      groups=""
-      name="{{ application_user }}"
-      createhome=no
-      home="{{ installation_directory }}"
-      shell="/usr/sbin/nologin"
-      system=yes
-
   - name: Rsync the application
     become: true
     synchronize:
@@ -56,7 +46,7 @@
   - name: Wait for server to come up
     wait_for:
       host: 0.0.0.0
-      port: 8080
+      port: "{{ application_port }}"
       state: started
 
 ...
