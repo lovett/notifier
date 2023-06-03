@@ -43,6 +43,7 @@ server: dummy
 		--external:express \
 		--external:request \
 		--external:yamlparser \
+		--external:pg-cloudflare \
 		server/server.ts
 	cp -r server/schema build/
 
