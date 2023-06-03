@@ -1,4 +1,3 @@
-
 import bodyParser from 'body-parser';
 import childProcess from 'child_process';
 import compression from 'compression';
@@ -51,7 +50,7 @@ nconf.file('host', '/etc/notifier.json');
 nconf.defaults({
     NOTIFIER_BADGE_BASE_URL: '/svg',
     NOTIFIER_BASE_URL: '/',
-    NOTIFIER_DB_DSN: 'postgres://notifier:notifier@localhost:5432/notifier',
+    NOTIFIER_DB_DSN: 'socket://notifier@/var/run/postgresql?db=notifier',
     NOTIFIER_FORCE_HTTPS: 0,
     NOTIFIER_HTTP_IP: '127.0.0.1',
     NOTIFIER_HTTP_PORT: 8080,
