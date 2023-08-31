@@ -74,7 +74,7 @@ export default {
             }, [
                 m('svg', [
                     m('use', {
-                        href: '#x',
+                        'xlink:href': '#x',
                     }),
                 ]),
             ]),
