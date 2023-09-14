@@ -2,7 +2,7 @@
 
 DEV_URL := http://localhost:8080
 TMUX_SESSION_NAME := notifier
-NPM_FILES := package.json package-lock.json .npmrc
+NPM_FILES := package.json package-lock.json
 
 export PATH := ./node_modules/.bin:$(PATH)
 
