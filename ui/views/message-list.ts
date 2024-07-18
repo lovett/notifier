@@ -19,7 +19,7 @@ export default {
             let cssClass = '.checking';
 
             if (cache.filledOn) {
-                message = 'You have no messages.';
+                message = 'No messages';
                 cssClass = '';
             }
 

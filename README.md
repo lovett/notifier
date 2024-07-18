@@ -143,5 +143,5 @@ The browser UI and the server are both written in Typescript.
 
 
 ## Attribution
-This project uses icons from [Font Awesome](https://fontawesome.com/license/free)
-under the Creative Commons Attribution 4.0 International license.
+This project uses icons from [Bootstrap](https://github.com/twbs/icons)
+under MIT license.
