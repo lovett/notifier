@@ -75,19 +75,18 @@ badgemessage:
 
 # Send a batch of messages.
 multimessage:
-	curl -u notifier:notifier -d "title=email group test message"     -d "group=email"     -d "body=Message 1"	 -d "localId=multi-email"     $(DEV_URL)/message
-	curl -u notifier:notifier -d "title=web group test message"       -d "group=web"       -d "body=Message 3"	 -d "localId=multi-web"       $(DEV_URL)/message
-	curl -u notifier:notifier -d "title=reminder group test message"  -d "group=reminder"  -d "body=Message 4"	 -d "localId=multi-reminder"  $(DEV_URL)/message
-	curl -u notifier:notifier -d "title=calendar group test message"  -d "group=calendar"  -d "body=Message 5"	 -d "localId=multi-calendar"  $(DEV_URL)/message
-	curl -u notifier:notifier -d "title=sysdown group test message"   -d "group=sysdown"   -d "body=Message 6"	 -d "localId=multi-sysdown"   $(DEV_URL)/message
-	curl -u notifier:notifier -d "title=sysdown group test message"   -d "group=sysdown"   -d "body=Message 7"	 -d "localId=multi-sysdown"   $(DEV_URL)/message
-	curl -u notifier:notifier -d "title=sysup group test message"     -d "group=sysup"     -d "body=Message 8"	 -d "localId=multi-sysup"     $(DEV_URL)/message
-	curl -u notifier:notifier -d "title=chore group test message"     -d "group=chore"     -d "body=Message 9"	 -d "localId=multi-chore"     $(DEV_URL)/message
-	curl -u notifier:notifier -d "title=computer group test message"  -d "group=computer"  -d "body=Message 11" -d "localId=multi-computer"  $(DEV_URL)/message
-	curl -u notifier:notifier -d "title=financial group test message" -d "group=financial" -d "body=Message 12" -d "localId=multi-financial" $(DEV_URL)/message
-	curl -u notifier:notifier -d "title=timer group test message"     -d "group=timer"     -d "body=Message 13" -d "localId=multi-timer"     $(DEV_URL)/message
-	curl -u notifier:notifier -d "title=warning group test message"   -d "group=warning"   -d "body=Message 14" -d "localId=multi-warning"   $(DEV_URL)/message
-	curl -u notifier:notifier -d "title=weather group test message"   -d "group=weather"   -d "body=Message 15" -d "localId=multi-weather"   $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=email group test message"     -d "group=email"     -d "body=Message 1"  -d "localId=multi-email"     $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=web group test message"       -d "group=web"       -d "body=Message 2"  -d "localId=multi-web"       $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=reminder group test message"  -d "group=reminder"  -d "body=Message 3"  -d "localId=multi-reminder"  $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=calendar group test message"  -d "group=calendar"  -d "body=Message 4"  -d "localId=multi-calendar"  $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=sysdown group test message"   -d "group=sysdown"   -d "body=Message 5"  -d "localId=multi-sysdown"   $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=sysup group test message"     -d "group=sysup"     -d "body=Message 6"  -d "localId=multi-sysup"     $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=chore group test message"     -d "group=chore"     -d "body=Message 7"  -d "localId=multi-chore"     $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=computer group test message"  -d "group=computer"  -d "body=Message 8"  -d "localId=multi-computer"  $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=financial group test message" -d "group=financial" -d "body=Message 9"  -d "localId=multi-financial" $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=timer group test message"     -d "group=timer"     -d "body=Message 10" -d "localId=multi-timer"     $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=warning group test message"   -d "group=warning"   -d "body=Message 11" -d "localId=multi-warning"   $(DEV_URL)/message
+	curl -u notifier:notifier -d "title=weather group test message"   -d "group=weather"   -d "body=Message 12" -d "localId=multi-weather"   $(DEV_URL)/message
 
 # Automation for setting up a tmux session.
 workspace:
