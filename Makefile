@@ -50,8 +50,8 @@ server: dummy
 # Compile the frontend.
 ui: dummy
 	@echo Building UI
-	esbuild --bundle --minify --outdir=build/public ui/index.ts
-	esbuild --bundle --minify --outdir=build/public worker/worker.ts
+	esbuild --bundle --minify --target=es2019 --outdir=build/public ui/index.ts
+	esbuild --bundle --minify --target=es2019 --outdir=build/public worker/worker.ts
 	cp ui/index.html build/public/
 	mkdir -p build/public/svg
 	cp -r ui/svg/*.svg build/public/svg
