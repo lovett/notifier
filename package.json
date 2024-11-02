@@ -13,16 +13,16 @@
   "homepage": "https://github.com/lovett/notifier",
   "dependencies": {
     "body-parser": "1.20.3",
-    "compression": "1.7.4",
-    "cookie-parser": "1.4.6",
-    "express": "4.21.0",
-    "mithril": "2.2.5",
+    "compression": "1.7.5",
+    "cookie-parser": "1.4.7",
+    "express": "4.21.1",
+    "mithril": "2.2.9",
     "nconf": "0.12.1",
-    "pg": "8.13.0",
+    "pg": "8.13.1",
     "pg-hstore": "2.3.4",
     "sanitize-html": "2.13.1",
     "useragent": "2.3.0",
-    "uuid": "10.0.0"
+    "uuid": "11.0.2"
   },
   "devDependencies": {
     "@types/body-parser": "1.19.5",
@@ -32,7 +32,7 @@
     "@types/mithril": "2.2.7",
     "@types/nconf": "0.10.7",
     "@types/needle": "3.3.0",
-    "@types/node": "22.7.4",
+    "@types/node": "22.8.6",
     "@types/pg": "8.11.10",
     "@types/sanitize-html": "2.13.0",
     "@types/serve-favicon": "2.5.7",
@@ -40,10 +40,10 @@
     "@types/uuid": "10.0.0",
     "esbuild": "0.24.0",
     "esbuild-linux-64": "0.15.18",
-    "eslint": "9.11.1",
+    "eslint": "9.14.0",
     "less": "4.2.0",
     "ts-node": "10.9.2",
-    "typescript": "5.6.2",
-    "typescript-eslint": "8.8.0"
+    "typescript": "5.6.3",
+    "typescript-eslint": "8.12.2"
   }
 }
