@@ -1,8 +1,8 @@
-import * as express from 'express';
-import * as http from 'http';
-import * as https from 'https';
+import type * as express from 'express';
+import * as http from 'node:http';
+import * as https from 'node:https';
 import db from '../db';
-import Message from '../Message';
+import type Message from '../Message';
 
 function publishWebhook(message: Message, url: string): void {
     const payload = JSON.stringify(message);

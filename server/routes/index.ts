@@ -1,5 +1,6 @@
-import { Response, Router } from 'express';
-import * as path from 'path';
+import type { Response } from 'express';
+import { Router } from 'express';
+import * as path from 'node:path';
 
 const router = Router();
 

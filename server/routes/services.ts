@@ -1,7 +1,8 @@
 import db from '../db';
-import User from '../User';
-import { Request, Response, Router } from 'express';
-import Token from '../Token';
+import type User from '../User';
+import type { Request, Response } from 'express';
+import Router from 'express';
+import type Token from '../Token';
 
 const router = Router();
 

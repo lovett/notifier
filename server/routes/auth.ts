@@ -1,8 +1,9 @@
 import db from '../db';
-import { NextFunction, Request, Response, Router } from 'express';
+import type { NextFunction, Request, Response } from 'express';
+import { Router } from 'express';
 import * as useragent from 'useragent';
 import Token from '../Token';
-import { CookieOptions } from 'express-serve-static-core';
+import type { CookieOptions } from 'express-serve-static-core';
 
 const router = Router();
 

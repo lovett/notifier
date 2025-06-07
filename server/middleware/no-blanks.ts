@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 /**
  * Remove leading and trailing whitespace from a parsed request body.
@@ -9,7 +9,7 @@ import { NextFunction, Request, Response } from 'express';
  * as it previously did in v1.
  */
 export default (req: Request, _: Response, next: NextFunction): void => {
-  for (let key in req.body ?? {}) {
+  for (const key in req.body ?? {}) {
     if (typeof req.body[key] !== 'string') {
       continue;
     }

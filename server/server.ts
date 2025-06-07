@@ -1,10 +1,10 @@
 import bodyParser from 'body-parser';
-import childProcess from 'child_process';
+import childProcess from 'node:child_process';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import nconf from 'nconf';
-import path from 'path';
+import path from 'node:path';
 
 import db from './db';
 import archive from './routes/archive';
@@ -41,7 +41,7 @@ const router = express.Router();
 
 nconf.env();
 
-nconf.file('environment', path.join(__dirname, '../', 'config-' + process.env.NODE_ENV + '.json'));
+nconf.file('environment', path.join(__dirname, '../', `config-${process.env.NODE_ENV}.json`));
 
 nconf.file('application', path.join(__dirname, '../', 'config.json'));
 

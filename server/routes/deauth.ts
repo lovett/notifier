@@ -1,5 +1,6 @@
 import db from '../db';
-import { NextFunction, Request, Response, Router } from 'express';
+import type { NextFunction, Request, Response } from 'express';
+import { Router } from 'express';
 
 const router = Router();
 
@@ -11,8 +12,8 @@ const router = Router();
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     const baseUrl = req.app.locals.config.get('NOTIFIER_BASE_URL');
 
-    let key;
-    let value;
+    let key: string;
+    let value: string | number | null;
 
     if (req.body.key && req.body.value) {
         key = req.body.key;

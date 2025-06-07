@@ -1,5 +1,6 @@
-import { Request, Response, Router } from 'express';
-import User from '../User';
+import type { Request, Response } from 'express';
+import { Router } from 'express';
+import type User from '../User';
 import * as uuid from 'uuid';
 
 const router = Router();

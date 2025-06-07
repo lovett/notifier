@@ -1,6 +1,7 @@
 import db from '../db';
-import User from '../User';
-import { NextFunction, Request, Response, Router } from 'express';
+import type User from '../User';
+import type { NextFunction, Request, Response } from 'express';
+import { Router } from 'express';
 import publishMessage from '../helpers/publish-message';
 
 const router = Router();

@@ -1,6 +1,7 @@
 import db from '../db';
-import User from '../User';
-import { Request, Response, Router } from 'express';
+import type User from '../User';
+import type { Request, Response } from 'express';
+import { Router } from 'express';
 
 const router = Router();
 
@@ -10,10 +11,10 @@ router.get('/:count?', async (req: Request, res: Response) => {
 
     let count = maxCount;
     if (req.params.count) {
-        count = Math.min(parseInt(req.params.count, 10), maxCount);
+        count = Math.min(Number.parseInt(req.params.count, 10), maxCount);
     }
 
-    const since = parseInt(req.query.since as string, 10) || 0;
+    const since = Number.parseInt(req.query.since as string, 10) || 0;
 
     const startDate = new Date(since);
 

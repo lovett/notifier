@@ -1,6 +1,7 @@
 import db from '../db';
-import User from '../User';
-import { NextFunction, Request, Response, Router } from 'express';
+import type User from '../User';
+import type { NextFunction, Request, Response } from 'express';
+import { Router } from 'express';
 import publishMessage from '../helpers/publish-message';
 import Message from '../Message';
 
@@ -17,11 +18,11 @@ function parseRelativeDate(value: string) {
     let totalMs = 0;
 
     for (const unit of Object.keys(units)) {
-        const regex = new RegExp('(?<quantity>\\d+)\\s+' + unit + 's?', 'i');
+        const regex = new RegExp(`(?<quantity>\\d+)\\s+${unit}s?`, 'i');
         const matches = value.trim().match(regex);
 
-        if (matches && matches.groups) {
-            totalMs += parseInt(matches.groups.quantity, 10) * units[unit] * 1000;
+        if (matches?.groups) {
+            totalMs += Number.parseInt(matches.groups.quantity, 10) * units[unit] * 1000;
         }
     }
 
@@ -29,7 +30,7 @@ function parseRelativeDate(value: string) {
 
 }
 
-async function validate(req: Request, res: Response, next: NextFunction): Promise<NextFunction|void> {
+async function validate(req: Request, res: Response, next: NextFunction): Promise<NextFunction> {
     if (Object.keys(req.body).length === 0) {
         res.status(400);
         throw new Error('No message fields specified');
@@ -54,7 +55,7 @@ async function validate(req: Request, res: Response, next: NextFunction): Promis
  * This enforces uniqueness from the client's perspective. From the
  * perspective of the database, localIds are not unique.
  */
-async function retract(req: Request, res: Response, next: NextFunction): Promise<NextFunction|void> {
+async function retract(req: Request, res: Response, next: NextFunction): Promise<NextFunction> {
     const message: Message = req.body.message;
 
     if (!message.localId) {
@@ -84,7 +85,7 @@ async function retract(req: Request, res: Response, next: NextFunction): Promise
     next();
 }
 
-async function save(req: Request, res: Response, next: NextFunction): Promise<NextFunction|void> {
+async function save(req: Request, res: Response, next: NextFunction): Promise<NextFunction> {
     const user = req.user as User;
     const message: Message = req.body.message;
 
@@ -102,7 +103,7 @@ async function save(req: Request, res: Response, next: NextFunction): Promise<Ne
     next();
 }
 
-async function publish(req: Request, res: Response, next: NextFunction): Promise<NextFunction|void> {
+async function publish(req: Request, res: Response, next: NextFunction): Promise<NextFunction> {
     const message: Message = req.body.message;
     const user = req.user as User;
 

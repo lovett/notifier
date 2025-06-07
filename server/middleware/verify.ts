@@ -1,13 +1,14 @@
 import db from '../db';
-import Token from '../Token';
-import { NextFunction, Request, Response } from 'express';
-import { CookieOptions } from 'express-serve-static-core'
+import type Token from '../Token';
+import type User from '../User';
+import type { NextFunction, Request, Response } from 'express';
+import type { CookieOptions } from 'express-serve-static-core'
 
 /**
  * Identify a user based on cookie or basic auth.
  */
 export default async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    let user;
+    let user: User;
 
     if ('token' in req.cookies) {
         const [key, value] = req.cookies.token.split(',', 2);
@@ -31,7 +32,7 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
             return next();
         }
 
-        if (req.headers['accept'] && req.headers['accept'].indexOf('text/event-stream') === -1) {
+        if (req.headers.accept?.indexOf('text/event-stream') === -1) {
             res.sendStatus(403);
         } else {
             res.writeHead(200, {
@@ -40,7 +41,7 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
                 'Content-Type': 'text/event-stream',
                 'X-Accel-Buffering': 'no'
             });
-            res.write(`event: message\ndata: 403\n\n`);
+            res.write("event: message\ndata: 403\n\n");
         }
         return;
     }

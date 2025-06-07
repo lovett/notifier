@@ -1,6 +1,6 @@
-import { NextFunction, Request, Response } from 'express';
-import * as url from 'url';
-import * as util from 'util';
+import type { NextFunction, Request, Response } from 'express';
+import * as url from 'node:url';
+import * as util from 'node:util';
 
 interface CspParams {
     [key: string]: string[];
@@ -51,7 +51,7 @@ export default function(req: Request, res: Response, next: NextFunction): void {
         res.setHeader('Strict-Transport-Security', util.format('max-age=%d', 60 * 60 * 24 * 30));
 
         if (req.get('x-forwarded-proto') === 'http') {
-            res.redirect('https://' + req.headers['x-forwarded-host'] + req.url);
+            res.redirect(`https://${req.headers['x-forwarded-host']}${req.url}`);
         }
     }
 

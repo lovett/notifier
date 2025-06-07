@@ -1,7 +1,7 @@
 import db from './db';
-import User from './User';
+import type User from './User';
 import publishMessage from './helpers/publish-message';
-import { Application } from 'express';
+import type { Application } from 'express';
 
 async function scheduler(app: Application): Promise<void> {
     // Clean up old tokens once per hour.

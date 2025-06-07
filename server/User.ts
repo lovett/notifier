@@ -1,18 +1,18 @@
-import * as crypto from 'crypto';
-import * as util from 'util';
-import Token from './Token';
+import * as crypto from 'node:crypto';
+import * as util from 'node:util';
+import type Token from './Token';
 
 export default class User {
     public static hashPassword(password: string): string {
-        const buf = crypto.randomBytes(this.hashKeylength);
+        const buf = crypto.randomBytes(User.hashKeylength);
         const salt = buf.toString('hex');
 
         const hash = crypto.pbkdf2Sync(
             password,
             salt,
-            this.hashIterations,
-            this.hashKeylength,
-            this.hashDigest,
+            User.hashIterations,
+            User.hashKeylength,
+            User.hashDigest,
         );
 
         return `${salt}::${hash.toString('hex')}`;

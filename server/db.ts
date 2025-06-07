@@ -2,14 +2,14 @@ import { Pool } from 'pg';
 import Message from './Message';
 import User from './User';
 import Token from './Token';
-import * as util from 'util';
-import * as fs from 'fs';
-import * as path from 'path';
+import * as util from 'node:util';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 let pool: Pool;
 
 export default {
-    connect: function (dsn: string): void {
+    connect: (dsn: string) =>  {
         if (pool) {
             return;
         }
@@ -50,10 +50,10 @@ export default {
         }
     },
 
-    getUser: async function (username: string): Promise<User | null> {
-        const sql = `SELECT id, username, password_hash as "passwordHash", ` +
-            `created_at as "createdAt" ` +
-            `FROM users WHERE username=$1`;
+    getUser: async (username: string): Promise<User | null> => {
+        const sql = `SELECT id, username, password_hash as "passwordHash",
+            created_at as "createdAt"
+            FROM users WHERE username=$1`;
 
         try {
             const res = await pool.query(sql, [username]);
@@ -70,11 +70,9 @@ export default {
         }
     },
 
-    getUserByToken: async function(key: string, value: string): Promise<User | null> {
-        const sql = `SELECT user_id, label, persist ` +
-            `FROM tokens ` +
-            `WHERE key=$1 ` +
-            `AND value=$2`;
+  getUserByToken: async (key: string, value: string): Promise<User | null> => {
+        const sql = `SELECT user_id, label, persist
+            FROM tokens WHERE key=$1 AND value=$2`;
 
         try {
             const res = await pool.query(sql, [key, value]);
@@ -99,9 +97,9 @@ export default {
         }
     },
 
-    markTokenSeen: async function (token: Token): Promise<null> {
-        const sql = `UPDATE tokens SET last_seen=NOW() ` +
-            `WHERE key=$1 AND value=$2`;
+    markTokenSeen: async (token: Token): Promise<null> => {
+        const sql = `UPDATE tokens SET last_seen=NOW()
+            WHERE key=$1 AND value=$2`;
 
         try {
             await pool.query(sql, [token.key, token.value]);
@@ -112,9 +110,9 @@ export default {
         return null;
     },
 
-    addUser: async function (username: string, password: string): Promise<User | null> {
-        const sql = `INSERT INTO users (username, password_hash) ` +
-            `VALUES ($1, $2) ON CONFLICT DO NOTHING`;
+  addUser: async (username: string, password: string): Promise<User | null> => {
+        const sql = `INSERT INTO users (username, password_hash)
+            VALUES ($1, $2) ON CONFLICT DO NOTHING`;
 
         const passwordHash = User.hashPassword(password);
 
@@ -136,11 +134,11 @@ export default {
         }
     },
 
-    getServiceTokens: async function (userId: number): Promise<Token[]> {
-        const sql = `SELECT key, value, label, persist ` +
-            `FROM tokens ` +
-            `WHERE user_id=$1 ` +
-            `AND label IN ('service', 'userval')`;
+  getServiceTokens: async (userId: number): Promise<Token[]> => {
+        const sql = `SELECT key, value, label, persist
+            FROM tokens
+            WHERE user_id=$1
+            AND label IN ('service', 'userval')`;
 
         try {
             const res = await pool.query(sql, [userId]);
@@ -156,11 +154,11 @@ export default {
         }
     },
 
-    getWebhookUrls: async function (userId: number): Promise<string[]> {
-        const sql = `SELECT value ` +
-            `FROM tokens ` +
-            `WHERE user_id=$1 ` +
-            `AND key='webhook'`;
+  getWebhookUrls: async (userId: number): Promise<string[]> => {
+        const sql = `SELECT value
+            FROM tokens
+            WHERE user_id=$1
+            AND key='webhook'`;
 
         try {
             const res = await pool.query(sql, [userId]);
@@ -171,10 +169,10 @@ export default {
         }
     },
 
-    deleteTokensByKey: async function (userId: number, records: string[]): Promise<boolean> {
-        const sql = `DELETE FROM tokens ` +
-            `WHERE user_id=$1 ` +
-            `AND key = ANY ($2)`;
+  deleteTokensByKey: async (userId: number, records: string[]): Promise<boolean> => {
+        const sql = `DELETE FROM tokens
+            WHERE user_id=$1
+            AND key = ANY ($2)`;
 
         try {
             await pool.query(sql, [userId, records]);
@@ -185,7 +183,7 @@ export default {
         }
     },
 
-    deleteToken: async function (key: string, value: string): Promise<boolean> {
+    deleteToken: async (key: string, value: string): Promise<boolean> => {
         const sql = 'DELETE FROM tokens WHERE key = $1 AND value = $2';
 
         try {
@@ -197,10 +195,10 @@ export default {
         }
     },
 
-    addTokens: async function (userId: number, tokens: Token[]): Promise<void> {
-        const sql = `INSERT INTO tokens ` +
-            `(user_id, key, value, label, persist) ` +
-            `VALUES ($1, $2, $3, $4, $5)`;
+    addTokens: async (userId: number, tokens: Token[]): Promise<void> => {
+        const sql = `INSERT INTO tokens
+            (user_id, key, value, label, persist)
+            VALUES ($1, $2, $3, $4, $5)`;
 
         (async (): Promise<void> => {
             const client = await pool.connect();
@@ -228,11 +226,11 @@ export default {
         })().catch((e) => console.error(e.stack));
     },
 
-    addMessages: async function (userId: number, messages: Message[]): Promise<void> {
-        const sql = `INSERT INTO messages ` +
-            `(body, expires_at, group_name, local_id, public_id, ` +
-            `source, title, url, received, user_id, badge) ` +
-            `VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`;
+    addMessages: async (userId: number, messages: Message[]): Promise<void> => {
+        const sql = `INSERT INTO messages
+            (body, expires_at, group_name, local_id, public_id,
+            source, title, url, received, user_id, badge)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`;
 
         (async (): Promise<void> => {
             const client = await pool.connect();
@@ -266,11 +264,11 @@ export default {
         })().catch((e) => console.error(e.stack));
     },
 
-    markMessagesUnread: async function (userId: number, publicIds: string[]): Promise<boolean> {
-        const sql = `UPDATE messages ` +
-            `SET unread=true ` +
-            `WHERE user_id=$1 ` +
-            `AND public_id = ANY ($2)`;
+    markMessagesUnread: async (userId: number, publicIds: string[]): Promise<boolean> => {
+        const sql = `UPDATE messages
+            SET unread=true
+            WHERE user_id=$1
+            AND public_id = ANY ($2)`;
 
         try {
             await pool.query(sql, [userId, publicIds]);
@@ -281,11 +279,11 @@ export default {
         }
     },
 
-    markMessagesRead: async function (userId: number, publicIds: string[]): Promise<boolean> {
-        const sql = `UPDATE messages ` +
-            `SET unread=false ` +
-            `WHERE user_id=$1 ` +
-            `AND public_id = ANY ($2)`;
+    markMessagesRead: async (userId: number, publicIds: string[]): Promise<boolean> => {
+        const sql = `UPDATE messages
+            SET unread=false
+            WHERE user_id=$1
+            AND public_id = ANY ($2)`;
 
         try {
             await pool.query(sql, [userId, publicIds]);
@@ -296,12 +294,12 @@ export default {
         }
     },
 
-    getMessage: async function (userId: number, publicId: string): Promise<Message | null> {
-        const sql = `SELECT public_id as "publicId", title, url, body, badge, source, ` +
-            `group_name as "group", received, expires_at as "expiresAt" ` +
-            `FROM messages ` +
-            `WHERE user_id=$1 ` +
-            `AND public_id=$2`;
+    getMessage: async (userId: number, publicId: string): Promise<Message | null> => {
+        const sql = `SELECT public_id as "publicId", title, url, body, badge, source,
+            group_name as "group", received, expires_at as "expiresAt"
+            FROM messages
+            WHERE user_id=$1
+            AND public_id=$2`;
 
         try {
             const res = await pool.query(sql, [userId, publicId]);
@@ -317,16 +315,16 @@ export default {
         }
     },
 
-    getUnreadMessages: async function (userId: number, startDate: Date, limit = 50): Promise<Message[]> {
-        const sql = `SELECT public_id as "publicId", local_id as "localId", title, url, body, badge, source, ` +
-            `group_name as "group", received, expires_at as "expiresAt" ` +
-            `FROM messages ` +
-            `WHERE user_id=$1 ` +
-            `AND unread=true ` +
-            `AND received >= $2 ` +
-            `AND (expires_at IS NULL OR expires_at > NOW()) ` +
-            `ORDER BY received ` +
-            `LIMIT $3`;
+    getUnreadMessages: async (userId: number, startDate: Date, limit = 50): Promise<Message[]> => {
+        const sql = `SELECT public_id as "publicId", local_id as "localId", title, url, body, badge, source,
+            group_name as "group", received, expires_at as "expiresAt"
+            FROM messages
+            WHERE user_id=$1
+            AND unread=true
+            AND received >= $2
+            AND (expires_at IS NULL OR expires_at > NOW())
+            ORDER BY received
+            LIMIT $3`;
 
         try {
             const res = await pool.query(sql, [userId, startDate, limit]);
@@ -337,12 +335,12 @@ export default {
         }
     },
 
-    getRetractableMessageIds: async function (userId: number, localId: string): Promise<string[]> {
-        const sql = `SELECT public_id as "publicId" ` +
-            `FROM messages ` +
-            `WHERE user_id=$1 ` +
-            `AND unread=true ` +
-            `AND local_id=$2`;
+    getRetractableMessageIds: async (userId: number, localId: string): Promise<string[]> => {
+        const sql = `SELECT public_id as "publicId"
+            FROM messages
+            WHERE user_id=$1
+            AND unread=true
+            AND local_id=$2`;
 
         try {
             const res = await pool.query(sql, [userId, localId]);
@@ -353,12 +351,11 @@ export default {
         }
     },
 
-    getExpiringMessages: async function (): Promise<Map<string, [number, Date]>> {
-        const sql = `SELECT public_id as "publicId", user_id as "userId", expires_at as "expiresAt" ` +
-            `FROM messages ` +
-            `WHERE unread=true ` +
-            `AND expires_at > NOW()`;
-
+    getExpiringMessages: async (): Promise<Map<string, [number, Date]>> => {
+        const sql = `SELECT public_id as "publicId", user_id as "userId", expires_at as "expiresAt"
+            FROM messages
+            WHERE unread=true
+            AND expires_at > NOW()`;
 
         const messages: Map<string, [number, Date]> = new Map();
 
@@ -375,10 +372,10 @@ export default {
         }
     },
 
-    pruneStaleTokens: async function (): Promise<boolean> {
-        const sql = `DELETE FROM tokens ` +
-            `WHERE DATE_PART('day', now() - last_seen) > 14
-             AND key <> 'webhook'`;
+    pruneStaleTokens: async (): Promise<boolean> => {
+        const sql = `DELETE FROM tokens
+            WHERE DATE_PART('day', now() - last_seen) > 14
+            AND key <> 'webhook'`;
 
         try {
             await pool.query(sql);
