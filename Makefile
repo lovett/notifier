@@ -16,10 +16,6 @@ build: dummy clean setup server ui
 	cd build && npm ci --production
 	cd build && rm $(NPM_FILES)
 
-# Install git hook scripts.
-hooks: dummy
-	cp hooks/* .git/hooks/
-
 # Install NPM packages quietly.
 setup:
 	DISABLE_OPENCOLLECTIVE=1 npm install
