@@ -7,7 +7,7 @@ import Message from '../Message';
 
 const router = Router();
 
-function parseRelativeDate(value: string) {
+function parseRelativeDate(value: string): number {
     const units: Record<string, number> = {
         'second': 1,
         'minute': 60,
@@ -30,7 +30,7 @@ function parseRelativeDate(value: string) {
 
 }
 
-async function validate(req: Request, res: Response, next: NextFunction): Promise<NextFunction> {
+async function validate(req: Request, res: Response, next: NextFunction) {
     if (Object.keys(req.body).length === 0) {
         res.status(400);
         throw new Error('No message fields specified');
@@ -45,7 +45,7 @@ async function validate(req: Request, res: Response, next: NextFunction): Promis
 
     req.body.message = new Message(req.body);
 
-    return next();
+    next();
 }
 
 /**
@@ -55,7 +55,7 @@ async function validate(req: Request, res: Response, next: NextFunction): Promis
  * This enforces uniqueness from the client's perspective. From the
  * perspective of the database, localIds are not unique.
  */
-async function retract(req: Request, res: Response, next: NextFunction): Promise<NextFunction> {
+async function retract(req: Request, res: Response, next: NextFunction) {
     const message: Message = req.body.message;
 
     if (!message.localId) {
@@ -85,7 +85,7 @@ async function retract(req: Request, res: Response, next: NextFunction): Promise
     next();
 }
 
-async function save(req: Request, res: Response, next: NextFunction): Promise<NextFunction> {
+async function save(req: Request, res: Response, next: NextFunction) {
     const user = req.user as User;
     const message: Message = req.body.message;
 
@@ -103,7 +103,7 @@ async function save(req: Request, res: Response, next: NextFunction): Promise<Ne
     next();
 }
 
-async function publish(req: Request, res: Response, next: NextFunction): Promise<NextFunction> {
+async function publish(req: Request, res: Response, next: NextFunction) {
     const message: Message = req.body.message;
     const user = req.user as User;
 

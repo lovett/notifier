@@ -110,31 +110,30 @@ export default {
         return null;
     },
 
-  addUser: async (username: string, password: string): Promise<User | null> => {
+  addUser: async (username: string, password: string): Promise<boolean> => {
         const sql = `INSERT INTO users (username, password_hash)
             VALUES ($1, $2) ON CONFLICT DO NOTHING`;
 
         const passwordHash = User.hashPassword(password);
 
         if (username.trim() === '' || password.trim() === '') {
-            return null;
+            return false;
         }
 
         try {
             const res = await pool.query(sql, [username, passwordHash]);
             if (res.rowCount === 0) {
-                return null;
+                return false;
             }
-
-            return await this.getUser(username);
-
         } catch (err) {
             console.log(err);
-            return null;
+            return false;
         }
+
+        return true;
     },
 
-  getServiceTokens: async (userId: number): Promise<Token[]> => {
+    getServiceTokens: async (userId: number): Promise<Token[]> => {
         const sql = `SELECT key, value, label, persist
             FROM tokens
             WHERE user_id=$1
@@ -154,7 +153,7 @@ export default {
         }
     },
 
-  getWebhookUrls: async (userId: number): Promise<string[]> => {
+    getWebhookUrls: async (userId: number): Promise<string[]> => {
         const sql = `SELECT value
             FROM tokens
             WHERE user_id=$1
@@ -169,7 +168,7 @@ export default {
         }
     },
 
-  deleteTokensByKey: async (userId: number, records: string[]): Promise<boolean> => {
+    deleteTokensByKey: async (userId: number, records: string[]): Promise<boolean> => {
         const sql = `DELETE FROM tokens
             WHERE user_id=$1
             AND key = ANY ($2)`;

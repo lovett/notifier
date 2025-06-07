@@ -2,7 +2,7 @@ import db from '../db';
 import type User from '../User';
 import type { Request, Response } from 'express';
 import Router from 'express';
-import type Token from '../Token';
+import Token from '../Token';
 
 const router = Router();
 
@@ -58,9 +58,9 @@ router.post('/', async (req: Request, res: Response) => {
         const user = req.user as User;
         await db.deleteTokensByKey(user.id, removals);
         await db.addTokens(user.id, additions);
-        return res.sendStatus(200);
+        res.sendStatus(200);
     } catch (e) {
-        return res.status(500).json(e);
+        res.status(500).json(e);
     }
 });
 

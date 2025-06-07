@@ -12,8 +12,8 @@ const router = Router();
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     const baseUrl = req.app.locals.config.get('NOTIFIER_BASE_URL');
 
-    let key: string;
-    let value: string | number | null;
+    let key = '';
+    let value = '';
 
     if (req.body.key && req.body.value) {
         key = req.body.key;
@@ -28,16 +28,18 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
         try {
             await db.deleteToken(key, value);
             res.clearCookie('token', { path: baseUrl });
-            return res.sendStatus(200);
+            res.sendStatus(200);
+            return;
         } catch (e) {
             console.log(e);
-            return res.sendStatus(500);
+            res.sendStatus(500);
+            return;
         }
     }
 
     const err = new Error('Credential not provided');
     res.status(400);
-    return next(err);
+    next(err);
 });
 
 export default router;

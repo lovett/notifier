@@ -12,7 +12,8 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     if (!req.body.publicId) {
         const err = new Error('Request lacked a publicId');
         res.status(400);
-        return next(err);
+        next(err);
+        return
     }
 
     const publicId = req.body.publicId;
@@ -26,8 +27,8 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
         const message = await db.getMessage(user.id, publicId);
 
         if (!message) {
-            res.sendStatus(404);
-            return;
+          res.sendStatus(404);
+          return;
         }
 
         message.deliveryStyle = 'whisper';
@@ -36,7 +37,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 
         res.sendStatus(204);
     } catch (e) {
-        return res.status(500).json(e);
+        res.status(500).json(e);
     }
 });
 

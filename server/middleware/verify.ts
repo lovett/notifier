@@ -7,12 +7,12 @@ import type { CookieOptions } from 'express-serve-static-core'
 /**
  * Identify a user based on cookie or basic auth.
  */
-export default async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    let user: User;
+export default async (req: Request, res: Response, next: NextFunction) => {
+    let user: User | null = null;
 
     if ('token' in req.cookies) {
         const [key, value] = req.cookies.token.split(',', 2);
-        user = await db.getUserByToken(key, value);
+        const user = await db.getUserByToken(key, value);
 
         if (user) {
             const token = user.token as Token;
@@ -29,7 +29,8 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
             }
 
             req.user = user;
-            return next();
+            next();
+            return;
         }
 
         if (req.headers.accept?.indexOf('text/event-stream') === -1) {
@@ -59,7 +60,7 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
 
             if (authUser === authPass) {
                 for (const candidate of trustedIps) {
-                    if (req.ip.startsWith(candidate)) {
+                    if (req.ip?.startsWith(candidate)) {
                         user = await db.getUser(authUser);
                         break;
                     }
@@ -73,7 +74,8 @@ export default async (req: Request, res: Response, next: NextFunction): Promise<
                     await db.markTokenSeen(user.token);
                 }
                 req.user = user;
-                return next();
+                next();
+                return;
             }
         }
 
