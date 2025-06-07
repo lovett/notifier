@@ -25,7 +25,6 @@
     "uuid": "11.1.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
     "@types/body-parser": "1.19.5",
     "@types/compression": "1.8.0",
     "@types/cookie-parser": "1.4.8",
