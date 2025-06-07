@@ -109,18 +109,18 @@ install: build
 
 # Lint the source files for the server.
 lint-server:
-	tsc --noEmit -p server
-	eslint --max-warnings=0 --ext=.ts server
+	npx @biomejs/biome lint server
+	tsc --noEmit --project server
 
 # Lint the source files for the browser UI.
 lint-ui:
-	tsc --noEmit -p ui
-	eslint --max-warnings=0 --ext=.ts ui
+	npx @biomejs/biome lint ui
+	tsc --noEmit --project ui
 
 # Lint the source files for the UI web worker.
 lint-worker:
-	tsc --noEmit -p worker
-	eslint --max-warnings=0 --ext=.ts worker
+	npx @biomejs/biome lint worker
+	tsc --noEmit --project worker
 
 # Lint everything.
 lint: lint-ui lint-server lint-worker
