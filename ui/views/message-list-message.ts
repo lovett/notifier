@@ -1,6 +1,6 @@
 import m from 'mithril';
-import Message from '../models/Message';
-import Cache from '../models/Cache';
+import type {Message} from '../models/Message';
+import type Cache from '../models/Cache';
 
 export default {
     startExpirationTimer(vnode: m.Vnode): void {
@@ -9,7 +9,7 @@ export default {
 
         const recheckSeconds = message.expirationRecheckInterval();
 
-        if (recheckSeconds == 0) {
+        if (recheckSeconds === 0) {
             return;
         }
 

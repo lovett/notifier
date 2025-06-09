@@ -1,5 +1,5 @@
 import m from 'mithril';
-import Cache from './Cache';
+import type Cache from './Cache';
 
 export interface Shortcut {
     description: string;
@@ -112,7 +112,7 @@ export class ShortcutService {
             return;
         }
 
-        const digit = parseInt(key, 10);
+        const digit = Number.parseInt(key, 10);
         if (digit >= 0) {
             this.accumulatingDigit = this.accumulatingDigit * 10 + digit;
 

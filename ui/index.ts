@@ -7,7 +7,7 @@ import messageList from './views/message-list';
 import settings from './views/settings';
 import shortcuts from './views/shortcuts';
 
-import Message from './models/Message';
+import {Message} from './models/Message';
 import Cache from './models/Cache';
 import { ShortcutService } from './models/ShortcutService';
 import User from './models/User';

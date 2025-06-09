@@ -1,11 +1,25 @@
-export default class Message {
-    public static fromJson(json: any): Message {
+export type JsonMessage = {
+    badge?: string,
+    title?: string,
+    group?: string,
+    publicId?: string,
+    retracted?: string,
+    url?: string
+    expiresAt?: string,
+    localId?: string,
+    deliveryStyle?: string,
+    body?: string,
+    received: string,
+}
+
+export class Message {
+    public static fromJson(json: JsonMessage): Message {
         const m = new Message();
 
-        m.badge = json.badge;
-        m.title = json.title;
-        m.group = json.group;
-        m.publicId = json.publicId;
+        m.badge = json.badge || '';
+        m.title = json.title || '';
+        m.group = json.group ||  '';
+        m.publicId = json.publicId || '';
 
         if (json.retracted) {
             m.publicId = json.retracted;
@@ -195,18 +209,19 @@ export default class Message {
             seconds % 3600 % 60
         ];
 
-        return hour_min_sec.reduce((accumulator, x, i) => {
-            let label = '';
-            if (x > 0) {
-                label = `${x} ${units[i]}`;
-
-                if (x > 1) {
-                    label += 's';
-                }
+        const remaining = hour_min_sec.reduce((accumulator, x, i) => {
+            if (x > 1) {
+                return `${accumulator} ${x} ${units[i]}s`;
             }
 
-            return `${accumulator} ${label} `;
-        }, `Expires at ${expireTime} - `) + ' remaining';
+            if (x > 0) {
+                return `${accumulator} ${x} ${units[i]}`;
+            }
+
+            return accumulator;
+        }, '');
+
+        return `Expires at ${expireTime} - ${remaining} remaining`;
     }
 
     public closeBrowserNotification(): void {
@@ -220,7 +235,7 @@ export default class Message {
 
         // Truncation avoids unwanted whitespace in Chrome
         if (body.length > 75) {
-            body = body.substring(0, 75) + '…';
+            body = `${body.substring(0, 75)}…`;
         }
 
         const opts: NotificationOptions = {

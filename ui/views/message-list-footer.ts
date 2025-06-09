@@ -1,5 +1,5 @@
 import m from 'mithril';
-import Cache from '../models/Cache';
+import type Cache from '../models/Cache';
 
 export default {
     view(vnode: m.Vnode): m.Vnode {

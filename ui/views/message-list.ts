@@ -2,7 +2,7 @@ import m from 'mithril';
 import messageListSummary from './message-list-summary';
 import messageListFooter from './message-list-footer';
 import messageListMessage from './message-list-message';
-import Cache from '../models/Cache';
+import type Cache from '../models/Cache';
 
 export default {
     view(vnode: m.Vnode): Array<m.Vnode> {

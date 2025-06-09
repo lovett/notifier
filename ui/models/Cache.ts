@@ -1,4 +1,4 @@
-import Message from './Message';
+import {Message, type JsonMessage} from './Message';
 import m from 'mithril';
 
 type MessageIterator = IterableIterator<[string, Message|null]>;
@@ -234,7 +234,7 @@ export default class Cache {
 
         try {
             const json = JSON.parse(xhr.responseText);
-            return json.reduce((accumulator: Message[], message: unknown) => {
+            return json.reduce((accumulator: Message[], message: JsonMessage) => {
                 accumulator.push(Message.fromJson(message));
                 return accumulator;
             }, []);
