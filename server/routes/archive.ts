@@ -5,7 +5,7 @@ import { Router } from 'express';
 
 const router = Router();
 
-router.get('/:count?', async (req: Request, res: Response) => {
+router.get('/{:count}', async (req: Request, res: Response) => {
     const user = req.user as User;
     const maxCount = 50;
 
