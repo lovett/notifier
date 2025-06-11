@@ -1,7 +1,6 @@
 import db from '../db';
 import type { NextFunction, Request, Response } from 'express';
 import { Router } from 'express';
-import * as useragent from 'useragent';
 import Token from '../Token';
 import type { CookieOptions } from 'express-serve-static-core';
 
@@ -26,7 +25,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     label = label.replace(/[^a-zA-Z0-9-./ ]/, '');
 
     if (label === '') {
-        label = useragent.parse(req.get('user-agent')).toString();
+        label = req.get('user-agent');
     }
 
     const persist = [true, '1', 'true'].indexOf(req.body.persist) > -1;
