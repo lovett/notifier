@@ -57,7 +57,7 @@ database creation would look something like:
 
 ```
 sudo -u postgres createuser --pwprompt notifier
-sudo -u postgres createdb notifier
+sudo -u postgres createdb -O notifier notifier
 ```
 
 If the configuration specifies a default user, it will also be created
