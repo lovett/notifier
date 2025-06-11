@@ -145,8 +145,6 @@ if (process.argv.length < 3) {
     server.on('listening', async () => {
         process.stdout.write(`Listening on ${nconf.get('NOTIFIER_HTTP_IP')}:${nconf.get('NOTIFIER_HTTP_PORT')}\n`);
 
-        await db.createSchema();
-
         app.locals.expirationCache = await db.getExpiringMessages();
 
         setInterval(scheduler, 1_000, app);

@@ -19,37 +19,6 @@ export default {
         });
     },
 
-    /**
-     * Define the database schema.
-     *
-     * Looks for SQL files in the schema directory and executes their
-     * contents. Queries should be rerunnable, since this normally gets
-     * called every time the server starts.
-     */
-    createSchema: async function createSchema(): Promise<void> {
-        const readDir = util.promisify(fs.readdir);
-        const readFile = util.promisify(fs.readFile);
-
-        const schemaDir = path.join(__dirname, 'schema');
-
-        const schemaFiles = await readDir(schemaDir);
-
-        for (const schemaFile of schemaFiles) {
-            if (schemaFile.endsWith('.sql') === false) {
-                continue;
-            }
-
-            const sql = await readFile(path.join(schemaDir, schemaFile));
-
-            try {
-                await pool.query(sql.toString());
-            } catch (err) {
-                console.log(err);
-                return;
-            }
-        }
-    },
-
     getUser: async (username: string): Promise<User | null> => {
         const sql = `SELECT id, username, password_hash as "passwordHash",
             created_at as "createdAt"
