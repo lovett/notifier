@@ -1,0 +1,17 @@
+{
+  "formatter": {
+    "ignore": ["server/public/*.js"],
+    "indentStyle": "space",
+    "indentWidth": 4
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single"
+    }
+  },
+  "json": {
+    "formatter": {
+      "trailingCommas": "none"
+    }
+  }
+}
