@@ -37,8 +37,6 @@
     "@types/serve-favicon": "2.5.7",
     "@types/useragent": "2.3.4",
     "@types/uuid": "10.0.0",
-    "esbuild": "0.25.5",
-    "esbuild-linux-64": "0.15.18",
     "ts-node": "10.9.2",
     "typescript": "5.8.3"
   }
