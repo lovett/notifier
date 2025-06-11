@@ -19,7 +19,7 @@ export default function(req: Request, res: Response, next: NextFunction): void {
     const csp: CspParams = {
         'connect-src': ['self', 'data:', 'unsafe-inline'],
         'default-src': ['self'],
-        'img-src': ['self'],
+        'img-src': ['self', 'data:'],
         'script-src': ['self', 'data:', 'unsafe-inline'],
         'style-src': ['self', 'unsafe-inline'],
     };

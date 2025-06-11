@@ -11,7 +11,7 @@ import {Message} from './models/Message';
 import Cache from './models/Cache';
 import { ShortcutService } from './models/ShortcutService';
 import User from './models/User';
-import {Command, Event} from '../worker/postmessage';
+import {Command, Event} from './postmessage';
 
 const root = document.getElementById('app-container') as HTMLElement;
 const cache = new Cache();
@@ -20,6 +20,7 @@ const worker = new Worker('worker.js');
 let offline = false;
 
 function onMessage(e: MessageEvent): void {
+  console.log('onMessage', e);
     offline = false;
 
     if (e.data === 403) {

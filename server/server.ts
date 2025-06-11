@@ -133,11 +133,10 @@ if (process.argv.length > 2) {
         });
     }
 }
-
 /**
  * Server mode
  */
-if (!module.parent && process.argv.length < 3) {
+if (process.argv.length < 3) {
     const server = app.listen(
         nconf.get('NOTIFIER_HTTP_PORT'),
         nconf.get('NOTIFIER_HTTP_IP'),

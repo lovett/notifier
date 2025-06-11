@@ -1,0 +1,354 @@
+#shortcuts {
+  margin: auto;
+}
+#shortcuts td {
+  text-align: left;
+  padding: 0.5em;
+}
+#shortcuts kbd {
+  display: inline-block;
+  color: #fff;
+  background-color: #333;
+  border-radius: 5px;
+  border: 2px ridge white;
+  text-align: center;
+  padding: 0.75em 1.25em;
+}
+.message {
+  display: grid;
+  grid-template-columns: 3.5em 1fr auto auto;
+  align-items: center;
+  background-color: white;
+  color: black;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  vertical-align: top;
+  min-height: 5em;
+}
+.message.offline .index {
+  display: none;
+}
+.message.linked:hover {
+  cursor: pointer;
+}
+.message div.badge {
+  background: transparent url('svg/bi--broadcast.svg') no-repeat center;
+  background-size: 70%;
+  width: 100%;
+  height: 100%;
+}
+.message img.badge {
+  width: 80%;
+  display: block;
+  margin: auto;
+}
+.message .details {
+  padding: 0.5em;
+}
+.message .index {
+  font-size: 0.75em;
+  text-align: center;
+  width: 2em;
+  line-height: 2em;
+  align-self: start;
+  margin-top: 0.3em;
+}
+.message .closer {
+  margin: 0.25em;
+  align-self: start;
+}
+.message .closer svg {
+  width: 0.75em;
+  height: 0.75em;
+  padding: 0.25em;
+  fill: none;
+  stroke: black;
+  stroke-width: 1.5em;
+  border: 3px solid black;
+}
+@media (pointer: fine) {
+  .message .closer:hover svg {
+    stroke: white;
+    background-color: black;
+  }
+}
+.message .title {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+.message time {
+  font-size: 0.7em;
+  display: block;
+}
+.message .domain,
+.message .expiration {
+  font-size: 0.7em;
+}
+.message.expired {
+  background-color: #ccc;
+  color: #666;
+}
+.message.selected .index {
+  background-color: black;
+  color: #fff;
+}
+.message.computer {
+  background-color: #C7E5F2;
+}
+.message.computer div.badge {
+  background-image: url('svg/bi--pc.svg');
+}
+.message.email {
+  background-color: #abd3df;
+}
+.message.email div.badge {
+  background-image: url('svg/bi--envelope-paper.svg');
+}
+.message.web {
+  background-color: #C7AD9B;
+}
+.message.web div.badge {
+  background-image: url('svg/bi--globe-americas.svg');
+}
+.message.reminder {
+  background-color: #fefefe;
+}
+.message.reminder div.badge {
+  background-image: url('svg/bi--asterisk.svg');
+}
+.message.calendar {
+  background-color: #faf0ca;
+}
+.message.calendar div.badge {
+  background-image: url('svg/bi--calendar3.svg');
+}
+.message.sysdown {
+  background-color: #F47676;
+}
+.message.sysdown div.badge {
+  background-image: url('svg/bi--exclamation-triangle.svg');
+}
+.message.sysup {
+  background-color: #C2F0D4;
+}
+.message.sysup div.badge {
+  background-image: url('svg/bi--check-circle.svg');
+}
+.message.chore {
+  background-color: #e8e2d6;
+}
+.message.chore div.badge {
+  background-image: url('svg/bi--house-heart.svg');
+}
+.message.financial {
+  background-color: #a0d3a6;
+}
+.message.financial div.badge {
+  background-image: url('svg/bi--cash-coin.svg');
+}
+.message.timer {
+  background-color: #DBB5C5;
+}
+.message.timer div.badge {
+  background-image: url('svg/bi--alarm.svg');
+}
+.message.warning {
+  background-color: #ffee93;
+}
+.message.warning div.badge {
+  background-image: url('svg/bi--exclamation-diamond.svg');
+}
+.message.weather {
+  background-color: #FBC799;
+}
+.message.weather div.badge {
+  background-image: url('svg/bi--emoji-surprise.svg');
+}
+body {
+  margin: 0;
+}
+fieldset {
+  border: 0;
+}
+html {
+  margin: 0;
+  background-color: #006ba6;
+  color: #fff;
+  font-family: 'Geneva', Arial, sans-serif;
+}
+h1 {
+  font-size: 1em;
+  margin-bottom: 2em;
+}
+input {
+  font-family: monospace;
+  font-size: 1.3em;
+  border-radius: 0;
+  padding: 0.25em;
+}
+noscript {
+  margin: auto;
+  text-align: center;
+}
+#app-container {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+#logout {
+  margin: auto;
+  text-align: center;
+}
+#login {
+  margin: auto;
+}
+#login .field:last-of-type {
+  margin-bottom: 0;
+}
+#login button {
+  display: block;
+  margin: auto;
+}
+#login label {
+  display: inline-block;
+  min-width: 6em;
+}
+#svg-defs {
+  display: none;
+}
+#messages {
+  display: grid;
+  grid-row-gap: 0.5em;
+}
+@media (min-width: 1024px) {
+  #messages {
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 0.5em;
+  }
+}
+#messageListEmptyBody {
+  margin: auto;
+  text-align: center;
+  font-size: 1.5em;
+}
+#messageListEmptyBody .icon {
+  background-color: #fff;
+  -webkit-mask-image: url('svg/bi--emoji-sunglasses.svg');
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-image: url('svg/bi--emoji-sunglasses.svg');
+  mask-repeat: no-repeat;
+  mask-position: center;
+  display: inline-block;
+  width: 42vw;
+  height: 20vh;
+}
+#messageListEmptyBody.checking .icon {
+  -webkit-mask-image: url('svg/bi--arrow-repeat.svg');
+  mask-image: url('svg/bi--emoji-sunglasses.svg');
+}
+#messageListSummary {
+  text-transform: uppercase;
+  font-size: 0.6em;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  text-align: center;
+  overflow: hidden;
+  padding: 1em;
+}
+#messageListSummary.offline {
+  background-color: #333;
+}
+#messageListFooter {
+  font-size: 0.85em;
+  display: flex;
+  flex-flow: row nowrap;
+}
+#messageListFooter a {
+  color: currentColor;
+  display: inline-block;
+  margin: 1em;
+}
+#messageListFooter a:last-of-type {
+  margin-left: auto;
+}
+#messageListFooter ul {
+  list-style-type: none;
+  clear: both;
+  color: black;
+}
+#messageListFooter ul li {
+  margin: 0;
+  display: inline-block;
+}
+#settings {
+  margin: auto;
+  color: #fff;
+}
+#settings a {
+  color: currentColor;
+  text-decoration: underline;
+}
+#settings button + a {
+  margin-left: 2em;
+}
+#settings span + a {
+  margin-left: 1em;
+}
+#settings label {
+  padding-right: 1em;
+  text-transform: capitalize;
+}
+#settings input {
+  width: 100%;
+  box-sizing: border-box;
+}
+#settings .field {
+  margin-bottom: 3em;
+}
+#settings p {
+  font-size: 0.85em;
+  line-height: 1.5;
+}
+a {
+  color: #006ba6;
+  text-decoration: none;
+}
+button {
+  padding: 0.5em 1em;
+  border: 0;
+  background-color: #004a73;
+  color: white;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 0.85em;
+}
+button:hover {
+  background-color: #002940;
+}
+button:disabled {
+  background-color: #000000;
+}
+.field {
+  margin-bottom: 1.5em;
+}
+.shortcuts {
+  padding-top: 0.5em;
+  font-size: 0.75em;
+  text-align: right;
+}
+.status-message {
+  margin-bottom: 1.5em;
+  padding: 1em;
+  margin-top: -1em;
+  margin-left: -1em;
+  margin-right: -1em;
+}
+.status-message.error {
+  background-color: #e9190f;
+  color: white;
+}
+.status-message.success {
+  background-color: green;
+  color: white;
+}

@@ -1,4 +1,4 @@
-import {Command, Event} from './postmessage';
+import { Command, Event } from './postmessage';
 
 let eventSource: EventSource;
 let reconnectTimer: number;
@@ -8,7 +8,6 @@ let reconnectTimer: number;
  */
 function connect() {
     eventSource = new EventSource('push');
-
     eventSource.onopen = () => {
         self.postMessage(Event.connected);
     };

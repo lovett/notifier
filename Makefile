@@ -2,56 +2,23 @@
 
 DEV_URL := http://localhost:8080
 TMUX_SESSION_NAME := notifier
-NPM_FILES := package.json package-lock.json
 
 export PATH := ./node_modules/.bin:$(PATH)
 
-# Reset the build directory to a pristine state.
+# setup:
+# 	bun install
+
+build:
+	bun build server/server.ts --compile --outfile notifier
+
 clean: dummy
-	rm -rf build
+	rm -rf server/public
 
-# Gather and compile the server and UI files in preparation for deployment.
-build: dummy clean setup server ui
-	cp $(NPM_FILES) build/
-	cd build && npm ci --production
-	cd build && rm $(NPM_FILES)
+ui: dummy clean
+	bun --watch build ui/index.html ui/worker.ts --outdir server/public
 
-# Install NPM packages quietly.
-setup:
-	DISABLE_OPENCOLLECTIVE=1 npm install
-
-# Launch a server that restarts when files are modified.
-dev-server: dummy
-	find server -type f | entr -c -r -s 'make server && node --trace-warnings build/server.js'
-
-# Watch for changes to the UI and recompile.
-dev-ui: dummy
-	find ui worker -type f | entr -c make ui
-
-# Compile the backend.
 server: dummy
-	@echo Building Server
-	esbuild --bundle \
-		--outdir=build \
-		--platform=node \
-		--external:pg-native \
-		--external:nconf \
-		--external:express \
-		--external:request \
-		--external:yamlparser \
-		--external:pg-cloudflare \
-		server/server.ts
-	cp -r server/schema build/
-
-# Compile the frontend.
-ui: dummy
-	@echo Building UI
-	esbuild --bundle --minify --target=es2019 --outdir=build/public ui/index.ts
-	esbuild --bundle --minify --target=es2019 --outdir=build/public worker/worker.ts
-	cp ui/index.html build/public/
-	mkdir -p build/public/svg
-	cp -r ui/svg/*.svg build/public/svg
-	lessc ui/less/app.less build/public/app.css
+	bun --watch run server/server.ts
 
 # Send a single test message in normal mode
 onemessage:
@@ -94,10 +61,10 @@ workspace:
 	tmux new-window -a -t "$(TMUX_SESSION_NAME)" "$$SHELL"
 
 ## 2: UI
-	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "dev-ui" "make dev-ui"
+	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "ui" "make ui"
 
 ## 3: Server
-	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "dev-server" "make dev-server"
+	tmux new-window -a -t "$(TMUX_SESSION_NAME)" -n "server" "make server"
 
 ## Activate
 	tmux select-window -t "$(TMUX_SESSION_NAME)":0
@@ -115,15 +82,10 @@ lint-server:
 # Lint the source files for the browser UI.
 lint-ui:
 	biome lint ui
-	tsc --noEmit --project ui
-
-# Lint the source files for the UI web worker.
-lint-worker:
-	biome lint worker
-	tsc --noEmit --project worker
+	bun x tsc --noEmit --project ui
 
 # Lint everything.
-lint: lint-ui lint-server lint-worker
+lint: lint-ui lint-server
 
 # Recreate the dev database.
 resetdb:
