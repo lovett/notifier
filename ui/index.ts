@@ -20,7 +20,6 @@ const worker = new Worker('worker.js');
 let offline = false;
 
 function onMessage(e: MessageEvent): void {
-  console.log('onMessage', e);
     offline = false;
 
     if (e.data === 403) {
