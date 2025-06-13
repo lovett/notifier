@@ -1,6 +1,8 @@
 {
+  "files": {
+    "ignore": ["server/public"]
+  },
   "formatter": {
-    "ignore": ["server/public/*.js"],
     "indentStyle": "space",
     "indentWidth": 4
   },
