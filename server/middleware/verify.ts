@@ -53,20 +53,22 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
         const [authType, credential] = authHeader.split(' ', 2);
 
-        if (authType.toLowerCase() === 'basic') {
+        if (credential && authType && authType.toLowerCase() === 'basic') {
             const [authUser, authPass] = Buffer.from(
                 credential, 'base64'
             ).toString().split(':', 2);
 
-            if (authUser === authPass) {
-                for (const candidate of trustedIps) {
-                    if (req.ip?.startsWith(candidate)) {
-                        user = await db.getUser(authUser);
-                        break;
+            if (authUser && authPass) {
+                if (authUser === authPass) {
+                    for (const candidate of trustedIps) {
+                        if (req.ip?.startsWith(candidate)) {
+                            user = await db.getUser(authUser);
+                            break;
+                        }
                     }
+                } else {
+                    user = await db.getUserByToken(authUser, authPass);
                 }
-            } else {
-                user = await db.getUserByToken(authUser, authPass);
             }
 
             if (user) {

@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "noPropertyAccessFromIndexSignature": false,
     "isolatedModules": true,
     "strict": true,
     "target": "ES2020",

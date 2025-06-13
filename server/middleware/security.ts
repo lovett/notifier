@@ -26,13 +26,15 @@ export default function(req: Request, res: Response, next: NextFunction): void {
 
     if (config.get('NOTIFIER_BADGE_BASE_URL')) {
         const parsedUrl = url.parse(config.get('NOTIFIER_BADGE_BASE_URL'));
-        csp['img-src'].push(parsedUrl.host as string);
+        if (parsedUrl.host && csp['img-src']) {
+            csp['img-src'].push(parsedUrl.host);
+        }
     }
 
     const cspString = Object.keys(csp).reduce((acc, key) => {
         const quotables = ['self', 'none', 'unsafe-inline', 'unsafe-eval'];
 
-        const values = csp[key].map((value) => {
+        const values = (csp[key] || []).map((value) => {
             if (quotables.indexOf(value) === -1) {
                 return value;
             }

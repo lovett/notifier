@@ -34,7 +34,7 @@ export default class Token {
 
         let result = '';
         for (let i = 0; i < length; i = i + 1) {
-            result += bag[buf[i] % bag.length];
+            result += bag[buf[i] ?? 1 % bag.length];
         }
 
         return result;

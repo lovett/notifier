@@ -21,8 +21,8 @@ function parseRelativeDate(value: string): number {
         const regex = new RegExp(`(?<quantity>\\d+)\\s+${unit}s?`, 'i');
         const matches = value.trim().match(regex);
 
-        if (matches?.groups) {
-            totalMs += Number.parseInt(matches.groups.quantity, 10) * units[unit] * 1000;
+        if (matches?.groups?.quantity) {
+            totalMs += Number.parseInt(matches.groups.quantity, 10) * (units[unit] || 1) * 1000;
         }
     }
 

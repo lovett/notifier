@@ -43,7 +43,7 @@ export default class User {
 
         const derivedKey = await pbkdf2(
             password,
-            salt,
+            salt || '',
             User.hashIterations,
             User.hashKeylength,
             User.hashDigest,

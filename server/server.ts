@@ -126,7 +126,7 @@ app.use(jsonError);
  */
 if (process.argv.length > 2) {
     if (process.argv[2] === 'adduser' && process.argv.length === 5) {
-        db.addUser(process.argv[3], process.argv[4]).then(() => {
+        db.addUser(process.argv[3] || '', process.argv[4] || '').then(() => {
             console.log('User added');
         }).finally(() => {
             process.exit();
