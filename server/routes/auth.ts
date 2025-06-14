@@ -35,7 +35,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     await db.addTokens(user.id, [token]);
 
     const cookieOptions: CookieOptions = {
-        path: req.app.locals.config.get('NOTIFIER_BASE_URL'),
+        path: req.app.locals.config.NOTIFIER_BASE_URL,
         sameSite: 'strict',
     };
 

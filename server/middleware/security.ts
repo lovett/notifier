@@ -10,7 +10,7 @@ interface CspParams {
 export default function(req: Request, res: Response, next: NextFunction): void {
     const config = req.app.locals.config;
 
-    const forceHttps = Boolean(config.get('NOTIFIER_FORCE_HTTPS'));
+    const forceHttps = Boolean(config.NOTIFIER_FORCE_HTTPS);
 
     // Clickjacking - https://www.owasp.org/index.php/Clickjacking
     res.setHeader('X-Frame-Options', 'DENY');
@@ -24,8 +24,8 @@ export default function(req: Request, res: Response, next: NextFunction): void {
         'style-src': ['self', 'unsafe-inline'],
     };
 
-    if (config.get('NOTIFIER_BADGE_BASE_URL')) {
-        const parsedUrl = url.parse(config.get('NOTIFIER_BADGE_BASE_URL'));
+    if (config.NOTIFIER_BADGE_BASE_URL) {
+        const parsedUrl = url.parse(config.NOTIFIER_BADGE_BASE_URL);
         if (parsedUrl.host && csp['img-src']) {
             csp['img-src'].push(parsedUrl.host);
         }

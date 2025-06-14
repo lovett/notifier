@@ -10,7 +10,7 @@ const router = Router();
  * This is the destructive counterpart to /auth
  */
 router.post('/', async (req: Request, res: Response, next: NextFunction) => {
-    const baseUrl = req.app.locals.config.get('NOTIFIER_BASE_URL');
+    const baseUrl = req.app.locals.config.NOTIFIER_BASE_URL;
 
     let key = '';
     let value = '';

@@ -3,7 +3,6 @@ import childProcess from 'node:child_process';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import express from 'express';
-import nconf from 'nconf';
 import path from 'node:path';
 
 import db from './db';
@@ -26,43 +25,20 @@ import verify from './middleware/verify';
 const app = express();
 const router = express.Router();
 
-/**
- * Application configuration
- *
- * Configuration is sourced from the following places, in order of
- * precedence:
- *
- * - Environment variables
- * - JSON file named after NODE_ENV
- * - JSON file named config.json
- * - JSON file in /etc
- * - Internal defaults
- */
-
-nconf.env();
-
-nconf.file('environment', path.join(__dirname, '../', `config-${process.env.NODE_ENV}.json`));
-
-nconf.file('application', path.join(__dirname, '../', 'config.json'));
-
-nconf.file('host', '/etc/notifier.json');
-
-nconf.defaults({
-    NOTIFIER_BADGE_BASE_URL: '/svg',
-    NOTIFIER_BASE_URL: '/',
-    NOTIFIER_DB_DSN: 'socket://notifier@/var/run/postgresql?db=notifier',
-    NOTIFIER_FORCE_HTTPS: 0,
-    NOTIFIER_HTTP_IP: '127.0.0.1',
-    NOTIFIER_HTTP_PORT: 8080,
-    NOTIFIER_PUBLIC_DIR: path.resolve(__dirname, './public'),
-    NOTIFIER_TRUSTED_IPS: '127.0.0.1',
-});
-
 app.disable('x-powered-by');
 
 app.enable('trust proxy');
 
-app.locals.config = nconf;
+app.locals.config = {
+    NOTIFIER_BADGE_BASE_URL: process.env.NOTIFIER_BADGE_BASE_URL || '/svg',
+    NOTIFIER_BASE_URL: process.env.NOTIFIER_BASE_URL || '/',
+    NOTIFIER_DB_DSN: process.env.NOTIFIER_DB_DSN || 'socket://notifier@/var/run/postgresql?db=notifier',
+    NOTIFIER_FORCE_HTTPS: process.env.NOTIFIER_FORCE_HTTPS || 0,
+    NOTIFIER_HTTP_IP: process.env.NOTIFIER_HTTP_IP || '127.0.0.1',
+    NOTIFIER_HTTP_PORT: process.env.NOTIFIER_HTTP_PORT || 8080,
+    NOTIFIER_PUBLIC_DIR: process.env.NOTIFIER_PUBLIC_DIR || path.resolve(__dirname, './public'),
+    NOTIFIER_TRUSTED_IPS: process.env.NOTIFIER_TRUSTED_IPS || '127.0.0.1',
+};
 
 app.locals.expirationCache = new Map();
 
@@ -87,12 +63,12 @@ app.use(bodyParser.json({
 
 app.use(noBlanks);
 
-db.connect(nconf.get('NOTIFIER_DB_DSN'));
+db.connect(app.locals.config.NOTIFIER_DB_DSN);
 
 /**
  * Routes
  */
-router.use(asset(nconf.get('NOTIFIER_PUBLIC_DIR')));
+router.use(asset(app.locals.config.NOTIFIER_PUBLIC_DIR));
 
 router.use(/^\/(login|logout)?$/, index);
 
@@ -112,7 +88,7 @@ router.use('/message/unclear', verify, unclear);
 
 router.use('/push', verify, push);
 
-app.use(nconf.get('NOTIFIER_BASE_URL'), router);
+app.use(app.locals.config.NOTIFIER_BASE_URL, router);
 
 app.use(jsonError);
 
@@ -138,12 +114,12 @@ if (process.argv.length > 2) {
  */
 if (process.argv.length < 3) {
     const server = app.listen(
-        nconf.get('NOTIFIER_HTTP_PORT'),
-        nconf.get('NOTIFIER_HTTP_IP'),
+        app.locals.config.NOTIFIER_HTTP_PORT,
+        app.locals.config.NOTIFIER_HTTP_IP,
     );
 
     server.on('listening', async () => {
-        process.stdout.write(`Listening on ${nconf.get('NOTIFIER_HTTP_IP')}:${nconf.get('NOTIFIER_HTTP_PORT')}\n`);
+        process.stdout.write(`Listening on ${app.locals.config.NOTIFIER_HTTP_IP}:${app.locals.config.NOTIFIER_HTTP_PORT}\n`);
 
         app.locals.expirationCache = await db.getExpiringMessages();
 

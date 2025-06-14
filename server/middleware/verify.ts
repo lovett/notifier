@@ -20,7 +20,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                 await db.markTokenSeen(token);
 
                 const cookieOptions: CookieOptions = {
-                    path: req.app.locals.config.get('NOTIFIER_BASE_URL'),
+                    path: req.app.locals.config.NOTIFIER_BASE_URL,
                     sameSite: 'strict',
                     expires: new Date(Date.now() + (86400000 * 30))
                 }
@@ -49,7 +49,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     if ('authorization' in req.headers) {
         const authHeader = req.headers.authorization as string;
-        const trustedIps = req.app.locals.config.get('NOTIFIER_TRUSTED_IPS').split(/\s*,\s*/);
+        const trustedIps = req.app.locals.config.NOTIFIER_TRUSTED_IPS.split(/\s*,\s*/);
 
         const [authType, credential] = authHeader.split(' ', 2);
 
