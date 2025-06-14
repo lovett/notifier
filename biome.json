@@ -8,6 +8,11 @@
   "formatter": {
     "indentStyle": "space"
   },
+  "css": {
+    "formatter": {
+      "indentWidth": 4
+    }
+  },
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
