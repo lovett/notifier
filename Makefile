@@ -77,7 +77,7 @@ install: build
 # Lint the source files for the server.
 lint-server:
 	biome lint server
-	tsc --noEmit --project server
+	bun x tsc --noEmit --project server
 
 # Lint the source files for the browser UI.
 lint-ui:
