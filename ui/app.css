@@ -32,7 +32,7 @@
   cursor: pointer;
 }
 .message div.badge {
-  background: transparent url('svg/bi--broadcast.svg') no-repeat center;
+  background: transparent url("svg/bi--broadcast.svg") no-repeat center;
   background-size: 70%;
   width: 100%;
   height: 100%;
@@ -93,76 +93,76 @@
   color: #fff;
 }
 .message.computer {
-  background-color: #C7E5F2;
+  background-color: #c7e5f2;
 }
 .message.computer div.badge {
-  background-image: url('svg/bi--pc.svg');
+  background-image: url("svg/bi--pc.svg");
 }
 .message.email {
   background-color: #abd3df;
 }
 .message.email div.badge {
-  background-image: url('svg/bi--envelope-paper.svg');
+  background-image: url("svg/bi--envelope-paper.svg");
 }
 .message.web {
-  background-color: #C7AD9B;
+  background-color: #c7ad9b;
 }
 .message.web div.badge {
-  background-image: url('svg/bi--globe-americas.svg');
+  background-image: url("svg/bi--globe-americas.svg");
 }
 .message.reminder {
   background-color: #fefefe;
 }
 .message.reminder div.badge {
-  background-image: url('svg/bi--asterisk.svg');
+  background-image: url("svg/bi--asterisk.svg");
 }
 .message.calendar {
   background-color: #faf0ca;
 }
 .message.calendar div.badge {
-  background-image: url('svg/bi--calendar3.svg');
+  background-image: url("svg/bi--calendar3.svg");
 }
 .message.sysdown {
-  background-color: #F47676;
+  background-color: #f47676;
 }
 .message.sysdown div.badge {
-  background-image: url('svg/bi--exclamation-triangle.svg');
+  background-image: url("svg/bi--exclamation-triangle.svg");
 }
 .message.sysup {
-  background-color: #C2F0D4;
+  background-color: #c2f0d4;
 }
 .message.sysup div.badge {
-  background-image: url('svg/bi--check-circle.svg');
+  background-image: url("svg/bi--check-circle.svg");
 }
 .message.chore {
   background-color: #e8e2d6;
 }
 .message.chore div.badge {
-  background-image: url('svg/bi--house-heart.svg');
+  background-image: url("svg/bi--house-heart.svg");
 }
 .message.financial {
   background-color: #a0d3a6;
 }
 .message.financial div.badge {
-  background-image: url('svg/bi--cash-coin.svg');
+  background-image: url("svg/bi--cash-coin.svg");
 }
 .message.timer {
-  background-color: #DBB5C5;
+  background-color: #dbb5c5;
 }
 .message.timer div.badge {
-  background-image: url('svg/bi--alarm.svg');
+  background-image: url("svg/bi--alarm.svg");
 }
 .message.warning {
   background-color: #ffee93;
 }
 .message.warning div.badge {
-  background-image: url('svg/bi--exclamation-diamond.svg');
+  background-image: url("svg/bi--exclamation-diamond.svg");
 }
 .message.weather {
-  background-color: #FBC799;
+  background-color: #fbc799;
 }
 .message.weather div.badge {
-  background-image: url('svg/bi--emoji-surprise.svg');
+  background-image: url("svg/bi--emoji-surprise.svg");
 }
 body {
   margin: 0;
@@ -174,7 +174,7 @@ html {
   margin: 0;
   background-color: #006ba6;
   color: #fff;
-  font-family: 'Geneva', Arial, sans-serif;
+  font-family: "Geneva", Arial, sans-serif;
 }
 h1 {
   font-size: 1em;
@@ -233,10 +233,10 @@ noscript {
 }
 #messageListEmptyBody .icon {
   background-color: #fff;
-  -webkit-mask-image: url('svg/bi--emoji-sunglasses.svg');
+  -webkit-mask-image: url("svg/bi--emoji-sunglasses.svg");
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
-  mask-image: url('svg/bi--emoji-sunglasses.svg');
+  mask-image: url("svg/bi--emoji-sunglasses.svg");
   mask-repeat: no-repeat;
   mask-position: center;
   display: inline-block;
@@ -244,8 +244,8 @@ noscript {
   height: 20vh;
 }
 #messageListEmptyBody.checking .icon {
-  -webkit-mask-image: url('svg/bi--arrow-repeat.svg');
-  mask-image: url('svg/bi--emoji-sunglasses.svg');
+  -webkit-mask-image: url("svg/bi--arrow-repeat.svg");
+  mask-image: url("svg/bi--emoji-sunglasses.svg");
 }
 #messageListSummary {
   text-transform: uppercase;

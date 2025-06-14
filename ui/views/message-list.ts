@@ -23,22 +23,28 @@ export default {
                 cssClass = '';
             }
 
-            nodes.push(m(`main#messageListEmptyBody${cssClass}`, [
-                m('.icon'),
-                m('p', message),
-            ]));
+            nodes.push(
+                m(`main#messageListEmptyBody${cssClass}`, [
+                    m('.icon'),
+                    m('p', message),
+                ]),
+            );
         } else {
             const messageList: m.Vnode[] = [];
 
             let index = 0;
             for (const message of cache.messages()) {
-                messageList.push(m(messageListMessage, { message, index, cache } as m.Attributes));
+                messageList.push(
+                    m(messageListMessage, {
+                        message,
+                        index,
+                        cache,
+                    } as m.Attributes),
+                );
                 index++;
             }
 
-            nodes.push(m('main', [
-                m('#messages', messageList),
-            ]));
+            nodes.push(m('main', [m('#messages', messageList)]));
         }
 
         nodes.push(m(messageListFooter, { cache, offline } as m.Attributes));

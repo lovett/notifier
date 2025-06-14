@@ -13,22 +13,19 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
         const err = new Error('Request lacked a publicId');
         res.status(400);
         next(err);
-        return
+        return;
     }
 
     const publicId = req.body.publicId;
 
     try {
-        await db.markMessagesUnread(
-            user.id,
-            [publicId],
-        );
+        await db.markMessagesUnread(user.id, [publicId]);
 
         const message = await db.getMessage(user.id, publicId);
 
         if (!message) {
-          res.sendStatus(404);
-          return;
+            res.sendStatus(404);
+            return;
         }
 
         message.deliveryStyle = 'whisper';

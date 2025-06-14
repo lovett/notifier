@@ -32,11 +32,14 @@ app.enable('trust proxy');
 app.locals.config = {
     NOTIFIER_BADGE_BASE_URL: process.env.NOTIFIER_BADGE_BASE_URL || '/svg',
     NOTIFIER_BASE_URL: process.env.NOTIFIER_BASE_URL || '/',
-    NOTIFIER_DB_DSN: process.env.NOTIFIER_DB_DSN || 'socket://notifier@/var/run/postgresql?db=notifier',
+    NOTIFIER_DB_DSN:
+        process.env.NOTIFIER_DB_DSN ||
+        'socket://notifier@/var/run/postgresql?db=notifier',
     NOTIFIER_FORCE_HTTPS: process.env.NOTIFIER_FORCE_HTTPS || 0,
     NOTIFIER_HTTP_IP: process.env.NOTIFIER_HTTP_IP || '127.0.0.1',
     NOTIFIER_HTTP_PORT: process.env.NOTIFIER_HTTP_PORT || 8080,
-    NOTIFIER_PUBLIC_DIR: process.env.NOTIFIER_PUBLIC_DIR || path.resolve(__dirname, './public'),
+    NOTIFIER_PUBLIC_DIR:
+        process.env.NOTIFIER_PUBLIC_DIR || path.resolve(__dirname, './public'),
     NOTIFIER_TRUSTED_IPS: process.env.NOTIFIER_TRUSTED_IPS || '127.0.0.1',
 };
 
@@ -52,14 +55,18 @@ app.use(compression());
 
 app.use(cookieParser());
 
-app.use(bodyParser.urlencoded({
-    extended: true,
-    limit: '5kb',
-}));
+app.use(
+    bodyParser.urlencoded({
+        extended: true,
+        limit: '5kb',
+    }),
+);
 
-app.use(bodyParser.json({
-    limit: '5kb',
-}));
+app.use(
+    bodyParser.json({
+        limit: '5kb',
+    }),
+);
 
 app.use(noBlanks);
 
@@ -102,11 +109,13 @@ app.use(jsonError);
  */
 if (process.argv.length > 2) {
     if (process.argv[2] === 'adduser' && process.argv.length === 5) {
-        db.addUser(process.argv[3] || '', process.argv[4] || '').then(() => {
-            console.log('User added');
-        }).finally(() => {
-            process.exit();
-        });
+        db.addUser(process.argv[3] || '', process.argv[4] || '')
+            .then(() => {
+                console.log('User added');
+            })
+            .finally(() => {
+                process.exit();
+            });
     }
 }
 /**
@@ -119,7 +128,9 @@ if (process.argv.length < 3) {
     );
 
     server.on('listening', async () => {
-        process.stdout.write(`Listening on ${app.locals.config.NOTIFIER_HTTP_IP}:${app.locals.config.NOTIFIER_HTTP_PORT}\n`);
+        process.stdout.write(
+            `Listening on ${app.locals.config.NOTIFIER_HTTP_IP}:${app.locals.config.NOTIFIER_HTTP_PORT}\n`,
+        );
 
         app.locals.expirationCache = await db.getExpiringMessages();
 
@@ -127,7 +138,9 @@ if (process.argv.length < 3) {
 
         // Tell systemd that startup has completed and all systems are go.
         if (process.env.NODE_ENV === 'production') {
-            childProcess.exec(`/bin/systemd-notify --ready --pid=${process.pid}`);
+            childProcess.exec(
+                `/bin/systemd-notify --ready --pid=${process.pid}`,
+            );
         }
     });
 }

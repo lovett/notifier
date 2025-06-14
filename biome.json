@@ -6,13 +6,18 @@
     "defaultBranch": "master"
   },
   "formatter": {
-    "indentStyle": "space",
-    "indentWidth": 4
+    "indentStyle": "space"
   },
   "javascript": {
     "formatter": {
       "quoteStyle": "single",
-      "quoteProperties": "preserve"
+      "quoteProperties": "preserve",
+      "indentWidth": 4
+    }
+  },
+  "json": {
+    "formatter": {
+      "indentWidth": 2
     }
   }
 }

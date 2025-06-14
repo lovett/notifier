@@ -55,15 +55,17 @@ export default {
             method: 'GET',
             url: 'services',
             withCredentials: true,
-        }).then((services: unknown) => {
-            for (const service of services as Service[]) {
-                currentUser.settings[service.key] = service.value;
-            }
-        }).catch((e) => {
-            if (e.code === 401) {
-                this.discardCookie();
-            }
-        });
+        })
+            .then((services: unknown) => {
+                for (const service of services as Service[]) {
+                    currentUser.settings[service.key] = service.value;
+                }
+            })
+            .catch((e) => {
+                if (e.code === 401) {
+                    this.discardCookie();
+                }
+            });
     },
 
     hasErrorMessage(): boolean {
@@ -84,7 +86,9 @@ export default {
 
     isLoggedIn(): boolean {
         const allCookies = document.cookie.split(';');
-        const tokenCookie = allCookies.filter((cookie: string) => cookie.startsWith('token='));
+        const tokenCookie = allCookies.filter((cookie: string) =>
+            cookie.startsWith('token='),
+        );
         return tokenCookie.length === 1;
     },
 
@@ -112,14 +116,16 @@ export default {
             method: 'POST',
             url: 'auth',
             withCredentials: true,
-        }).then(() => {
-            loginUnderway = false;
-            currentUser.errorMessage = '';
-            m.route.set('/');
-        }).catch(() => {
-            loginUnderway = false;
-            currentUser.errorMessage = 'Please try again.';
-        });
+        })
+            .then(() => {
+                loginUnderway = false;
+                currentUser.errorMessage = '';
+                m.route.set('/');
+            })
+            .catch(() => {
+                loginUnderway = false;
+                currentUser.errorMessage = 'Please try again.';
+            });
     },
 
     loginUnderway: false,
@@ -134,15 +140,17 @@ export default {
             method: 'POST',
             url: 'deauth',
             withCredentials: true,
-        }).then(() => {
-            currentUser.password = '';
-            currentUser.persist = false;
-            currentUser.username = '';
-        }).catch((e: MithrilRequestError) => {
-            if (e.code === 401) {
-                this.discardCookie();
-            }
-        });
+        })
+            .then(() => {
+                currentUser.password = '';
+                currentUser.persist = false;
+                currentUser.username = '';
+            })
+            .catch((e: MithrilRequestError) => {
+                if (e.code === 401) {
+                    this.discardCookie();
+                }
+            });
     },
 
     saveServices(data: FormData): void {
@@ -152,11 +160,13 @@ export default {
             method: 'POST',
             url: 'services',
             withCredentials: true,
-        }).then(() => {
-            currentUser.successMessage = 'Settings saved.';
-            currentUser.settings = settings;
-        }).catch(() => {
-            currentUser.errorMessage = 'Please try again.';
-        });
+        })
+            .then(() => {
+                currentUser.successMessage = 'Settings saved.';
+                currentUser.settings = settings;
+            })
+            .catch(() => {
+                currentUser.errorMessage = 'Please try again.';
+            });
     },
 };

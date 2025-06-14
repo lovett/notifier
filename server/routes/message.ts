@@ -12,8 +12,8 @@ function parseRelativeDate(value: string): number {
         'second': 1,
         'minute': 60,
         'hour': 3600,
-        'day': 86400
-    }
+        'day': 86400,
+    };
 
     let totalMs = 0;
 
@@ -22,12 +22,14 @@ function parseRelativeDate(value: string): number {
         const matches = value.trim().match(regex);
 
         if (matches?.groups?.quantity) {
-            totalMs += Number.parseInt(matches.groups.quantity, 10) * (units[unit] || 1) * 1000;
+            totalMs +=
+                Number.parseInt(matches.groups.quantity, 10) *
+                (units[unit] || 1) *
+                1000;
         }
     }
 
     return totalMs;
-
 }
 
 async function validate(req: Request, res: Response, next: NextFunction) {
@@ -97,7 +99,10 @@ async function save(req: Request, res: Response, next: NextFunction) {
     }
 
     if (message.expiresAt) {
-        req.app.locals.expirationCache.set(message.publicId, [req.user, message.expiresAt]);
+        req.app.locals.expirationCache.set(message.publicId, [
+            req.user,
+            message.expiresAt,
+        ]);
     }
 
     next();

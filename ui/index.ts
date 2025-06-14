@@ -7,11 +7,11 @@ import messageList from './views/message-list';
 import settings from './views/settings';
 import shortcuts from './views/shortcuts';
 
-import {Message} from './models/Message';
+import { Message } from './models/Message';
 import Cache from './models/Cache';
 import { ShortcutService } from './models/ShortcutService';
 import User from './models/User';
-import {Command, Event} from './postmessage';
+import { Command, Event } from './postmessage';
 
 const root = document.getElementById('app-container') as HTMLElement;
 const cache = new Cache();
@@ -57,7 +57,6 @@ function onMessage(e: MessageEvent): void {
     }
 
     m.redraw();
-
 }
 
 worker.addEventListener('message', onMessage);

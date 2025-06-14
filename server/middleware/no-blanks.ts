@@ -9,16 +9,16 @@ import type { NextFunction, Request, Response } from 'express';
  * as it previously did in v1.
  */
 export default (req: Request, _: Response, next: NextFunction): void => {
-  for (const key in req.body ?? {}) {
-    if (typeof req.body[key] !== 'string') {
-      continue;
+    for (const key in req.body ?? {}) {
+        if (typeof req.body[key] !== 'string') {
+            continue;
+        }
+
+        req.body[key] = req.body[key].trim();
+        if (req.body[key].length === 0) {
+            req.body[key] = null;
+        }
     }
 
-    req.body[key] = req.body[key].trim();
-    if (req.body[key].length === 0) {
-      req.body[key] = null;
-    }
-  }
-
-  next();
+    next();
 };

@@ -1,7 +1,9 @@
 import m from 'mithril';
 
-export const notificationsDeniedMessage = 'They can be turned on from the brower\'s settings page.';
-export const notificationsEnabledMessage = 'They can be turned off from the browser\'s settings page.';
+export const notificationsDeniedMessage =
+    "They can be turned on from the brower's settings page.";
+export const notificationsEnabledMessage =
+    "They can be turned off from the browser's settings page.";
 export const promptMessage = 'Turn them on';
 
 export function isUncertain(): boolean {

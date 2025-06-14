@@ -40,16 +40,17 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     };
 
     if (token.persist) {
-        cookieOptions.expires = new Date(Date.now() + (86400000 * 30));
+        cookieOptions.expires = new Date(Date.now() + 86400000 * 30);
     }
 
     res.cookie('token', `${token.key},${token.value}`, cookieOptions);
 
     res.format({
-        'application/json': () => res.json({
-            key: token.key,
-            value: token.value,
-        }),
+        'application/json': () =>
+            res.json({
+                key: token.key,
+                value: token.value,
+            }),
         'default': () => res.status(406).send('Not Acceptable'),
         'text/plain': () => res.send(`${token.key},${token.value}`),
     });

@@ -28,7 +28,8 @@ export default class Token {
     }
 
     private randomString(length: number): string {
-        const bag = 'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789';
+        const bag =
+            'abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789';
 
         const buf = crypto.randomBytes(length);
 

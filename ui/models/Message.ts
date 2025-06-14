@@ -1,16 +1,16 @@
 export type JsonMessage = {
-    badge?: string,
-    title?: string,
-    group?: string,
-    publicId?: string,
-    retracted?: string,
-    url?: string
-    expiresAt?: string,
-    localId?: string,
-    deliveryStyle?: string,
-    body?: string,
-    received: string,
-}
+    badge?: string;
+    title?: string;
+    group?: string;
+    publicId?: string;
+    retracted?: string;
+    url?: string;
+    expiresAt?: string;
+    localId?: string;
+    deliveryStyle?: string;
+    body?: string;
+    received: string;
+};
 
 export class Message {
     public static fromJson(json: JsonMessage): Message {
@@ -18,7 +18,7 @@ export class Message {
 
         m.badge = json.badge || '';
         m.title = json.title || '';
-        m.group = json.group ||  '';
+        m.group = json.group || '';
         m.publicId = json.publicId || '';
 
         if (json.retracted) {
@@ -146,10 +146,10 @@ export class Message {
             options.day = '2-digit';
         }
 
-        return prefix + new Intl.DateTimeFormat(
-            undefined,
-            options,
-        ).format(this.received);
+        return (
+            prefix +
+            new Intl.DateTimeFormat(undefined, options).format(this.received)
+        );
     }
 
     /**
@@ -171,32 +171,34 @@ export class Message {
             return '';
         }
 
-        const seconds = Math.ceil((this.expiration.getTime() - Date.now()) / 1000);
+        const seconds = Math.ceil(
+            (this.expiration.getTime() - Date.now()) / 1000,
+        );
 
-        const expireTime = new Intl.DateTimeFormat(
-            undefined,
-            {hour: 'numeric', minute: '2-digit'},
-        ).format(this.expiration);
+        const expireTime = new Intl.DateTimeFormat(undefined, {
+            hour: 'numeric',
+            minute: '2-digit',
+        }).format(this.expiration);
 
-        const expireDateShort = new Intl.DateTimeFormat(
-            'en-US',
-            {month: '2-digit', day: '2-digit'}
-        ).format(this.expiration);
+        const expireDateShort = new Intl.DateTimeFormat('en-US', {
+            month: '2-digit',
+            day: '2-digit',
+        }).format(this.expiration);
 
-        const currentDateShort = new Intl.DateTimeFormat(
-            'en-US',
-            {month: '2-digit', day: '2-digit'}
-        ).format(Date.now());
+        const currentDateShort = new Intl.DateTimeFormat('en-US', {
+            month: '2-digit',
+            day: '2-digit',
+        }).format(Date.now());
 
         if (expireDateShort > currentDateShort) {
             if (seconds < 86400) {
                 return `Expires tomorrow at ${expireTime}`;
             }
 
-            const expireDateLong = new Intl.DateTimeFormat(
-                undefined,
-                {month: 'long', day: 'numeric'}
-            ).format(this.expiration);
+            const expireDateLong = new Intl.DateTimeFormat(undefined, {
+                month: 'long',
+                day: 'numeric',
+            }).format(this.expiration);
 
             return `Expires on ${expireDateLong} at ${expireTime}`;
         }
@@ -205,8 +207,8 @@ export class Message {
 
         const hour_min_sec = [
             Math.floor(seconds / 3600),
-            Math.floor(seconds % 3600 / 60),
-            seconds % 3600 % 60
+            Math.floor((seconds % 3600) / 60),
+            (seconds % 3600) % 60,
         ];
 
         const remaining = hour_min_sec.reduce((accumulator, x, i) => {
@@ -244,10 +246,7 @@ export class Message {
             tag: this.publicId,
         };
 
-        this.browserNotification = new Notification(
-            this.title,
-            opts,
-        );
+        this.browserNotification = new Notification(this.title, opts);
     }
 
     public isExpired(): boolean {

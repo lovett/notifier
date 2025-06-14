@@ -6,8 +6,11 @@ interface CspParams {
     [key: string]: string[];
 }
 
-
-export default function(req: Request, res: Response, next: NextFunction): void {
+export default function (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): void {
     const config = req.app.locals.config;
 
     const forceHttps = Boolean(config.NOTIFIER_FORCE_HTTPS);
@@ -39,7 +42,7 @@ export default function(req: Request, res: Response, next: NextFunction): void {
                 return value;
             }
 
-            return util.format('\'%s\'', value);
+            return util.format("'%s'", value);
         });
 
         return acc + util.format('%s %s; ', key, values.join(' '));
@@ -50,10 +53,15 @@ export default function(req: Request, res: Response, next: NextFunction): void {
     // Require HTTPS
     if (forceHttps) {
         // HTTP Strict Transport Security - https://www.owasp.org/index.php/HTTP_Strict_Transport_Security
-        res.setHeader('Strict-Transport-Security', util.format('max-age=%d', 60 * 60 * 24 * 30));
+        res.setHeader(
+            'Strict-Transport-Security',
+            util.format('max-age=%d', 60 * 60 * 24 * 30),
+        );
 
         if (req.get('x-forwarded-proto') === 'http') {
-            res.redirect(`https://${req.headers['x-forwarded-host']}${req.url}`);
+            res.redirect(
+                `https://${req.headers['x-forwarded-host']}${req.url}`,
+            );
         }
     }
 

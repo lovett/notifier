@@ -1,5 +1,5 @@
 import m from 'mithril';
-import type {Message} from '../models/Message';
+import type { Message } from '../models/Message';
 import type Cache from '../models/Cache';
 
 export default {
@@ -48,36 +48,47 @@ export default {
 
         rootAttrs.onclick = () => {
             message.visit();
-        }
+        };
 
         return m(rootTag, rootAttrs, [
-            (message.badge) ? m('img.badge', { src: message.badge }) : m('.badge'),
+            message.badge
+                ? m('img.badge', { src: message.badge })
+                : m('.badge'),
 
             m('.details', [
                 m('.title', message.title),
 
-                m('time', (message.expiration) ? message.expiresAt() : message.receivedAt()),
+                m(
+                    'time',
+                    message.expiration
+                        ? message.expiresAt()
+                        : message.receivedAt(),
+                ),
 
-                (message.domain) ? m('.domain', message.domain) : null,
+                message.domain ? m('.domain', message.domain) : null,
                 m('.body', message.body),
             ]),
 
             m('.index', index + 1),
 
-            m('a.closer', {
-                href: '#',
-                onclick: (e: Event) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    cache.clear(message);
+            m(
+                'a.closer',
+                {
+                    href: '#',
+                    onclick: (e: Event) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        cache.clear(message);
+                    },
                 },
-            }, [
-                m('svg', [
-                    m('use', {
-                        'xlink:href': '#x',
-                    }),
-                ]),
-            ]),
+                [
+                    m('svg', [
+                        m('use', {
+                            'xlink:href': '#x',
+                        }),
+                    ]),
+                ],
+            ),
         ]);
     },
 };

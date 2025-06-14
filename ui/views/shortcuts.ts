@@ -9,14 +9,17 @@ export default {
             m('header'),
             m('main#shortcuts', [
                 m('h1', 'Keyboard Shortcuts'),
-                m('table', Array.from(shortcutService.bag.entries()).map(([key, shortcut]) => {
-                    return m('tr', [
-                        m('td', [
-                            m('kbd', key),
-                        ]),
-                        m('td', shortcut.description),
-                    ]);
-                })),
+                m(
+                    'table',
+                    Array.from(shortcutService.bag.entries()).map(
+                        ([key, shortcut]) => {
+                            return m('tr', [
+                                m('td', [m('kbd', key)]),
+                                m('td', shortcut.description),
+                            ]);
+                        },
+                    ),
+                ),
             ]),
             m('footer'),
         ];

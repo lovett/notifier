@@ -6,7 +6,7 @@ import Token from './Token';
 let pool: Pool;
 
 export default {
-    connect: (dsn: string) =>  {
+    connect: (dsn: string) => {
         if (pool) {
             return;
         }
@@ -29,14 +29,16 @@ export default {
             }
 
             return null;
-
         } catch (err) {
             console.log(err);
             return null;
         }
     },
 
-  getUserByToken: async (key: string, value: string): Promise<User | null> => {
+    getUserByToken: async (
+        key: string,
+        value: string,
+    ): Promise<User | null> => {
         const sql = `SELECT user_id, label, persist
             FROM tokens WHERE key=$1 AND value=$2`;
 
@@ -50,7 +52,7 @@ export default {
                 res.rows[0].label,
                 res.rows[0].persist,
                 key,
-                value
+                value,
             );
 
             return new User({
@@ -76,7 +78,7 @@ export default {
         return null;
     },
 
-  addUser: async (username: string, password: string): Promise<boolean> => {
+    addUser: async (username: string, password: string): Promise<boolean> => {
         const sql = `INSERT INTO users (username, password_hash)
             VALUES ($1, $2) ON CONFLICT DO NOTHING`;
 
@@ -107,12 +109,9 @@ export default {
 
         try {
             const res = await pool.query(sql, [userId]);
-            return res.rows.map((row) => new Token(
-                row.label,
-                row.persist,
-                row.key,
-                row.value,
-            ));
+            return res.rows.map(
+                (row) => new Token(row.label, row.persist, row.key, row.value),
+            );
         } catch (err) {
             console.log(err);
             return [];
@@ -134,7 +133,10 @@ export default {
         }
     },
 
-    deleteTokensByKey: async (userId: number, records: string[]): Promise<boolean> => {
+    deleteTokensByKey: async (
+        userId: number,
+        records: string[],
+    ): Promise<boolean> => {
         const sql = `DELETE FROM tokens
             WHERE user_id=$1
             AND key = ANY ($2)`;
@@ -170,16 +172,13 @@ export default {
 
             try {
                 for (const token of tokens) {
-                    await client.query(
-                        sql,
-                        [
-                            userId,
-                            token.key,
-                            token.value,
-                            token.label,
-                            token.persist,
-                        ],
-                    );
+                    await client.query(sql, [
+                        userId,
+                        token.key,
+                        token.value,
+                        token.label,
+                        token.persist,
+                    ]);
                 }
                 await client.query('COMMIT');
             } catch (e) {
@@ -202,22 +201,19 @@ export default {
 
             try {
                 for (const message of messages) {
-                    await client.query(
-                        sql,
-                        [
-                            message.body,
-                            message.expiresAt,
-                            message.group,
-                            message.localId,
-                            message.publicId,
-                            message.source,
-                            message.title,
-                            message.url,
-                            new Date(),
-                            userId,
-                            message.badge,
-                        ],
-                    );
+                    await client.query(sql, [
+                        message.body,
+                        message.expiresAt,
+                        message.group,
+                        message.localId,
+                        message.publicId,
+                        message.source,
+                        message.title,
+                        message.url,
+                        new Date(),
+                        userId,
+                        message.badge,
+                    ]);
                 }
                 await client.query('COMMIT');
             } catch (e) {
@@ -229,7 +225,10 @@ export default {
         })().catch((e) => console.error(e.stack));
     },
 
-    markMessagesUnread: async (userId: number, publicIds: string[]): Promise<boolean> => {
+    markMessagesUnread: async (
+        userId: number,
+        publicIds: string[],
+    ): Promise<boolean> => {
         const sql = `UPDATE messages
             SET unread=true
             WHERE user_id=$1
@@ -244,7 +243,10 @@ export default {
         }
     },
 
-    markMessagesRead: async (userId: number, publicIds: string[]): Promise<boolean> => {
+    markMessagesRead: async (
+        userId: number,
+        publicIds: string[],
+    ): Promise<boolean> => {
         const sql = `UPDATE messages
             SET unread=false
             WHERE user_id=$1
@@ -259,7 +261,10 @@ export default {
         }
     },
 
-    getMessage: async (userId: number, publicId: string): Promise<Message | null> => {
+    getMessage: async (
+        userId: number,
+        publicId: string,
+    ): Promise<Message | null> => {
         const sql = `SELECT public_id as "publicId", title, url, body, badge, source,
             group_name as "group", received, expires_at as "expiresAt"
             FROM messages
@@ -280,7 +285,11 @@ export default {
         }
     },
 
-    getUnreadMessages: async (userId: number, startDate: Date, limit = 50): Promise<Message[]> => {
+    getUnreadMessages: async (
+        userId: number,
+        startDate: Date,
+        limit = 50,
+    ): Promise<Message[]> => {
         const sql = `SELECT public_id as "publicId", local_id as "localId", title, url, body, badge, source,
             group_name as "group", received, expires_at as "expiresAt"
             FROM messages
@@ -300,7 +309,10 @@ export default {
         }
     },
 
-    getRetractableMessageIds: async (userId: number, localId: string): Promise<string[]> => {
+    getRetractableMessageIds: async (
+        userId: number,
+        localId: string,
+    ): Promise<string[]> => {
         const sql = `SELECT public_id as "publicId"
             FROM messages
             WHERE user_id=$1
@@ -349,5 +361,5 @@ export default {
             console.log(err);
             return false;
         }
-    }
-}
+    },
+};

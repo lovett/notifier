@@ -13,10 +13,5 @@
     "strict": true,
     "noImplicitAny": true
   },
-  "exclude": [
-    "**/flycheck_*",
-    "**/#*",
-    "**/.*"
-  ]
-
+  "exclude": ["**/flycheck_*", "**/#*", "**/.*"]
 }

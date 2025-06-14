@@ -13,8 +13,8 @@ function publishWebhook(message: Message, url: string): void {
         headers: {
             'Content-Type': 'application/json',
             'Content-Length': Buffer.byteLength(payload),
-            'User-Agent': 'notifier'
-        }
+            'User-Agent': 'notifier',
+        },
     };
 
     let req = https.request(endpoint, options);
@@ -34,8 +34,12 @@ function publishWebhook(message: Message, url: string): void {
     req.end(payload);
 }
 
-export default (app: express.Application, userId: number, message: Message | null, retractionId?: string): void => {
-
+export default (
+    app: express.Application,
+    userId: number,
+    message: Message | null,
+    retractionId?: string,
+): void => {
     let jsonMessage: string | undefined;
 
     if (message) {

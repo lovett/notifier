@@ -2,7 +2,7 @@ import db from '../db';
 import type Token from '../Token';
 import type User from '../User';
 import type { NextFunction, Request, Response } from 'express';
-import type { CookieOptions } from 'express-serve-static-core'
+import type { CookieOptions } from 'express-serve-static-core';
 
 /**
  * Identify a user based on cookie or basic auth.
@@ -22,10 +22,14 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                 const cookieOptions: CookieOptions = {
                     path: req.app.locals.config.NOTIFIER_BASE_URL,
                     sameSite: 'strict',
-                    expires: new Date(Date.now() + (86400000 * 30))
-                }
+                    expires: new Date(Date.now() + 86400000 * 30),
+                };
 
-                res.cookie('token', `${token.key},${token.value}`, cookieOptions);
+                res.cookie(
+                    'token',
+                    `${token.key},${token.value}`,
+                    cookieOptions,
+                );
             }
 
             req.user = user;
@@ -40,23 +44,24 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                 'Cache-Control': 'no-cache, no-transform',
                 'Connection': 'keep-alive',
                 'Content-Type': 'text/event-stream',
-                'X-Accel-Buffering': 'no'
+                'X-Accel-Buffering': 'no',
             });
-            res.write("event: message\ndata: 403\n\n");
+            res.write('event: message\ndata: 403\n\n');
         }
         return;
     }
 
     if ('authorization' in req.headers) {
         const authHeader = req.headers.authorization as string;
-        const trustedIps = req.app.locals.config.NOTIFIER_TRUSTED_IPS.split(/\s*,\s*/);
+        const trustedIps =
+            req.app.locals.config.NOTIFIER_TRUSTED_IPS.split(/\s*,\s*/);
 
         const [authType, credential] = authHeader.split(' ', 2);
 
         if (credential && authType && authType.toLowerCase() === 'basic') {
-            const [authUser, authPass] = Buffer.from(
-                credential, 'base64'
-            ).toString().split(':', 2);
+            const [authUser, authPass] = Buffer.from(credential, 'base64')
+                .toString()
+                .split(':', 2);
 
             if (authUser && authPass) {
                 if (authUser === authPass) {
@@ -84,9 +89,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         res.sendStatus(403);
         return;
     }
-
-
-
 
     res.setHeader('WWW-Authenticate', 'Basic realm="notifier"');
     res.sendStatus(401);

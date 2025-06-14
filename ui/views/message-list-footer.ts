@@ -17,13 +17,19 @@ export default {
         return m(selector, [
             m(m.route.Link, { href: '/settings' }, 'Settings'),
 
-            (cache.canRestore()) ? m('a', {
-                href: '#undo',
-                onclick: (e: Event) => {
-                    e.preventDefault();
-                    cache.restore().then(m.redraw);
-                },
-            }, 'Undo') : null,
+            cache.canRestore()
+                ? m(
+                      'a',
+                      {
+                          href: '#undo',
+                          onclick: (e: Event) => {
+                              e.preventDefault();
+                              cache.restore().then(m.redraw);
+                          },
+                      },
+                      'Undo',
+                  )
+                : null,
 
             logout,
         ]);

@@ -9,4 +9,4 @@ enum Event {
     error = 'ERROR',
 }
 
-export {Command, Event};
+export { Command, Event };

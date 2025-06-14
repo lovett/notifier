@@ -8,13 +8,17 @@ export default {
             m('main#logout', [
                 m('h1', 'Goodbye'),
                 m('p', 'You have been logged out.'),
-                m('button', {
-                    autofocus: true,
-                    onclick: (e: Event) => {
-                        e.preventDefault();
-                        m.route.set('/login');
+                m(
+                    'button',
+                    {
+                        autofocus: true,
+                        onclick: (e: Event) => {
+                            e.preventDefault();
+                            m.route.set('/login');
+                        },
                     },
-                }, 'Sign in again'),
+                    'Sign in again',
+                ),
             ]),
 
             m('footer'),

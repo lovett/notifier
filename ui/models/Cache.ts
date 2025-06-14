@@ -1,12 +1,12 @@
-import {Message, type JsonMessage} from './Message';
+import { Message, type JsonMessage } from './Message';
 import m from 'mithril';
 
-type MessageIterator = IterableIterator<[string, Message|null]>;
+type MessageIterator = IterableIterator<[string, Message | null]>;
 
 type MessageIteratorResult = {
     done: boolean;
-    value: [string, Message|null];
-}
+    value: [string, Message | null];
+};
 
 /**
  * A container for a set of messages.
@@ -16,7 +16,7 @@ export default class Cache {
 
     private undoQueue: Message[];
 
-    private _messages: Map<string, Message|null>;
+    private _messages: Map<string, Message | null>;
 
     public constructor() {
         this.undoQueue = [];
@@ -24,21 +24,23 @@ export default class Cache {
 
         // The messages map gets a custom iterator so that it is easier
         // to display messages in newest-first order.
-        this._messages[Symbol.iterator] = function(this): MessageIterator {
+        this._messages[Symbol.iterator] = function (this): MessageIterator {
             const pairs = Array.from(this.entries());
 
             let index = pairs.length;
 
             return {
-                [Symbol.iterator](): MessageIterator { return this; },
+                [Symbol.iterator](): MessageIterator {
+                    return this;
+                },
                 next(): MessageIteratorResult {
                     return {
                         done: index === 0,
-                        value: pairs[--index]
+                        value: pairs[--index],
                     };
                 },
             };
-        }
+        };
     }
 
     /**
@@ -78,7 +80,7 @@ export default class Cache {
         let counter = 0;
         for (const message of this.messages()) {
             counter++;
-            message.selected = (counter === index);
+            message.selected = counter === index;
         }
     }
 
@@ -88,7 +90,7 @@ export default class Cache {
     public selected(): [Message | null, number] {
         let counter = 0;
         for (const message of this.messages()) {
-            counter++
+            counter++;
             if (message.selected) {
                 return [message, counter];
             }
@@ -111,7 +113,7 @@ export default class Cache {
         }
 
         if (targetIndex > maxIndex) {
-            this.selectByIndex(1 + maxIndex % step);
+            this.selectByIndex(1 + (maxIndex % step));
             return;
         }
 
@@ -137,11 +139,13 @@ export default class Cache {
             body: { publicId: message.publicId },
             method: 'POST',
             withCredentials: true,
-        }).then(() => {
-            this.undoQueue.push(message);
-        }).catch(() => {
-            console.error('Message could not be cleared');
-        });
+        })
+            .then(() => {
+                this.undoQueue.push(message);
+            })
+            .catch(() => {
+                console.error('Message could not be cleared');
+            });
     }
 
     /**
@@ -184,17 +188,19 @@ export default class Cache {
             extract: this.extract,
             method: 'GET',
             withCredentials: true,
-        } as m.RequestOptions<Message[]>).then((messages: Message[]) => {
-            this.empty();
+        } as m.RequestOptions<Message[]>)
+            .then((messages: Message[]) => {
+                this.empty();
 
-            for (const message of messages) {
-                this.add(message);
-            }
+                for (const message of messages) {
+                    this.add(message);
+                }
 
-            this.filledOn = new Date();
-        }).catch(() => {
-            m.route.set('/logout');
-        });
+                this.filledOn = new Date();
+            })
+            .catch(() => {
+                m.route.set('/logout');
+            });
     }
 
     /**
@@ -234,10 +240,13 @@ export default class Cache {
 
         try {
             const json = JSON.parse(xhr.responseText);
-            return json.reduce((accumulator: Message[], message: JsonMessage) => {
-                accumulator.push(Message.fromJson(message));
-                return accumulator;
-            }, []);
+            return json.reduce(
+                (accumulator: Message[], message: JsonMessage) => {
+                    accumulator.push(Message.fromJson(message));
+                    return accumulator;
+                },
+                [],
+            );
         } catch (e) {
             return [];
         }
