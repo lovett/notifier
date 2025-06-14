@@ -6,27 +6,22 @@ interface for viewing them, and a webhook option for relaying messages
 to another service.
 
 Unlike OS- or in-app notifications, Notifier is a standalone service
-geared toward self-hosted use. It can run wherever NodeJS runs.
+geared toward self-hosted use.
+
 
 ## Configuration
-The server's default configuration is reasonable for production use.
-Changes to the defaults can be made with environment variables or a
-JSON file. The JSON file can be loaded from several places:
-
-  - `config-[NODE_ENV].json` in the application root
-  - `config.json` in the application root
-  - `/etc/notifier.json`
+The server is configured through a small collection of environment
+variables.
 
 `NOTIFIER_BADGE_BASE_URL`: Where to find custom message
 badges. A message with a custom badge only specifies the
 filename. This value provides the rest. Message badges are only
-loaded from one location.
-Default: `/svg`.
+loaded from one location. Default: `/svg`.
 
-`NOTIFIER_BASE_URL`: The URL path of the application. Default: `/`.
+`NOTIFIER_BASE_URL`: The root URL path of the application. Default: `/`.
 
 `NOTIFIER_DB_DSN`: The connection string for the Postgres database.
-Default: `postgres://notifier:notifier@localhost:5432/notifier`.
+Default: `socket://notifier@/var/run/postgresql?db=notifier`.
 
 `NOTIFIER_FORCE_HTTPS`: Whether HTTPs is required. Default: `0`.
 
@@ -42,10 +37,11 @@ Default: `./public`.
 `NOTIFIER_TRUSTED_IPS`: A comma-separated list of IP addresses or
 subnets that are allowed to send messages without providing a
 username/password pair. They can instead use the username as the
-password for Basic Auth. This is meant for server scripts that run
-sporadically and would be inconvenienced by token
-expiration. Addresses are matched by string prefix, so `192.168.0`
-covers that entire subnet.  Default: _127.0.0.1_.
+password for Basic Auth. This is meant for server scripts that would
+be inconvenienced by token expiration. Addresses are matched by string
+prefix, so `192.168.0` covers that entire subnet.  Default:
+`127.0.0.1`.
+
 
 ## Database setup
 
@@ -66,11 +62,7 @@ the schema directory, applied sequentially:
 psql -U notifier notifier -f schema/00-base-schema.sql
 ```
 
-The application will connect to the database over a TCP socket even if
-both are running on the same host. Connections over Unix domain
-sockets aren't currently supported.
-
-In order for database authentication to succeed, the Postgrs
+In order for database authentication to succeed, the Postgres
 `pg_hba.conf` should have a setup like this:
 
 ```
@@ -86,16 +78,15 @@ is convenient for command-line or other access.
 
 Other approaches are possible, but these are reasonable starting points.
 
-## User setup
 
-Regular user management (i.e. users other than the default user)
-occurs from the command line.
+## User setup
 
 To add a user, run:
 
 ```
 node server.js adduser myusername mypassword
 ```
+
 
 ## Message Schema
 
@@ -135,16 +126,19 @@ an email. This field is required.
 
 Messages can be sent to notifier via POST parameters.
 
+
 ## What it's made of
+
 The browser UI uses Mithril.
 
 Message delivery to the browser is done with server-sent events.
 
-The server uses Express and a PostgresSQL database.
+The server uses Express.
 
-The browser UI and the server are both written in Typescript.
+Both the browser UI and server are both written in Typescript.
 
 
 ## Attribution
+
 This project uses icons from [Bootstrap](https://github.com/twbs/icons)
 under MIT license.
