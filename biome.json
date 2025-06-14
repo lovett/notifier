@@ -1,6 +1,9 @@
 {
-  "files": {
-    "ignore": ["server/public"]
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true,
+    "defaultBranch": "master"
   },
   "formatter": {
     "indentStyle": "space",
@@ -8,12 +11,8 @@
   },
   "javascript": {
     "formatter": {
-      "quoteStyle": "single"
-    }
-  },
-  "json": {
-    "formatter": {
-      "trailingCommas": "none"
+      "quoteStyle": "single",
+      "quoteProperties": "preserve"
     }
   }
 }
