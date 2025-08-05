@@ -141,16 +141,12 @@ export default {
             url: 'deauth',
             withCredentials: true,
         })
-            .then(() => {
+            .finally(() => {
                 currentUser.password = '';
                 currentUser.persist = false;
                 currentUser.username = '';
+                this.discardCookie();
             })
-            .catch((e: MithrilRequestError) => {
-                if (e.code === 401) {
-                    this.discardCookie();
-                }
-            });
     },
 
     saveServices(data: FormData): void {
