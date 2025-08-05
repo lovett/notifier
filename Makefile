@@ -1,4 +1,4 @@
-.PHONY: ui server
+.PHONY: ui server image
 
 MAKEFLAGS += --no-print-directory
 DEV_URL := http://localhost:8080
@@ -7,6 +7,9 @@ TMUX_SESSION_NAME := notifier
 setup:
 	bun install
 
+image:
+	podman build -t notifier .
+	podman image prune -f
 build:
 	bun build server/server.ts ui/index.html ui/worker.ts --compile --target=bun-linux-x64-baseline --outfile notifier
 

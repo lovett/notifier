@@ -1,13 +1,17 @@
 # Notifier
-Notifier is a web service for sending yourself notifications.
+A web service for sending yourself notifications.
 
-It provides an HTTP endpoint you can send messages to, a browser-based
-interface for viewing them, and a webhook option for relaying messages
-to another service.
+It provides:
+  - an HTTP endpoint you can send messages to
+  - a browser-based interface for viewing them
+  - a webhook option for relaying messages to another service
 
-Unlike OS- or in-app notifications, Notifier is a standalone service
+Unlike OS or in-app notifications, Notifier is a standalone service
 geared toward self-hosted use.
 
+## Container
+The application can run as a Podman or Docker container. To build the
+image, run `make image`.
 
 ## Configuration
 The server is configured through a small collection of environment
@@ -91,11 +95,10 @@ The endpoint for sending messages to a Notifier is `/message`. It
 accepts POST requests with the following fields, all of which are
 optional except for title:
 
-**body**: A short blurb of content.
+**body**: A short blurb. A supplement to the title field.
 
 **deliveryStyle**: If _whisper_, the server should accept and display
-the message but not send webhooks or in-browser notifications that it
-has arrived.
+the message but not send webhooks or in-browser notifications.
 
 **expiresAt**: The lifetime of the message specified in relative units
 (such as "1 hour" or "45 minutes") from the time it is received. The
@@ -119,10 +122,7 @@ finishes).
 **title**: The purpose of the message. Similar to the subject line of
 an email. This field is required.
 
-**url**: If provided, the message will be displayed with a link.
-
-Messages can be sent to notifier via POST parameters.
-
+**url**: An offsite link. When set, the notification is clickable.
 
 ## What it's made of
 
@@ -137,5 +137,4 @@ Both the browser UI and server are both written in Typescript.
 
 ## Attribution
 
-This project uses icons from [Bootstrap](https://github.com/twbs/icons)
-under MIT license.
+This project uses icons from [Bootstrap](https://github.com/twbs/icons).

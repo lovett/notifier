@@ -1,0 +1,8 @@
+.ackrc
+.github
+.gitignore
+Containerfile
+Makefile
+ansible
+biome.json
+schema
