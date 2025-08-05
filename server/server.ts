@@ -36,7 +36,6 @@ app.locals.config = {
         process.env.NOTIFIER_DB_DSN ||
         'socket://notifier@/var/run/postgresql?db=notifier',
     NOTIFIER_FORCE_HTTPS: process.env.NOTIFIER_FORCE_HTTPS || 0,
-    NOTIFIER_HTTP_IP: process.env.NOTIFIER_HTTP_IP || '127.0.0.1',
     NOTIFIER_HTTP_PORT: process.env.NOTIFIER_HTTP_PORT || 8080,
     NOTIFIER_PUBLIC_DIR:
         process.env.NOTIFIER_PUBLIC_DIR || path.resolve(__dirname, './public'),
@@ -123,24 +122,28 @@ if (process.argv.length > 2) {
  */
 if (process.argv.length < 3) {
     const server = app.listen(
-        app.locals.config.NOTIFIER_HTTP_PORT,
-        app.locals.config.NOTIFIER_HTTP_IP,
+        app.locals.config.NOTIFIER_HTTP_PORT
     );
+
+    let schedulerInterval;
 
     server.on('listening', async () => {
         process.stdout.write(
-            `Listening on ${app.locals.config.NOTIFIER_HTTP_IP}:${app.locals.config.NOTIFIER_HTTP_PORT}\n`,
+            `Listening on port ${app.locals.config.NOTIFIER_HTTP_PORT}\n`,
         );
 
         app.locals.expirationCache = await db.getExpiringMessages();
 
-        setInterval(scheduler, 1_000, app);
+        schedulerInterval = setInterval(scheduler, 1_000, app);
+    });
 
-        // Tell systemd that startup has completed and all systems are go.
-        if (process.env.NODE_ENV === 'production') {
-            childProcess.exec(
-                `/bin/systemd-notify --ready --pid=${process.pid}`,
-            );
-        }
+    process.on('SIGTERM', () => {
+        console.log(`\nSIGTERM received. Exiting...`);
+        process.exit(0);
+    });
+
+    process.on('SIGINT', () => {
+        console.log(`\nSIGINT received. Exiting...`);
+        process.exit(0);
     });
 }

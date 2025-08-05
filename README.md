@@ -25,9 +25,6 @@ Default: `socket://notifier@/var/run/postgresql?db=notifier`.
 
 `NOTIFIER_FORCE_HTTPS`: Whether HTTPs is required. Default: `0`.
 
-`NOTIFIER_HTTP_IP`: The IP address the server should listen on.
-Default: `127.0.0.1`.
-
 `NOTIFIER_HTTP_PORT`: The port the server should listen on.
 Default: `8080`.
 
