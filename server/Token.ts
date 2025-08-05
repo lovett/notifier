@@ -10,7 +10,7 @@ export default class Token {
         const randomString = () => {
             const buf = Buffer.alloc(32);
             return randomFillSync(buf).toString('base64');
-        }
+        };
 
         this.label = label;
         this.persist = persist;

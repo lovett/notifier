@@ -46,7 +46,8 @@ export default {
     },
 
     discardCookie(): void {
-        document.cookie = 'token=;path=/;SameSite=Strict;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        document.cookie =
+            'token=;path=/;SameSite=Strict;expires=Thu, 01 Jan 1970 00:00:00 GMT';
     },
 
     getServices(): void {
@@ -140,13 +141,12 @@ export default {
             method: 'POST',
             url: 'deauth',
             withCredentials: true,
-        })
-            .finally(() => {
-                currentUser.password = '';
-                currentUser.persist = false;
-                currentUser.username = '';
-                this.discardCookie();
-            })
+        }).finally(() => {
+            currentUser.password = '';
+            currentUser.persist = false;
+            currentUser.username = '';
+            this.discardCookie();
+        });
     },
 
     saveServices(data: FormData): void {
