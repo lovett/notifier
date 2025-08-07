@@ -5,6 +5,16 @@ import Token from './Token';
 
 let pool: Pool;
 
+function logError(err: Error) {
+    if (err.code === 'ENOENT') {
+        console.error('Failed to connect to database');
+        return;
+    }
+
+    console.error(`${err.message} during ${err.cause}`);
+}
+
+
 export default {
     connect: (dsn: string) => {
         if (pool) {
@@ -30,7 +40,8 @@ export default {
 
             return null;
         } catch (err) {
-            console.log(err);
+            err.cause = `getUser(username:${username})`;
+            logError(err);
             return null;
         }
     },
@@ -60,22 +71,22 @@ export default {
                 token,
             });
         } catch (err) {
-            console.log(err);
+            err.cause = `getUserByToken(key=${key}, value=${value})`;
+            logError(err);
             return null;
         }
     },
 
-    markTokenSeen: async (token: Token): Promise<null> => {
+    markTokenSeen: async (token: Token): Promise<void> => {
         const sql = `UPDATE tokens SET last_seen=NOW()
             WHERE key=$1 AND value=$2`;
 
         try {
             await pool.query(sql, [token.key, token.value]);
         } catch (err) {
-            console.log(err);
+            err.cause = `markTokenSeen(token=${token})`;
+            logError(err);
         }
-
-        return null;
     },
 
     addUser: async (username: string, password: string): Promise<boolean> => {
@@ -94,7 +105,8 @@ export default {
                 return false;
             }
         } catch (err) {
-            console.log(err);
+            err.cause = `addUser(username=${username}, password=${password})`;
+            logError(err);
             return false;
         }
 
@@ -113,7 +125,8 @@ export default {
                 (row) => new Token(row.label, row.persist, row.key, row.value),
             );
         } catch (err) {
-            console.log(err);
+            err.cause = `getServiceTokens(userId=${userId})`;
+            logError(err);
             return [];
         }
     },
@@ -128,7 +141,8 @@ export default {
             const res = await pool.query(sql, [userId]);
             return res.rows.map((row) => row.value);
         } catch (err) {
-            console.log(err);
+            err.cause = `getWebhookUrls(userId=${userId})`;
+            logError(err);
             return [];
         }
     },
@@ -145,7 +159,8 @@ export default {
             await pool.query(sql, [userId, records]);
             return true;
         } catch (err) {
-            console.log(err);
+            err.cause = `deleteTokensByKey(userId=${userId}, records=${records})`;
+            logError(err);
             return false;
         }
     },
@@ -157,7 +172,8 @@ export default {
             await pool.query(sql, [key, value]);
             return true;
         } catch (err) {
-            console.log(err);
+            err.cause = `deleteToken(key=${key}, value=${value})`;
+            logError(err);
             return false;
         }
     },
@@ -187,7 +203,10 @@ export default {
             } finally {
                 client.release();
             }
-        })().catch((e) => console.error(e.stack));
+        })().catch((err) => {
+            err.cause = `addTokens(userId=${userId}, tokens=${tokens})`;
+            logError(err);
+        });
     },
 
     addMessages: async (userId: number, messages: Message[]): Promise<void> => {
@@ -222,7 +241,10 @@ export default {
             } finally {
                 client.release();
             }
-        })().catch((e) => console.error(e.stack));
+        })().catch((err) => {
+            err.cause = `addMessages(userId=${userId}, messages=${messages})`;
+            logError(err);
+        });
     },
 
     markMessagesUnread: async (
@@ -238,7 +260,8 @@ export default {
             await pool.query(sql, [userId, publicIds]);
             return true;
         } catch (err) {
-            console.log(err);
+            err.cause = `markMessagesUnread(userId=${userId}, publicIds=${publicIds})`;
+            logError(err);
             return false;
         }
     },
@@ -256,7 +279,8 @@ export default {
             await pool.query(sql, [userId, publicIds]);
             return true;
         } catch (err) {
-            console.log(err);
+            err.cause = `markMessagesRead(userId=${userId}, publicIds=${publicIds})`;
+            logError(err);
             return false;
         }
     },
@@ -280,7 +304,8 @@ export default {
 
             return new Message(res.rows[0]);
         } catch (err) {
-            console.log(err);
+            err.cause = `getMessage(userId=${userId}, publicId=${publicId})`;
+            logError(err);
             return null;
         }
     },
@@ -304,7 +329,8 @@ export default {
             const res = await pool.query(sql, [userId, startDate, limit]);
             return res.rows.map((row) => new Message(row));
         } catch (err) {
-            console.log(err);
+            err.cause = `getUnreadMessages(userId=${userId}, startDate=${startDate}, limit=${limit})`;
+            logError(err);
             return [];
         }
     },
@@ -323,7 +349,8 @@ export default {
             const res = await pool.query(sql, [userId, localId]);
             return res.rows.map((row) => row.publicId);
         } catch (err) {
-            console.log(err);
+            err.cause = `getRetractableMessageIds(userId=${userId}, localId=${localId})`;
+            logError(err);
             return [];
         }
     },
@@ -344,22 +371,23 @@ export default {
                 return accumulator;
             }, messages);
         } catch (err) {
-            console.log(err);
+            err.cause = 'getExpiringMessages()';
+            logError(err);
             return messages;
         }
     },
 
-    pruneStaleTokens: async (): Promise<boolean> => {
+    pruneStaleTokens: async (): Promise<void> => {
         const sql = `DELETE FROM tokens
             WHERE DATE_PART('day', now() - last_seen) > 14
             AND key <> 'webhook'`;
 
         try {
             await pool.query(sql);
-            return true;
         } catch (err) {
-            console.log(err);
-            return false;
+            err.cause = 'pruneStaleTokens()';
+            logError(err);
         }
     },
+
 };
