@@ -39,7 +39,7 @@ app.locals.config = {
     NOTIFIER_HTTP_PORT: process.env.NOTIFIER_HTTP_PORT || 8080,
     NOTIFIER_PUBLIC_DIR:
         process.env.NOTIFIER_PUBLIC_DIR || path.resolve(__dirname, './public'),
-    NOTIFIER_TRUSTED_IPS: process.env.NOTIFIER_TRUSTED_IPS || '127.0.0.1',
+    NOTIFIER_TRUSTED_IPS: process.env.NOTIFIER_TRUSTED_IPS,
 };
 
 app.locals.expirationCache = new Map();

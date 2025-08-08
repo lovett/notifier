@@ -40,8 +40,8 @@ subnets that are allowed to send messages without providing a
 username/password pair. They can instead use the username as the
 password for Basic Auth. This is meant for server scripts that would
 be inconvenienced by token expiration. Addresses are matched by string
-prefix, so `192.168.0` covers that entire subnet.  Default:
-`127.0.0.1`.
+prefix, so `192.168.0` covers that entire subnet. The subnets
+`127.0.0` and `::1` are always trusted.
 
 
 ## Database setup
