@@ -11,6 +11,8 @@ RUN bun build --production --outdir=server/public ui/index.html ui/worker.ts
 
 FROM base AS release
 
+LABEL org.opencontainers.image.base.name="docker.io/oven/bun:alpine"
+
 ENV NOTIFIER_HTTP_IP=0.0.0.0
 ENV NOTIFIER_DB_DSN=postgres://notifier@host.containers.internal/notifier
 

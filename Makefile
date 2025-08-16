@@ -3,6 +3,7 @@
 MAKEFLAGS += --no-print-directory
 DEV_URL := http://localhost:8080
 TMUX_SESSION_NAME := notifier
+MAIN := $(shell jq .main package.json)
 
 export LOCAL_REGISTRY_AUTH_FILE=$(HOME)/.config/containers/auth.json
 export REMOTE_REGISTRY_AUTH_FILE=/root/.config/containers/auth.json
@@ -23,11 +24,17 @@ deploy:
 	ssh -O exit -q $(NOTIFIER_DEPLOY_HOST)
 
 image:
-	podman build -t notifier .
+	podman build -t notifier --inherit-labels=false \
+	--label=org.opencontainers.image.created="$(shell date --rfc-3339='seconds')" \
+	--label=org.opencontainers.image.description=$(shell jq .description package.json) \
+	--label=org.opencontainers.image.revision=$(shell git rev-parse HEAD) \
+	--label=org.opencontainers.image.title=$(shell jq .name package.json) \
+	--label=org.opencontainers.image.url=$(shell jq .homepage package.json) \
+	.
 	podman image prune -f
 
 build:
-	bun build server/server.ts ui/index.html ui/worker.ts --compile --target=bun-linux-x64-baseline --outfile notifier
+	bun build $(MAIN) ui/index.html ui/worker.ts --compile --target=bun-linux-x64-baseline --outfile notifier
 
 clean:
 	rm -rf server/public/*
@@ -47,7 +54,7 @@ ui:
 	bun --watch build ui/index.html ui/worker.ts --outdir server/public
 
 server: favicon
-	bun --watch run server/server.ts
+	bun --watch run $(MAIN)
 
 # Send a test message in normal mode
 onemessage:

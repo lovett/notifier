@@ -2,12 +2,12 @@
   "name": "notifier",
   "private": true,
   "version": "0.0.0",
-  "description": "A notification service for user-generated events",
+  "description": "A self-hosted notification service",
   "main": "server/server.ts",
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git://github.com/lovett/notifier.git"
+    "url": "https://github.com/lovett/notifier.git"
   },
   "author": "Bill Lovett",
   "homepage": "https://github.com/lovett/notifier",
