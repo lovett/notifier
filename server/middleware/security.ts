@@ -13,8 +13,6 @@ export default function (
 ): void {
     const config = req.app.locals.config;
 
-    const forceHttps = Boolean(config.NOTIFIER_FORCE_HTTPS);
-
     // Clickjacking - https://www.owasp.org/index.php/Clickjacking
     res.setHeader('X-Frame-Options', 'DENY');
 
@@ -49,21 +47,6 @@ export default function (
     }, '');
 
     res.setHeader('Content-Security-Policy', cspString);
-
-    // Require HTTPS
-    if (forceHttps) {
-        // HTTP Strict Transport Security - https://www.owasp.org/index.php/HTTP_Strict_Transport_Security
-        res.setHeader(
-            'Strict-Transport-Security',
-            util.format('max-age=%d', 60 * 60 * 24 * 30),
-        );
-
-        if (req.get('x-forwarded-proto') === 'http') {
-            res.redirect(
-                `https://${req.headers['x-forwarded-host']}${req.url}`,
-            );
-        }
-    }
 
     next();
 }

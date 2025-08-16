@@ -35,7 +35,6 @@ app.locals.config = {
     NOTIFIER_DB_DSN:
         process.env.NOTIFIER_DB_DSN ||
         'socket://notifier@/var/run/postgresql?db=notifier',
-    NOTIFIER_FORCE_HTTPS: process.env.NOTIFIER_FORCE_HTTPS || 0,
     NOTIFIER_HTTP_PORT: process.env.NOTIFIER_HTTP_PORT || 8080,
     NOTIFIER_PUBLIC_DIR:
         process.env.NOTIFIER_PUBLIC_DIR || path.resolve(__dirname, './public'),
