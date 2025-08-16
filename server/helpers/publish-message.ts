@@ -45,7 +45,7 @@ export default (
     if (message) {
         message.urlizeBadge(app.locals.config.NOTIFIER_BADGE_BASE_URL);
         jsonMessage = JSON.stringify(message);
-        console.info(`Publishing ${message.publicId}, localId=${message.localId}`);
+        console.info(`Publishing ${message.publicId}, localId=${message.localId || 'none'}`);
     }
 
     if (retractionId) {
