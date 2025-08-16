@@ -103,10 +103,6 @@ workspace:
 	tmux select-window -t "$(TMUX_SESSION_NAME)":0
 	tmux attach-session -t "$(TMUX_SESSION_NAME)"
 
-# Install the application on the production host via Ansible.
-install: build
-	ansible-playbook ansible/install.yml
-
 # Lint server files only.
 lint-server:
 	biome lint server
