@@ -1,15 +1,31 @@
-.PHONY: ui server image
+.PHONY: ui server image deploy
 
 MAKEFLAGS += --no-print-directory
 DEV_URL := http://localhost:8080
 TMUX_SESSION_NAME := notifier
 
+export LOCAL_REGISTRY_AUTH_FILE=$(HOME)/.config/containers/auth.json
+export REMOTE_REGISTRY_AUTH_FILE=/root/.config/containers/auth.json
+
 setup:
 	bun install
+
+deploy:
+	test -n "$(NOTIFIER_CONTAINER_REGISTRY)"  # Has NOTIFIER_CONTAINER_REGISTRY been set?
+	test -n "$(NOTIFIER_DEPLOY_HOST)"  # Has NOTIFIER_DEPLOY_HOST been set?
+	ssh -o "ControlPersist=15" -MNf $(NOTIFIER_DEPLOY_HOST)
+	podman push --authfile=$(LOCAL_REGISTRY_AUTH_FILE) notifier:latest $(NOTIFIER_CONTAINER_REGISTRY)/notifier
+	rsync -avz --rsync-path="sudo rsync" --chown=root:root systemd/ \
+		$(NOTIFIER_DEPLOY_HOST):/etc/containers/systemd
+	ssh $(NOTIFIER_DEPLOY_HOST) sudo podman pull --authfile=$(REMOTE_REGISTRY_AUTH_FILE) $(NOTIFIER_CONTAINER_REGISTRY)/notifier
+	ssh $(NOTIFIER_DEPLOY_HOST) sudo systemctl daemon-reload
+	ssh $(NOTIFIER_DEPLOY_HOST) sudo systemctl restart notifier
+	ssh -O exit -q $(NOTIFIER_DEPLOY_HOST)
 
 image:
 	podman build -t notifier .
 	podman image prune -f
+
 build:
 	bun build server/server.ts ui/index.html ui/worker.ts --compile --target=bun-linux-x64-baseline --outfile notifier
 

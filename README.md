@@ -9,25 +9,61 @@ It provides:
 Unlike OS or in-app notifications, Notifier is a standalone service
 geared toward self-hosted use.
 
-## Container
-The application can run as a Podman or Docker container. To build the
-image, run `make image`.
+
+## Deployment
+The application runs as a Podman container managed by systemd.
+
+The container image is not hosted in a public registry, so build it
+locally by running `make image`.
+
+To bring the local image onto a remote host, first create 2 environment variables:
+
+  - `NOTIFIER_DEPLOY_HOST`: The host that will run the container.
+  - `NOTIFIER_CONTAINER_REGISTRY`: The registry that will host the container image.
+
+Now run `make deploy`. It will:
+
+  - Push the image created by `make image` to `NOTIFIER_CONTAINER_REGISTRY`.
+  - Rsync the Podman Quadlet service file to `NOTIFIER_DEPLOY_HOST` so
+    that the application can be managed as a systemd service.
+  - Pull the image onto `NOTIFIER_DEPLOY_HOST`
+  - Start the container via systemd.
+
+The `systemd/notifier.container` service determines the image to run
+by reading `notifier.image`. This file should be created manually at
+`/etc/containers/systemd/notifier.image` on `NOTIFIER_DEPLOY_HOST`.
+For example:
+
+```
+[Image]
+Image=example.com/notifier:latest
+```
+
+If the container registry also runs on the deploy host as a container,
+the `notifier.image` service should depend on it:
+
+```
+[Unit]
+After=myregistry.container
+Requires=rmyegistry.container
+
+[Image]
+Image=myregistry.example.com/notifier:latest
+```
+
 
 ## Configuration
-The server is configured through a small collection of environment
-variables.
+The server is configured through the following environment variables.
 
-`NOTIFIER_BADGE_BASE_URL`: Where to find custom message
-badges. A message with a custom badge only specifies the
-filename. This value provides the rest. Message badges are only
-loaded from one location. Default: `/svg`.
+`NOTIFIER_BADGE_BASE_URL`: Where to find custom message badges. A
+message with a custom badge only specifies the filename. This value
+provides the rest of the URL. Message badges are only loaded from one
+location. Default: `/svg`.
 
 `NOTIFIER_BASE_URL`: The root URL path of the application. Default: `/`.
 
 `NOTIFIER_DB_DSN`: The connection string for the Postgres database.
 Default: `socket://notifier@/var/run/postgresql?db=notifier`.
-
-`NOTIFIER_FORCE_HTTPS`: Whether HTTPs is required. Default: `0`.
 
 `NOTIFIER_HTTP_PORT`: The port the server should listen on.
 Default: `8080`.

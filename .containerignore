@@ -6,3 +6,4 @@ Makefile
 ansible
 biome.json
 schema
+systemd

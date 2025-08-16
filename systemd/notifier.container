@@ -1,0 +1,18 @@
+[Unit]
+Description=Notifier
+
+[Container]
+ContainerName=notifier
+EnvironmentFile=/etc/notifier.vars
+Image=notifier.image
+PublishPort=8080:8080
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target
+
+# Local Variables:
+# mode: systemd
+# End:
