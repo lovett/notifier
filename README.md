@@ -1,22 +1,19 @@
 # Notifier
-A web service for sending yourself notifications.
+A web service for sending yourself notifications. Similar to OS or app-specific notification systems, but more agnostic.
 
 It provides:
-  - an HTTP endpoint you can send messages to
-  - a browser-based interface for viewing them
-  - a webhook option for relaying messages to another service
-
-Unlike OS or in-app notifications, Notifier is a standalone service
-geared toward self-hosted use.
+  - an HTTP endpoint for receiving messages
+  - a browser UI for viewing them
+  - relaying to another service via webhook
 
 
 ## Deployment
 The application runs as a Podman container managed by systemd.
 
-The container image is not hosted in a public registry, so build it
+The container image is not hosted in a public registry. Build it
 locally by running `make image`.
 
-To bring the local image onto a remote host, first create 2 environment variables:
+To bring the local image onto a remote host, create 2 environment variables:
 
   - `NOTIFIER_DEPLOY_HOST`: The host that will run the container.
   - `NOTIFIER_CONTAINER_REGISTRY`: The registry that will host the container image.
@@ -24,41 +21,37 @@ To bring the local image onto a remote host, first create 2 environment variable
 Now run `make deploy`. It will:
 
   - Push the image created by `make image` to `NOTIFIER_CONTAINER_REGISTRY`.
-  - Rsync the Podman Quadlet service file to `NOTIFIER_DEPLOY_HOST` so
+  - Rsync a Podman Quadlet service file to `NOTIFIER_DEPLOY_HOST` so
     that the application can be managed as a systemd service.
   - Pull the image onto `NOTIFIER_DEPLOY_HOST`
   - Start the container via systemd.
 
-The `systemd/notifier.container` service determines the image to run
-by reading `notifier.image`. This file should be created manually at
+The `systemd/notifier.container` service references the file
+`notifier.image`.  This file should be created manually at
 `/etc/containers/systemd/notifier.image` on `NOTIFIER_DEPLOY_HOST`.
-For example:
-
-```
-[Image]
-Image=example.com/notifier:latest
-```
-
-If the container registry also runs on the deploy host as a container,
-the `notifier.image` service should depend on it:
+and have the following contents:
 
 ```
 [Unit]
 After=myregistry.container
-Requires=rmyegistry.container
+Requires=myregistry.container
 
 [Image]
 Image=myregistry.example.com/notifier:latest
 ```
 
+The Unit section can be omitted if the container registry runs on a
+different host.
+
 
 ## Configuration
-The server is configured through the following environment variables.
+The server is configured through the following environment
+variables. The systemd service sources them from the file
+`/etc/notifier.vars`.
 
-`NOTIFIER_BADGE_BASE_URL`: Where to find custom message badges. A
-message with a custom badge only specifies the filename. This value
-provides the rest of the URL. Message badges are only loaded from one
-location. Default: `/svg`.
+`NOTIFIER_BADGE_BASE_URL`: Where to find custom message
+badges. Messages that specify a custom badge only list a
+filename. This value provides the rest of the URL. Default: `/svg`.
 
 `NOTIFIER_BASE_URL`: The root URL path of the application. Default: `/`.
 
@@ -73,11 +66,10 @@ Default: `./public`.
 
 `NOTIFIER_TRUSTED_IPS`: A comma-separated list of IP addresses or
 subnets that are allowed to send messages without providing a
-username/password pair. They can instead use the username as the
-password for Basic Auth. This is meant for server scripts that would
-be inconvenienced by token expiration. Addresses are matched by string
-prefix, so `192.168.0` covers that entire subnet. The subnets
-`127.0.0` and `::1` are always trusted.
+username/password pair. They can instead use the username for both
+values. Addresses are matched by string prefix, so `192.168.0` covers
+that entire subnet. The subnets `127.0.0` and `::1` are always
+trusted.
 
 
 ## Database setup
@@ -104,16 +96,17 @@ In order for database authentication to succeed, the Postgres
 
 ```
 # TYPE  DATABASE        USER            ADDRESS                 METHOD
-host    all             all             127.0.0.1/32            ident
-
-# IPv4 local connections:
-host    notifier        notifier        127.0.0.1/32            md5
+host    sameuser        notifier        samenet                 trust
+local   sameuser        notifier                                trust
 ```
 
-The second "host" line is what the application will use. The first one
-is convenient for command-line or other access.
+For this to work, the `postgresql.conf` file should contain:
 
-Other approaches are possible, but these are reasonable starting points.
+```
+listen_addresses = '*'
+```
+
+Other approaches are possible, but this is a decent starting point.
 
 
 ## User setup
@@ -160,15 +153,13 @@ an email. This field is required.
 
 **url**: An offsite link. When set, the notification is clickable.
 
+
 ## What it's made of
-
-The browser UI uses Mithril.
-
-Message delivery to the browser is done with server-sent events.
-
-The server uses Express.
-
-Both the browser UI and server are both written in Typescript.
+  - [Mithril](https://mithril.js.org/)
+  - [Server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
+  - [Express](https://expressjs.com/)
+  - [Bun](https://bun.sh/)
+  - [Typescript](https://www.typescriptlang.org/)
 
 
 ## Attribution
