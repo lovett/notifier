@@ -21,12 +21,8 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
         return;
     }
 
-    let label = req.body.label || '';
-    label = label.replace(/[^a-zA-Z0-9-./ ]/, '');
-
-    if (label === '') {
-        label = req.get('user-agent');
-    }
+    let label = req.body.label || req.get('user-agent') || '';
+    label = label.replace(/[^a-zA-Z0-9-./ ]/, '').substring(0, 100);
 
     const persist = [true, '1', 'true'].indexOf(req.body.persist) > -1;
 
