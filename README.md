@@ -38,11 +38,13 @@ Requires=myregistry.container
 
 [Image]
 Image=myregistry.example.com/notifier:latest
+RetryDelay=5s
 ```
 
 The Unit section can be omitted if the container registry runs on a
-different host.
-
+different host. The RetryDelay setting makes it less likely that the
+container will fail to start at boot due to the container registry not
+being immediately available.
 
 ## Configuration
 The server is configured through the following environment
