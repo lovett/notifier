@@ -24,6 +24,9 @@ deploy:
 	ssh -O exit -q $(NOTIFIER_DEPLOY_HOST)
 
 image:
+	date +'%Y.%m.%d+' > server/public/version.txt
+	truncate -s-1 server/public/version.txt
+	git rev-parse --short=5 HEAD >> server/public/version.txt
 	podman build -t notifier --inherit-labels=false \
 	--label=org.opencontainers.image.created="$(shell date --rfc-3339='seconds')" \
 	--label=org.opencontainers.image.description=$(shell jq .description package.json) \
@@ -32,6 +35,7 @@ image:
 	--label=org.opencontainers.image.url=$(shell jq .homepage package.json) \
 	.
 	podman image prune -f
+	rm -f server/public/version.txt
 
 build:
 	bun build $(MAIN) ui/index.html ui/worker.ts --compile --target=bun-linux-x64-baseline --outfile notifier

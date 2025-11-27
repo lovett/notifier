@@ -21,6 +21,7 @@ import scheduler from './scheduler';
 import security from './middleware/security';
 import services from './routes/services';
 import verify from './middleware/verify';
+import version from './routes/version';
 
 const app = express();
 const router = express.Router();
@@ -95,6 +96,8 @@ router.use('/message/clear', verify, clear);
 router.use('/message/unclear', verify, unclear);
 
 router.use('/push', verify, push);
+
+router.use('/version', version);
 
 app.use(app.locals.config.NOTIFIER_BASE_URL, router);
 
