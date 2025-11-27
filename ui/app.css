@@ -72,6 +72,11 @@
         background-color: black;
     }
 }
+
+.message .body {
+    overflow-wrap: anywhere;
+}
+
 .message .title {
     font-size: 1.1em;
     font-weight: bold;
