@@ -1,5 +1,5 @@
---ignore-dir=build
---ignore-dir=.cache
+--ignore-dir=node_modules
+--ignore-dir=public
 --ignore-file=ext:js
---ignore-file=is:package-lock.json
+--ignore-file=is:bun.lock
 --type-add=html:ext:ejs,html
