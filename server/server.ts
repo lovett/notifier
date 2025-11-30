@@ -1,6 +1,5 @@
 import bodyParser from 'body-parser';
 import childProcess from 'node:child_process';
-import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import path from 'node:path';
@@ -52,8 +51,6 @@ app.locals.pushClients = new Map();
 app.locals.maintenanceTimestamp = new Date();
 
 app.use(security);
-
-app.use(compression());
 
 app.use(cookieParser());
 
