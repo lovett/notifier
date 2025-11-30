@@ -140,28 +140,12 @@ noscript {
 #messageListFooter {
     font-size: 0.85em;
     display: flex;
-    flex-flow: row nowrap;
+    gap: 0 2em;
+    padding: 1em;
 }
 
 #messageListFooter a {
     color: currentColor;
-    display: inline-block;
-    margin: 1em;
-}
-
-#messageListFooter a:last-of-type {
-    margin-left: auto;
-}
-
-#messageListFooter ul {
-    list-style-type: none;
-    clear: both;
-    color: black;
-}
-
-#messageListFooter ul li {
-    margin: 0;
-    display: inline-block;
 }
 
 #settings {
@@ -258,16 +242,19 @@ noscript {
 }
 
 .message .index {
+    margin-left: .25em;
+    box-sizing: border-box;
     font-size: 0.75em;
     text-align: center;
     width: 2em;
-    line-height: 2em;
     align-self: start;
-    margin-top: 0.3em;
+    padding-top: 1.2em;
+    align-self: stretch;
 }
 
 .message .closer {
-    margin: 0.25em;
+    margin: 0.5em;
+    margin-right: 0;
     align-self: start;
 }
 

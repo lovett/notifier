@@ -69,8 +69,6 @@ export default {
                 m('.body', m.trust(message.body.replace(/(\S)\/(\S)/g, '$1/<wbr>$2'))),
             ]),
 
-            m('.index', index + 1),
-
             m(
                 'a.closer',
                 {
@@ -89,6 +87,7 @@ export default {
                     ]),
                 ],
             ),
+            m('.index', index + 1)
         ]);
     },
 };
