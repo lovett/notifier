@@ -53,9 +53,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     if ('authorization' in req.headers) {
         const authHeader = req.headers.authorization as string;
-        const trustedIps = req.app.locals.config.NOTIFIER_TRUSTED_IPS
-            .split(/\s*,\s*/)
-            .filter(ip => ip.length > 0);
+        const trustedIps = req.app.locals.config.NOTIFIER_TRUSTED_IPS.split(
+            /\s*,\s*/,
+        ).filter((ip) => ip.length > 0);
 
         const [authType, credential] = authHeader.split(' ', 2);
 

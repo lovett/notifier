@@ -96,7 +96,6 @@ noscript {
         grid-template-columns: 1fr 1fr;
         grid-column-gap: 0.5em;
     }
-
 }
 
 #messageListEmptyBody {
@@ -242,7 +241,7 @@ noscript {
 }
 
 .message .index {
-    margin-left: .25em;
+    margin-left: 0.25em;
     box-sizing: border-box;
     font-size: 0.75em;
     text-align: center;

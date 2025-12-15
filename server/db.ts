@@ -14,7 +14,6 @@ function logError(err: Error) {
     console.error(`${err.message} during ${err.cause}`);
 }
 
-
 export default {
     connect: (dsn: string) => {
         if (pool) {
@@ -389,5 +388,4 @@ export default {
             logError(err);
         }
     },
-
 };

@@ -66,7 +66,10 @@ export default {
                 ),
 
                 message.domain ? m('.domain', message.domain) : null,
-                m('.body', m.trust(message.body.replace(/(\S)\/(\S)/g, '$1/<wbr>$2'))),
+                m(
+                    '.body',
+                    m.trust(message.body.replace(/(\S)\/(\S)/g, '$1/<wbr>$2')),
+                ),
             ]),
 
             m(
@@ -87,7 +90,7 @@ export default {
                     ]),
                 ],
             ),
-            m('.index', index + 1)
+            m('.index', index + 1),
         ]);
     },
 };

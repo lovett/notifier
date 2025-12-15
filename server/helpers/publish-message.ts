@@ -24,11 +24,15 @@ function publishWebhook(message: Message, url: string): void {
     }
 
     req.on('error', (err) => {
-        console.error(`Webhook POST to ${url} for ${message.publicId} failed: ${err.message}`);
+        console.error(
+            `Webhook POST to ${url} for ${message.publicId} failed: ${err.message}`,
+        );
     });
 
     req.once('response', (res: http.IncomingMessage) => {
-        console.info(`Webhook POST to ${url} for ${message.publicId} returned ${res.statusCode}`);
+        console.info(
+            `Webhook POST to ${url} for ${message.publicId} returned ${res.statusCode}`,
+        );
     });
 
     req.end(payload);
@@ -45,7 +49,9 @@ export default (
     if (message) {
         message.urlizeBadge(app.locals.config.NOTIFIER_BADGE_BASE_URL);
         jsonMessage = JSON.stringify(message);
-        console.info(`Publishing ${message.publicId}, localId=${message.localId || 'none'}`);
+        console.info(
+            `Publishing ${message.publicId}, localId=${message.localId || 'none'}`,
+        );
     }
 
     if (retractionId) {
