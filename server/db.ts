@@ -1,17 +1,12 @@
-import { Pool } from 'pg';
+import { DatabaseError, Pool } from 'pg';
 import Message from './Message';
 import User from './User';
 import Token from './Token';
 
 let pool: Pool;
 
-function logError(err: Error) {
-    if (err.code === 'ENOENT') {
-        console.error('Failed to connect to database');
-        return;
-    }
-
-    console.error(`${err.message} during ${err.cause}`);
+function logError(source: string, err: DatabaseError) {
+    console.error(`${source}: ${err.message}. ${err.hint}`);
 }
 
 export default {
@@ -26,7 +21,7 @@ export default {
     },
 
     getUser: async (username: string): Promise<User | null> => {
-        const sql = `SELECT id, username, password_hash as "passwordHash",
+        const sql = `SELECT id, xusername, password_hash as "passwordHash",
             created_at as "createdAt"
             FROM users WHERE username=$1`;
 
@@ -39,8 +34,11 @@ export default {
 
             return null;
         } catch (err) {
-            err.cause = `getUser(username:${username})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError('getUser()', err);
+            } else {
+                console.error(err);
+            }
             return null;
         }
     },
@@ -70,8 +68,11 @@ export default {
                 token,
             });
         } catch (err) {
-            err.cause = `getUserByToken(key=${key}, value=${value})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`getUserByToken()`, err);
+            } else {
+                console.error(err);
+            }
             return null;
         }
     },
@@ -83,8 +84,11 @@ export default {
         try {
             await pool.query(sql, [token.key, token.value]);
         } catch (err) {
-            err.cause = `markTokenSeen(token=${token})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`markTokenSeen()`, err);
+            } else {
+                console.error(err);
+            }
         }
     },
 
@@ -104,8 +108,11 @@ export default {
                 return false;
             }
         } catch (err) {
-            err.cause = `addUser(username=${username}, password=${password})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`addUser()`, err);
+            } else {
+                console.error(err);
+            }
             return false;
         }
 
@@ -124,8 +131,11 @@ export default {
                 (row) => new Token(row.label, row.persist, row.key, row.value),
             );
         } catch (err) {
-            err.cause = `getServiceTokens(userId=${userId})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`getServiceTokens()`, err);
+            } else {
+                console.error(err);
+            }
             return [];
         }
     },
@@ -140,8 +150,11 @@ export default {
             const res = await pool.query(sql, [userId]);
             return res.rows.map((row) => row.value);
         } catch (err) {
-            err.cause = `getWebhookUrls(userId=${userId})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`getWebhookUrls()`, err);
+            } else {
+                console.error(err);
+            }
             return [];
         }
     },
@@ -158,8 +171,11 @@ export default {
             await pool.query(sql, [userId, records]);
             return true;
         } catch (err) {
-            err.cause = `deleteTokensByKey(userId=${userId}, records=${records})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`deleteTokensByKey()`, err);
+            } else {
+                console.error(err);
+            }
             return false;
         }
     },
@@ -171,8 +187,11 @@ export default {
             await pool.query(sql, [key, value]);
             return true;
         } catch (err) {
-            err.cause = `deleteToken(key=${key}, value=${value})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`deleteToken()`, err);
+            } else {
+                console.error(err);
+            }
             return false;
         }
     },
@@ -203,8 +222,11 @@ export default {
                 client.release();
             }
         })().catch((err) => {
-            err.cause = `addTokens(userId=${userId}, tokens=${tokens})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`addTokens()`, err);
+            } else {
+                console.error(err);
+            }
         });
     },
 
@@ -241,8 +263,11 @@ export default {
                 client.release();
             }
         })().catch((err) => {
-            err.cause = `addMessages(userId=${userId}, messages=${messages})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`addMessages()`, err);
+            } else {
+                console.error(err);
+            }
         });
     },
 
@@ -259,8 +284,11 @@ export default {
             await pool.query(sql, [userId, publicIds]);
             return true;
         } catch (err) {
-            err.cause = `markMessagesUnread(userId=${userId}, publicIds=${publicIds})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`markMessagesUnread()`, err);
+            } else {
+                console.error(err);
+            }
             return false;
         }
     },
@@ -278,8 +306,11 @@ export default {
             await pool.query(sql, [userId, publicIds]);
             return true;
         } catch (err) {
-            err.cause = `markMessagesRead(userId=${userId}, publicIds=${publicIds})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`markMessagesRead()`, err);
+            } else {
+                console.error(err);
+            }
             return false;
         }
     },
@@ -303,8 +334,11 @@ export default {
 
             return new Message(res.rows[0]);
         } catch (err) {
-            err.cause = `getMessage(userId=${userId}, publicId=${publicId})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`getMessage()`, err);
+            } else {
+                console.error(err);
+            }
             return null;
         }
     },
@@ -328,8 +362,11 @@ export default {
             const res = await pool.query(sql, [userId, startDate, limit]);
             return res.rows.map((row) => new Message(row));
         } catch (err) {
-            err.cause = `getUnreadMessages(userId=${userId}, startDate=${startDate}, limit=${limit})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`getUnreadMessages()`, err);
+            } else {
+                console.error(err);
+            }
             return [];
         }
     },
@@ -348,8 +385,11 @@ export default {
             const res = await pool.query(sql, [userId, localId]);
             return res.rows.map((row) => row.publicId);
         } catch (err) {
-            err.cause = `getRetractableMessageIds(userId=${userId}, localId=${localId})`;
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`getRetractableMessageIds()`, err);
+            } else {
+                console.error(err);
+            }
             return [];
         }
     },
@@ -370,8 +410,11 @@ export default {
                 return accumulator;
             }, messages);
         } catch (err) {
-            err.cause = 'getExpiringMessages()';
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError('getExpiringMessages()', err);
+            } else {
+                console.error(err);
+            }
             return messages;
         }
     },
@@ -384,8 +427,11 @@ export default {
         try {
             await pool.query(sql);
         } catch (err) {
-            err.cause = 'pruneStaleTokens()';
-            logError(err);
+            if (err instanceof DatabaseError) {
+                logError(`pruneStaleTokens()`, err);
+            } else {
+                console.error(err);
+            }
         }
     },
 };

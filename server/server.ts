@@ -1,5 +1,4 @@
 import bodyParser from 'body-parser';
-import childProcess from 'node:child_process';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import path from 'node:path';
@@ -39,7 +38,7 @@ app.locals.config = {
     NOTIFIER_PUBLIC_DIR:
         process.env.NOTIFIER_PUBLIC_DIR || path.resolve(__dirname, './public'),
     NOTIFIER_TRUSTED_IPS:
-        '127.0.0,::1,' + (process.env.NOTIFIER_TRUSTED_IPS || ''),
+        `127.0.0,::1,${process.env.NOTIFIER_TRUSTED_IPS || ''}`,
 };
 
 app.locals.expirationCache = new Map();
@@ -140,8 +139,6 @@ if (process.argv.length > 2) {
 
     const server = app.listen(app.locals.config.NOTIFIER_HTTP_PORT);
 
-    let schedulerInterval;
-
     server.on('listening', async () => {
         process.stdout.write(
             `Listening on port ${app.locals.config.NOTIFIER_HTTP_PORT}\n`,
@@ -149,7 +146,7 @@ if (process.argv.length > 2) {
 
         app.locals.expirationCache = await db.getExpiringMessages();
 
-        schedulerInterval = setInterval(scheduler, 1_000, app);
+        setInterval(scheduler, 1_000, app);
     });
 
     process.on('SIGTERM', () => {

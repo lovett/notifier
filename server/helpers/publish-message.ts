@@ -41,8 +41,8 @@ function publishWebhook(message: Message, url: string): void {
 export default (
     app: express.Application,
     userId: number,
-    message?: Message,
-    retractionId?: string,
+    message?: Message | null,
+    retractionId?: string | null,
 ): void => {
     let jsonMessage = '';
 

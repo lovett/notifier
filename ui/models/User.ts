@@ -31,10 +31,6 @@ const currentUser: UserFields = {
     },
 };
 
-interface MithrilRequestError extends Error {
-    code: number;
-}
-
 let loginUnderway = false;
 
 export default {
@@ -46,6 +42,7 @@ export default {
     },
 
     discardCookie(): void {
+        // biome-ignore lint/suspicious/noDocumentCookie: Old browser support
         document.cookie =
             'token=;path=/;SameSite=Strict;expires=Thu, 01 Jan 1970 00:00:00 GMT';
     },

@@ -247,7 +247,7 @@ export default class Cache {
                 },
                 [],
             );
-        } catch (e) {
+        } catch (_err) {
             return [];
         }
     }
