@@ -41,9 +41,6 @@ app.locals.config = {
     NOTIFIER_TRUSTED_IPS: '127.0.0,::1,' + (process.env.NOTIFIER_TRUSTED_IPS || ''),
 };
 
-console.info('Running with the following configuration:');
-console.table(app.locals.config);
-
 app.locals.expirationCache = new Map();
 
 app.locals.pushClients = new Map();
@@ -100,29 +97,42 @@ app.use(app.locals.config.NOTIFIER_BASE_URL, router);
 
 app.use(jsonError);
 
-/**
- * Command mode
- *
- * argv[0] is the node executable
- * argv[1] is the path to this file
- * argv[2] indicates a command
- * argv[3...] indicate command arguments
- */
 if (process.argv.length > 2) {
-    if (process.argv[2] === 'adduser' && process.argv.length === 5) {
-        db.addUser(process.argv[3] || '', process.argv[4] || '')
-            .then(() => {
-                console.log('User added');
-            })
-            .finally(() => {
-                process.exit();
-            });
+    /**
+     * Command mode
+     *
+     * argv[0] is the bun executable
+     * argv[1] is the path to this file
+     * argv[2] indicates a command
+     * argv[3...] indicate command arguments
+     */
+    switch (process.argv[2]) {
+        case 'config':
+            console.table(app.locals.config);
+            break;
+
+        case 'adduser':
+            if (process.argv.length !== 5) {
+                console.error('Missing username and password arguments');
+                process.exit(1);
+            }
+
+            db.addUser(process.argv[3] || '', process.argv[4] || '')
+                .then(() => { console.log('User added') })
+                .finally(() => { process.exit() });
+            break;
+
+        default:
+            console.error('Unknown command');
+            process.exit(1);
     }
-}
-/**
- * Server mode
- */
-if (process.argv.length < 3) {
+} else {
+    /**
+     * Server mode
+     */
+    console.info('Running with the following configuration:');
+    console.table(app.locals.config);
+
     const server = app.listen(
         app.locals.config.NOTIFIER_HTTP_PORT
     );

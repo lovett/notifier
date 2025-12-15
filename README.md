@@ -113,10 +113,31 @@ Other approaches are possible, but this is a decent starting point.
 
 ## User setup
 
-To add a user, run:
+To add a user via the application container image, run:
 
 ```
-node server.js adduser myusername mypassword
+make image
+podman run --rm notifier adduser myusername mypassword
+```
+
+The non-container equivalent is:
+
+```
+bun server/server.ts adduser myusername mypassword
+```
+
+## Config Display
+
+The configuration as seen by the application can be displayed using:
+
+```
+podman run --rm notifier config
+```
+
+or:
+
+```
+bun server/server.ts config
 ```
 
 
