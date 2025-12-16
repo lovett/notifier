@@ -23,7 +23,7 @@ deploy:
 	ssh $(NOTIFIER_DEPLOY_HOST) sudo systemctl restart notifier
 	ssh -O exit -q $(NOTIFIER_DEPLOY_HOST)
 
-image:
+image: clean
 	date +'%Y.%m.%d+' > server/public/version.txt
 	truncate -s-1 server/public/version.txt
 	git rev-parse --short=5 HEAD >> server/public/version.txt
@@ -54,7 +54,7 @@ favicon:
 format:
 	biome format --fix
 
-ui:
+ui: clean
 	bun --watch build ui/index.html ui/worker.ts --outdir server/public
 
 server: favicon
