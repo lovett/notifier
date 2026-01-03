@@ -21,7 +21,7 @@ export default {
     },
 
     getUser: async (username: string): Promise<User | null> => {
-        const sql = `SELECT id, xusername, password_hash as "passwordHash",
+        const sql = `SELECT id, username, password_hash as "passwordHash",
             created_at as "createdAt"
             FROM users WHERE username=$1`;
 
