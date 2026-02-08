@@ -1,17 +1,4 @@
-.DS_Store
-._*
-.\#*
-\#*
 node_modules
 build
-*.log
-*.tar.gz
-config*.json
 coverage
-*.bak
-ansible/*.retry
-ansible/inventory
-ansible/vars.yml
-.vscode
-.cache
 server/public
