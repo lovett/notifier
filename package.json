@@ -12,11 +12,11 @@
   "author": "Bill Lovett",
   "homepage": "https://github.com/lovett/notifier",
   "dependencies": {
-    "body-parser": "2.2.1",
+    "body-parser": "2.2.2",
     "cookie-parser": "1.4.7",
     "express": "5.2.1",
     "mithril": "2.3.8",
-    "pg": "8.16.3",
+    "pg": "8.18.0",
     "pg-hstore": "2.3.4",
     "sanitize-html": "2.17.0",
     "uuid": "13.0.0"
@@ -26,7 +26,7 @@
     "@types/cookie-parser": "1.4.10",
     "@types/express": "5.0.6",
     "@types/mithril": "2.2.7",
-    "@types/node": "25.0.3",
+    "@types/node": "25.2.2",
     "@types/pg": "8.16.0",
     "@types/sanitize-html": "2.16.0",
     "@types/serve-favicon": "2.5.7",
