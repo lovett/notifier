@@ -18,20 +18,20 @@
     "mithril": "2.3.8",
     "pg": "8.20.0",
     "pg-hstore": "2.3.4",
-    "sanitize-html": "2.17.2",
-    "uuid": "13.0.0"
+    "sanitize-html": "2.17.3",
+    "uuid": "14.0.0"
   },
   "devDependencies": {
     "@types/body-parser": "1.19.6",
     "@types/cookie-parser": "1.4.10",
     "@types/express": "5.0.6",
     "@types/mithril": "2.2.8",
-    "@types/node": "25.5.2",
+    "@types/node": "25.6.0",
     "@types/pg": "8.20.0",
     "@types/sanitize-html": "2.16.1",
     "@types/serve-favicon": "2.5.7",
     "@types/uuid": "11.0.0",
     "ts-node": "10.9.2",
-    "typescript": "6.0.2"
+    "typescript": "6.0.3"
   }
 }
