@@ -10,11 +10,7 @@ router.get('/', async (_, res: Response) => {
 
     res.set('Content-Type', 'text/plain');
 
-    if (fs.existsSync(asset)) {
-        res.sendFile(asset);
-    } else {
-        res.send('dev');
-    }
+    res.sendFile(asset);
 });
 
 export default router;

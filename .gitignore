@@ -1,4 +1,5 @@
 node_modules
 build
 coverage
-server/public
+public/*
+!public/version.txt
