@@ -2,13 +2,13 @@
 
 set -eu
 
-cd "$(dirname "$0")/../"
+. "$(dirname "$0")/vars.sh"
 
-VERSION_FILE="server/public/version.txt"
+cd "$(dirname "$0")/../"
 
 rm -f server/public/*.html server/public/*.js server/public*.css
 
-bun build ui/index.html ui/worker.ts --outdir server/public
+$BUN build ui/index.html ui/worker.ts --outdir server/public
 
 date +'%Y.%m.%d+' > "$VERSION_FILE"
 truncate -s-1 "$VERSION_FILE"
