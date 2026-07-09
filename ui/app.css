@@ -68,6 +68,10 @@ noscript {
     margin: auto;
 }
 
+#login .field {
+    margin-bottom: 1.5em;
+}
+
 #login .field:last-of-type {
     margin-bottom: 0;
 }
@@ -215,6 +219,16 @@ noscript {
     min-height: 5em;
 }
 
+.message .index {
+    margin-left: 0.25em;
+    box-sizing: border-box;
+    font-size: 0.75em;
+    text-align: center;
+    width: 2em;
+    padding-top: 1.2em;
+    align-self: stretch;
+}
+
 .message.offline .index {
     display: none;
 }
@@ -238,17 +252,6 @@ noscript {
 
 .message .details {
     padding: 0.5em;
-}
-
-.message .index {
-    margin-left: 0.25em;
-    box-sizing: border-box;
-    font-size: 0.75em;
-    text-align: center;
-    width: 2em;
-    align-self: start;
-    padding-top: 1.2em;
-    align-self: stretch;
 }
 
 .message .closer {
@@ -397,10 +400,6 @@ noscript {
 
 .message.weather div.badge {
     background-image: url("svg/bi--emoji-surprise.svg");
-}
-
-.field {
-    margin-bottom: 1.5em;
 }
 
 .shortcuts {

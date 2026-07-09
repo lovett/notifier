@@ -21,22 +21,22 @@ BIOME="podman run --rm -it -v $PWD:/app:Z -w /app $BIOME_IMAGE"
 BUN="podman run --rm -v $PWD:/app:Z -w /app $BUN_IMAGE bun"
 
 lint_server() {
-    echo "Running biome..."
+    echo "Running biome on server files..."
 	$BIOME lint server
 
     echo ""
 
-    echo "Running tsc..."
+    echo "Running tsc on server files..."
     $BUN x tsc --noEmit --project server
 }
 
 lint_ui() {
-    echo "Running biome..."
+    echo "Running biome on ui files..."
     $BIOME lint ui
 
     echo ""
 
-    echo "Running tsc..."
+    echo "Running tsc on ui files..."
     $BUN x tsc --noEmit --project ui
 }
 

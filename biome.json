@@ -5,6 +5,15 @@
     "useIgnoreFile": true,
     "defaultBranch": "master"
   },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "a11y": {
+        "noSvgWithoutTitle": "off"
+      }
+    }
+  },
   "formatter": {
     "indentStyle": "space"
   },

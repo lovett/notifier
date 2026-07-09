@@ -1,7 +1,6 @@
 import type { Response } from 'express';
 import { Router } from 'express';
 import * as path from 'node:path';
-import * as fs from 'node:fs';
 
 const router = Router();
 
