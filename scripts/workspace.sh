@@ -16,10 +16,10 @@ tmux send-keys -t "$TMUX_SESSION_NAME" "$EDITOR ." C-m
 tmux new-window -a -t "$TMUX_SESSION_NAME" "$SHELL"
 
 # 2: UI
-tmux new-window -a -t "$TMUX_SESSION_NAME" -n "ui" "make ui"
+tmux new-window -a -t "$TMUX_SESSION_NAME" -n "ui" "scripts/watch-ui.sh"
 
 # 3: Server
-tmux new-window -a -t "$TMUX_SESSION_NAME" -n "server" "make server"
+tmux new-window -a -t "$TMUX_SESSION_NAME" -n "server" "scripts/watch-server.sh"
 
 # Activate
 tmux select-window -t "$TMUX_SESSION_NAME":0

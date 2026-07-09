@@ -24,12 +24,6 @@ favicon:
 format:
 	biome format --fix
 
-ui: clean
-	bun --watch build ui/index.html ui/worker.ts --outdir server/public
-
-server: favicon
-	bun --watch run $(MAIN)
-
 # Recreate the dev database.
 resetdb:
 	dropdb -U postgres notifier_dev
