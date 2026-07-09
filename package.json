@@ -26,12 +26,12 @@
     "@types/cookie-parser": "1.4.10",
     "@types/express": "5.0.6",
     "@types/mithril": "2.2.8",
-    "@types/node": "26.1.0",
+    "@types/node": "26.1.1",
     "@types/pg": "8.20.0",
     "@types/sanitize-html": "2.16.1",
     "@types/serve-favicon": "2.5.7",
     "@types/uuid": "11.0.0",
     "ts-node": "10.9.2",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   }
 }
