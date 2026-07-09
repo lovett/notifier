@@ -17,10 +17,10 @@ git rev-parse --short=5 HEAD >> "$VERSION_FILE"
 podman build -t notifier \
        --inherit-labels=false \
 	   --label=org.opencontainers.image.created="$(date --rfc-3339='seconds')" \
-	   --label=org.opencontainers.image.description="$(jq .description package.json)" \
+	   --label=org.opencontainers.image.description="$(jq -r .description package.json)" \
 	   --label=org.opencontainers.image.revision="$(git rev-parse HEAD)" \
-	   --label=org.opencontainers.image.title="$(jq .name package.json)" \
-	   --label=org.opencontainers.image.url="$(jq .homepage package.json)" \
+	   --label=org.opencontainers.image.title="$(jq -r .name package.json)" \
+	   --label=org.opencontainers.image.url="$(jq -r .homepage package.json)" \
 	   .
 
 podman image prune -f
