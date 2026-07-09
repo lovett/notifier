@@ -11,45 +11,11 @@ It provides:
 The application runs as a Podman container managed by systemd.
 
 The container image is not hosted in a public registry. Build it
-locally by running `make image`.
-
-To bring the local image onto a remote host, create 2 environment variables:
-
-  - `NOTIFIER_DEPLOY_HOST`: The host that will run the container.
-  - `NOTIFIER_CONTAINER_REGISTRY`: The registry that will host the container image.
-
-Now run `make deploy`. It will:
-
-  - Push the image created by `make image` to `NOTIFIER_CONTAINER_REGISTRY`.
-  - Rsync a Podman Quadlet service file to `NOTIFIER_DEPLOY_HOST` so
-    that the application can be managed as a systemd service.
-  - Pull the image onto `NOTIFIER_DEPLOY_HOST`
-  - Start the container via systemd.
-
-The `systemd/notifier.container` service references the file
-`notifier.image`.  This file should be created manually at
-`/etc/containers/systemd/notifier.image` on `NOTIFIER_DEPLOY_HOST`.
-and have the following contents:
-
-```
-[Unit]
-After=myregistry.container
-Requires=myregistry.container
-
-[Image]
-Image=myregistry.example.com/notifier:latest
-RetryDelay=5s
-```
-
-The Unit section can be omitted if the container registry runs on a
-different host. The RetryDelay setting makes it less likely that the
-container will fail to start at boot due to the container registry not
-being immediately available.
+locally by running `scripts/image.sh`.
 
 ## Configuration
-The server is configured through the following environment
-variables. The systemd service sources them from the file
-`/etc/notifier.vars`.
+The server can beis configured through the following environment
+variables.
 
 `NOTIFIER_BADGE_BASE_URL`: Where to find custom message
 badges. Messages that specify a custom badge only list a
