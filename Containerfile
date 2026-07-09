@@ -1,7 +1,7 @@
 # Based on https://bun.com/guides/ecosystem/docker
 # See https://hub.docker.com/r/oven/bun for other image variants.
 
-FROM oven/bun:alpine AS base
+FROM docker.io/oven/bun:alpine AS base
 WORKDIR /usr/src/app
 
 FROM base AS build
