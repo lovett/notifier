@@ -1,12 +1,11 @@
 import { setTimeout } from 'node:timers/promises';
 
 import db from './db';
-import type User from './User';
 import publishMessage from './helpers/publish-message';
 import type { Application } from 'express';
 
 export default {
-    pruneTokens: async (intervalMs) => {
+    pruneTokens: async (intervalMs: number) => {
         console.log(`Pruning stale tokens every ${intervalMs/1000} seconds`);
         while (true) {
             try {
@@ -19,7 +18,7 @@ export default {
         }
     },
 
-    markExpiredMessagesRead: async (intervalMs, app: Application) => {
+    markExpiredMessagesRead: async (intervalMs: number, app: Application) => {
         app.locals.expirationCache = await db.getExpiringMessages();
 
         console.log(`Marking expired messages as read every ${intervalMs/1000} seconds`);
