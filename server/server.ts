@@ -15,7 +15,7 @@ import message from './routes/message';
 import unclear from './routes/unclear';
 import noBlanks from './middleware/no-blanks';
 import push from './routes/push';
-import scheduler from './scheduler';
+import tasks from './tasks';
 import security from './middleware/security';
 import services from './routes/services';
 import verify from './middleware/verify';
@@ -44,8 +44,6 @@ app.locals.config = {
 app.locals.expirationCache = new Map();
 
 app.locals.pushClients = new Map();
-
-app.locals.maintenanceTimestamp = new Date();
 
 app.use(security);
 
@@ -144,9 +142,8 @@ if (process.argv.length > 2) {
             `Listening on port ${app.locals.config.NOTIFIER_HTTP_PORT}\n`,
         );
 
-        app.locals.expirationCache = await db.getExpiringMessages();
-
-        setInterval(scheduler, 1_000, app);
+        tasks.pruneTokens(1_000 * 60 * 60);
+        tasks.markExpiredMessagesRead(1_000, app);
     });
 
     process.on('SIGTERM', () => {

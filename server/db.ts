@@ -398,7 +398,7 @@ export default {
         const sql = `SELECT public_id as "publicId", user_id as "userId", expires_at as "expiresAt"
             FROM messages
             WHERE unread=true
-            AND expires_at > NOW()`;
+            AND expires_at IS NOT NULL`;
 
         const messages: Map<string, [number, Date]> = new Map();
 
