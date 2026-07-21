@@ -1,11 +1,12 @@
 import db from '../db';
+import noEtag from '../middleware/no-etag';
 import type User from '../User';
 import type { Request, Response } from 'express';
 import { Router } from 'express';
 
 const router = Router();
 
-router.get('/{:count}', async (req: Request, res: Response) => {
+router.get('/{:count}', noEtag, async (req: Request, res: Response) => {
     const user = req.user as User;
     const maxCount = 50;
 
