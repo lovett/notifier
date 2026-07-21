@@ -41,7 +41,6 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
         await db.markMessagesRead(user.id, messageIds);
         for (const id of messageIds) {
-            delete req.app.locals.expirationCache[id];
             publishMessage(req.app, user.id, null, id);
         }
     } catch (e) {

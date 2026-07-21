@@ -41,8 +41,6 @@ app.locals.config = {
         `127.0.0,::1,${process.env.NOTIFIER_TRUSTED_IPS || ''}`,
 };
 
-app.locals.expirationCache = new Map();
-
 app.locals.pushClients = new Map();
 
 app.use(security);
@@ -143,7 +141,7 @@ if (process.argv.length > 2) {
         );
 
         tasks.pruneTokens(1_000 * 60 * 60);
-        tasks.markExpiredMessagesRead(1_000, app);
+        tasks.markExpiredMessagesRead(1_000 * 60 * 30);
     });
 
     process.on('SIGTERM', () => {

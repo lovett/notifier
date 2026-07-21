@@ -76,7 +76,6 @@ async function retract(req: Request, res: Response, next: NextFunction) {
         await db.markMessagesRead(user.id, messageIds);
 
         for (const id of messageIds) {
-            delete req.app.locals.expirationCache[id];
             publishMessage(req.app, user.id, null, id);
         }
     } catch (err) {
@@ -96,13 +95,6 @@ async function save(req: Request, res: Response, next: NextFunction) {
     } catch (err) {
         res.status(500);
         throw err;
-    }
-
-    if (message.expiresAt) {
-        req.app.locals.expirationCache.set(message.publicId, [
-            req.user,
-            message.expiresAt,
-        ]);
     }
 
     next();

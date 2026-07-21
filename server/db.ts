@@ -315,6 +315,25 @@ export default {
         }
     },
 
+    markExpiredMessagesRead: async (): Promise<boolean> => {
+        const sql = `UPDATE messages
+        SET unread=false
+        WHERE unread=true
+        AND expires_at < NOW()`;
+
+        try {
+            await pool.query(sql);
+            return true;
+        } catch (err) {
+            if (err instanceof DatabaseError) {
+                logError(`markExpiredMessagesRead()`, err);
+            } else {
+                console.error(err);
+            }
+            return false;
+        }
+    },
+
     getMessage: async (
         userId: number,
         publicId: string,
