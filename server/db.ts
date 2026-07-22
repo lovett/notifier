@@ -319,7 +319,7 @@ export default {
         const sql = `UPDATE messages
         SET unread=false
         WHERE unread=true
-        AND expires_at < NOW() AT TIMEZONE 'UTC'`;
+        AND expires_at < NOW() AT TIME ZONE 'UTC'`;
 
         try {
             await pool.query(sql);
