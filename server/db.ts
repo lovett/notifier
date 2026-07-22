@@ -319,7 +319,7 @@ export default {
         const sql = `UPDATE messages
         SET unread=false
         WHERE unread=true
-        AND expires_at < NOW()`;
+        AND expires_at < NOW() AT TIMEZONE 'UTC'`;
 
         try {
             await pool.query(sql);
@@ -373,7 +373,7 @@ export default {
             WHERE user_id=$1
             AND unread=true
             AND received >= $2
-            AND (expires_at IS NULL OR expires_at > NOW())
+            AND (expires_at IS NULL OR expires_at > NOW() AT TIME ZONE 'UTC')
             ORDER BY received
             LIMIT $3`;
 
