@@ -4,5 +4,8 @@ set -eu
 
 cd "$(dirname "$0")/../"
 
-rm -f *.html *.js *.css
-bun --watch build ui/index.html ui/worker.ts --outdir server/public
+PUBLIC="server/public"
+
+find "$PUBLIC" -type f \( -name "*.css" -o -name "*.js" -o -name "*.html" \) -exec rm {} +
+
+bun --watch build ui/index.html ui/worker.ts --outdir "$PUBLIC"
