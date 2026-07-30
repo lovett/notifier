@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
     "downlevelIteration": true,
     "extendedDiagnostics": false,
@@ -11,7 +12,8 @@
     "sourceMap": true,
     "target": "ES6",
     "strict": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "noEmit": true
   },
-  "exclude": ["**/flycheck_*", "**/#*", "**/.*"]
+  "exclude": ["**/#*", "**/.*"]
 }
