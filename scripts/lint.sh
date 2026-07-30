@@ -2,9 +2,9 @@
 
 set -eu
 
-. "$(dirname "$0")/vars.sh"
-
 cd "$(dirname "$0")/../"
+
+. scripts/vars.sh
 
 lint_server() {
     echo "Running biome on server files..."

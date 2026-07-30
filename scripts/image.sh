@@ -2,9 +2,9 @@
 
 set -eu
 
-. "$(dirname "$0")/vars.sh"
-
 cd "$(dirname "$0")/../"
+
+. scripts/vars.sh
 
 rm -f server/public/*.html server/public/*.js server/public*.css
 

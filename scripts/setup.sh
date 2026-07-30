@@ -2,12 +2,9 @@
 
 set -eu
 
-. "$(dirname "$0")/vars.sh"
-
 cd "$(dirname "$0")/../"
 
-BIOME_IMAGE="ghcr.io/biomejs/biome"
-BUN_IMAGE="docker.io/oven/bun:alpine"
+. scripts/vars.sh
 
 if ! podman image exists "$BUN_IMAGE"; then
     echo "Pulling $BUN_IMAGE"

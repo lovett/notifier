@@ -1,3 +1,4 @@
+# shellcheck disable=SC2034
 VERSION_FILE="server/public/version.txt"
 BUN_IMAGE="docker.io/oven/bun:alpine"
 BUN="podman run --rm -v $PWD:/app:Z -w /app $BUN_IMAGE bun"
