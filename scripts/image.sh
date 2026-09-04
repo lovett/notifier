@@ -23,5 +23,4 @@ podman build -t notifier \
        --label=notifier.version="$APP_VERSION" \
        .
 
-podman image prune -f
 git checkout -q "$VERSION_FILE"
