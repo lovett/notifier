@@ -1,6 +1,8 @@
 # shellcheck disable=SC2034
 VERSION_FILE="server/public/version.txt"
-BUN_IMAGE="docker.io/oven/bun:alpine"
+
+BUN_IMAGE="docker.io/oven/bun:1.4.2-alpine"
 BUN="podman run --rm -v $PWD:/app:Z -w /app $BUN_IMAGE bun"
+
 BIOME_IMAGE="ghcr.io/biomejs/biome"
 BIOME="podman run --rm -v $PWD:/app:Z -w /app $BIOME_IMAGE"
