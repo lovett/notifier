@@ -1,7 +1,9 @@
 # Based on https://bun.com/guides/ecosystem/docker
 # See https://hub.docker.com/r/oven/bun for other image variants.
 
-FROM docker.io/oven/bun:alpine AS base
+ARG BUN=docker.io/oven/bun:1.4.2-alpine
+
+FROM ${BUN} AS base
 WORKDIR /usr/src/app
 
 FROM base AS build
@@ -11,7 +13,7 @@ RUN bun build --production --outdir=server/public ui/index.html ui/worker.ts
 
 FROM base AS release
 
-LABEL org.opencontainers.image.base.name="docker.io/oven/bun:alpine"
+LABEL org.opencontainers.image.base.name="${BUN}"
 
 ENV NOTIFIER_HTTP_IP=0.0.0.0
 ENV NOTIFIER_DB_DSN=postgres://notifier@host.containers.internal/notifier
