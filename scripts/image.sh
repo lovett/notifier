@@ -15,6 +15,7 @@ echo "$APP_VERSION" > "$VERSION_FILE"
 
 podman build -t notifier \
        --inherit-labels=false \
+       --label=org.opencontainers.image.base.name="$BUN_IMAGE" \
        --label=org.opencontainers.image.created="$(date --rfc-3339='seconds')" \
        --label=org.opencontainers.image.description="$(jq -r .description package.json)" \
        --label=org.opencontainers.image.revision="$(git rev-parse HEAD)" \
